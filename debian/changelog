@@ -1,5 +1,5 @@
-vtk7 (7.1.1-2) unstable; urgency=medium
+vtk7 (7.1.1-2) bionic; urgency=medium
 
   * Releasing 7.1.1
 
- -- Matthew Powelson <powelson.matthew@gmail.com>  Fri, 21 Feb 2020 12:15:49 +0200
+ -- Levi Armstrong <levi.armstrong@gmail.com>  Fri, 21 Feb 2020 12:15:49 +0200
