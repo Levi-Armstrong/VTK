@@ -20,13 +20,13 @@
  * vtkXMLHierarchicalBoxDataFileConverter is a utility class to convert v0.1 and
  * v1.0 of the VTK XML hierarchical file format to the v1.1. Users can then use
  * vtkXMLUniformGridAMRReader to read the dataset into VTK.
- */
+*/
 
 #ifndef vtkXMLHierarchicalBoxDataFileConverter_h
 #define vtkXMLHierarchicalBoxDataFileConverter_h
 
-#include "vtkIOXMLModule.h" // needed for export macro.
 #include "vtkObject.h"
+#include "vtkIOXMLModule.h" // needed for export macro.
 
 class vtkXMLDataElement;
 
@@ -35,7 +35,7 @@ class VTKIOXML_EXPORT vtkXMLHierarchicalBoxDataFileConverter : public vtkObject
 public:
   static vtkXMLHierarchicalBoxDataFileConverter* New();
   vtkTypeMacro(vtkXMLHierarchicalBoxDataFileConverter, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -60,21 +60,23 @@ public:
 
 protected:
   vtkXMLHierarchicalBoxDataFileConverter();
-  ~vtkXMLHierarchicalBoxDataFileConverter() override;
+  ~vtkXMLHierarchicalBoxDataFileConverter();
 
   vtkXMLDataElement* ParseXML(const char* filename);
 
   // Returns GridDescription. VTK_UNCHANGED for invalid/failure.
-  int GetOriginAndSpacing(vtkXMLDataElement* ePrimary, double origin[3], double*& spacing);
+  int GetOriginAndSpacing(
+    vtkXMLDataElement* ePrimary, double origin[3], double* &spacing);
 
-  char* InputFileName;
-  char* OutputFileName;
-  char* FilePath;
+  char *InputFileName;
+  char *OutputFileName;
+  char *FilePath;
   vtkSetStringMacro(FilePath);
 
 private:
-  vtkXMLHierarchicalBoxDataFileConverter(const vtkXMLHierarchicalBoxDataFileConverter&) = delete;
-  void operator=(const vtkXMLHierarchicalBoxDataFileConverter&) = delete;
+  vtkXMLHierarchicalBoxDataFileConverter(const vtkXMLHierarchicalBoxDataFileConverter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkXMLHierarchicalBoxDataFileConverter&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif

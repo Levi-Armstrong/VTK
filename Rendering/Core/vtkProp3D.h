@@ -28,13 +28,13 @@
  *
  * @sa
  * vtkProp vtkActor vtkAssembly vtkVolume
- */
+*/
 
 #ifndef vtkProp3D_h
 #define vtkProp3D_h
 
-#include "vtkProp.h"
 #include "vtkRenderingCoreModule.h" // For export macro
+#include "vtkProp.h"
 
 class vtkRenderer;
 class vtkTransform;
@@ -43,13 +43,13 @@ class vtkLinearTransform;
 class VTKRENDERINGCORE_EXPORT vtkProp3D : public vtkProp
 {
 public:
-  vtkTypeMacro(vtkProp3D, vtkProp);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkProp3D,vtkProp);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Shallow copy of this vtkProp3D.
    */
-  void ShallowCopy(vtkProp* prop) override;
+  void ShallowCopy(vtkProp *prop);
 
   //@{
   /**
@@ -57,20 +57,24 @@ public:
    */
   virtual void SetPosition(double x, double y, double z)
   {
-    vtkDebugMacro(<< this->GetClassName() << " (" << this << "): setting Position to (" << x << ","
-                  << y << "," << z << ")");
-    if ((this->Position[0] != x) || (this->Position[1] != y) || (this->Position[2] != z))
-    {
-      this->Position[0] = x;
-      this->Position[1] = y;
-      this->Position[2] = z;
-      this->Modified();
-      this->IsIdentity = 0;
-    }
+      vtkDebugMacro(<< this->GetClassName() << " (" << this <<
+      "): setting Position to (" << x << "," << y << "," <<
+      z << ")");
+      if ((this->Position[0] != x)||
+          (this->Position[1] != y)||
+          (this->Position[2] != z))
+      {
+        this->Position[0] = x;
+        this->Position[1] = y;
+        this->Position[2] = z;
+        this->Modified();
+        this->IsIdentity = 0;
+      }
   };
   //@}
 
-  virtual void SetPosition(double pos[3]) { this->SetPosition(pos[0], pos[1], pos[2]); }
+  virtual void SetPosition(double pos[3])
+    { this->SetPosition(pos[0], pos[1], pos[2]); }
   vtkGetVectorMacro(Position, double, 3);
   void AddPosition(double deltaPosition[3]);
   void AddPosition(double deltaX, double deltaY, double deltaZ);
@@ -82,18 +86,22 @@ public:
    */
   virtual void SetOrigin(double x, double y, double z)
   {
-    vtkDebugMacro(<< this->GetClassName() << " (" << this << "): setting Origin to (" << x << ","
-                  << y << "," << z << ")");
-    if ((this->Origin[0] != x) || (this->Origin[1] != y) || (this->Origin[2] != z))
-    {
-      this->Origin[0] = x;
-      this->Origin[1] = y;
-      this->Origin[2] = z;
-      this->Modified();
-      this->IsIdentity = 0;
-    }
+      vtkDebugMacro(<< this->GetClassName() << " (" << this <<
+      "): setting Origin to (" << x << "," << y << "," <<
+      z << ")");
+      if ((this->Origin[0] != x)||
+          (this->Origin[1] != y)||
+          (this->Origin[2] != z))
+      {
+        this->Origin[0] = x;
+        this->Origin[1] = y;
+        this->Origin[2] = z;
+        this->Modified();
+        this->IsIdentity = 0;
+      }
   };
-  virtual void SetOrigin(const double pos[3]) { this->SetOrigin(pos[0], pos[1], pos[2]); }
+  virtual void SetOrigin(const double pos[3])
+    { this->SetOrigin(pos[0], pos[1], pos[2]); }
   vtkGetVectorMacro(Origin, double, 3);
   //@}
 
@@ -104,9 +112,12 @@ public:
    */
   virtual void SetScale(double x, double y, double z)
   {
-    vtkDebugMacro(<< this->GetClassName() << " (" << this << "): setting Scale to (" << x << ","
-                  << y << "," << z << ")");
-    if (this->Scale[0] != x || this->Scale[1] != y || this->Scale[2] != z)
+    vtkDebugMacro(<< this->GetClassName() << " (" << this <<
+      "): setting Scale to (" << x << "," << y << "," <<
+      z << ")");
+    if (this->Scale[0] != x ||
+        this->Scale[1] != y ||
+        this->Scale[2] != z )
     {
       this->Scale[0] = x;
       this->Scale[1] = y;
@@ -115,14 +126,16 @@ public:
       this->IsIdentity = 0;
     }
   };
-  virtual void SetScale(double scale[3]) { this->SetScale(scale[0], scale[1], scale[2]); }
+  virtual void SetScale(double scale[3])
+    { this->SetScale(scale[0], scale[1], scale[2]); }
   vtkGetVectorMacro(Scale, double, 3);
   //@}
 
   /**
    * Method to set the scale isotropically
    */
-  void SetScale(double s) { this->SetScale(s, s, s); }
+  void SetScale(double s)
+    { this->SetScale(s, s, s); }
 
   //@{
   /**
@@ -137,7 +150,7 @@ public:
    * UserTransform, concatenated with the UserMatrix if the UserMatrix
    * is present.
    */
-  void SetUserTransform(vtkLinearTransform* transform);
+  void SetUserTransform(vtkLinearTransform *transform);
   vtkGetObjectMacro(UserTransform, vtkLinearTransform);
   //@}
 
@@ -145,8 +158,8 @@ public:
   /**
    * The UserMatrix can be used in place of UserTransform.
    */
-  void SetUserMatrix(vtkMatrix4x4* matrix);
-  vtkMatrix4x4* GetUserMatrix();
+  void SetUserMatrix(vtkMatrix4x4 *matrix);
+  vtkMatrix4x4 *GetUserMatrix();
   //@}
 
   //@{
@@ -155,7 +168,7 @@ public:
    * Get the matrix from the position, origin, scale and orientation This
    * matrix is cached, so multiple GetMatrix() calls will be efficient.
    */
-  virtual void GetMatrix(vtkMatrix4x4* m);
+  virtual void GetMatrix(vtkMatrix4x4 *m);
   virtual void GetMatrix(double m[16]);
   //@}
 
@@ -168,28 +181,28 @@ public:
    * Get the bounds for this Prop3D as (Xmin,Xmax,Ymin,Ymax,Zmin,Zmax).
    */
   void GetBounds(double bounds[6]);
-  double* GetBounds() VTK_SIZEHINT(6) override = 0;
+  virtual double *GetBounds() = 0;
   //@}
 
   /**
    * Get the center of the bounding box in world coordinates.
    */
-  double* GetCenter() VTK_SIZEHINT(3);
+  double *GetCenter();
 
   /**
    * Get the Prop3D's x range in world coordinates.
    */
-  double* GetXRange() VTK_SIZEHINT(2);
+  double *GetXRange();
 
   /**
    * Get the Prop3D's y range in world coordinates.
    */
-  double* GetYRange() VTK_SIZEHINT(2);
+  double *GetYRange();
 
   /**
    * Get the Prop3D's z range in world coordinates.
    */
-  double* GetZRange() VTK_SIZEHINT(2);
+  double *GetZRange();
 
   /**
    * Get the length of the diagonal of the bounding box.
@@ -252,14 +265,14 @@ public:
    * same matrix is RotateZ, RotateX, and finally RotateY. See also
    * SetOrientation.
    */
-  double* GetOrientation() VTK_SIZEHINT(3);
+  double *GetOrientation();
   void GetOrientation(double orentation[3]);
   //@}
 
   /**
    * Returns the WXYZ orientation of the Prop3D.
    */
-  double* GetOrientationWXYZ() VTK_SIZEHINT(4);
+  double *GetOrientationWXYZ();
 
   /**
    * Add to the current orientation. See SetOrientation and
@@ -287,18 +300,18 @@ public:
    * vtkProp3D will be restored. This method is used to support
    * picking and assembly structures.
    */
-  void PokeMatrix(vtkMatrix4x4* matrix) override;
+  void PokeMatrix(vtkMatrix4x4 *matrix);
 
   /**
    * Overload vtkProp's method for setting up assembly paths. See
    * the documentation for vtkProp.
    */
-  void InitPathTraversal() override;
+  void InitPathTraversal();
 
   /**
    * Get the vtkProp3D's mtime
    */
-  vtkMTimeType GetMTime() override;
+  vtkMTimeType GetMTime();
 
   /**
    * Get the modified time of the user matrix or user transform.
@@ -314,7 +327,7 @@ public:
   /**
    * Get a pointer to an internal vtkMatrix4x4. that represents
    */
-  vtkMatrix4x4* GetMatrix() override
+  vtkMatrix4x4 *GetMatrix()
   {
     this->ComputeMatrix();
     return this->Matrix;
@@ -330,25 +343,24 @@ public:
 
 protected:
   vtkProp3D();
-  ~vtkProp3D() override;
+  ~vtkProp3D();
 
-  vtkLinearTransform* UserTransform;
-  vtkMatrix4x4* UserMatrix;
-  vtkMatrix4x4* Matrix;
+  vtkLinearTransform *UserTransform;
+  vtkMatrix4x4 *UserMatrix;
+  vtkMatrix4x4 *Matrix;
   vtkTimeStamp MatrixMTime;
   double Origin[3];
   double Position[3];
   double Orientation[3];
   double Scale[3];
   double Center[3];
-  vtkTransform* Transform;
+  vtkTransform *Transform;
   double Bounds[6];
-  vtkProp3D* CachedProp3D; // support the PokeMatrix() method
+  vtkProp3D *CachedProp3D; //support the PokeMatrix() method
   int IsIdentity;
-
 private:
-  vtkProp3D(const vtkProp3D&) = delete;
-  void operator=(const vtkProp3D&) = delete;
+  vtkProp3D(const vtkProp3D&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkProp3D&) VTK_DELETE_FUNCTION;
 };
 
 #endif

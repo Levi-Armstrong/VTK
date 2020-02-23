@@ -39,7 +39,7 @@
  *
  * @todo
  * Need to clean up style to match vtk/Kitware standards. Please help.
- */
+*/
 
 #ifndef vtkCachingInterpolatedVelocityField_h
 #define vtkCachingInterpolatedVelocityField_h
@@ -59,47 +59,44 @@ class vtkAbstractCellLocator;
 //---------------------------------------------------------------------------
 class IVFDataSetInfo;
 //---------------------------------------------------------------------------
-class IVFCacheList : public std::vector<IVFDataSetInfo>
-{
-};
+class IVFCacheList : public std::vector< IVFDataSetInfo > {};
 //---------------------------------------------------------------------------
 
 class VTKFILTERSFLOWPATHS_EXPORT vtkCachingInterpolatedVelocityField : public vtkFunctionSet
 {
 public:
-  vtkTypeMacro(vtkCachingInterpolatedVelocityField, vtkFunctionSet);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkCachingInterpolatedVelocityField,vtkFunctionSet);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Construct a vtkCachingInterpolatedVelocityField with no initial data set.
    * LastCellId is set to -1.
    */
-  static vtkCachingInterpolatedVelocityField* New();
+  static vtkCachingInterpolatedVelocityField *New();
 
-  using Superclass::FunctionValues;
   //@{
   /**
    * Evaluate the velocity field, f={u,v,w}, at {x, y, z}.
    * returns 1 if valid, 0 if test failed
    */
-  int FunctionValues(double* x, double* f) override;
+  virtual int FunctionValues(double* x, double* f);
   virtual int InsideTest(double* x);
   //@}
 
   /**
    * Add a dataset used by the interpolation function evaluation.
    */
-  virtual void SetDataSet(
-    int I, vtkDataSet* dataset, bool staticdataset, vtkAbstractCellLocator* locator);
+  virtual void SetDataSet(int I, vtkDataSet* dataset, bool staticdataset, vtkAbstractCellLocator *locator);
 
   //@{
   /**
    * If you want to work with an arbitrary vector array, then set its name
-   * here. By default this in nullptr and the filter will use the active vector
+   * here. By default this in NULL and the filter will use the active vector
    * array.
    */
   vtkGetStringMacro(VectorsSelection);
-  void SelectVectors(const char* fieldName) { this->SetVectorsSelection(fieldName); }
+  void SelectVectors(const char *fieldName)
+    {this->SetVectorsSelection(fieldName);}
   //@}
 
   /**
@@ -110,8 +107,8 @@ public:
   void SetLastCellInfo(vtkIdType c, int datasetindex);
 
   /**
-   * Set LastCellId to -1 and Cache to nullptr so that the next
-   * search does not start from the previous cell.
+   * Set LastCellId to -1 and Cache to NULL so that the next
+   * search does not  start from the previous cell.
    */
   void ClearLastCellInfo();
 
@@ -136,26 +133,26 @@ public:
 
 protected:
   vtkCachingInterpolatedVelocityField();
-  ~vtkCachingInterpolatedVelocityField() override;
+ ~vtkCachingInterpolatedVelocityField();
 
-  vtkGenericCell* TempCell;
-  int CellCacheHit;
-  int DataSetCacheHit;
-  int CacheMiss;
-  int LastCacheIndex;
-  int LastCellId;
-  IVFDataSetInfo* Cache;
-  IVFCacheList CacheList;
-  char* VectorsSelection;
+  vtkGenericCell          *TempCell;
+  int                      CellCacheHit;
+  int                      DataSetCacheHit;
+  int                      CacheMiss;
+  int                      LastCacheIndex;
+  int                      LastCellId;
+  IVFDataSetInfo          *Cache;
+  IVFCacheList          CacheList;
+  char                    *VectorsSelection;
 
-  std::vector<double> Weights;
+  std::vector<double>   Weights;
 
   vtkSetStringMacro(VectorsSelection);
 
   // private versions which work on the passed dataset/cache
   // these do the real computation
-  int FunctionValues(IVFDataSetInfo* cache, double* x, double* f);
-  int InsideTest(IVFDataSetInfo* cache, double* x);
+  int FunctionValues(IVFDataSetInfo *cache, double *x, double *f);
+  int InsideTest(IVFDataSetInfo *cache, double* x);
 
   friend class vtkTemporalInterpolatedVelocityField;
   //@{
@@ -166,16 +163,16 @@ protected:
    * This function is primarily reserved for use by
    * vtkTemporalInterpolatedVelocityField
    */
-  void FastCompute(IVFDataSetInfo* cache, double f[3]);
-  bool InterpolatePoint(vtkPointData* outPD, vtkIdType outIndex);
-  bool InterpolatePoint(
-    vtkCachingInterpolatedVelocityField* inCIVF, vtkPointData* outPD, vtkIdType outIndex);
-  vtkGenericCell* GetLastCell();
+  void FastCompute(IVFDataSetInfo *cache, double f[3]);
+  bool InterpolatePoint(vtkPointData *outPD, vtkIdType outIndex);
+  bool InterpolatePoint(vtkCachingInterpolatedVelocityField *inCIVF,
+                        vtkPointData *outPD, vtkIdType outIndex);
+  vtkGenericCell *GetLastCell();
   //@}
 
 private:
-  vtkCachingInterpolatedVelocityField(const vtkCachingInterpolatedVelocityField&) = delete;
-  void operator=(const vtkCachingInterpolatedVelocityField&) = delete;
+  vtkCachingInterpolatedVelocityField(const vtkCachingInterpolatedVelocityField&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkCachingInterpolatedVelocityField&) VTK_DELETE_FUNCTION;
 };
 
 //---------------------------------------------------------------------------
@@ -190,19 +187,18 @@ private:
 class IVFDataSetInfo
 {
 public:
-  vtkSmartPointer<vtkDataSet> DataSet;
+  vtkSmartPointer<vtkDataSet>             DataSet;
   vtkSmartPointer<vtkAbstractCellLocator> BSPTree;
-  vtkSmartPointer<vtkGenericCell> Cell;
-  double PCoords[3];
-  float* VelocityFloat;
-  double* VelocityDouble;
-  double Tolerance;
-  bool StaticDataSet;
+  vtkSmartPointer<vtkGenericCell>         Cell;
+  double                                  PCoords[3];
+  float                                  *VelocityFloat;
+  double                                 *VelocityDouble;
+  double                                  Tolerance;
+  bool                                    StaticDataSet;
   IVFDataSetInfo();
-  IVFDataSetInfo(const IVFDataSetInfo& ivfci);
-  IVFDataSetInfo& operator=(const IVFDataSetInfo& ivfci);
-  void SetDataSet(
-    vtkDataSet* data, char* velocity, bool staticdataset, vtkAbstractCellLocator* locator);
+  IVFDataSetInfo(const IVFDataSetInfo &ivfci);
+  IVFDataSetInfo &operator=(const IVFDataSetInfo &ivfci);
+  void SetDataSet(vtkDataSet *data, char *velocity, bool staticdataset, vtkAbstractCellLocator *locator);
   //
   static const double TOLERANCE_SCALE;
 };

@@ -35,7 +35,7 @@
  * @sa
  * vtkGeometryFilter vtkExtractGeometry vtkExtractVOI
  * vtkStructuredGridGeometryFilter
- */
+*/
 
 #ifndef vtkExtractGrid_h
 #define vtkExtractGrid_h
@@ -49,9 +49,9 @@ class vtkExtractStructuredGridHelper;
 class VTKFILTERSEXTRACTION_EXPORT vtkExtractGrid : public vtkStructuredGridAlgorithm
 {
 public:
-  static vtkExtractGrid* New();
-  vtkTypeMacro(vtkExtractGrid, vtkStructuredGridAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkExtractGrid *New();
+  vtkTypeMacro(vtkExtractGrid,vtkStructuredGridAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -59,8 +59,8 @@ public:
    * dataset can be of any topological dimension (i.e., point, line, plane,
    * or 3D grid).
    */
-  vtkSetVector6Macro(VOI, int);
-  vtkGetVectorMacro(VOI, int, 6);
+  vtkSetVector6Macro(VOI,int);
+  vtkGetVectorMacro(VOI,int,6);
   //@}
 
   //@{
@@ -84,18 +84,18 @@ public:
    * though the sample rate is not an even multiple of the grid
    * dimensions. (By default IncludeBoundary is off.)
    */
-  vtkSetMacro(IncludeBoundary, vtkTypeBool);
-  vtkGetMacro(IncludeBoundary, vtkTypeBool);
-  vtkBooleanMacro(IncludeBoundary, vtkTypeBool);
+  vtkSetMacro(IncludeBoundary,int);
+  vtkGetMacro(IncludeBoundary,int);
+  vtkBooleanMacro(IncludeBoundary,int);
   //@}
 
 protected:
   vtkExtractGrid();
-  ~vtkExtractGrid() override;
+  ~vtkExtractGrid();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int RequestUpdateExtent(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
+  virtual int RequestInformation(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
+  virtual int RequestUpdateExtent(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 
   /**
    * Implementation for RequestData using a specified VOI. This is because the
@@ -103,17 +103,21 @@ protected:
    * partitioning to play nice. The VOI is calculated from the output
    * data object's extents in this implementation.
    */
-  bool RequestDataImpl(vtkInformationVector** inputVector, vtkInformationVector* outputVector);
+  bool RequestDataImpl(vtkInformationVector **inputVector,
+                       vtkInformationVector *outputVector);
+
 
   int VOI[6];
   int SampleRate[3];
-  vtkTypeBool IncludeBoundary;
+  int IncludeBoundary;
 
   vtkExtractStructuredGridHelper* Internal;
 
 private:
-  vtkExtractGrid(const vtkExtractGrid&) = delete;
-  void operator=(const vtkExtractGrid&) = delete;
+  vtkExtractGrid(const vtkExtractGrid&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkExtractGrid&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+

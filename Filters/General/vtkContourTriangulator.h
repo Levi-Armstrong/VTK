@@ -29,7 +29,7 @@
  * not attempt to produce high-quality triangles.
  * @par Thanks:
  * Thanks to David Gobbi for contributing this class to VTK.
- */
+*/
 
 #ifndef vtkContourTriangulator_h
 #define vtkContourTriangulator_h
@@ -43,9 +43,9 @@ class vtkIdList;
 class VTKFILTERSGENERAL_EXPORT vtkContourTriangulator : public vtkPolyDataAlgorithm
 {
 public:
-  static vtkContourTriangulator* New();
-  vtkTypeMacro(vtkContourTriangulator, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkContourTriangulator *New();
+  vtkTypeMacro(vtkContourTriangulator,vtkPolyDataAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   //@{
   /**
@@ -60,9 +60,9 @@ public:
    * Note that triangulation failures are often minor, because they involve
    * tiny triangles that are too small to see.
    */
-  vtkSetMacro(TriangulationErrorDisplay, vtkTypeBool);
-  vtkBooleanMacro(TriangulationErrorDisplay, vtkTypeBool);
-  vtkGetMacro(TriangulationErrorDisplay, vtkTypeBool);
+  vtkSetMacro(TriangulationErrorDisplay, int);
+  vtkBooleanMacro(TriangulationErrorDisplay, int);
+  vtkGetMacro(TriangulationErrorDisplay, int);
   //@}
 
   /**
@@ -70,7 +70,8 @@ public:
    * It cleans up the polygon and then applies the ear-cut triangulation.
    * A zero return value indicates that triangulation failed.
    */
-  static int TriangulatePolygon(vtkIdList* polygon, vtkPoints* points, vtkCellArray* triangles);
+  static int TriangulatePolygon(
+    vtkIdList *polygon, vtkPoints *points, vtkCellArray *triangles);
 
   /**
    * Given some closed contour lines, create a triangle mesh that
@@ -78,22 +79,24 @@ public:
    * not polylines.  The input lines do not have to be in order.
    * Only numLines starting from firstLine will be used.
    */
-  static int TriangulateContours(vtkPolyData* data, vtkIdType firstLine, vtkIdType numLines,
-    vtkCellArray* outputPolys, const double normal[3]);
+  static int TriangulateContours(
+    vtkPolyData *data, vtkIdType firstLine, vtkIdType numLines,
+    vtkCellArray *outputPolys, const double normal[3]);
 
 protected:
   vtkContourTriangulator();
-  ~vtkContourTriangulator() override;
+  ~vtkContourTriangulator() VTK_OVERRIDE;
 
-  int RequestData(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  int RequestData(
+    vtkInformation* request, vtkInformationVector** inputVector,
+    vtkInformationVector* outputVector) VTK_OVERRIDE;
 
   int TriangulationError;
-  vtkTypeBool TriangulationErrorDisplay;
+  int TriangulationErrorDisplay;
 
 private:
-  vtkContourTriangulator(const vtkContourTriangulator&) = delete;
-  void operator=(const vtkContourTriangulator&) = delete;
+  vtkContourTriangulator(const vtkContourTriangulator&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkContourTriangulator&) VTK_DELETE_FUNCTION;
 };
 
 #endif

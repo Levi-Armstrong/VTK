@@ -38,7 +38,7 @@
  *
  * @sa
  * vtkContourFilter vtkGenericDataSet
- */
+*/
 
 #ifndef vtkGenericContourFilter_h
 #define vtkGenericContourFilter_h
@@ -54,17 +54,18 @@ class vtkCellData;
 class VTKFILTERSGENERIC_EXPORT vtkGenericContourFilter : public vtkPolyDataAlgorithm
 {
 public:
-  vtkTypeMacro(vtkGenericContourFilter, vtkPolyDataAlgorithm);
+  vtkTypeMacro(vtkGenericContourFilter,
+                       vtkPolyDataAlgorithm);
 
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Construct object with initial range (0,1) and single contour value
    * of 0.0.
    */
-  static vtkGenericContourFilter* New();
+  static vtkGenericContourFilter *New();
 
-  typedef double PointType[3]; // Arbitrary definition of a point
+  typedef double PointType[3];  // Arbitrary definition of a point
 
   //@{
   /**
@@ -72,10 +73,10 @@ public:
    */
   void SetValue(int i, float value);
   double GetValue(int i);
-  double* GetValues();
-  void GetValues(double* contourValues);
+  double *GetValues();
+  void GetValues(double *contourValues);
   void SetNumberOfContours(int number);
-  vtkIdType GetNumberOfContours();
+  int GetNumberOfContours();
   void GenerateValues(int numContours, double range[2]);
   void GenerateValues(int numContours, double rangeStart, double rangeEnd);
   //@}
@@ -83,7 +84,7 @@ public:
   /**
    * Modified GetMTime Because we delegate to vtkContourValues
    */
-  vtkMTimeType GetMTime() override;
+  vtkMTimeType GetMTime();
 
   //@{
   /**
@@ -92,9 +93,9 @@ public:
    * processed by filters that modify topology or geometry, it may be
    * wise to turn Normals and Gradients off.
    */
-  vtkSetMacro(ComputeNormals, vtkTypeBool);
-  vtkGetMacro(ComputeNormals, vtkTypeBool);
-  vtkBooleanMacro(ComputeNormals, vtkTypeBool);
+  vtkSetMacro(ComputeNormals,int);
+  vtkGetMacro(ComputeNormals,int);
+  vtkBooleanMacro(ComputeNormals,int);
   //@}
 
   //@{
@@ -106,18 +107,18 @@ public:
    * will be processed by filters that modify topology or geometry, it
    * may be wise to turn Normals and Gradients off.
    */
-  vtkSetMacro(ComputeGradients, vtkTypeBool);
-  vtkGetMacro(ComputeGradients, vtkTypeBool);
-  vtkBooleanMacro(ComputeGradients, vtkTypeBool);
+  vtkSetMacro(ComputeGradients,int);
+  vtkGetMacro(ComputeGradients,int);
+  vtkBooleanMacro(ComputeGradients,int);
   //@}
 
   //@{
   /**
    * Set/Get the computation of scalars.
    */
-  vtkSetMacro(ComputeScalars, vtkTypeBool);
-  vtkGetMacro(ComputeScalars, vtkTypeBool);
-  vtkBooleanMacro(ComputeScalars, vtkTypeBool);
+  vtkSetMacro(ComputeScalars,int);
+  vtkGetMacro(ComputeScalars,int);
+  vtkBooleanMacro(ComputeScalars,int);
   //@}
 
   //@{
@@ -125,8 +126,8 @@ public:
    * Set / get a spatial locator for merging points. By default,
    * an instance of vtkMergePoints is used.
    */
-  void SetLocator(vtkIncrementalPointLocator* locator);
-  vtkGetObjectMacro(Locator, vtkIncrementalPointLocator);
+  void SetLocator(vtkIncrementalPointLocator *locator);
+  vtkGetObjectMacro(Locator,vtkIncrementalPointLocator);
   //@}
 
   /**
@@ -139,36 +140,36 @@ public:
   /**
    * If you want to contour by an arbitrary scalar attribute, then set its
    * name here.
-   * By default this in nullptr and the filter will use the active scalar array.
+   * By default this in NULL and the filter will use the active scalar array.
    */
   vtkGetStringMacro(InputScalarsSelection);
-  virtual void SelectInputScalars(const char* fieldName);
+  virtual void SelectInputScalars(const char *fieldName);
   //@}
 
 protected:
   vtkGenericContourFilter();
-  ~vtkGenericContourFilter() override;
+  ~vtkGenericContourFilter();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 
-  int FillInputPortInformation(int, vtkInformation*) override;
+  int FillInputPortInformation(int, vtkInformation*);
 
-  vtkContourValues* ContourValues;
-  vtkTypeBool ComputeNormals;
-  vtkTypeBool ComputeGradients;
-  vtkTypeBool ComputeScalars;
-  vtkIncrementalPointLocator* Locator;
+  vtkContourValues *ContourValues;
+  int ComputeNormals;
+  int ComputeGradients;
+  int ComputeScalars;
+  vtkIncrementalPointLocator *Locator;
 
-  char* InputScalarsSelection;
+  char *InputScalarsSelection;
   vtkSetStringMacro(InputScalarsSelection);
 
   // Used internal by vtkGenericAdaptorCell::Contour()
-  vtkPointData* InternalPD;
-  vtkPointData* SecondaryPD;
-  vtkCellData* SecondaryCD;
+  vtkPointData *InternalPD;
+  vtkPointData *SecondaryPD;
+  vtkCellData  *SecondaryCD;
 
 private:
-  vtkGenericContourFilter(const vtkGenericContourFilter&) = delete;
-  void operator=(const vtkGenericContourFilter&) = delete;
+  vtkGenericContourFilter(const vtkGenericContourFilter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkGenericContourFilter&) VTK_DELETE_FUNCTION;
 };
 #endif

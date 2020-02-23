@@ -34,16 +34,16 @@ vtkCxxSetObjectMacro(vtkArrayIteratorTemplate<T>, Array, vtkAbstractArray);
 template <class T>
 vtkArrayIteratorTemplate<T>::vtkArrayIteratorTemplate()
 {
-  this->Array = nullptr;
-  this->Pointer = nullptr;
+  this->Array = 0;
+  this->Pointer = 0;
 }
 
 //-----------------------------------------------------------------------------
 template <class T>
 vtkArrayIteratorTemplate<T>::~vtkArrayIteratorTemplate()
 {
-  this->SetArray(nullptr);
-  this->Pointer = nullptr;
+  this->SetArray(0);
+  this->Pointer = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -51,7 +51,7 @@ template <class T>
 void vtkArrayIteratorTemplate<T>::Initialize(vtkAbstractArray* a)
 {
   this->SetArray(a);
-  this->Pointer = nullptr;
+  this->Pointer = 0;
   if (this->Array)
   {
     this->Pointer = static_cast<T*>(this->Array->GetVoidPointer(0));
@@ -100,14 +100,14 @@ T* vtkArrayIteratorTemplate<T>::GetTuple(vtkIdType id)
 
 //-----------------------------------------------------------------------------
 template <class T>
-int vtkArrayIteratorTemplate<T>::GetDataType() const
+int vtkArrayIteratorTemplate<T>::GetDataType()
 {
   return this->Array->GetDataType();
 }
 
 //-----------------------------------------------------------------------------
 template <class T>
-int vtkArrayIteratorTemplate<T>::GetDataTypeSize() const
+int vtkArrayIteratorTemplate<T>::GetDataTypeSize()
 {
   return this->Array->GetDataTypeSize();
 }
@@ -117,7 +117,7 @@ template <class T>
 void vtkArrayIteratorTemplate<T>::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
-  os << indent << "Array: ";
+  os << indent << "Array: " ;
   if (this->Array)
   {
     os << "\n";
@@ -125,9 +125,9 @@ void vtkArrayIteratorTemplate<T>::PrintSelf(ostream& os, vtkIndent indent)
   }
   else
   {
-    os << "(none)"
-       << "\n";
+    os << "(none)" << "\n";
   }
 }
 
 #endif
+

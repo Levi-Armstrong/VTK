@@ -20,7 +20,7 @@
  * extent is larger than the input image extent, the extra pixels are
  * filled by an algorithm determined by the subclass.
  * The image extent of the output has to be specified.
- */
+*/
 
 #ifndef vtkImagePadFilter_h
 #define vtkImagePadFilter_h
@@ -31,18 +31,19 @@
 class VTKIMAGINGCORE_EXPORT vtkImagePadFilter : public vtkThreadedImageAlgorithm
 {
 public:
-  static vtkImagePadFilter* New();
-  vtkTypeMacro(vtkImagePadFilter, vtkThreadedImageAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkImagePadFilter *New();
+  vtkTypeMacro(vtkImagePadFilter,vtkThreadedImageAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   //@{
   /**
    * The image extent of the output has to be set explicitly.
    */
   void SetOutputWholeExtent(int extent[6]);
-  void SetOutputWholeExtent(int minX, int maxX, int minY, int maxY, int minZ, int maxZ);
+  void SetOutputWholeExtent(int minX, int maxX, int minY, int maxY,
+                            int minZ, int maxZ);
   void GetOutputWholeExtent(int extent[6]);
-  int* GetOutputWholeExtent() VTK_SIZEHINT(6) { return this->OutputWholeExtent; }
+  int *GetOutputWholeExtent() {return this->OutputWholeExtent;}
   //@}
 
   //@{
@@ -55,19 +56,27 @@ public:
 
 protected:
   vtkImagePadFilter();
-  ~vtkImagePadFilter() override {}
+  ~vtkImagePadFilter() {}
 
   int OutputWholeExtent[6];
   int OutputNumberOfScalarComponents;
 
-  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int RequestUpdateExtent(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int RequestInformation (vtkInformation*,
+                                  vtkInformationVector**,
+                                  vtkInformationVector*) VTK_OVERRIDE;
+  virtual int RequestUpdateExtent(vtkInformation*,
+                                  vtkInformationVector**,
+                                  vtkInformationVector*) VTK_OVERRIDE;
 
-  virtual void ComputeInputUpdateExtent(int inExt[6], int outExt[6], int wExt[6]);
+  virtual void ComputeInputUpdateExtent (int inExt[6], int outExt[6],
+                                         int wExt[6]);
 
 private:
-  vtkImagePadFilter(const vtkImagePadFilter&) = delete;
-  void operator=(const vtkImagePadFilter&) = delete;
+  vtkImagePadFilter(const vtkImagePadFilter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkImagePadFilter&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+
+

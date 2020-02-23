@@ -19,7 +19,7 @@
  * vtkInformationExecutivePortKey is used to represent keys in
  * vtkInformation for values that are vtkExecutive instances paired
  * with port numbers.
- */
+*/
 
 #ifndef vtkInformationExecutivePortKey_h
 #define vtkInformationExecutivePortKey_h
@@ -34,11 +34,11 @@ class vtkExecutive;
 class VTKCOMMONEXECUTIONMODEL_EXPORT vtkInformationExecutivePortKey : public vtkInformationKey
 {
 public:
-  vtkTypeMacro(vtkInformationExecutivePortKey, vtkInformationKey);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkInformationExecutivePortKey,vtkInformationKey);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   vtkInformationExecutivePortKey(const char* name, const char* location);
-  ~vtkInformationExecutivePortKey() override;
+  ~vtkInformationExecutivePortKey() VTK_OVERRIDE;
 
   /**
    * This method simply returns a new vtkInformationExecutivePortKey, given a
@@ -58,7 +58,7 @@ public:
   void Set(vtkInformation* info, vtkExecutive*, int);
   vtkExecutive* GetExecutive(vtkInformation* info);
   int GetPort(vtkInformation* info);
-  void Get(vtkInformation* info, vtkExecutive*& executive, int& port);
+  void Get(vtkInformation *info, vtkExecutive*& executive, int &port);
   //@}
 
   /**
@@ -66,21 +66,21 @@ public:
    * object to another.  If there is no entry in the first information
    * object for this key, the value is removed from the second.
    */
-  void ShallowCopy(vtkInformation* from, vtkInformation* to) override;
+  void ShallowCopy(vtkInformation* from, vtkInformation* to) VTK_OVERRIDE;
 
   /**
    * Report a reference this key has in the given information object.
    */
-  void Report(vtkInformation* info, vtkGarbageCollector* collector) override;
+  void Report(vtkInformation* info, vtkGarbageCollector* collector) VTK_OVERRIDE;
 
   /**
    * Print the key's value in an information object to a stream.
    */
-  void Print(ostream& os, vtkInformation* info) override;
+  void Print(ostream& os, vtkInformation* info) VTK_OVERRIDE;
 
 private:
-  vtkInformationExecutivePortKey(const vtkInformationExecutivePortKey&) = delete;
-  void operator=(const vtkInformationExecutivePortKey&) = delete;
+  vtkInformationExecutivePortKey(const vtkInformationExecutivePortKey&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkInformationExecutivePortKey&) VTK_DELETE_FUNCTION;
 };
 
 #endif

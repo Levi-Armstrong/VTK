@@ -25,7 +25,7 @@
  *
  * @sa
  * vtkXMLRectilinearGridWriter
- */
+*/
 
 #ifndef vtkXMLPRectilinearGridWriter_h
 #define vtkXMLPRectilinearGridWriter_h
@@ -39,8 +39,8 @@ class VTKIOPARALLELXML_EXPORT vtkXMLPRectilinearGridWriter : public vtkXMLPStruc
 {
 public:
   static vtkXMLPRectilinearGridWriter* New();
-  vtkTypeMacro(vtkXMLPRectilinearGridWriter, vtkXMLPStructuredDataWriter);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkXMLPRectilinearGridWriter,vtkXMLPStructuredDataWriter);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Get/Set the writer's input.
@@ -50,22 +50,22 @@ public:
   /**
    * Get the default file extension for files written by this writer.
    */
-  const char* GetDefaultFileExtension() override;
+  const char* GetDefaultFileExtension();
 
 protected:
   vtkXMLPRectilinearGridWriter();
-  ~vtkXMLPRectilinearGridWriter() override;
+  ~vtkXMLPRectilinearGridWriter();
 
   // see algorithm for more info
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  virtual int FillInputPortInformation(int port, vtkInformation* info);
 
-  const char* GetDataSetName() override;
-  vtkXMLStructuredDataWriter* CreateStructuredPieceWriter() override;
-  void WritePData(vtkIndent indent) override;
+  const char* GetDataSetName();
+  vtkXMLStructuredDataWriter* CreateStructuredPieceWriter();
+  void WritePData(vtkIndent indent);
 
 private:
-  vtkXMLPRectilinearGridWriter(const vtkXMLPRectilinearGridWriter&) = delete;
-  void operator=(const vtkXMLPRectilinearGridWriter&) = delete;
+  vtkXMLPRectilinearGridWriter(const vtkXMLPRectilinearGridWriter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkXMLPRectilinearGridWriter&) VTK_DELETE_FUNCTION;
 };
 
 #endif

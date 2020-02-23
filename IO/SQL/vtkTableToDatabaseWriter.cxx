@@ -31,28 +31,30 @@
 //----------------------------------------------------------------------------
 vtkTableToDatabaseWriter::vtkTableToDatabaseWriter()
 {
-  this->Database = nullptr;
+    this->Database = 0;
 }
 
 //----------------------------------------------------------------------------
-vtkTableToDatabaseWriter::~vtkTableToDatabaseWriter() = default;
+vtkTableToDatabaseWriter::~vtkTableToDatabaseWriter()
+{
+}
 
 //----------------------------------------------------------------------------
-bool vtkTableToDatabaseWriter::SetDatabase(vtkSQLDatabase* db)
+bool vtkTableToDatabaseWriter::SetDatabase(vtkSQLDatabase *db)
 {
-  if (!db)
+  if(!db)
   {
     return false;
   }
   this->Database = db;
-  if (this->Database->IsOpen() == false)
+  if(this->Database->IsOpen() == false)
   {
-    vtkErrorMacro(<< "SetDatabase must be passed an open database connection");
-    this->Database = nullptr;
+    vtkErrorMacro(<<"SetDatabase must be passed an open database connection");
+    this->Database = 0;
     return false;
   }
 
-  if (!this->TableName.empty())
+  if(this->TableName != "")
   {
     return this->TableNameIsNew();
   }
@@ -60,11 +62,11 @@ bool vtkTableToDatabaseWriter::SetDatabase(vtkSQLDatabase* db)
 }
 
 //----------------------------------------------------------------------------
-bool vtkTableToDatabaseWriter::SetTableName(const char* name)
+bool vtkTableToDatabaseWriter::SetTableName(const char *name)
 {
   std::string nameStr = name;
   this->TableName = nameStr;
-  if (this->Database != nullptr)
+  if(this->Database != 0)
   {
     return this->TableNameIsNew();
   }
@@ -74,31 +76,32 @@ bool vtkTableToDatabaseWriter::SetTableName(const char* name)
 //----------------------------------------------------------------------------
 bool vtkTableToDatabaseWriter::TableNameIsNew()
 {
-  if (this->Database == nullptr)
+  if(this->Database == 0)
   {
-    vtkErrorMacro(<< "TableNameIsNew() called with no open database!");
+    vtkErrorMacro(<<"TableNameIsNew() called with no open database!");
     return false;
   }
 
-  if (this->TableName.empty())
+  if(this->TableName == "")
   {
-    vtkErrorMacro(<< "TableNameIsNew() called but no table name specified.");
+    vtkErrorMacro(<<"TableNameIsNew() called but no table name specified.");
     return false;
   }
 
-  vtkStringArray* tableNames = this->Database->GetTables();
-  if (tableNames->LookupValue(this->TableName) == -1)
+  vtkStringArray *tableNames = this->Database->GetTables();
+  if(tableNames->LookupValue(this->TableName) == -1)
   {
     return true;
   }
 
-  vtkErrorMacro(<< "Table " << this->TableName << " already exists in the database.  "
-                << "Please choose another name.");
+  vtkErrorMacro(
+    << "Table " << this->TableName << " already exists in the database.  "
+    << "Please choose another name.");
   this->TableName = "";
   return false;
 }
 
-int vtkTableToDatabaseWriter::FillInputPortInformation(int, vtkInformation* info)
+int vtkTableToDatabaseWriter::FillInputPortInformation(int, vtkInformation *info)
 {
   info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkTable");
   return 1;
@@ -117,5 +120,5 @@ vtkTable* vtkTableToDatabaseWriter::GetInput(int port)
 //----------------------------------------------------------------------------
 void vtkTableToDatabaseWriter::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 }

@@ -32,22 +32,22 @@
  * option with vtkImageMask may result in results being slightly off since 0
  * could be a valid value from your input.
  *
- */
+*/
 
 #ifndef vtkImageAccumulate_h
 #define vtkImageAccumulate_h
 
-#include "vtkImageAlgorithm.h"
 #include "vtkImagingStatisticsModule.h" // For export macro
+#include "vtkImageAlgorithm.h"
 
 class vtkImageStencilData;
 
 class VTKIMAGINGSTATISTICS_EXPORT vtkImageAccumulate : public vtkImageAlgorithm
 {
 public:
-  static vtkImageAccumulate* New();
-  vtkTypeMacro(vtkImageAccumulate, vtkImageAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkImageAccumulate *New();
+  vtkTypeMacro(vtkImageAccumulate,vtkImageAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -87,29 +87,31 @@ public:
    * Initial value is (0,255,0,0,0,0)
    */
   void SetComponentExtent(int extent[6]);
-  void SetComponentExtent(int minX, int maxX, int minY, int maxY, int minZ, int maxZ);
+  void SetComponentExtent(int minX, int maxX, int minY, int maxY,
+        int minZ, int maxZ);
   void GetComponentExtent(int extent[6]);
-  int* GetComponentExtent() VTK_SIZEHINT(6) { return this->ComponentExtent; }
+  int *GetComponentExtent() {return this->ComponentExtent;}
   //@}
+
 
   //@{
   /**
    * Use a stencil to specify which voxels to accumulate.
    * Backcompatible methods.
    * It set and get the stencil on input port 1.
-   * Initial value is nullptr.
+   * Initial value is NULL.
    */
-  void SetStencilData(vtkImageStencilData* stencil);
-  vtkImageStencilData* GetStencil();
+  void SetStencilData(vtkImageStencilData *stencil);
+  vtkImageStencilData *GetStencil();
   //@}
 
   //@{
   /**
    * Reverse the stencil. Initial value is false.
    */
-  vtkSetClampMacro(ReverseStencil, vtkTypeBool, 0, 1);
-  vtkBooleanMacro(ReverseStencil, vtkTypeBool);
-  vtkGetMacro(ReverseStencil, vtkTypeBool);
+  vtkSetClampMacro(ReverseStencil, int, 0, 1);
+  vtkBooleanMacro(ReverseStencil, int);
+  vtkGetMacro(ReverseStencil, int);
   //@}
 
   //@{
@@ -129,38 +131,46 @@ public:
   /**
    * Should the data with value 0 be ignored? Initial value is false.
    */
-  vtkSetClampMacro(IgnoreZero, vtkTypeBool, 0, 1);
-  vtkGetMacro(IgnoreZero, vtkTypeBool);
-  vtkBooleanMacro(IgnoreZero, vtkTypeBool);
+  vtkSetClampMacro(IgnoreZero, int, 0, 1);
+  vtkGetMacro(IgnoreZero, int);
+  vtkBooleanMacro(IgnoreZero, int);
   //@}
 
 protected:
   vtkImageAccumulate();
-  ~vtkImageAccumulate() override;
+  ~vtkImageAccumulate();
 
   double ComponentSpacing[3];
   double ComponentOrigin[3];
   int ComponentExtent[6];
 
-  int RequestUpdateExtent(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int RequestData(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  virtual int RequestUpdateExtent(vtkInformation*,
+                                   vtkInformationVector**,
+                                   vtkInformationVector*);
+  virtual int RequestInformation (vtkInformation*,
+                                  vtkInformationVector**,
+                                  vtkInformationVector*);
+  virtual int RequestData(vtkInformation* request,
+                          vtkInformationVector** inputVector,
+                          vtkInformationVector* outputVector);
 
-  vtkTypeBool IgnoreZero;
+  int    IgnoreZero;
   double Min[3];
   double Max[3];
   double Mean[3];
   double StandardDeviation[3];
   vtkIdType VoxelCount;
 
-  vtkTypeBool ReverseStencil;
+  int ReverseStencil;
 
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  virtual int FillInputPortInformation(int port, vtkInformation* info);
 
 private:
-  vtkImageAccumulate(const vtkImageAccumulate&) = delete;
-  void operator=(const vtkImageAccumulate&) = delete;
+  vtkImageAccumulate(const vtkImageAccumulate&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkImageAccumulate&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+
+

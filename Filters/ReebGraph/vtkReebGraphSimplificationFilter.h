@@ -18,23 +18,24 @@
  *
  * The filter takes an input vtkReebGraph object and outputs a
  * vtkReebGraph object.
- */
+*/
 
 #ifndef vtkReebGraphSimplificationFilter_h
 #define vtkReebGraphSimplificationFilter_h
 
-#include "vtkDirectedGraphAlgorithm.h"
 #include "vtkFiltersReebGraphModule.h" // For export macro
+#include "vtkDirectedGraphAlgorithm.h"
 
 class vtkReebGraph;
 class vtkReebGraphSimplificationMetric;
 
-class VTKFILTERSREEBGRAPH_EXPORT vtkReebGraphSimplificationFilter : public vtkDirectedGraphAlgorithm
+class VTKFILTERSREEBGRAPH_EXPORT vtkReebGraphSimplificationFilter :
+  public vtkDirectedGraphAlgorithm
 {
 public:
   static vtkReebGraphSimplificationFilter* New();
   vtkTypeMacro(vtkReebGraphSimplificationFilter, vtkDirectedGraphAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -47,29 +48,29 @@ public:
 
   /**
    * Set the persistence metric evaluation code
-   * Default value: nullptr (standard topological persistence).
+   * Default value: NULL (standard topological persistence).
    */
-  void SetSimplificationMetric(vtkReebGraphSimplificationMetric* metric);
+  void SetSimplificationMetric(vtkReebGraphSimplificationMetric *metric);
 
   vtkReebGraph* GetOutput();
 
 protected:
   vtkReebGraphSimplificationFilter();
-  ~vtkReebGraphSimplificationFilter() override;
+  ~vtkReebGraphSimplificationFilter();
 
   double SimplificationThreshold;
 
-  vtkReebGraphSimplificationMetric* SimplificationMetric;
+  vtkReebGraphSimplificationMetric *SimplificationMetric;
 
-  int FillInputPortInformation(int portNumber, vtkInformation*) override;
-  int FillOutputPortInformation(int, vtkInformation*) override;
+  int FillInputPortInformation(int portNumber, vtkInformation *);
+  int FillOutputPortInformation(int, vtkInformation *);
 
-  int RequestData(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  int RequestData(vtkInformation *request,
+    vtkInformationVector **inputVector, vtkInformationVector *outputVector);
 
 private:
-  vtkReebGraphSimplificationFilter(const vtkReebGraphSimplificationFilter&) = delete;
-  void operator=(const vtkReebGraphSimplificationFilter&) = delete;
+  vtkReebGraphSimplificationFilter(const vtkReebGraphSimplificationFilter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkReebGraphSimplificationFilter&) VTK_DELETE_FUNCTION;
 };
 
 #endif

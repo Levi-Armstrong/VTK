@@ -19,23 +19,23 @@
  * This filter works correctly only if the whole geometry dataset
  * (that specify the point locations used to probe input) is available on all
  * nodes.
- */
+*/
 
 #ifndef vtkPProbeFilter_h
 #define vtkPProbeFilter_h
 
-#include "vtkCompositeDataProbeFilter.h"
 #include "vtkFiltersParallelModule.h" // For export macro
+#include "vtkCompositeDataProbeFilter.h"
 
 class vtkMultiProcessController;
 
 class VTKFILTERSPARALLEL_EXPORT vtkPProbeFilter : public vtkCompositeDataProbeFilter
 {
 public:
-  vtkTypeMacro(vtkPProbeFilter, vtkCompositeDataProbeFilter);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkPProbeFilter,vtkCompositeDataProbeFilter);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
-  static vtkPProbeFilter* New();
+  static vtkPProbeFilter *New();
 
   //@{
   /**
@@ -47,23 +47,24 @@ public:
 
 protected:
   vtkPProbeFilter();
-  ~vtkPProbeFilter() override;
+  ~vtkPProbeFilter();
 
   enum
   {
-    PROBE_COMMUNICATION_TAG = 1970
+    PROBE_COMMUNICATION_TAG=1970
   };
 
   // Usual data generation method
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int RequestUpdateExtent(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  virtual int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
+  virtual int RequestUpdateExtent(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
+  virtual int FillInputPortInformation(int port, vtkInformation *info);
 
   vtkMultiProcessController* Controller;
 
 private:
-  vtkPProbeFilter(const vtkPProbeFilter&) = delete;
-  void operator=(const vtkPProbeFilter&) = delete;
+  vtkPProbeFilter(const vtkPProbeFilter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPProbeFilter&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif

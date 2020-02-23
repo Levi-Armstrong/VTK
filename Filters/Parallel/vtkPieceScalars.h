@@ -23,13 +23,13 @@
  *
  * @sa
  * vtkPolyDataStreamer
- */
+*/
 
 #ifndef vtkPieceScalars_h
 #define vtkPieceScalars_h
 
-#include "vtkDataSetAlgorithm.h"
 #include "vtkFiltersParallelModule.h" // For export macro
+#include "vtkDataSetAlgorithm.h"
 
 class vtkFloatArray;
 class vtkIntArray;
@@ -37,42 +37,41 @@ class vtkIntArray;
 class VTKFILTERSPARALLEL_EXPORT vtkPieceScalars : public vtkDataSetAlgorithm
 {
 public:
-  static vtkPieceScalars* New();
+  static vtkPieceScalars *New();
 
-  vtkTypeMacro(vtkPieceScalars, vtkDataSetAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkPieceScalars,vtkDataSetAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Option to centerate cell scalars of points scalars.  Default is point scalars.
    */
-  void SetScalarModeToCellData() { this->SetCellScalarsFlag(1); }
-  void SetScalarModeToPointData() { this->SetCellScalarsFlag(0); }
-  int GetScalarMode() { return this->CellScalarsFlag; }
+  void SetScalarModeToCellData() {this->SetCellScalarsFlag(1);}
+  void SetScalarModeToPointData() {this->SetCellScalarsFlag(0);}
+  int GetScalarMode() {return this->CellScalarsFlag;}
 
   // Dscription:
   // This option uses a random mapping between pieces and scalar values.
   // The scalar values are chosen between 0 and 1.  By default, random mode is off.
-  vtkSetMacro(RandomMode, vtkTypeBool);
-  vtkGetMacro(RandomMode, vtkTypeBool);
-  vtkBooleanMacro(RandomMode, vtkTypeBool);
+  vtkSetMacro(RandomMode, int);
+  vtkGetMacro(RandomMode, int);
+  vtkBooleanMacro(RandomMode, int);
 
 protected:
   vtkPieceScalars();
-  ~vtkPieceScalars() override;
+  ~vtkPieceScalars();
 
   // Append the pieces.
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 
-  vtkIntArray* MakePieceScalars(int piece, vtkIdType numScalars);
-  vtkFloatArray* MakeRandomScalars(int piece, vtkIdType numScalars);
+  vtkIntArray *MakePieceScalars(int piece, vtkIdType numScalars);
+  vtkFloatArray *MakeRandomScalars(int piece, vtkIdType numScalars);
 
-  vtkSetMacro(CellScalarsFlag, int);
+  vtkSetMacro(CellScalarsFlag,int);
   int CellScalarsFlag;
-  vtkTypeBool RandomMode;
-
+  int RandomMode;
 private:
-  vtkPieceScalars(const vtkPieceScalars&) = delete;
-  void operator=(const vtkPieceScalars&) = delete;
+  vtkPieceScalars(const vtkPieceScalars&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPieceScalars&) VTK_DELETE_FUNCTION;
 };
 
 #endif

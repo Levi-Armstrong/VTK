@@ -14,10 +14,9 @@
 #ifndef vtkOpenGLVertexBufferObject_h
 #define vtkOpenGLVertexBufferObject_h
 
-#include "vtkOpenGLBufferObject.h"
 #include "vtkRenderingOpenGL2Module.h" // for export macro
+#include "vtkOpenGLBufferObject.h"
 
-class vtkOpenGLVertexBufferObjectCache;
 
 /**
  * @brief OpenGL vertex buffer object
@@ -26,55 +25,57 @@ class vtkOpenGLVertexBufferObjectCache;
  * GPU.
  */
 
+
 // useful union for stuffing colors into a float
-union vtkFourByteUnion {
+union vtkucfloat
+{
   unsigned char c[4];
-  short s[2];
   float f;
 };
 
-class VTKRENDERINGOPENGL2_EXPORT vtkOpenGLVertexBufferObject : public vtkOpenGLBufferObject
+class VTKRENDERINGOPENGL2_EXPORT vtkOpenGLVertexBufferObject :
+  public vtkOpenGLBufferObject
 {
 public:
-  static vtkOpenGLVertexBufferObject* New();
+  static vtkOpenGLVertexBufferObject *New();
   vtkTypeMacro(vtkOpenGLVertexBufferObject, vtkOpenGLBufferObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
-  // set the VBOs data to the provided data array and upload
-  // this can use a fast path of just passing the
-  // data array pointer to OpenGL if it is suitable
-  void UploadDataArray(vtkDataArray* array);
+  // Take the points, and pack them into this VBO. This currently
+  // takes whatever the input type might be and packs them into a VBO using
+  // floats for the vertices and normals, and unsigned char for the colors (if
+  // the array is non-null).
+  void CreateVBO(vtkPoints *points, unsigned int numPoints,
+      vtkDataArray *normals,
+      vtkDataArray *tcoords,
+      unsigned char *colors, int colorComponents);
 
-  // append a data array to this VBO, always
-  // copies the data from the data array
-  void AppendDataArray(vtkDataArray* array);
-
-  // Get the mtime when this VBO was loaded
-  vtkGetMacro(UploadTime, vtkTimeStamp);
+  void AppendVBO(vtkPoints *points, unsigned int numPoints,
+      vtkDataArray *normals,
+      vtkDataArray *tcoords,
+      unsigned char *colors, int colorComponents);
 
   /**\brief Methods for VBO coordinate shift+scale-computation.
-   *
-   * By default, shift and scale vectors are enabled
-   * whenever CreateVBO is called with points whose
-   * bounds are many bbox-lengths away from the origin.
-   *
-   * Shifting and scaling may be completely disabled,
-   * or manually specified, or left at the default.
-   *
-   * Manual specification is for the case when you
-   * will be calling AppendVBO instead of just CreateVBO
-   * and know better bounds than the what CreateVBO
-   * might produce.
-   *
-   * The automatic method tells CreatVBO to compute shift and
-   * scale vectors that remap the points to the unit cube.
-   */
-  enum ShiftScaleMethod
-  {
-    DISABLE_SHIFT_SCALE,     //!< Do not shift/scale point coordinates. Ever!
-    AUTO_SHIFT_SCALE,        //!< The default, automatic computation.
-    ALWAYS_AUTO_SHIFT_SCALE, //!< Always shift scale using auto computed values
-    MANUAL_SHIFT_SCALE       //!< Manual shift/scale (for use with AppendVBO)
+    *
+    * By default, shift and scale vectors are enabled
+    * whenever CreateVBO is called with points whose
+    * bounds are many bbox-lengths away from the origin.
+    *
+    * Shifting and scaling may be completely disabled,
+    * or manually specified, or left at the default.
+    *
+    * Manual specification is for the case when you
+    * will be calling AppendVBO instead of just CreateVBO
+    * and know better bounds than the what CreateVBO
+    * might produce.
+    *
+    * The automatic method tells CreatVBO to compute shift and
+    * scale vectors that remap the points to the unit cube.
+    */
+  enum ShiftScaleMethod {
+    DISABLE_SHIFT_SCALE,  //!< Do not shift/scale point coordinates. Ever!
+    AUTO_SHIFT_SCALE,     //!< The default, automatic computation.
+    MANUAL_SHIFT_SCALE    //!< Manual shift/scale provided (for use with AppendVBO)
   };
 
   // Description:
@@ -108,66 +109,39 @@ public:
   //
   // These methods are used by the mapper to determine the
   // additional transform (if any) to apply to the rendering transform.
-  vtkGetMacro(CoordShiftAndScaleEnabled, bool);
-  vtkGetMacro(CoordShiftAndScaleMethod, ShiftScaleMethod);
+  vtkGetMacro(CoordShiftAndScaleEnabled,bool);
+  vtkGetMacro(CoordShiftAndScaleMethod,ShiftScaleMethod);
+  vtkGetVector3Macro(CoordShift,double);
+  vtkGetVector3Macro(CoordScale,double);
   virtual void SetCoordShiftAndScaleMethod(ShiftScaleMethod meth);
-  virtual void SetShift(const std::vector<double>& shift);
-  virtual void SetScale(const std::vector<double>& scale);
-  virtual const std::vector<double>& GetShift();
-  virtual const std::vector<double>& GetScale();
+  virtual void SetCoordShift(double x, double y, double z);
+  virtual void SetCoordShift(const double s[3]);
+  virtual void SetCoordScale(double sx, double sy, double sz);
+  virtual void SetCoordScale(const double s[3]);
 
-  // Set/Get the DataType to use for the VBO
-  // As a side effect sets the DataTypeSize
-  void SetDataType(int v);
-  vtkGetMacro(DataType, int);
-
-  // Get the size in bytes of the data type
-  vtkGetMacro(DataTypeSize, unsigned int);
-
-  // How many tuples in the VBO
-  vtkGetMacro(NumberOfTuples, unsigned int);
-
-  // How many components in the VBO
-  vtkGetMacro(NumberOfComponents, unsigned int);
-
-  // Set/Get the VBO stride in bytes
-  vtkSetMacro(Stride, unsigned int);
-  vtkGetMacro(Stride, unsigned int);
-
-  // Get the underlying VBO array
-  std::vector<float>& GetPackedVBO() { return this->PackedVBO; }
-
-  // upload the current PackedVBO
-  // only used by mappers that skip the VBOGroup support
-  void UploadVBO();
-
-  // VBOs may hold onto the cache, never the other way around
-  void SetCache(vtkOpenGLVertexBufferObjectCache* cache);
+  // Sizes/offsets are all in bytes as OpenGL API expects them.
+  size_t VertexCount; // Number of vertices in the VBO
+  int Stride;       // The size of a complete vertex + attributes
+  int VertexOffset; // Offset of the vertex
+  int NormalOffset; // Offset of the normal
+  int TCoordOffset; // Offset of the texture coordinates
+  int TCoordComponents; // Number of texture dimensions
+  int ColorOffset;  // Offset of the color
+  int ColorComponents; // Number of color components
+  std::vector<float> PackedVBO; // the data
 
 protected:
   vtkOpenGLVertexBufferObject();
-  ~vtkOpenGLVertexBufferObject() override;
+  ~vtkOpenGLVertexBufferObject();
 
-  std::vector<float> PackedVBO; // the data
-
-  vtkTimeStamp UploadTime;
-
-  unsigned int Stride; // The size of a complete tuple
-  unsigned int NumberOfComponents;
-  unsigned int NumberOfTuples;
-  int DataType;
-  unsigned int DataTypeSize;
-
+  double CoordShift[3];
+  double CoordScale[3];
   ShiftScaleMethod CoordShiftAndScaleMethod;
   bool CoordShiftAndScaleEnabled;
-  std::vector<double> Shift;
-  std::vector<double> Scale;
-
-  vtkOpenGLVertexBufferObjectCache* Cache;
 
 private:
-  vtkOpenGLVertexBufferObject(const vtkOpenGLVertexBufferObject&) = delete;
-  void operator=(const vtkOpenGLVertexBufferObject&) = delete;
+  vtkOpenGLVertexBufferObject(const vtkOpenGLVertexBufferObject&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkOpenGLVertexBufferObject&) VTK_DELETE_FUNCTION;
 };
 
 #endif

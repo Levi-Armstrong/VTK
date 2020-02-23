@@ -24,8 +24,8 @@
  * columns (when AddIdColumn is true). Such a column can be used
  * to name the columns of the result.
  * Note that columns of the output table will have a variant type
- * is the columns of the initial table are not consistent.
- */
+ * is the columns of the initial table are not consistant.
+*/
 
 #ifndef vtkTransposeTable_h
 #define vtkTransposeTable_h
@@ -38,7 +38,7 @@ class VTKFILTERSCORE_EXPORT vtkTransposeTable : public vtkTableAlgorithm
 public:
   static vtkTransposeTable* New();
   vtkTypeMacro(vtkTransposeTable, vtkTableAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   //@{
   /**
@@ -73,17 +73,19 @@ public:
 
 protected:
   vtkTransposeTable();
-  ~vtkTransposeTable() override;
+  ~vtkTransposeTable() VTK_OVERRIDE;
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation*,
+    vtkInformationVector**,
+    vtkInformationVector*) VTK_OVERRIDE;
 
   bool AddIdColumn;
   bool UseIdColumn;
   char* IdColumnName;
 
 private:
-  vtkTransposeTable(const vtkTransposeTable&) = delete;
-  void operator=(const vtkTransposeTable&) = delete;
+  vtkTransposeTable(const vtkTransposeTable&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTransposeTable&) VTK_DELETE_FUNCTION;
 };
 
 #endif

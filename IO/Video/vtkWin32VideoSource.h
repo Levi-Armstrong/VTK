@@ -26,7 +26,7 @@
  *
  * @sa
  * vtkVideoSource vtkMILVideoSource
- */
+*/
 
 #ifndef vtkWin32VideoSource_h
 #define vtkWin32VideoSource_h
@@ -39,55 +39,56 @@ class vtkWin32VideoSourceInternal;
 class VTKIOVIDEO_EXPORT vtkWin32VideoSource : public vtkVideoSource
 {
 public:
-  static vtkWin32VideoSource* New();
-  vtkTypeMacro(vtkWin32VideoSource, vtkVideoSource);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkWin32VideoSource *New();
+  vtkTypeMacro(vtkWin32VideoSource,vtkVideoSource);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Standard VCR functionality: Record incoming video.
    */
-  void Record() override;
+  void Record();
 
   /**
    * Standard VCR functionality: Play recorded video.
    */
-  void Play() override;
+  void Play();
 
   /**
    * Standard VCR functionality: Stop recording or playing.
    */
-  void Stop() override;
+  void Stop();
 
   /**
    * Grab a single video frame.
    */
-  void Grab() override;
+  void Grab();
 
   //@{
   /**
    * Request a particular frame size (set the third value to 1).
    */
-  void SetFrameSize(int x, int y, int z) override;
-  void SetFrameSize(int dim[3]) override { this->SetFrameSize(dim[0], dim[1], dim[2]); }
+  void SetFrameSize(int x, int y, int z);
+  virtual void SetFrameSize(int dim[3]) {
+    this->SetFrameSize(dim[0], dim[1], dim[2]); };
   //@}
 
   /**
    * Request a particular frame rate (default 30 frames per second).
    */
-  void SetFrameRate(float rate) override;
+  void SetFrameRate(float rate);
 
   /**
    * Request a particular output format (default: VTK_RGB).
    */
-  void SetOutputFormat(int format) override;
+  void SetOutputFormat(int format);
 
   //@{
   /**
    * Turn on/off the preview (overlay) window.
    */
   void SetPreview(int p);
-  vtkBooleanMacro(Preview, int);
-  vtkGetMacro(Preview, int);
+  vtkBooleanMacro(Preview,int);
+  vtkGetMacro(Preview,int);
   //@}
 
   /**
@@ -104,13 +105,13 @@ public:
    * Initialize the driver (this is called automatically when the
    * first grab is done).
    */
-  void Initialize() override;
+  void Initialize();
 
   /**
    * Free the driver (this is called automatically inside the
    * destructor).
    */
-  void ReleaseSystemResources() override;
+  void ReleaseSystemResources();
 
   //@{
   /**
@@ -122,23 +123,29 @@ public:
 
 protected:
   vtkWin32VideoSource();
-  ~vtkWin32VideoSource() override;
+  ~vtkWin32VideoSource();
 
   char WndClassName[16];
   int BitMapSize;
   int Preview;
 
-  vtkWin32VideoSourceInternal* Internal;
+  vtkWin32VideoSourceInternal *Internal;
 
   void CheckBuffer();
-  void UnpackRasterLine(char* outptr, char* inptr, int start, int count) override;
+  void UnpackRasterLine(char *outptr, char *inptr,
+                        int start, int count);
 
   void DoVFWFormatSetup();
   void DoVFWFormatCheck();
 
 private:
-  vtkWin32VideoSource(const vtkWin32VideoSource&) = delete;
-  void operator=(const vtkWin32VideoSource&) = delete;
+  vtkWin32VideoSource(const vtkWin32VideoSource&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkWin32VideoSource&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+
+
+
+

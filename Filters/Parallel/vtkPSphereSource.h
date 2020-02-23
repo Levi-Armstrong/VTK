@@ -15,7 +15,7 @@
 /**
  * @class   vtkPSphereSource
  * @brief   sphere source that supports pieces
- */
+*/
 
 #ifndef vtkPSphereSource_h
 #define vtkPSphereSource_h
@@ -26,15 +26,15 @@
 class VTKFILTERSPARALLEL_EXPORT vtkPSphereSource : public vtkSphereSource
 {
 public:
-  vtkTypeMacro(vtkPSphereSource, vtkSphereSource);
+  vtkTypeMacro(vtkPSphereSource,vtkSphereSource);
 
   //@{
   /**
    * Construct sphere with radius=0.5 and default resolution 8 in both Phi
    * and Theta directions. Theta ranges from (0,360) and phi (0,180) degrees.
    */
-  static vtkPSphereSource* New();
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkPSphereSource *New();
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
   //@}
 
   /**
@@ -44,13 +44,12 @@ public:
 
 protected:
   vtkPSphereSource() {}
-  ~vtkPSphereSource() override {}
+  ~vtkPSphereSource() {}
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-
+  virtual int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 private:
-  vtkPSphereSource(const vtkPSphereSource&) = delete;
-  void operator=(const vtkPSphereSource&) = delete;
+  vtkPSphereSource(const vtkPSphereSource&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPSphereSource&) VTK_DELETE_FUNCTION;
 };
 
 #endif

@@ -1,3 +1,5 @@
 add_subdirectory(NativeVTK)
 add_subdirectory(JavaVTK)
-add_subdirectory(VolumeRender)
+if (OPENGL_ES_VERSION STREQUAL "3.0")
+  add_subdirectory(VolumeRender)
+endif()

@@ -22,9 +22,9 @@
 #include "vtkContextScene.h"
 #include "vtkContextTransform.h"
 #include "vtkContextView.h"
+#include "vtkRenderer.h"
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
-#include "vtkRenderer.h"
 
 #include "vtkRegressionTestImage.h"
 
@@ -49,19 +49,19 @@ int TestHeatmapCategoryLegend(int argc, char* argv[])
   column->SetValue(2, "a");
   column->SetValue(3, "a");
 
-  table->AddColumn(tableNames);
-  table->AddColumn(column);
+  table->AddColumn(tableNames.GetPointer());
+  table->AddColumn(column.GetPointer());
 
   vtkNew<vtkHeatmapItem> heatmap;
-  heatmap->SetTable(table);
+  heatmap->SetTable(table.GetPointer());
 
   vtkNew<vtkContextTransform> trans;
   trans->SetInteractive(true);
-  trans->AddItem(heatmap);
+  trans->AddItem(heatmap.GetPointer());
   trans->Translate(125, 125);
 
   vtkNew<vtkContextView> contextView;
-  contextView->GetScene()->AddItem(trans);
+  contextView->GetScene()->AddItem(trans.GetPointer());
 
   contextView->GetRenderWindow()->SetMultiSamples(0);
   contextView->GetRenderWindow()->Render();

@@ -26,7 +26,7 @@
  * @warning
  * The cone is infinite in extent. To truncate the cone use the
  * vtkImplicitBoolean in combination with clipping planes.
- */
+*/
 
 #ifndef vtkCone_h
 #define vtkCone_h
@@ -40,41 +40,44 @@ public:
   /**
    * Construct cone with angle of 45 degrees.
    */
-  static vtkCone* New();
+  static vtkCone *New();
 
-  vtkTypeMacro(vtkCone, vtkImplicitFunction);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkCone,vtkImplicitFunction);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   //@{
   /**
    * Evaluate cone equation.
    */
-  using vtkImplicitFunction::EvaluateFunction;
-  double EvaluateFunction(double x[3]) override;
+  double EvaluateFunction(double x[3]) VTK_OVERRIDE;
+  double EvaluateFunction(double x, double y, double z)
+    {return this->vtkImplicitFunction::EvaluateFunction(x, y, z); } ;
   //@}
 
   /**
    * Evaluate cone normal.
    */
-  void EvaluateGradient(double x[3], double g[3]) override;
+  void EvaluateGradient(double x[3], double g[3]) VTK_OVERRIDE;
 
   //@{
   /**
    * Set/Get the cone angle (expressed in degrees).
    */
-  vtkSetClampMacro(Angle, double, 0.0, 89.0);
-  vtkGetMacro(Angle, double);
+  vtkSetClampMacro(Angle,double,0.0,89.0);
+  vtkGetMacro(Angle,double);
   //@}
 
 protected:
   vtkCone();
-  ~vtkCone() override {}
+  ~vtkCone() VTK_OVERRIDE {}
 
   double Angle;
 
 private:
-  vtkCone(const vtkCone&) = delete;
-  void operator=(const vtkCone&) = delete;
+  vtkCone(const vtkCone&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkCone&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+

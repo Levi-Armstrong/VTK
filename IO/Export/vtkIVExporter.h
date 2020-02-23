@@ -21,13 +21,13 @@
  *
  * @sa
  * vtkExporter
- */
+*/
 
 #ifndef vtkIVExporter_h
 #define vtkIVExporter_h
 
-#include "vtkExporter.h"
 #include "vtkIOExportModule.h" // For export macro
+#include "vtkExporter.h"
 
 class vtkLight;
 class vtkActor;
@@ -38,9 +38,9 @@ class vtkUnsignedCharArray;
 class VTKIOEXPORT_EXPORT vtkIVExporter : public vtkExporter
 {
 public:
-  static vtkIVExporter* New();
-  vtkTypeMacro(vtkIVExporter, vtkExporter);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkIVExporter *New();
+  vtkTypeMacro(vtkIVExporter,vtkExporter);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -52,18 +52,19 @@ public:
 
 protected:
   vtkIVExporter();
-  ~vtkIVExporter() override;
+  ~vtkIVExporter();
 
-  void WriteData() override;
-  void WriteALight(vtkLight* aLight, FILE* fp);
-  void WriteAnActor(vtkActor* anActor, FILE* fp);
-  void WritePointData(vtkPoints* points, vtkDataArray* normals, vtkDataArray* tcoords,
-    vtkUnsignedCharArray* colors, FILE* fp);
-  char* FileName;
-
+  void WriteData();
+  void WriteALight(vtkLight *aLight, FILE *fp);
+  void WriteAnActor(vtkActor *anActor, FILE *fp);
+  void WritePointData(vtkPoints *points, vtkDataArray *normals,
+                      vtkDataArray *tcoords, vtkUnsignedCharArray *colors,
+                      FILE *fp);
+  char *FileName;
 private:
-  vtkIVExporter(const vtkIVExporter&) = delete;
-  void operator=(const vtkIVExporter&) = delete;
+  vtkIVExporter(const vtkIVExporter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkIVExporter&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

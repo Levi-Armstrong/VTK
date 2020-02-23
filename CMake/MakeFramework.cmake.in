@@ -1,7 +1,8 @@
 #
 # Before calling this, ensure that the following variables are set:
 #
-# VTK_GLOB_LIBS - a path containing a wildcard suitable for globbing
+# VTK_DEVICE_LIBS - a path containing a wildcard suitable for globbing
+# VTK_SIMULATOR_LIBS - a path containing a wildcard suitable for globbing
 # VTK_INSTALLED_HEADERS - the path containing all headers for the framework
 # CMAKE_FRAMEWORK_INSTALL_PREFIX - the path in which to make vtk.framework
 #
@@ -15,7 +16,7 @@ endif()
 # Ensure a framework path is set
 if (NOT EXISTS "@CMAKE_FRAMEWORK_INSTALL_PREFIX@")
   message(FATAL_ERROR
-          "Please specify a CMAKE_FRAMEWORK_INSTALL_PREFIX.")
+          "Please specifiy a CMAKE_FRAMEWORK_INSTALL_PREFIX.")
 endif()
 
 # Glob all input libs

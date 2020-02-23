@@ -28,13 +28,13 @@
  * @sa
  * vtkUnstructuredGridVolumeRayCastFunction
  *
- */
+*/
 
 #ifndef vtkUnstructuredGridVolumeRayCastIterator_h
 #define vtkUnstructuredGridVolumeRayCastIterator_h
 
-#include "vtkObject.h"
 #include "vtkRenderingVolumeModule.h" // For export macro
+#include "vtkObject.h"
 
 class vtkIdList;
 class vtkDoubleArray;
@@ -44,7 +44,7 @@ class VTKRENDERINGVOLUME_EXPORT vtkUnstructuredGridVolumeRayCastIterator : publi
 {
 public:
   vtkTypeMacro(vtkUnstructuredGridVolumeRayCastIterator, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  virtual void PrintSelf(ostream &os, vtkIndent indent);
 
   /**
    * Initializes the iteration to the start of the ray at the given screen
@@ -63,9 +63,11 @@ public:
    * returned.  0 is returned if and only if no more intersections are to
    * be found.
    */
-  virtual vtkIdType GetNextIntersections(vtkIdList* intersectedCells,
-    vtkDoubleArray* intersectionLengths, vtkDataArray* scalars, vtkDataArray* nearIntersections,
-    vtkDataArray* farIntersections) = 0;
+  virtual vtkIdType GetNextIntersections(vtkIdList *intersectedCells,
+                                         vtkDoubleArray *intersectionLengths,
+                                         vtkDataArray *scalars,
+                                         vtkDataArray *nearIntersections,
+                                         vtkDataArray *farIntersections) = 0;
 
   //@{
   /**
@@ -84,16 +86,16 @@ public:
 
 protected:
   vtkUnstructuredGridVolumeRayCastIterator();
-  ~vtkUnstructuredGridVolumeRayCastIterator() override;
+  ~vtkUnstructuredGridVolumeRayCastIterator();
 
   double Bounds[2];
 
   vtkIdType MaxNumberOfIntersections;
 
 private:
-  vtkUnstructuredGridVolumeRayCastIterator(
-    const vtkUnstructuredGridVolumeRayCastIterator&) = delete;
-  void operator=(const vtkUnstructuredGridVolumeRayCastIterator&) = delete;
+  vtkUnstructuredGridVolumeRayCastIterator(const vtkUnstructuredGridVolumeRayCastIterator&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkUnstructuredGridVolumeRayCastIterator&) VTK_DELETE_FUNCTION;
 };
 
-#endif // vtkUnstructuredGridRayCastIterator_h
+#endif //vtkUnstructuredGridRayCastIterator_h
+

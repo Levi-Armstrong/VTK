@@ -14,17 +14,17 @@
 #ifndef vtkAbstractRenderDevice_h
 #define vtkAbstractRenderDevice_h
 
-#include "vtkObject.h"
 #include "vtkRenderingCoreModule.h" // For export macro
-#include <string>                   // For std::string
+#include "vtkObject.h"
+#include <string> // For std::string
 
 class vtkRecti;
 
 class VTKRENDERINGCORE_EXPORT vtkAbstractRenderDevice : public vtkObject
 {
 public:
-  vtkTypeMacro(vtkAbstractRenderDevice, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkAbstractRenderDevice, vtkObject)
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * @brief Make a new device, this class is abstract and one of its derived
@@ -46,7 +46,8 @@ public:
    * @param geometry The geometry in screen coordinates for the window.
    * @return True on success, false on failure.
    */
-  virtual bool CreateNewWindow(const vtkRecti& geometry, const std::string& name) = 0;
+  virtual bool CreateNewWindow(const vtkRecti &geometry,
+                               const std::string &name) = 0;
 
   /**
    * @brief Make the context current so that it can be used by OpenGL. This is
@@ -57,14 +58,14 @@ public:
 
 protected:
   vtkAbstractRenderDevice();
-  ~vtkAbstractRenderDevice() override;
+  ~vtkAbstractRenderDevice();
 
   int GLMajor;
   int GLMinor;
 
 private:
-  vtkAbstractRenderDevice(const vtkAbstractRenderDevice&) = delete;
-  void operator=(const vtkAbstractRenderDevice&) = delete;
+  vtkAbstractRenderDevice(const vtkAbstractRenderDevice&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkAbstractRenderDevice&) VTK_DELETE_FUNCTION;
 };
 
 #endif

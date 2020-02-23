@@ -25,66 +25,76 @@ const char* vtkTextCodec::Name()
   return "";
 }
 
+
 bool vtkTextCodec::CanHandle(const char*)
 {
   return false;
 }
+
 
 bool vtkTextCodec::IsValid(istream&)
 {
   return false;
 }
 
-vtkTextCodec::~vtkTextCodec() = default;
 
-vtkTextCodec::vtkTextCodec() = default;
+vtkTextCodec::~vtkTextCodec()
+{
+}
+
+
+vtkTextCodec::vtkTextCodec()
+{
+}
+
 
 namespace
 {
-class vtkUnicodeStringOutputIterator : public vtkTextCodec::OutputIterator
-{
-public:
-  vtkUnicodeStringOutputIterator& operator++(int) override;
-  vtkUnicodeStringOutputIterator& operator*() override;
-  vtkUnicodeStringOutputIterator& operator=(const vtkUnicodeString::value_type value) override;
+  class vtkUnicodeStringOutputIterator : public vtkTextCodec::OutputIterator
+  {
+  public:
+    vtkUnicodeStringOutputIterator& operator++(int) VTK_OVERRIDE;
+    vtkUnicodeStringOutputIterator& operator*() VTK_OVERRIDE;
+    vtkUnicodeStringOutputIterator& operator=(const vtkUnicodeString::value_type value) VTK_OVERRIDE;
 
-  vtkUnicodeStringOutputIterator(vtkUnicodeString& outputString);
-  ~vtkUnicodeStringOutputIterator() override;
+    vtkUnicodeStringOutputIterator(vtkUnicodeString& outputString);
+    ~vtkUnicodeStringOutputIterator() VTK_OVERRIDE;
 
-private:
-  vtkUnicodeStringOutputIterator(const vtkUnicodeStringOutputIterator&) = delete;
-  vtkUnicodeStringOutputIterator& operator=(const vtkUnicodeStringOutputIterator&) = delete;
+  private:
+    vtkUnicodeStringOutputIterator(const vtkUnicodeStringOutputIterator&) VTK_DELETE_FUNCTION;
+    const vtkUnicodeStringOutputIterator& operator=(const vtkUnicodeStringOutputIterator&) VTK_DELETE_FUNCTION;
 
-  vtkUnicodeString& OutputString;
-  unsigned int StringPosition;
-};
+    vtkUnicodeString& OutputString;
+    unsigned int StringPosition;
+  };
 
-vtkUnicodeStringOutputIterator& vtkUnicodeStringOutputIterator::operator++(int)
-{
-  this->StringPosition++;
-  return *this;
+  vtkUnicodeStringOutputIterator& vtkUnicodeStringOutputIterator::operator++(int)
+  {
+    this->StringPosition++;
+    return *this;
+  }
+
+  vtkUnicodeStringOutputIterator& vtkUnicodeStringOutputIterator::operator*()
+  {
+    return *this;
+  }
+
+  vtkUnicodeStringOutputIterator& vtkUnicodeStringOutputIterator::operator=(const vtkUnicodeString::value_type value)
+  {
+    this->OutputString += value;
+    return *this;
+  }
+
+  vtkUnicodeStringOutputIterator::vtkUnicodeStringOutputIterator(vtkUnicodeString& outputString) :
+    OutputString(outputString), StringPosition(0)
+  {
+  }
+
+  vtkUnicodeStringOutputIterator::~vtkUnicodeStringOutputIterator()
+  {
+  }
 }
 
-vtkUnicodeStringOutputIterator& vtkUnicodeStringOutputIterator::operator*()
-{
-  return *this;
-}
-
-vtkUnicodeStringOutputIterator& vtkUnicodeStringOutputIterator::operator=(
-  const vtkUnicodeString::value_type value)
-{
-  this->OutputString += value;
-  return *this;
-}
-
-vtkUnicodeStringOutputIterator::vtkUnicodeStringOutputIterator(vtkUnicodeString& outputString)
-  : OutputString(outputString)
-  , StringPosition(0)
-{
-}
-
-vtkUnicodeStringOutputIterator::~vtkUnicodeStringOutputIterator() = default;
-}
 
 vtkUnicodeString vtkTextCodec::ToUnicode(istream& InputStream)
 {
@@ -96,6 +106,7 @@ vtkUnicodeString vtkTextCodec::ToUnicode(istream& InputStream)
 
   return returnString;
 }
+
 
 void vtkTextCodec::PrintSelf(ostream& os, vtkIndent indent)
 {

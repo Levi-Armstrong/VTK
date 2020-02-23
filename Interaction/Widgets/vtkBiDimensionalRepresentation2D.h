@@ -36,13 +36,13 @@
  *
  * @sa
  * vtkAngleWidget vtkHandleRepresentation vtkBiDimensionalRepresentation
- */
+*/
 
 #ifndef vtkBiDimensionalRepresentation2D_h
 #define vtkBiDimensionalRepresentation2D_h
 
-#include "vtkBiDimensionalRepresentation.h"
 #include "vtkInteractionWidgetsModule.h" // For export macro
+#include "vtkBiDimensionalRepresentation.h"
 
 class vtkHandleRepresentation;
 class vtkCellArray;
@@ -54,21 +54,21 @@ class vtkActor2D;
 class vtkProperty2D;
 class vtkTextProperty;
 
-class VTKINTERACTIONWIDGETS_EXPORT vtkBiDimensionalRepresentation2D
-  : public vtkBiDimensionalRepresentation
+
+class VTKINTERACTIONWIDGETS_EXPORT vtkBiDimensionalRepresentation2D : public vtkBiDimensionalRepresentation
 {
 public:
   /**
    * Instantiate the class.
    */
-  static vtkBiDimensionalRepresentation2D* New();
+  static vtkBiDimensionalRepresentation2D *New();
 
   //@{
   /**
    * Standard VTK methods.
    */
-  vtkTypeMacro(vtkBiDimensionalRepresentation2D, vtkBiDimensionalRepresentation);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkBiDimensionalRepresentation2D,vtkBiDimensionalRepresentation);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   //@{
@@ -76,8 +76,8 @@ public:
    * Retrieve the property used to control the appearance of the two
    * orthogonal lines.
    */
-  vtkGetObjectMacro(LineProperty, vtkProperty2D);
-  vtkGetObjectMacro(SelectedLineProperty, vtkProperty2D);
+  vtkGetObjectMacro(LineProperty,vtkProperty2D);
+  vtkGetObjectMacro(SelectedLineProperty,vtkProperty2D);
   //@}
 
   //@{
@@ -85,85 +85,88 @@ public:
    * Retrieve the property used to control the appearance of the text
    * labels.
    */
-  vtkGetObjectMacro(TextProperty, vtkTextProperty);
+  vtkGetObjectMacro(TextProperty,vtkTextProperty);
   //@}
 
   // Used to communicate about the state of the representation
-  enum
-  {
-    Outside = 0,
-    NearP1,
-    NearP2,
-    NearP3,
-    NearP4,
-    OnL1Inner,
-    OnL1Outer,
-    OnL2Inner,
-    OnL2Outer,
-    OnCenter
-  };
+  enum {Outside=0,NearP1,NearP2,NearP3,NearP4,OnL1Inner,OnL1Outer,OnL2Inner,OnL2Outer,OnCenter};
 
   //@{
   /**
    * These are methods that satisfy vtkWidgetRepresentation's API.
    */
-  void BuildRepresentation() override;
-  int ComputeInteractionState(int X, int Y, int modify = 0) override;
-  void StartWidgetDefinition(double e[2]) override;
-  void Point2WidgetInteraction(double e[2]) override;
-  void Point3WidgetInteraction(double e[2]) override;
-  void StartWidgetManipulation(double e[2]) override;
-  void WidgetInteraction(double e[2]) override;
-  void Highlight(int highlightOn) override;
+  virtual void BuildRepresentation();
+  virtual int ComputeInteractionState(int X, int Y, int modify=0);
+  virtual void StartWidgetDefinition(double e[2]);
+  virtual void Point2WidgetInteraction(double e[2]);
+  virtual void Point3WidgetInteraction(double e[2]);
+  virtual void StartWidgetManipulation(double e[2]);
+  virtual void WidgetInteraction(double e[2]);
+  virtual void Highlight(int highlightOn);
   //@}
 
   //@{
   /**
    * Methods required by vtkProp superclass.
    */
-  void ReleaseGraphicsResources(vtkWindow* w) override;
-  int RenderOverlay(vtkViewport* viewport) override;
+  virtual void ReleaseGraphicsResources(vtkWindow *w);
+  virtual int RenderOverlay(vtkViewport *viewport);
   //@}
 
   /**
    * Get the text shown in the widget's label.
    */
-  char* GetLabelText() override;
+  char* GetLabelText();
 
   //@{
   /**
    * Get the position of the widget's label in display coordinates.
    */
-  double* GetLabelPosition() override;
-  void GetLabelPosition(double pos[3]) override;
-  void GetWorldLabelPosition(double pos[3]) override;
+  double* GetLabelPosition();
+  void GetLabelPosition(double pos[3]);
+  void GetWorldLabelPosition(double pos[3]);
   //@}
 
 protected:
   vtkBiDimensionalRepresentation2D();
-  ~vtkBiDimensionalRepresentation2D() override;
+  ~vtkBiDimensionalRepresentation2D();
+
+  // Keep track if modifier is set
+  int Modifier;
 
   // Geometry of the lines
-  vtkCellArray* LineCells;
-  vtkPoints* LinePoints;
-  vtkPolyData* LinePolyData;
-  vtkPolyDataMapper2D* LineMapper;
-  vtkActor2D* LineActor;
-  vtkProperty2D* LineProperty;
-  vtkProperty2D* SelectedLineProperty;
+  vtkCellArray        *LineCells;
+  vtkPoints           *LinePoints;
+  vtkPolyData         *LinePolyData;
+  vtkPolyDataMapper2D *LineMapper;
+  vtkActor2D          *LineActor;
+  vtkProperty2D       *LineProperty;
+  vtkProperty2D       *SelectedLineProperty;
 
   // The labels for the line lengths
-  vtkTextProperty* TextProperty;
-  vtkTextMapper* TextMapper;
-  vtkActor2D* TextActor;
+  vtkTextProperty *TextProperty;
+  vtkTextMapper   *TextMapper;
+  vtkActor2D      *TextActor;
+
+  // Internal variables
+  double P1World[3];
+  double P2World[3];
+  double P3World[3];
+  double P4World[3];
+  double P21World[3];
+  double P43World[3];
+  double T21;
+  double T43;
+  double CenterWorld[3];
+  double StartEventPositionWorld[4];
 
   // Helper method
-  void ProjectOrthogonalPoint(
-    double x[4], double y[3], double x1[3], double x2[3], double x21[3], double dir, double xP[3]);
+  void ProjectOrthogonalPoint(double x[4], double y[3], double x1[3], double x2[3], double x21[3],
+                              double dir, double xP[3]);
 
 private:
-  vtkBiDimensionalRepresentation2D(const vtkBiDimensionalRepresentation2D&) = delete;
-  void operator=(const vtkBiDimensionalRepresentation2D&) = delete;
+  vtkBiDimensionalRepresentation2D(const vtkBiDimensionalRepresentation2D&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkBiDimensionalRepresentation2D&) VTK_DELETE_FUNCTION;
 };
 
 #endif

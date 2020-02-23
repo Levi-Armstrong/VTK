@@ -23,34 +23,35 @@
  *
  * Simply passes existing edge layout information from the input to the
  * output without making changes.
- */
+*/
 
 #ifndef vtkPassThroughEdgeStrategy_h
 #define vtkPassThroughEdgeStrategy_h
 
-#include "vtkEdgeLayoutStrategy.h"
 #include "vtkInfovisLayoutModule.h" // For export macro
+#include "vtkEdgeLayoutStrategy.h"
 
 class VTKINFOVISLAYOUT_EXPORT vtkPassThroughEdgeStrategy : public vtkEdgeLayoutStrategy
 {
 public:
   static vtkPassThroughEdgeStrategy* New();
-  vtkTypeMacro(vtkPassThroughEdgeStrategy, vtkEdgeLayoutStrategy);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkPassThroughEdgeStrategy,vtkEdgeLayoutStrategy);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * This is the layout method where the graph that was
    * set in SetGraph() is laid out.
    */
-  void Layout() override;
+  virtual void Layout();
 
 protected:
   vtkPassThroughEdgeStrategy();
-  ~vtkPassThroughEdgeStrategy() override;
+  ~vtkPassThroughEdgeStrategy();
 
 private:
-  vtkPassThroughEdgeStrategy(const vtkPassThroughEdgeStrategy&) = delete;
-  void operator=(const vtkPassThroughEdgeStrategy&) = delete;
+  vtkPassThroughEdgeStrategy(const vtkPassThroughEdgeStrategy&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPassThroughEdgeStrategy&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

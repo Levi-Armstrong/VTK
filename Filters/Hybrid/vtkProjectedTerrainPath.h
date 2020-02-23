@@ -63,7 +63,7 @@
  *
  * @sa
  * vtkGreedyTerrainDecimation
- */
+*/
 
 #ifndef vtkProjectedTerrainPath_h
 #define vtkProjectedTerrainPath_h
@@ -81,10 +81,10 @@ class VTKFILTERSHYBRID_EXPORT vtkProjectedTerrainPath : public vtkPolyDataAlgori
 public:
   //@{
   /**
-   * Standard methods for printing and determining type information.
+   * Standard methids for printing and determining type information.
    */
-  vtkTypeMacro(vtkProjectedTerrainPath, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkProjectedTerrainPath,vtkPolyDataAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   /**
@@ -99,8 +99,8 @@ public:
    * To establish a pipeline connection, use
    * SetSourceConnection() method.
    */
-  void SetSourceData(vtkImageData* source);
-  vtkImageData* GetSource();
+  void SetSourceData(vtkImageData *source);
+  vtkImageData *GetSource();
   //@}
 
   /**
@@ -109,12 +109,7 @@ public:
    */
   void SetSourceConnection(vtkAlgorithmOutput* algOutput);
 
-  enum
-  {
-    SIMPLE_PROJECTION = 0,
-    NONOCCLUDED_PROJECTION,
-    HUG_PROJECTION
-  };
+  enum {SIMPLE_PROJECTION=0,NONOCCLUDED_PROJECTION,HUG_PROJECTION};
 
   //@{
   /**
@@ -125,11 +120,14 @@ public:
    * produces a path that is nearly parallel to the terrain (within the
    * user specified height tolerance).
    */
-  vtkSetClampMacro(ProjectionMode, int, SIMPLE_PROJECTION, HUG_PROJECTION);
-  vtkGetMacro(ProjectionMode, int);
-  void SetProjectionModeToSimple() { this->SetProjectionMode(SIMPLE_PROJECTION); }
-  void SetProjectionModeToNonOccluded() { this->SetProjectionMode(NONOCCLUDED_PROJECTION); }
-  void SetProjectionModeToHug() { this->SetProjectionMode(HUG_PROJECTION); }
+  vtkSetClampMacro(ProjectionMode,int,SIMPLE_PROJECTION,HUG_PROJECTION);
+  vtkGetMacro(ProjectionMode,int);
+  void SetProjectionModeToSimple()
+    {this->SetProjectionMode(SIMPLE_PROJECTION);}
+  void SetProjectionModeToNonOccluded()
+    {this->SetProjectionMode(NONOCCLUDED_PROJECTION);}
+  void SetProjectionModeToHug()
+    {this->SetProjectionMode(HUG_PROJECTION);}
   //@}
 
   //@{
@@ -138,8 +136,8 @@ public:
    * path should be. Positive values indicate distances above the terrain;
    * negative values indicate distances below the terrain.
    */
-  vtkSetMacro(HeightOffset, double);
-  vtkGetMacro(HeightOffset, double);
+  vtkSetMacro(HeightOffset,double);
+  vtkGetMacro(HeightOffset,double);
   //@}
 
   //@{
@@ -148,8 +146,8 @@ public:
    * with respect to the variation in the terrain. It only comes
    * into play if the hug projection mode is enabled.
    */
-  vtkSetClampMacro(HeightTolerance, double, 0.0, VTK_FLOAT_MAX);
-  vtkGetMacro(HeightTolerance, double);
+  vtkSetClampMacro(HeightTolerance,double,0.0,VTK_FLOAT_MAX);
+  vtkGetMacro(HeightTolerance,double);
   //@}
 
   //@{
@@ -158,16 +156,17 @@ public:
    * segments created during subdivision. Note that the number of input line
    * segments will be the minimum number that cab be output.
    */
-  vtkSetClampMacro(MaximumNumberOfLines, vtkIdType, 1, VTK_ID_MAX);
-  vtkGetMacro(MaximumNumberOfLines, vtkIdType);
+  vtkSetClampMacro(MaximumNumberOfLines,vtkIdType,1,VTK_ID_MAX);
+  vtkGetMacro(MaximumNumberOfLines,vtkIdType);
   //@}
 
 protected:
   vtkProjectedTerrainPath();
-  ~vtkProjectedTerrainPath() override;
+  ~vtkProjectedTerrainPath();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  virtual int RequestData(vtkInformation *, vtkInformationVector **,
+                          vtkInformationVector *);
+  virtual int FillInputPortInformation(int port, vtkInformation *info);
 
   // Supporting methods
   void GetImageIndex(double x[3], double loc[2], int ij[2]);
@@ -177,32 +176,33 @@ protected:
   void HugTerrain();
   void SplitEdge(vtkIdType eId, double t);
 
-  // ivars that the API addresses
-  int ProjectionMode;
-  double HeightOffset;
-  double HeightTolerance;
+  //ivars that the API addresses
+  int       ProjectionMode;
+  double    HeightOffset;
+  double    HeightTolerance;
   vtkIdType MaximumNumberOfLines;
 
-  // Bookkeeping arrays
-  int Dimensions[3];
-  int Extent[6];
-  double Origin[3];
-  double Spacing[3];
-  vtkDataArray* Heights;
-  vtkPoints* Points;
-  vtkIdType NumLines;
+  //Bookeeping arrays
+  int          Dimensions[3];
+  int          Extent[6];
+  double       Origin[3];
+  double       Spacing[3];
+  vtkDataArray *Heights;
+  vtkPoints    *Points;
+  vtkIdType    NumLines;
 
-  // Errors above/below terrain. In both instances, negative values are
-  // inserted because the priority queue puts smallest values on top.
-  vtkPriorityQueue* PositiveLineError; // errors above terrain
-  vtkPriorityQueue* NegativeLineError; // errors below terrain
+  //Errors above/below terrain. In both instances, negative values are
+  //inserted because the priority queue puts smallest values on top.
+  vtkPriorityQueue *PositiveLineError; //errors above terrain
+  vtkPriorityQueue *NegativeLineError; //errors below terrain
 
-  // This is a PIMPL'd vector representing edges
-  vtkEdgeList* EdgeList;
+  //This is a PIMPL'd vector representing edges
+  vtkEdgeList *EdgeList;
 
 private:
-  vtkProjectedTerrainPath(const vtkProjectedTerrainPath&) = delete;
-  void operator=(const vtkProjectedTerrainPath&) = delete;
+  vtkProjectedTerrainPath(const vtkProjectedTerrainPath&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkProjectedTerrainPath&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif

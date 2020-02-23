@@ -24,41 +24,44 @@
 #include <vtkObjectFactory.h>
 #include <vtkPointData.h>
 #include <vtkRTAnalyticSource.h>
+#include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
-#include <vtkRenderer.h>
 #include <vtkStreamingDemandDrivenPipeline.h>
 #include <vtkUnstructuredGrid.h>
 
 class vtkTimeRTAnalyticSource : public vtkRTAnalyticSource
 {
 public:
-  static vtkTimeRTAnalyticSource* New();
+  static vtkTimeRTAnalyticSource *New();
   vtkTypeMacro(vtkTimeRTAnalyticSource, vtkRTAnalyticSource);
 
 protected:
-  vtkTimeRTAnalyticSource() = default;
+  vtkTimeRTAnalyticSource() {}
 
-  int RequestInformation(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override
+  int RequestInformation(vtkInformation * request,
+                         vtkInformationVector **inputVector,
+                         vtkInformationVector *outputVector) VTK_OVERRIDE
   {
     // get the info objects
-    vtkInformation* outInfo = outputVector->GetInformationObject(0);
-    double range[2] = { 0, 5 };
-    outInfo->Set(vtkStreamingDemandDrivenPipeline::TIME_RANGE(), range, 2);
+    vtkInformation *outInfo = outputVector->GetInformationObject(0);
+    double range[2] = {0, 5};
+    outInfo->Set(vtkStreamingDemandDrivenPipeline::TIME_RANGE(),
+                 range, 2);
 
-    double outTimes[6] = { 0, 1, 2, 3, 4, 5 };
-    outInfo->Set(vtkStreamingDemandDrivenPipeline::TIME_STEPS(), outTimes, 6);
+    double outTimes[6] = {0, 1, 2, 3, 4, 5};
+    outInfo->Set(vtkStreamingDemandDrivenPipeline::TIME_STEPS(),
+                 outTimes, 6);
     vtkRTAnalyticSource::RequestInformation(request, inputVector, outputVector);
     return 1;
   }
 
-  void ExecuteDataWithInformation(vtkDataObject* output, vtkInformation* outInfo) override
+  void ExecuteDataWithInformation(vtkDataObject *output, vtkInformation *outInfo) VTK_OVERRIDE
   {
     Superclass::ExecuteDataWithInformation(output, outInfo);
 
     // Split the update extent further based on piece request.
-    vtkImageData* data = vtkImageData::GetData(outInfo);
+    vtkImageData *data = vtkImageData::GetData(outInfo);
     int* outExt = data->GetExtent();
 
     // find the region to loop over
@@ -69,7 +72,7 @@ protected:
     vtkNew<vtkDoubleArray> timeArray;
     timeArray->SetName("timeData");
     timeArray->SetNumberOfValues(maxX * maxY * maxZ);
-    data->GetPointData()->SetScalars(timeArray);
+    data->GetPointData()->SetScalars(timeArray.Get());
 
     double t = outInfo->Get(vtkStreamingDemandDrivenPipeline::UPDATE_TIME_STEP());
     vtkIdType cnt = 0;
@@ -86,8 +89,8 @@ protected:
   }
 
 private:
-  vtkTimeRTAnalyticSource(const vtkTimeRTAnalyticSource&) = delete;
-  void operator=(const vtkTimeRTAnalyticSource&) = delete;
+  vtkTimeRTAnalyticSource(const vtkTimeRTAnalyticSource&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTimeRTAnalyticSource&) VTK_DELETE_FUNCTION;
 };
 
 vtkStandardNewMacro(vtkTimeRTAnalyticSource);
@@ -106,13 +109,12 @@ int TestForceTime(int vtkNotUsed(argc), char* vtkNotUsed(argv)[])
   forceTime->IgnorePipelineTimeOn();
 
   forceTime->UpdateInformation();
-  forceTime->GetOutputInformation(0)->Set(vtkStreamingDemandDrivenPipeline::UPDATE_TIME_STEP(), 2);
+  forceTime->GetOutputInformation(0)->Set(
+    vtkStreamingDemandDrivenPipeline::UPDATE_TIME_STEP(), 2);
   forceTime->Update();
 
   if (vtkUnstructuredGrid::SafeDownCast(forceTime->GetOutput(0))
-        ->GetPointData()
-        ->GetScalars()
-        ->GetTuple1(0) != 1)
+      ->GetPointData()->GetScalars()->GetTuple1(0) != 1)
   {
     std::cerr << "Incorrect data in force time output" << std::endl;
     return EXIT_FAILURE;
@@ -123,15 +125,15 @@ int TestForceTime(int vtkNotUsed(argc), char* vtkNotUsed(argv)[])
   mapper->SetScalarRange(0, 30);
 
   vtkNew<vtkActor> actor;
-  actor->SetMapper(mapper);
+  actor->SetMapper(mapper.Get());
 
   vtkNew<vtkRenderer> renderer;
   vtkNew<vtkRenderWindow> renderWindow;
-  renderWindow->AddRenderer(renderer);
+  renderWindow->AddRenderer(renderer.Get());
   vtkNew<vtkRenderWindowInteractor> renderWindowInteractor;
-  renderWindowInteractor->SetRenderWindow(renderWindow);
+  renderWindowInteractor->SetRenderWindow(renderWindow.Get());
 
-  renderer->AddActor(actor);
+  renderer->AddActor(actor.Get());
   renderer->SetBackground(.3, .6, .3); // Background color green
 
   renderWindow->Render();

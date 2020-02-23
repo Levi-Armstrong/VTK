@@ -38,13 +38,13 @@
  *
  * @sa
  * vtkHoverWidget vtkHardwareSelector
- */
+*/
 
 #ifndef vtkScenePicker_h
 #define vtkScenePicker_h
 
-#include "vtkObject.h"
 #include "vtkRenderingCoreModule.h" // For export macro
+#include "vtkObject.h"
 
 class vtkRenderer;
 class vtkProp;
@@ -61,7 +61,7 @@ class VTKRENDERINGCORE_EXPORT vtkScenePicker : public vtkObject
 public:
   static vtkScenePicker* New();
   vtkTypeMacro(vtkScenePicker, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -98,14 +98,14 @@ public:
    * additional resources and can slow down still render time by
    * 5-10%. Enabled by default.
    */
-  vtkSetMacro(EnableVertexPicking, vtkTypeBool);
-  vtkGetMacro(EnableVertexPicking, vtkTypeBool);
-  vtkBooleanMacro(EnableVertexPicking, vtkTypeBool);
+  vtkSetMacro(EnableVertexPicking, int);
+  vtkGetMacro(EnableVertexPicking, int);
+  vtkBooleanMacro(EnableVertexPicking, int);
   //@}
 
 protected:
   vtkScenePicker();
-  ~vtkScenePicker() override;
+  ~vtkScenePicker();
 
   // Pick render entire viewport
   // Automatically invoked from vtkRenderer at the end of a still render.
@@ -120,9 +120,9 @@ protected:
   // The RenderWindowInteractor must be set, so that avoid scene picks (which
   // involve extra renders) during interaction. This is done by observing the
   // RenderWindowInteractor for start and end interaction events.
-  void SetInteractor(vtkRenderWindowInteractor*);
+  void SetInteractor(vtkRenderWindowInteractor *);
 
-  vtkTypeBool EnableVertexPicking;
+  int EnableVertexPicking;
   vtkHardwareSelector* Selector;
   vtkRenderer* Renderer;
   vtkRenderWindowInteractor* Interactor;
@@ -134,10 +134,9 @@ protected:
   vtkScenePickerSelectionRenderCommand* SelectionRenderCommand;
 
   vtkTimeStamp PickRenderTime;
-
 private:
-  vtkScenePicker(const vtkScenePicker&) = delete;
-  void operator=(const vtkScenePicker&) = delete;
+  vtkScenePicker(const vtkScenePicker&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkScenePicker&) VTK_DELETE_FUNCTION;
 };
 
 #endif

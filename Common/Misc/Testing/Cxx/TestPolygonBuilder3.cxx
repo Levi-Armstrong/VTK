@@ -18,17 +18,18 @@
 #include "vtkPolygonBuilder.h"
 #include "vtkSmartPointer.h"
 
-int TestPolygonBuilder3(int, char*[])
+int TestPolygonBuilder3(int, char* [])
 {
 
   vtkPolygonBuilder builder;
-  builder.InsertTriangle(nullptr);
+  builder.InsertTriangle(NULL);
   vtkNew<vtkIdListCollection> polys;
-  builder.GetPolygons(polys);
+  builder.GetPolygons(polys.GetPointer());
   if (polys->GetNumberOfItems() != 0)
   {
     return EXIT_FAILURE;
   }
+
 
   return EXIT_SUCCESS;
 }

@@ -13,36 +13,38 @@
 
 =========================================================================*/
 
-#include "vtkActor.h"
-#include "vtkDataSetSurfaceFilter.h"
 #include "vtkNew.h"
-#include "vtkPolyDataMapper.h"
-#include "vtkRegressionTestImage.h"
-#include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
+#include "vtkRenderWindow.h"
 #include "vtkRenderer.h"
-#include "vtkTestUtilities.h"
+#include "vtkActor.h"
+#include "vtkPolyDataMapper.h"
+#include "vtkDataSetSurfaceFilter.h"
 #include "vtkXMLUnstructuredGridReader.h"
+#include "vtkRegressionTestImage.h"
+#include "vtkTestUtilities.h"
 
 int TestExtractSurfaceNonLinearSubdivision(int argc, char* argv[])
 {
   // Basic visualisation.
   vtkNew<vtkRenderer> ren;
-  ren->SetBackground(0, 0, 0);
+  ren->SetBackground(0,0,0);
 
   vtkNew<vtkRenderWindow> renWin;
-  renWin->AddRenderer(ren);
+  renWin->AddRenderer(ren.GetPointer());
 
   vtkNew<vtkRenderWindowInteractor> iren;
-  iren->SetRenderWindow(renWin);
+  iren->SetRenderWindow(renWin.GetPointer());
 
-  renWin->SetSize(300, 300);
+  renWin->SetSize(300,300);
+
 
   vtkNew<vtkXMLUnstructuredGridReader> reader;
-  char* filename = vtkTestUtilities::ExpandDataFileName(argc, argv, "Data/quadraticTetra01.vtu");
+  char* filename = vtkTestUtilities::ExpandDataFileName(
+    argc, argv, "Data/quadraticTetra01.vtu");
   reader->SetFileName(filename);
-  delete[] filename;
-  filename = nullptr;
+  delete [] filename;
+  filename = NULL;
 
   vtkNew<vtkDataSetSurfaceFilter> extract_surface;
   extract_surface->SetInputConnection(reader->GetOutputPort());
@@ -55,12 +57,12 @@ int TestExtractSurfaceNonLinearSubdivision(int argc, char* argv[])
   mapper->SetScalarModeToUsePointFieldData();
 
   vtkNew<vtkActor> actor;
-  actor->SetMapper(mapper);
+  actor->SetMapper(mapper.GetPointer());
 
-  ren->AddActor(actor);
+  ren->AddActor(actor.GetPointer());
   ren->ResetCamera();
 
-  int retVal = vtkRegressionTestImage(renWin);
+  int retVal = vtkRegressionTestImage(renWin.GetPointer());
   if (retVal == vtkRegressionTester::DO_INTERACTOR)
   {
     iren->Start();

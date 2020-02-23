@@ -19,31 +19,37 @@
 -------------------------------------------------------------------------*/
 #include "vtkRowQuery.h"
 
-#include "algorithm"
 #include "vtkObjectFactory.h"
 #include "vtkStdString.h"
+#include "algorithm"
 #include "vtkVariantArray.h"
 
 #include <cctype>
+
 
 vtkRowQuery::vtkRowQuery()
 {
   this->CaseSensitiveFieldNames = false;
 }
 
-vtkRowQuery::~vtkRowQuery() = default;
-
-void vtkRowQuery::PrintSelf(ostream& os, vtkIndent indent)
+vtkRowQuery::~vtkRowQuery()
 {
-  this->Superclass::PrintSelf(os, indent);
-  os << indent << "CaseSensitiveFieldNames: " << this->CaseSensitiveFieldNames << endl;
 }
 
-int vtkRowQuery::GetFieldIndex(const char* name)
+void vtkRowQuery::PrintSelf(ostream &os, vtkIndent indent)
+{
+  this->Superclass::PrintSelf(os, indent);
+  os << indent << "CaseSensitiveFieldNames: "
+    << this->CaseSensitiveFieldNames << endl;
+}
+
+int vtkRowQuery::GetFieldIndex(char* name)
 {
   vtkStdString lcSearchName(name);
-  std::transform(
-    lcSearchName.begin(), lcSearchName.end(), lcSearchName.begin(), (int (*)(int))tolower);
+  std::transform(lcSearchName.begin(),
+                    lcSearchName.end(),
+                    lcSearchName.begin(),
+                    (int(*)(int))tolower);
 
   int index;
   bool found = false;
@@ -60,7 +66,10 @@ int vtkRowQuery::GetFieldIndex(const char* name)
     else
     {
       vtkStdString fieldName(this->GetFieldName(index));
-      std::transform(fieldName.begin(), fieldName.end(), fieldName.begin(), (int (*)(int))tolower);
+      std::transform(fieldName.begin(),
+                        fieldName.end(),
+                        fieldName.begin(),
+                        (int(*)(int))tolower);
       if (lcSearchName == fieldName)
       {
         found = true;
@@ -75,6 +84,7 @@ int vtkRowQuery::GetFieldIndex(const char* name)
   return -1;
 }
 
+
 bool vtkRowQuery::NextRow(vtkVariantArray* rowArray)
 {
   if (!this->NextRow())
@@ -88,3 +98,4 @@ bool vtkRowQuery::NextRow(vtkVariantArray* rowArray)
   }
   return true;
 }
+

@@ -38,7 +38,7 @@
  *
  * @sa
  * vtkAbstractArray vtkDataSetAttributes vtkPointData vtkCellData
- */
+*/
 
 #ifndef vtkFieldData_h
 #define vtkFieldData_h
@@ -53,10 +53,10 @@ class vtkIdList;
 class VTKCOMMONDATAMODEL_EXPORT vtkFieldData : public vtkObject
 {
 public:
-  static vtkFieldData* New();
+  static vtkFieldData *New();
 
-  vtkTypeMacro(vtkFieldData, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkFieldData,vtkObject);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Release all data but do not delete object.
@@ -68,7 +68,7 @@ public:
    * Allocate data for each array.
    * Note that ext is no longer used.
    */
-  vtkTypeBool Allocate(vtkIdType sz, vtkIdType ext = 1000);
+  int Allocate(const vtkIdType sz, const vtkIdType ext=1000);
 
   /**
    * Copy data array structure from a given field.  The same arrays
@@ -90,86 +90,75 @@ public:
 
   /**
    * Get the number of arrays of data available.
-   * This does not include nullptr array pointers therefore after
+   * This does not include NULL array pointers therefore after
    * fd->AllocateArray(n); nArrays = GetNumberOfArrays()
    * nArrays is not necessarily equal to n.
    */
-  int GetNumberOfArrays() { return this->NumberOfActiveArrays; }
+  int GetNumberOfArrays()
+  {
+      return this->NumberOfActiveArrays;
+  }
 
   /**
    * Add an array to the array list. If an array with the same name
    * already exists - then the added array will replace it.
    * Return the index of the added array.
    */
-  int AddArray(vtkAbstractArray* array);
+  int AddArray(vtkAbstractArray *array);
 
   //@{
   /**
    * Remove an array (with the given name or index) from the list of arrays.
    */
-  virtual void RemoveArray(const char* name);
+  virtual void RemoveArray(const char *name);
   virtual void RemoveArray(int index);
   //@}
 
   /**
-   * Not recommended for use. Use GetAbstractArray(int i) instead.
-   *
-   * Return the ith array in the field. A nullptr is returned if the
-   * index i is out of range, or if the array at the given
-   * index is not a vtkDataArray. To access vtkStringArray,
-   * vtkUnicodeStringArray, or vtkVariantArray, use GetAbstractArray(int i).
+   * Return the ith array in the field. A NULL is returned if the
+   * index i is out of range. A NULL is returned if the array at the given
+   * index is not a vtkDataArray.
    */
-  vtkDataArray* GetArray(int i);
+  vtkDataArray *GetArray(int i);
 
   /**
-   * Not recommended for use. Use
-   * GetAbstractArray(const char *arrayName, int &index) instead.
-   *
-   * Return the array with the name given. Returns nullptr if array not found.
-   * A nullptr is also returned if the array with the given name is not a
-   * vtkDataArray. To access vtkStringArray, vtkUnicodeStringArray, or
-   * vtkVariantArray, use GetAbstractArray(const char* arrayName, int &index).
-   * Also returns the index of the array if found, -1 otherwise.
+   * Return the array with the name given. Returns NULL is array not found.
+   * A NULL is also returned if the array with the given name is not a
+   * vtkDataArray. Also returns index of array if found, -1 otherwise.
    */
-  vtkDataArray* GetArray(const char* arrayName, int& index);
+  vtkDataArray *GetArray(const char *arrayName, int &index);
 
   //@{
   /**
-   * Not recommended for use. Use GetAbstractArray(const char *arrayName)
-   * instead.
-   *
-   * Return the array with the name given. Returns nullptr if array not found.
-   * A nullptr is also returned if the array with the given name is not a
-   * vtkDataArray. To access vtkStringArray, vtkUnicodeStringArray, or
-   * vtkVariantArray, use GetAbstractArray(const char *arrayName).
+   * Return the array with the name given. Returns NULL is array not found.
+   * A NULL is also returned if the array with the given name is not a
+   * vtkDataArray.
    */
-  vtkDataArray* GetArray(const char* arrayName)
+  vtkDataArray *GetArray(const char *arrayName)
   {
-    int i;
-    return this->GetArray(arrayName, i);
+      int i;
+      return this->GetArray(arrayName, i);
   }
   //@}
 
   /**
    * Returns the ith array in the field. Unlike GetArray(), this method returns
-   * a vtkAbstractArray and can be used to access any array type. A nullptr is
-   * returned only if the index i is out of range.
+   * a vtkAbstractArray. A NULL is returned only if the index i is
+   * out of range.
    */
   vtkAbstractArray* GetAbstractArray(int i);
 
   /**
-   * Return the array with the name given. Returns nullptr if array not found.
-   * Unlike GetArray(), this method returns a vtkAbstractArray and can be used
-   * to access any array type. Also returns index of array if found, -1
-   * otherwise.
+   * Return the array with the name given. Returns NULL is array not found.
+   * Unlike GetArray(), this method returns a vtkAbstractArray.
+   * Also returns index of array if found, -1 otherwise.
    */
-  vtkAbstractArray* GetAbstractArray(const char* arrayName, int& index);
+  vtkAbstractArray* GetAbstractArray(const char* arrayName, int &index);
 
   //@{
   /**
-   * Return the array with the name given. Returns nullptr if array not found.
-   * Unlike GetArray(), this method returns a vtkAbstractArray and can be used
-   * to access any array type.
+   * Return the array with the name given. Returns NULL is array not found.
+   * Unlike GetArray(), this method returns a vtkAbstractArray.
    */
   vtkAbstractArray* GetAbstractArray(const char* arrayName)
   {
@@ -182,12 +171,12 @@ public:
   /**
    * Return 1 if an array with the given name could be found. 0 otherwise.
    */
-  int HasArray(const char* name)
+  int HasArray(const char *name)
   {
-    int i;
-    vtkAbstractArray* array = this->GetAbstractArray(name, i);
-    // assert( i == -1);
-    return array ? 1 : 0;
+      int i;
+      vtkAbstractArray *array = this->GetAbstractArray(name, i);
+      // assert( i == -1);
+      return array ? 1 : 0;
   }
   //@}
 
@@ -195,12 +184,12 @@ public:
   /**
    * Get the name of ith array.
    * Note that this is equivalent to:
-   * GetAbstractArray(i)->GetName() if ith array pointer is not nullptr
+   * GetAbstractArray(i)->GetName() if ith array pointer is not NULL
    */
   const char* GetArrayName(int i)
   {
     vtkAbstractArray* da = this->GetAbstractArray(i);
-    return da ? da->GetName() : nullptr;
+    return da ? da->GetName() : 0;
   }
   //@}
 
@@ -231,7 +220,7 @@ public:
    * 2. If CopyAllOn is set, copy the array.
    * If CopyAllOff is set, do not copy the array
    */
-  virtual void CopyAllOn(int unused = 0);
+  virtual void CopyAllOn(int unused=0);
 
   /**
    * Turn off copying of all data.
@@ -242,17 +231,17 @@ public:
    * 2. If CopyAllOn is set, copy the array.
    * If CopyAllOff is set, do not copy the array
    */
-  virtual void CopyAllOff(int unused = 0);
+  virtual void CopyAllOff(int unused=0);
 
   /**
    * Copy a field by creating new data arrays (i.e., duplicate storage).
    */
-  virtual void DeepCopy(vtkFieldData* da);
+  virtual void DeepCopy(vtkFieldData *da);
 
   /**
    * Copy a field by reference counting the data arrays.
    */
-  virtual void ShallowCopy(vtkFieldData* da);
+  virtual void ShallowCopy(vtkFieldData *da);
 
   /**
    * Squeezes each data array in the field (Squeeze() reclaims unused memory.)
@@ -276,7 +265,7 @@ public:
   /**
    * Check object's components for modified times.
    */
-  vtkMTimeType GetMTime() override;
+  vtkMTimeType GetMTime() VTK_OVERRIDE;
 
   /**
    * Get a field from a list of ids. Supplied field f should have same
@@ -287,7 +276,7 @@ public:
    * is stored with the other fields and will cause the method to
    * behave in an unexpected way.
    */
-  void GetField(vtkIdList* ptId, vtkFieldData* f);
+  void GetField(vtkIdList *ptId, vtkFieldData *f);
 
   /**
    * Return the array containing the ith component of the field. The
@@ -300,7 +289,7 @@ public:
 
   /**
    * Get the number of components in the field. This is determined by adding
-   * up the components in each non-nullptr array.
+   * up the components in each non-NULL array.
    * This method should not be used if the instance is from a
    * subclass of vtkFieldData (vtkPointData or vtkCellData).
    * This is because in those cases, the attribute data is
@@ -345,24 +334,25 @@ public:
   void InsertTuple(const vtkIdType i, const vtkIdType j, vtkFieldData* source);
 
   /**
-   * Insert the jth tuple in source field data at the end of the
+   * Insert the jth tuple in source field data  at the end of the
    * tuple matrix. Range checking is performed and memory is allocated
    * as necessary.
    */
   vtkIdType InsertNextTuple(const vtkIdType j, vtkFieldData* source);
 
 protected:
+
   vtkFieldData();
-  ~vtkFieldData() override;
+  ~vtkFieldData() VTK_OVERRIDE;
 
   int NumberOfArrays;
   int NumberOfActiveArrays;
-  vtkAbstractArray** Data;
+  vtkAbstractArray **Data;
 
   /**
    * Set an array to define the field.
    */
-  void SetArray(int i, vtkAbstractArray* array);
+  void SetArray(int i, vtkAbstractArray *array);
 
   /**
    * Release all data but do not delete object.
@@ -375,8 +365,8 @@ protected:
     int IsCopied;
   };
 
-  CopyFieldFlag* CopyFieldFlags; // the names of fields not to be copied
-  int NumberOfFieldFlags;        // the number of fields not to be copied
+  CopyFieldFlag* CopyFieldFlags; //the names of fields not to be copied
+  int NumberOfFieldFlags; //the number of fields not to be copied
   void CopyFieldOnOff(const char* name, int onOff);
   void ClearFieldFlags();
   int FindFlag(const char* field);
@@ -385,11 +375,13 @@ protected:
   int DoCopyAllOn;
   int DoCopyAllOff;
 
+
 private:
-  vtkFieldData(const vtkFieldData&) = delete;
-  void operator=(const vtkFieldData&) = delete;
+  vtkFieldData(const vtkFieldData&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkFieldData&) VTK_DELETE_FUNCTION;
 
 public:
+
   class VTKCOMMONDATAMODEL_EXPORT BasicIterator
   {
   public:
@@ -398,23 +390,33 @@ public:
     BasicIterator(const int* list, unsigned int listSize);
     BasicIterator& operator=(const BasicIterator& source);
     virtual ~BasicIterator();
-    void PrintSelf(ostream& os, vtkIndent indent);
+    void PrintSelf(ostream &os, vtkIndent indent);
 
-    int GetListSize() const { return this->ListSize; }
-    int GetCurrentIndex() { return this->List[this->Position]; }
+    int GetListSize() const
+    {
+        return this->ListSize;
+    }
+    int GetCurrentIndex()
+    {
+        return this->List[this->Position];
+    }
     int BeginIndex()
     {
-      this->Position = -1;
-      return this->NextIndex();
+        this->Position = -1;
+        return this->NextIndex();
     }
-    int End() const { return (this->Position >= this->ListSize); }
+    int End() const
+    {
+        return (this->Position >= this->ListSize);
+    }
     int NextIndex()
     {
-      this->Position++;
-      return (this->End() ? -1 : this->List[this->Position]);
+        this->Position++;
+        return (this->End() ? -1 : this->List[this->Position]);
     }
 
   protected:
+
     int* List;
     int ListSize;
     int Position;
@@ -423,30 +425,32 @@ public:
   class VTKCOMMONDATAMODEL_EXPORT Iterator : public BasicIterator
   {
   public:
+
     Iterator(const Iterator& source);
     Iterator& operator=(const Iterator& source);
-    ~Iterator() override;
-    Iterator(vtkFieldData* dsa, const int* list = nullptr, unsigned int listSize = 0);
+    ~Iterator() VTK_OVERRIDE;
+    Iterator(vtkFieldData* dsa, const int* list=0,
+             unsigned int listSize=0);
 
     vtkDataArray* Begin()
     {
-      this->Position = -1;
-      return this->Next();
+        this->Position = -1;
+        return this->Next();
     }
 
     vtkDataArray* Next()
     {
-      this->Position++;
-      if (this->End())
-      {
-        return nullptr;
-      }
+        this->Position++;
+        if (this->End())
+        {
+          return 0;
+        }
 
-      // vtkFieldData::GetArray() can return null, which implies that
-      // a the array at the given index in not a vtkDataArray subclass.
-      // This iterator skips such arrays.
-      vtkDataArray* cur = Fields->GetArray(this->List[this->Position]);
-      return (cur ? cur : this->Next());
+        // vtkFieldData::GetArray() can return null, which implies that
+        // a the array at the given index in not a vtkDataArray subclass.
+        // This iterator skips such arrays.
+        vtkDataArray* cur =  Fields->GetArray(this->List[this->Position]);
+        return (cur? cur : this->Next());
     }
 
     void DetachFieldData();
@@ -455,6 +459,8 @@ public:
     vtkFieldData* Fields;
     int Detached;
   };
+
 };
+
 
 #endif

@@ -22,7 +22,7 @@
 // VC - View Coordinates
 // DC - Display Coordinates
 
-in vec4 vertexWC;
+attribute vec4 vertexWC;
 
 // material property values
 //VTK::Color::Dec

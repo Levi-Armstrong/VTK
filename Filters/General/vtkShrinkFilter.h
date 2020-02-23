@@ -28,7 +28,7 @@
  *
  * @sa
  * vtkShrinkPolyData
- */
+*/
 
 #ifndef vtkShrinkFilter_h
 #define vtkShrinkFilter_h
@@ -39,9 +39,9 @@
 class VTKFILTERSGENERAL_EXPORT vtkShrinkFilter : public vtkUnstructuredGridAlgorithm
 {
 public:
-  static vtkShrinkFilter* New();
-  vtkTypeMacro(vtkShrinkFilter, vtkUnstructuredGridAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkShrinkFilter *New();
+  vtkTypeMacro(vtkShrinkFilter,vtkUnstructuredGridAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   //@{
   /**
@@ -53,19 +53,21 @@ public:
 
 protected:
   vtkShrinkFilter();
-  ~vtkShrinkFilter() override;
+  ~vtkShrinkFilter() VTK_OVERRIDE;
 
   // Override to specify support for any vtkDataSet input type.
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  int FillInputPortInformation(int port, vtkInformation* info) VTK_OVERRIDE;
 
   // Main implementation.
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation*,
+                  vtkInformationVector**,
+                  vtkInformationVector*) VTK_OVERRIDE;
 
   double ShrinkFactor;
 
 private:
-  vtkShrinkFilter(const vtkShrinkFilter&) = delete;
-  void operator=(const vtkShrinkFilter&) = delete;
+  vtkShrinkFilter(const vtkShrinkFilter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkShrinkFilter&) VTK_DELETE_FUNCTION;
 };
 
 #endif

@@ -51,13 +51,13 @@
  *
  * @sa
  * vtkActor2D vtkTextProperty vtkTextMapper vtkPolyDataMapper2D
- */
+*/
 
 #ifndef vtkScalarBarActor_h
 #define vtkScalarBarActor_h
 
-#include "vtkActor2D.h"
 #include "vtkRenderingAnnotationModule.h" // For export macro
+#include "vtkActor2D.h"
 
 class vtkColor3ub;
 class vtkPolyData;
@@ -78,7 +78,7 @@ class VTKRENDERINGANNOTATION_EXPORT vtkScalarBarActor : public vtkActor2D
 {
 public:
   vtkTypeMacro(vtkScalarBarActor, vtkActor2D);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Instantiate object with 64 maximum colors; 5 labels; %%-#6.3g label
@@ -91,22 +91,22 @@ public:
   /**
    * Draw the scalar bar and annotation text to the screen.
    */
-  int RenderOpaqueGeometry(vtkViewport* viewport) override;
-  int RenderTranslucentPolygonalGeometry(vtkViewport*) override { return 0; }
-  int RenderOverlay(vtkViewport* viewport) override;
+  int RenderOpaqueGeometry(vtkViewport* viewport) VTK_OVERRIDE;
+  virtual int RenderTranslucentPolygonalGeometry(vtkViewport*) VTK_OVERRIDE { return 0; };
+  int RenderOverlay(vtkViewport* viewport) VTK_OVERRIDE;
   //@}
 
   /**
    * Does this prop have some translucent polygonal geometry?
    */
-  vtkTypeBool HasTranslucentPolygonalGeometry() override;
+  virtual int HasTranslucentPolygonalGeometry() VTK_OVERRIDE;
 
   /**
    * Release any graphics resources that are being consumed by this actor.
    * The parameter window could be used to determine which graphic
    * resources to release.
    */
-  void ReleaseGraphicsResources(vtkWindow*) override;
+  virtual void ReleaseGraphicsResources(vtkWindow*) VTK_OVERRIDE;
 
   /**
    * Fills rect with the dimensions of the scalar bar in viewport coordinates.
@@ -134,9 +134,9 @@ public:
    * if Opacity is ON. You might also want to play with SetTextureGridWith
    * in that case. [Default: off]
    */
-  vtkSetMacro(UseOpacity, vtkTypeBool);
-  vtkGetMacro(UseOpacity, vtkTypeBool);
-  vtkBooleanMacro(UseOpacity, vtkTypeBool);
+  vtkSetMacro(UseOpacity, int);
+  vtkGetMacro(UseOpacity, int);
+  vtkBooleanMacro(UseOpacity, int);
   //@}
 
   //@{
@@ -163,8 +163,9 @@ public:
    */
   vtkSetClampMacro(Orientation, int, VTK_ORIENT_HORIZONTAL, VTK_ORIENT_VERTICAL);
   vtkGetMacro(Orientation, int);
-  void SetOrientationToHorizontal() { this->SetOrientation(VTK_ORIENT_HORIZONTAL); }
-  void SetOrientationToVertical() { this->SetOrientation(VTK_ORIENT_VERTICAL); }
+  void SetOrientationToHorizontal()
+       {this->SetOrientation(VTK_ORIENT_HORIZONTAL);}
+  void SetOrientationToVertical() {this->SetOrientation(VTK_ORIENT_VERTICAL);}
   //@}
 
   //@{
@@ -219,7 +220,7 @@ public:
   /**
    * Shallow copy of a scalar bar actor. Overloads the virtual vtkProp method.
    */
-  void ShallowCopy(vtkProp* prop) override;
+  void ShallowCopy(vtkProp* prop) VTK_OVERRIDE;
 
   //@{
   /**
@@ -236,11 +237,7 @@ public:
   vtkGetObjectMacro(TextureActor, vtkTexturedActor2D);
   //@}
 
-  enum
-  {
-    PrecedeScalarBar = 0,
-    SucceedScalarBar
-  };
+  enum { PrecedeScalarBar = 0, SucceedScalarBar };
 
   //@{
   /**
@@ -254,13 +251,9 @@ public:
   vtkSetClampMacro(TextPosition, int, PrecedeScalarBar, SucceedScalarBar);
   vtkGetMacro(TextPosition, int);
   virtual void SetTextPositionToPrecedeScalarBar()
-  {
-    this->SetTextPosition(vtkScalarBarActor::PrecedeScalarBar);
-  }
+    { this->SetTextPosition(vtkScalarBarActor::PrecedeScalarBar); }
   virtual void SetTextPositionToSucceedScalarBar()
-  {
-    this->SetTextPosition(vtkScalarBarActor::SucceedScalarBar);
-  }
+    { this->SetTextPosition(vtkScalarBarActor::SucceedScalarBar); }
   //@}
 
   //@{
@@ -293,9 +286,9 @@ public:
    * Currently, this only affects rendering when \a IndexedLookup is true.
    * The default is true.
    */
-  vtkSetMacro(DrawAnnotations, vtkTypeBool);
-  vtkGetMacro(DrawAnnotations, vtkTypeBool);
-  vtkBooleanMacro(DrawAnnotations, vtkTypeBool);
+  vtkSetMacro(DrawAnnotations, int);
+  vtkGetMacro(DrawAnnotations, int);
+  vtkBooleanMacro(DrawAnnotations, int);
   //@}
 
   //@{
@@ -304,9 +297,9 @@ public:
    * This only affects rendering when \a DrawAnnotations is true.
    * The default is false.
    */
-  vtkSetMacro(DrawNanAnnotation, vtkTypeBool);
-  vtkGetMacro(DrawNanAnnotation, vtkTypeBool);
-  vtkBooleanMacro(DrawNanAnnotation, vtkTypeBool);
+  vtkSetMacro(DrawNanAnnotation, int);
+  vtkGetMacro(DrawNanAnnotation, int);
+  vtkBooleanMacro(DrawNanAnnotation, int);
   //@}
 
   //@{
@@ -355,9 +348,9 @@ public:
    * This only affects rendering when \a DrawAnnotations is true.
    * The default is false.
    */
-  vtkSetMacro(FixedAnnotationLeaderLineColor, vtkTypeBool);
-  vtkGetMacro(FixedAnnotationLeaderLineColor, vtkTypeBool);
-  vtkBooleanMacro(FixedAnnotationLeaderLineColor, vtkTypeBool);
+  vtkSetMacro(FixedAnnotationLeaderLineColor, int);
+  vtkGetMacro(FixedAnnotationLeaderLineColor, int);
+  vtkBooleanMacro(FixedAnnotationLeaderLineColor, int);
   //@}
 
   //@{
@@ -377,9 +370,9 @@ public:
    * labels will have their TextScaleMode set to viewport-based scaling,
    * which nonlinearly scales font size with the viewport size.
    */
-  vtkSetMacro(AnnotationTextScaling, vtkTypeBool);
-  vtkGetMacro(AnnotationTextScaling, vtkTypeBool);
-  vtkBooleanMacro(AnnotationTextScaling, vtkTypeBool);
+  vtkSetMacro(AnnotationTextScaling, int);
+  vtkGetMacro(AnnotationTextScaling, int);
+  vtkBooleanMacro(AnnotationTextScaling, int);
   //@}
 
   //@{
@@ -387,9 +380,9 @@ public:
    * Set/Get whether a background should be drawn around the scalar bar.
    * Default is off.
    */
-  vtkSetMacro(DrawBackground, vtkTypeBool);
-  vtkGetMacro(DrawBackground, vtkTypeBool);
-  vtkBooleanMacro(DrawBackground, vtkTypeBool);
+  vtkSetMacro(DrawBackground, int);
+  vtkGetMacro(DrawBackground, int);
+  vtkBooleanMacro(DrawBackground, int);
   //@}
 
   //@{
@@ -397,9 +390,9 @@ public:
    * Set/Get whether a frame should be drawn around the scalar bar.
    * Default is off.
    */
-  vtkSetMacro(DrawFrame, vtkTypeBool);
-  vtkGetMacro(DrawFrame, vtkTypeBool);
-  vtkBooleanMacro(DrawFrame, vtkTypeBool);
+  vtkSetMacro(DrawFrame, int);
+  vtkGetMacro(DrawFrame, int);
+  vtkBooleanMacro(DrawFrame, int);
   //@}
 
   //@{
@@ -407,18 +400,18 @@ public:
    * Set/Get whether the color bar should be drawn. If off, only the tickmarks
    * and text will be drawn. Default is on.
    */
-  vtkSetMacro(DrawColorBar, vtkTypeBool);
-  vtkGetMacro(DrawColorBar, vtkTypeBool);
-  vtkBooleanMacro(DrawColorBar, vtkTypeBool);
+  vtkSetMacro(DrawColorBar, int);
+  vtkGetMacro(DrawColorBar, int);
+  vtkBooleanMacro(DrawColorBar, int);
   //@}
 
   //@{
   /**
    * Set/Get whether the tick labels should be drawn. Default is on.
    */
-  vtkSetMacro(DrawTickLabels, vtkTypeBool);
-  vtkGetMacro(DrawTickLabels, vtkTypeBool);
-  vtkBooleanMacro(DrawTickLabels, vtkTypeBool);
+  vtkSetMacro(DrawTickLabels, int);
+  vtkGetMacro(DrawTickLabels, int);
+  vtkBooleanMacro(DrawTickLabels, int);
   //@}
 
   //@{
@@ -489,7 +482,7 @@ public:
 
 protected:
   vtkScalarBarActor();
-  ~vtkScalarBarActor() override;
+  ~vtkScalarBarActor();
 
   /**
    * Called from within \a RenderOpaqueGeometry when the internal state
@@ -523,6 +516,7 @@ protected:
    * zero on error
    */
   virtual int RebuildLayoutIfNeeded(vtkViewport* viewport);
+
 
   /**
    * Free internal storage used by the previous layout.
@@ -688,7 +682,7 @@ protected:
    * the coordinate if you wish multiple labels to annotate the same position.
    * Each entry in this->P->Labels must have a matching entry in this->P->LabelColors.
    */
-  virtual void EditAnnotations() {}
+  virtual void EditAnnotations() { }
 
   /**
    * Compute the best size for the legend title.
@@ -707,13 +701,14 @@ protected:
    * This method is called by \a ConfigureAnnotationLabels when Orientation is VTK_ORIENT_VERTICAL.
    */
   int PlaceAnnotationsVertically(
-    double barX, double barY, double barWidth, double barHeight, double delta, double pad);
+    double barX, double barY, double barWidth, double barHeight,
+    double delta, double pad);
   /**
-   * This method is called by \a ConfigureAnnotationLabels when Orientation is
-   * VTK_ORIENT_HORIZONTAL.
+   * This method is called by \a ConfigureAnnotationLabels when Orientation is VTK_ORIENT_HORIZONTAL.
    */
   int PlaceAnnotationsHorizontally(
-    double barX, double barY, double barWidth, double barHeight, double delta, double pad);
+    double barX, double barY, double barWidth, double barHeight,
+    double delta, double pad);
 
   /// User-changeable settings
   //@{
@@ -721,20 +716,20 @@ protected:
   int NumberOfLabels;
   int NumberOfLabelsBuilt;
   int Orientation;
-  vtkTypeBool DrawBackground; // off by default
-  vtkTypeBool DrawFrame;      // off by default
-  vtkTypeBool DrawColorBar;   // on by default
-  vtkTypeBool DrawTickLabels; // on by default
-  vtkTypeBool DrawAnnotations;
-  vtkTypeBool DrawNanAnnotation;
-  vtkTypeBool AnnotationTextScaling; // off by default
-  vtkTypeBool FixedAnnotationLeaderLineColor;
+  int DrawBackground; // off by default
+  int DrawFrame; // off by default
+  int DrawColorBar; // on by default
+  int DrawTickLabels; // on by default
+  int DrawAnnotations;
+  int DrawNanAnnotation;
+  int AnnotationTextScaling; // off by default
+  int FixedAnnotationLeaderLineColor;
   vtkProperty2D* BackgroundProperty;
   vtkProperty2D* FrameProperty;
   char* Title;
   char* ComponentTitle;
   char* LabelFormat;
-  vtkTypeBool UseOpacity; // off by default
+  int UseOpacity; // off by default
   double TextureGridWidth;
   int TextPosition;
   char* NanAnnotation;
@@ -747,7 +742,7 @@ protected:
   int VerticalTitleSeparation;
   double BarRatio;
   double TitleRatio;
-  bool UnconstrainedFontSize; // off by default
+  bool UnconstrainedFontSize;  // off by default
 
   bool DrawBelowRangeSwatch;
   bool DrawAboveRangeSwatch;
@@ -756,37 +751,38 @@ protected:
   /// Internal state used for rendering
   //@{
   vtkTimeStamp BuildTime; //!< Last time internal state changed.
-  int LastSize[2];        //!< Projected size in viewport coordinates of last build.
-  int LastOrigin[2];      //!< Projected origin (viewport coordinates) of last build.
+  int LastSize[2]; //!< Projected size in viewport coordinates of last build.
+  int LastOrigin[2]; //!< Projected origin (viewport coordinates) of last build.
 
   vtkScalarBarActorInternal* P; //!< Containers shared with subclasses
 
   vtkScalarsToColors* LookupTable; //!< The object this actor illustrates
 
-  vtkTextProperty* TitleTextProperty;      //!< Font for the legend title.
-  vtkTextProperty* LabelTextProperty;      //!< Font for tick labels.
+  vtkTextProperty* TitleTextProperty; //!< Font for the legend title.
+  vtkTextProperty* LabelTextProperty; //!< Font for tick labels.
   vtkTextProperty* AnnotationTextProperty; //!< Font for annotation labels.
-  vtkTextActor* TitleActor;                //!< The legend title text renderer.
+  vtkTextActor* TitleActor; //!< The legend title text renderer.
 
-  vtkPolyData* ScalarBar;               //!< Polygon(s) colored by \a LookupTable.
+  vtkPolyData* ScalarBar; //!< Polygon(s) colored by \a LookupTable.
   vtkPolyDataMapper2D* ScalarBarMapper; //!< Mapper for \a ScalarBar.
-  vtkActor2D* ScalarBarActor;           //!< Actor for \a ScalarBar.
-  vtkPolyData* TexturePolyData;         //!< Polygon colored when UseOpacity is true.
-  vtkTexture* Texture;                  //!< Color data for \a TexturePolyData.
-  vtkTexturedActor2D* TextureActor;     //!< Actor for \a TexturePolyData.
+  vtkActor2D* ScalarBarActor; //!< Actor for \a ScalarBar.
+  vtkPolyData* TexturePolyData; //!< Polygon colored when UseOpacity is true.
+  vtkTexture* Texture; //!< Color data for \a TexturePolyData.
+  vtkTexturedActor2D* TextureActor; //!< Actor for \a TexturePolyData.
 
-  vtkPolyData* Background;               //!< Polygon used to fill the background.
+  vtkPolyData* Background; //!< Polygon used to fill the background.
   vtkPolyDataMapper2D* BackgroundMapper; //!< Mapper for \a Background.
-  vtkActor2D* BackgroundActor;           //!< Actor for \a Background.
+  vtkActor2D* BackgroundActor; //!< Actor for \a Background.
 
-  vtkPolyData* Frame;               //!< Polyline used to highlight frame.
+  vtkPolyData* Frame; //!< Polyline used to highlight frame.
   vtkPolyDataMapper2D* FrameMapper; //!< Mapper for \a Frame.
-  vtkActor2D* FrameActor;           //!< Actor for \a Frame.
+  vtkActor2D* FrameActor; //!< Actor for \a Frame.
   //@}
 
 private:
-  vtkScalarBarActor(const vtkScalarBarActor&) = delete;
-  void operator=(const vtkScalarBarActor&) = delete;
+  vtkScalarBarActor(const vtkScalarBarActor&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkScalarBarActor&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

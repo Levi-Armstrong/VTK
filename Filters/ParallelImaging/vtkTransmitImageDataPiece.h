@@ -24,7 +24,7 @@
  *
  * Note that this class is legacy. The superclass does all the work and
  * can be used directly instead.
- */
+*/
 
 #ifndef vtkTransmitImageDataPiece_h
 #define vtkTransmitImageDataPiece_h
@@ -34,21 +34,20 @@
 
 class vtkMultiProcessController;
 
-class VTKFILTERSPARALLELIMAGING_EXPORT vtkTransmitImageDataPiece
-  : public vtkTransmitStructuredDataPiece
+class VTKFILTERSPARALLELIMAGING_EXPORT vtkTransmitImageDataPiece : public vtkTransmitStructuredDataPiece
 {
 public:
-  static vtkTransmitImageDataPiece* New();
+  static vtkTransmitImageDataPiece *New();
   vtkTypeMacro(vtkTransmitImageDataPiece, vtkTransmitStructuredDataPiece);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
 protected:
   vtkTransmitImageDataPiece();
-  ~vtkTransmitImageDataPiece() override;
+  ~vtkTransmitImageDataPiece();
 
 private:
-  vtkTransmitImageDataPiece(const vtkTransmitImageDataPiece&) = delete;
-  void operator=(const vtkTransmitImageDataPiece&) = delete;
+  vtkTransmitImageDataPiece(const vtkTransmitImageDataPiece&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTransmitImageDataPiece&) VTK_DELETE_FUNCTION;
 };
 
 #endif

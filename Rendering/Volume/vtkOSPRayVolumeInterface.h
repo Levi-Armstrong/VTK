@@ -19,7 +19,7 @@
  *
  * Class allows SmartVolume to use OSPRay for rendering when ospray
  * is enabled. When disabled, this class does nothing but return a warning.
- */
+*/
 
 #ifndef vtkOSPRayVolumeInterface_h
 #define vtkOSPRayVolumeInterface_h
@@ -30,25 +30,27 @@
 class vtkRenderer;
 class vtkVolume;
 
-class VTKRENDERINGVOLUME_EXPORT vtkOSPRayVolumeInterface : public vtkVolumeMapper
+class VTKRENDERINGVOLUME_EXPORT vtkOSPRayVolumeInterface
+: public vtkVolumeMapper
 {
 public:
-  static vtkOSPRayVolumeInterface* New();
-  vtkTypeMacro(vtkOSPRayVolumeInterface, vtkVolumeMapper);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkOSPRayVolumeInterface *New();
+  vtkTypeMacro(vtkOSPRayVolumeInterface,vtkVolumeMapper);
+  void PrintSelf( ostream& os, vtkIndent indent );
 
   /**
    * Overridden to warn about lack of OSPRay if not overridden.
    */
-  void Render(vtkRenderer*, vtkVolume*) override;
+  virtual void Render(vtkRenderer *, vtkVolume *);
 
 protected:
   vtkOSPRayVolumeInterface();
-  ~vtkOSPRayVolumeInterface() override;
+  ~vtkOSPRayVolumeInterface();
 
 private:
-  vtkOSPRayVolumeInterface(const vtkOSPRayVolumeInterface&) = delete;
-  void operator=(const vtkOSPRayVolumeInterface&) = delete;
+  vtkOSPRayVolumeInterface
+    (const vtkOSPRayVolumeInterface&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkOSPRayVolumeInterface&) VTK_DELETE_FUNCTION;
 };
 
 #endif

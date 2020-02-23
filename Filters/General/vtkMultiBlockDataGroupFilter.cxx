@@ -24,14 +24,20 @@
 
 vtkStandardNewMacro(vtkMultiBlockDataGroupFilter);
 //-----------------------------------------------------------------------------
-vtkMultiBlockDataGroupFilter::vtkMultiBlockDataGroupFilter() = default;
+vtkMultiBlockDataGroupFilter::vtkMultiBlockDataGroupFilter()
+{
+}
 
 //-----------------------------------------------------------------------------
-vtkMultiBlockDataGroupFilter::~vtkMultiBlockDataGroupFilter() = default;
+vtkMultiBlockDataGroupFilter::~vtkMultiBlockDataGroupFilter()
+{
+}
 
 //-----------------------------------------------------------------------------
-int vtkMultiBlockDataGroupFilter::RequestInformation(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector)
+int vtkMultiBlockDataGroupFilter::RequestInformation(
+  vtkInformation *vtkNotUsed(request),
+  vtkInformationVector **vtkNotUsed(inputVector),
+  vtkInformationVector *outputVector)
 {
   vtkInformation* info = outputVector->GetInformationObject(0);
   info->Remove(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT());
@@ -39,29 +45,34 @@ int vtkMultiBlockDataGroupFilter::RequestInformation(vtkInformation* vtkNotUsed(
 }
 
 //-----------------------------------------------------------------------------
-int vtkMultiBlockDataGroupFilter::RequestUpdateExtent(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** inputVector, vtkInformationVector* vtkNotUsed(outputVector))
+int vtkMultiBlockDataGroupFilter::RequestUpdateExtent(
+  vtkInformation *vtkNotUsed(request),
+  vtkInformationVector **inputVector,
+  vtkInformationVector *vtkNotUsed(outputVector))
 {
   int numInputs = inputVector[0]->GetNumberOfInformationObjects();
-  for (int i = 0; i < numInputs; i++)
+  for (int i=0; i<numInputs; i++)
   {
     vtkInformation* inInfo = inputVector[0]->GetInformationObject(i);
     if (inInfo->Has(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT()))
     {
       inInfo->Set(vtkStreamingDemandDrivenPipeline::UPDATE_EXTENT(),
-        inInfo->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT()), 6);
+        inInfo->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT()),
+        6);
     }
   }
   return 1;
 }
 
 //-----------------------------------------------------------------------------
-int vtkMultiBlockDataGroupFilter::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+int vtkMultiBlockDataGroupFilter::RequestData(
+  vtkInformation *vtkNotUsed(request),
+  vtkInformationVector **inputVector,
+  vtkInformationVector *outputVector)
 {
   vtkInformation* info = outputVector->GetInformationObject(0);
-  vtkMultiBlockDataSet* output =
-    vtkMultiBlockDataSet::SafeDownCast(info->Get(vtkDataObject::DATA_OBJECT()));
+  vtkMultiBlockDataSet* output = vtkMultiBlockDataSet::SafeDownCast(
+    info->Get(vtkDataObject::DATA_OBJECT()));
   if (!output)
   {
     return 0;
@@ -85,7 +96,7 @@ int vtkMultiBlockDataGroupFilter::RequestData(vtkInformation* vtkNotUsed(request
     block->Delete();
     */
 
-    vtkDataObject* input = nullptr;
+    vtkDataObject* input = 0;
     vtkInformation* inInfo = inputVector[0]->GetInformationObject(idx);
     if (inInfo)
     {
@@ -100,14 +111,15 @@ int vtkMultiBlockDataGroupFilter::RequestData(vtkInformation* vtkNotUsed(request
     }
     else
     {
-      output->SetBlock(idx, nullptr);
+      output->SetBlock(idx, 0);
     }
   }
 
-  if (output->GetNumberOfBlocks() == 1 && output->GetBlock(0) &&
-    output->GetBlock(0)->IsA("vtkMultiBlockDataSet"))
+  if (output->GetNumberOfBlocks() == 1 &&
+    output->GetBlock(0) && output->GetBlock(0)->IsA("vtkMultiBlockDataSet"))
   {
-    vtkMultiBlockDataSet* block = vtkMultiBlockDataSet::SafeDownCast(output->GetBlock(0));
+    vtkMultiBlockDataSet* block = vtkMultiBlockDataSet::SafeDownCast(
+      output->GetBlock(0));
     block->Register(this);
     output->ShallowCopy(block);
     block->UnRegister(this);
@@ -129,7 +141,8 @@ void vtkMultiBlockDataGroupFilter::AddInputData(int index, vtkDataObject* input)
 }
 
 //-----------------------------------------------------------------------------
-int vtkMultiBlockDataGroupFilter::FillInputPortInformation(int, vtkInformation* info)
+int vtkMultiBlockDataGroupFilter::FillInputPortInformation(
+  int, vtkInformation *info)
 {
   info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkDataObject");
   info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 1);
@@ -140,5 +153,5 @@ int vtkMultiBlockDataGroupFilter::FillInputPortInformation(int, vtkInformation* 
 //-----------------------------------------------------------------------------
 void vtkMultiBlockDataGroupFilter::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 }

@@ -19,7 +19,7 @@
  * The difference between this implementation and vtkMaskPoints is
  * the use of the vtkMultiProcessController and that
  * ProportionalMaximumNumberOfPoints is obeyed.
- */
+*/
 
 #ifndef vtkPMaskPoints_h
 #define vtkPMaskPoints_h
@@ -32,9 +32,9 @@ class vtkMultiProcessController;
 class VTKFILTERSPARALLEL_EXPORT vtkPMaskPoints : public vtkMaskPoints
 {
 public:
-  static vtkPMaskPoints* New();
-  vtkTypeMacro(vtkPMaskPoints, vtkMaskPoints);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkPMaskPoints *New();
+  vtkTypeMacro(vtkPMaskPoints,vtkMaskPoints);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -46,22 +46,18 @@ public:
 
 protected:
   vtkPMaskPoints();
-  ~vtkPMaskPoints() override;
+  ~vtkPMaskPoints();
 
-  void InternalScatter(unsigned long*, unsigned long*, int, int) override;
-  void InternalGather(unsigned long*, unsigned long*, int, int) override;
-  int InternalGetNumberOfProcesses() override;
-  int InternalGetLocalProcessId() override;
-  void InternalBarrier() override;
-  void InternalSplitController(int color, int key) override;
-  void InternalResetController() override;
+  virtual void InternalScatter(unsigned long*, unsigned long *, int, int);
+  virtual void InternalGather(unsigned long*, unsigned long*, int, int);
+  virtual int InternalGetNumberOfProcesses();
+  virtual int InternalGetLocalProcessId();
+  virtual void InternalBarrier();
 
   vtkMultiProcessController* Controller;
-  vtkMultiProcessController* OriginalController;
-
 private:
-  vtkPMaskPoints(const vtkPMaskPoints&) = delete;
-  void operator=(const vtkPMaskPoints&) = delete;
+  vtkPMaskPoints(const vtkPMaskPoints&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPMaskPoints&) VTK_DELETE_FUNCTION;
 };
 
 #endif

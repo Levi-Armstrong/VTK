@@ -20,33 +20,25 @@
  * functionality needed to write VTK XML file formats.  Concrete
  * subclasses provide actual writer implementations calling upon this
  * functionality.
- *
- * @par Thanks
- * CompressionLevel getters/setters exposed by Quincy Wofford
- * (qwofford@lanl.gov) and John Patchett (patchett@lanl.gov),
- * Los Alamos National Laboratory (2017)
- */
+*/
 
 #ifndef vtkXMLWriter_h
 #define vtkXMLWriter_h
 
-#include "vtkAlgorithm.h"
 #include "vtkIOXMLModule.h" // For export macro
-
+#include "vtkAlgorithm.h"
 #include <sstream> // For ostringstream ivar
 
 class vtkAbstractArray;
 class vtkArrayIterator;
 
-template <class T>
-class vtkArrayIteratorTemplate;
+template <class T> class vtkArrayIteratorTemplate;
 
 class vtkCellData;
 class vtkDataArray;
 class vtkDataCompressor;
 class vtkDataSet;
 class vtkDataSetAttributes;
-class vtkFieldData;
 class vtkOutputStream;
 class vtkPointData;
 class vtkPoints;
@@ -62,16 +54,12 @@ class VTKIOXML_EXPORT vtkXMLWriter : public vtkAlgorithm
 {
 public:
   vtkTypeMacro(vtkXMLWriter, vtkAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Enumerate big and little endian byte order settings.
    */
-  enum
-  {
-    BigEndian,
-    LittleEndian
-  };
+  enum { BigEndian, LittleEndian };
 
   /**
    * Enumerate the supported data modes.
@@ -79,34 +67,21 @@ public:
    * Binary = Inline binary data (base64 encoded, possibly compressed).
    * Appended = Appended binary data (possibly compressed and/or base64).
    */
-  enum
-  {
-    Ascii,
-    Binary,
-    Appended
-  };
+  enum { Ascii, Binary, Appended };
 
   /**
    * Enumerate the supported vtkIdType bit lengths.
    * Int32 = File stores 32-bit values for vtkIdType.
    * Int64 = File stores 64-bit values for vtkIdType.
    */
-  enum
-  {
-    Int32 = 32,
-    Int64 = 64
-  };
+  enum { Int32=32, Int64=64 };
 
   /**
    * Enumerate the supported binary data header bit lengths.
    * UInt32 = File stores 32-bit binary data header elements.
    * UInt64 = File stores 64-bit binary data header elements.
    */
-  enum
-  {
-    UInt32 = 32,
-    UInt64 = 64
-  };
+  enum { UInt32=32, UInt64=64 };
 
   //@{
   /**
@@ -153,9 +128,9 @@ public:
   /**
    * Enable writing to an OutputString instead of the default, a file.
    */
-  vtkSetMacro(WriteToOutputString, vtkTypeBool);
-  vtkGetMacro(WriteToOutputString, vtkTypeBool);
-  vtkBooleanMacro(WriteToOutputString, vtkTypeBool);
+  vtkSetMacro(WriteToOutputString, int);
+  vtkGetMacro(WriteToOutputString, int);
+  vtkBooleanMacro(WriteToOutputString, int);
   std::string GetOutputString() { return this->OutputString; }
   //@}
 
@@ -171,9 +146,7 @@ public:
   enum CompressorType
   {
     NONE,
-    ZLIB,
-    LZ4,
-    LZMA
+    ZLIB
   };
 
   //@{
@@ -181,13 +154,14 @@ public:
    * Convenience functions to set the compressor to certain known types.
    */
   void SetCompressorType(int compressorType);
-  void SetCompressorTypeToNone() { this->SetCompressorType(NONE); }
-  void SetCompressorTypeToLZ4() { this->SetCompressorType(LZ4); }
-  void SetCompressorTypeToZLib() { this->SetCompressorType(ZLIB); }
-  void SetCompressorTypeToLZMA() { this->SetCompressorType(LZMA); }
-
-  void SetCompressionLevel(int compressorLevel);
-  vtkGetMacro(CompressionLevel, int);
+  void SetCompressorTypeToNone()
+  {
+    this->SetCompressorType(NONE);
+  }
+  void SetCompressorTypeToZLib()
+  {
+    this->SetCompressorType(ZLIB);
+  }
   //@}
 
   //@{
@@ -222,9 +196,9 @@ public:
    * specification will be violated, but reading and writing will be
    * fast.  The default is to do the encoding.
    */
-  vtkSetMacro(EncodeAppendedData, vtkTypeBool);
-  vtkGetMacro(EncodeAppendedData, vtkTypeBool);
-  vtkBooleanMacro(EncodeAppendedData, vtkTypeBool);
+  vtkSetMacro(EncodeAppendedData, int);
+  vtkGetMacro(EncodeAppendedData, int);
+  vtkBooleanMacro(EncodeAppendedData, int);
   //@}
 
   //@{
@@ -233,16 +207,16 @@ public:
    * establish a pipeline connection. Use SetInputConnection() to
    * setup a pipeline connection.
    */
-  void SetInputData(vtkDataObject*);
+  void SetInputData(vtkDataObject *);
   void SetInputData(int, vtkDataObject*);
-  vtkDataObject* GetInput(int port);
-  vtkDataObject* GetInput() { return this->GetInput(0); }
+  vtkDataObject *GetInput(int port);
+  vtkDataObject *GetInput() { return this->GetInput(0); }
   //@}
 
   /**
    * Get the default file extension for files written by this writer.
    */
-  virtual const char* GetDefaultFileExtension() = 0;
+  virtual const char* GetDefaultFileExtension()=0;
 
   /**
    * Invoke the writer.  Returns 1 for success, 0 for failure.
@@ -250,8 +224,10 @@ public:
   int Write();
 
   // See the vtkAlgorithm for a description of what these do
-  vtkTypeBool ProcessRequest(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  virtual int ProcessRequest(vtkInformation* request,
+                             vtkInformationVector** inputVector,
+                             vtkInformationVector* outputVector);
+
 
   //@{
   /**
@@ -272,12 +248,15 @@ public:
 
 protected:
   vtkXMLWriter();
-  ~vtkXMLWriter() override;
+  ~vtkXMLWriter();
 
-  virtual int RequestInformation(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector);
-  virtual int RequestData(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector);
+  virtual int RequestInformation(
+                          vtkInformation* request,
+                          vtkInformationVector** inputVector,
+                          vtkInformationVector* outputVector);
+  virtual int RequestData(vtkInformation* request,
+                          vtkInformationVector** inputVector,
+                          vtkInformationVector* outputVector);
 
   // The name of the output file.
   char* FileName;
@@ -287,7 +266,7 @@ protected:
 
   // Whether this object is writing to a string or a file.
   // Default is 0: write to file.
-  vtkTypeBool WriteToOutputString;
+  int WriteToOutputString;
 
   // The output string.
   std::string OutputString;
@@ -306,26 +285,26 @@ protected:
   int DataMode;
 
   // Whether to base64-encode the appended data section.
-  vtkTypeBool EncodeAppendedData;
+  int EncodeAppendedData;
 
   // The stream position at which appended data starts.
   vtkTypeInt64 AppendedDataPosition;
 
   // appended data offsets for field data
-  OffsetsManagerGroup* FieldDataOM; // one per array
+  OffsetsManagerGroup *FieldDataOM;  //one per array
 
   // We need a 32 bit signed integer type to which vtkIdType will be
   // converted if Int32 is specified for the IdType parameter to this
   // writer.
-#if VTK_SIZEOF_SHORT == 4
+# if VTK_SIZEOF_SHORT == 4
   typedef short Int32IdType;
-#elif VTK_SIZEOF_INT == 4
+# elif VTK_SIZEOF_INT == 4
   typedef int Int32IdType;
-#elif VTK_SIZEOF_LONG == 4
+# elif VTK_SIZEOF_LONG == 4
   typedef long Int32IdType;
-#else
-#error "No native data type can represent a signed 32-bit integer."
-#endif
+# else
+#  error "No native data type can represent a signed 32-bit integer."
+# endif
 
   // Buffer for vtkIdType conversion.
   Int32IdType* Int32IdTypeBuffer;
@@ -339,9 +318,6 @@ protected:
   size_t CompressionBlockNumber;
   vtkXMLDataHeader* CompressionHeader;
   vtkTypeInt64 CompressionHeaderPosition;
-  // Compression Level for vtkDataCompressor objects
-  // 1 (worst compression, fastest) ... 9 (best compression, slowest)
-  int CompressionLevel = 5;
 
   // The output stream used to write binary and appended data.  May
   // transparently encode the data.
@@ -359,7 +335,7 @@ protected:
   virtual int WriteData() { return 1; }
 
   // Method defined by subclasses to specify the data set's type name.
-  virtual const char* GetDataSetName() = 0;
+  virtual const char* GetDataSetName()=0;
 
   // Methods to define the file's major and minor version numbers.
   virtual int GetDataSetMajorVersion();
@@ -373,8 +349,8 @@ protected:
   void DeleteAFile();
   void DeleteAFile(const char* name);
 
-  virtual int WritePrimaryElement(ostream& os, vtkIndent indent);
-  virtual void WritePrimaryElementAttributes(ostream& os, vtkIndent indent);
+  virtual int WritePrimaryElement(ostream &os, vtkIndent indent);
+  virtual void WritePrimaryElementAttributes(ostream &os, vtkIndent indent);
   void StartAppendedData();
   void EndAppendedData();
 
@@ -385,14 +361,18 @@ protected:
   // a double-precision floating point value written to 13 digits of
   // precision (the other 7 come from a minus sign, decimal place, and
   // a big exponent like "e+300").
-  vtkTypeInt64 ReserveAttributeSpace(const char* attr, size_t length = 20);
+  vtkTypeInt64 ReserveAttributeSpace(const char* attr, size_t length=20);
 
   vtkTypeInt64 GetAppendedDataOffset();
-  void WriteAppendedDataOffset(
-    vtkTypeInt64 streamPos, vtkTypeInt64& lastoffset, const char* attr = nullptr);
-  void ForwardAppendedDataOffset(
-    vtkTypeInt64 streamPos, vtkTypeInt64 offset, const char* attr = nullptr);
-  void ForwardAppendedDataDouble(vtkTypeInt64 streamPos, double value, const char* attr);
+  void WriteAppendedDataOffset(vtkTypeInt64 streamPos,
+                               vtkTypeInt64 &lastoffset,
+                               const char* attr=0);
+  void ForwardAppendedDataOffset(vtkTypeInt64 streamPos,
+                                 vtkTypeInt64 offset,
+                                 const char* attr=0);
+  void ForwardAppendedDataDouble(vtkTypeInt64 streamPos,
+                                 double value,
+                                 const char* attr);
 
   int WriteScalarAttribute(const char* name, int data);
   int WriteScalarAttribute(const char* name, float data);
@@ -413,49 +393,60 @@ protected:
   int WriteStringAttribute(const char* name, const char* value);
 
   // Returns true if any keys were written.
-  bool WriteInformation(vtkInformation* info, vtkIndent indent);
+  bool WriteInformation(vtkInformation *info, vtkIndent indent);
 
-  void WriteArrayHeader(vtkAbstractArray* a, vtkIndent indent, const char* alternateName,
-    int writeNumTuples, int timestep);
-  virtual void WriteArrayFooter(
-    ostream& os, vtkIndent indent, vtkAbstractArray* a, int shortFormat);
+  void WriteArrayHeader(vtkAbstractArray* a, vtkIndent indent,
+    const char* alternateName, int writeNumTuples, int timestep);
+  virtual void WriteArrayFooter(ostream &os, vtkIndent indent, vtkAbstractArray *a, int shortFormat);
   virtual void WriteArrayInline(vtkAbstractArray* a, vtkIndent indent,
-    const char* alternateName = nullptr, int writeNumTuples = 0);
+    const char* alternateName=0, int writeNumTuples=0);
   virtual void WriteInlineData(vtkAbstractArray* a, vtkIndent indent);
 
-  void WriteArrayAppended(vtkAbstractArray* a, vtkIndent indent, OffsetsManager& offs,
-    const char* alternateName = nullptr, int writeNumTuples = 0, int timestep = 0);
+  void WriteArrayAppended(vtkAbstractArray* a, vtkIndent indent,
+    OffsetsManager &offs, const char* alternateName=0,  int writeNumTuples=0,
+    int timestep=0);
   int WriteAsciiData(vtkAbstractArray* a, vtkIndent indent);
   int WriteBinaryData(vtkAbstractArray* a);
   int WriteBinaryDataInternal(vtkAbstractArray* a);
-  void WriteArrayAppendedData(vtkAbstractArray* a, vtkTypeInt64 pos, vtkTypeInt64& lastoffset);
+  void WriteArrayAppendedData(vtkAbstractArray* a, vtkTypeInt64 pos,
+                              vtkTypeInt64 &lastoffset);
 
   // Methods for writing points, point data, and cell data.
   void WriteFieldData(vtkIndent indent);
   void WriteFieldDataInline(vtkFieldData* fd, vtkIndent indent);
   void WritePointDataInline(vtkPointData* pd, vtkIndent indent);
   void WriteCellDataInline(vtkCellData* cd, vtkIndent indent);
-  void WriteFieldDataAppended(vtkFieldData* fd, vtkIndent indent, OffsetsManagerGroup* fdManager);
-  void WriteFieldDataAppendedData(vtkFieldData* fd, int timestep, OffsetsManagerGroup* fdManager);
-  void WritePointDataAppended(vtkPointData* pd, vtkIndent indent, OffsetsManagerGroup* pdManager);
-  void WritePointDataAppendedData(vtkPointData* pd, int timestep, OffsetsManagerGroup* pdManager);
-  void WriteCellDataAppended(vtkCellData* cd, vtkIndent indent, OffsetsManagerGroup* cdManager);
-  void WriteCellDataAppendedData(vtkCellData* cd, int timestep, OffsetsManagerGroup* cdManager);
+  void WriteFieldDataAppended(vtkFieldData* fd, vtkIndent indent,
+                              OffsetsManagerGroup *fdManager);
+  void WriteFieldDataAppendedData(vtkFieldData* fd, int timestep,
+                                  OffsetsManagerGroup *fdManager);
+  void  WritePointDataAppended(vtkPointData* pd, vtkIndent indent,
+                               OffsetsManagerGroup *pdManager);
+  void WritePointDataAppendedData(vtkPointData* pd, int timestep,
+                                  OffsetsManagerGroup *pdManager);
+  void WriteCellDataAppended(vtkCellData* cd, vtkIndent indent,
+                             OffsetsManagerGroup *cdManager);
+  void WriteCellDataAppendedData(vtkCellData* cd, int timestep,
+                                 OffsetsManagerGroup *cdManager);
   void WriteAttributeIndices(vtkDataSetAttributes* dsa, char** names);
-  void WritePointsAppended(vtkPoints* points, vtkIndent indent, OffsetsManager* manager);
-  void WritePointsAppendedData(vtkPoints* points, int timestep, OffsetsManager* pdManager);
+  void WritePointsAppended(vtkPoints* points, vtkIndent indent, OffsetsManager *manager);
+  void WritePointsAppendedData(vtkPoints* points, int timestep, OffsetsManager *pdManager);
   void WritePointsInline(vtkPoints* points, vtkIndent indent);
-  void WriteCoordinatesInline(
-    vtkDataArray* xc, vtkDataArray* yc, vtkDataArray* zc, vtkIndent indent);
-  void WriteCoordinatesAppended(vtkDataArray* xc, vtkDataArray* yc, vtkDataArray* zc,
-    vtkIndent indent, OffsetsManagerGroup* coordManager);
-  void WriteCoordinatesAppendedData(vtkDataArray* xc, vtkDataArray* yc, vtkDataArray* zc,
-    int timestep, OffsetsManagerGroup* coordManager);
+  void WriteCoordinatesInline(vtkDataArray* xc, vtkDataArray* yc,
+                              vtkDataArray* zc, vtkIndent indent);
+  void WriteCoordinatesAppended(vtkDataArray* xc, vtkDataArray* yc,
+                                vtkDataArray* zc, vtkIndent indent,
+                                OffsetsManagerGroup *coordManager);
+  void WriteCoordinatesAppendedData(vtkDataArray* xc, vtkDataArray* yc,
+                                    vtkDataArray* zc, int timestep,
+                                    OffsetsManagerGroup *coordManager);
   void WritePPointData(vtkPointData* pd, vtkIndent indent);
   void WritePCellData(vtkCellData* cd, vtkIndent indent);
   void WritePPoints(vtkPoints* points, vtkIndent indent);
-  void WritePArray(vtkAbstractArray* a, vtkIndent indent, const char* alternateName = nullptr);
-  void WritePCoordinates(vtkDataArray* xc, vtkDataArray* yc, vtkDataArray* zc, vtkIndent indent);
+  void WritePArray(vtkAbstractArray* a, vtkIndent indent,
+    const char* alternateName=0);
+  void WritePCoordinates(vtkDataArray* xc, vtkDataArray* yc,
+                         vtkDataArray* zc, vtkIndent indent);
 
   // Internal utility methods.
   int WriteBinaryDataBlock(unsigned char* in_data, size_t numWords, int wordType);
@@ -479,11 +470,7 @@ protected:
   virtual void UpdateProgressDiscrete(float progress);
   float ProgressRange[2];
 
-  // This shallows copy input field data to the passed field data and
-  // then adds any additional field arrays. For example, TimeValue.
-  void UpdateFieldData(vtkFieldData*);
-
-  ostream* OutFile;
+  ofstream* OutFile;
   std::ostringstream* OutStringStream;
 
   int OpenStream();
@@ -499,7 +486,7 @@ protected:
 
   // Dummy boolean var to start/stop the continue executing:
   // when using the Start/Stop/WriteNextTime API
-  int UserContinueExecuting; // can only be -1 = invalid, 0 = stop, 1 = start
+  int UserContinueExecuting; //can only be -1 = invalid, 0 = stop, 1 = start
 
   // This variable is used to ease transition to new versions of VTK XML files.
   // If data that needs to be written satisfies certain conditions,
@@ -509,13 +496,13 @@ protected:
   // the file is written with version: 0.1/1.0.
   bool UsePreviousVersion;
 
-  vtkTypeInt64* NumberOfTimeValues; // one per piece / per timestep
+  vtkTypeInt64 *NumberOfTimeValues; //one per piece / per timestep
 
   friend class vtkXMLWriterHelper;
 
 private:
-  vtkXMLWriter(const vtkXMLWriter&) = delete;
-  void operator=(const vtkXMLWriter&) = delete;
+  vtkXMLWriter(const vtkXMLWriter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkXMLWriter&) VTK_DELETE_FUNCTION;
 };
 
 #endif

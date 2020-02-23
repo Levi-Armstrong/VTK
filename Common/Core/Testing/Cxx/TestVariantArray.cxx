@@ -18,15 +18,15 @@
   the U.S. Government retains certain rights in this software.
 -------------------------------------------------------------------------*/
 
+#include "vtkIntArray.h"
+#include "vtkStringArray.h"
+#include "vtkDoubleArray.h"
+#include "vtkVariantArray.h"
 #include "vtkArrayIterator.h"
 #include "vtkArrayIteratorTemplate.h"
-#include "vtkDoubleArray.h"
 #include "vtkIdList.h"
-#include "vtkIntArray.h"
 #include "vtkMath.h"
 #include "vtkSmartPointer.h"
-#include "vtkStringArray.h"
-#include "vtkVariantArray.h"
 
 #include <time.h>
 #include <vector>
@@ -46,9 +46,11 @@ void PrintArrays(vector<double> vec, vtkVariantArray* arr)
 
 int TestLookup()
 {
-  vtkSmartPointer<vtkVariantArray> array = vtkSmartPointer<vtkVariantArray>::New();
+  vtkSmartPointer<vtkVariantArray> array =
+    vtkSmartPointer<vtkVariantArray>::New();
 
-  vtkSmartPointer<vtkIdList> idList = vtkSmartPointer<vtkIdList>::New();
+  vtkSmartPointer<vtkIdList> idList =
+    vtkSmartPointer<vtkIdList>::New();
 
   array->SetNumberOfValues(4);
   array->SetValue(0, "a");
@@ -59,7 +61,8 @@ int TestLookup()
   array->LookupValue("a", idList);
   if (idList->GetNumberOfIds() != 3)
   {
-    cerr << "Expected 3 a's, found " << idList->GetNumberOfIds() << " of them\n";
+    cerr << "Expected 3 a's, found " << idList->GetNumberOfIds()
+         << " of them\n";
     return 1;
   }
 
@@ -72,7 +75,8 @@ int TestLookup()
   array->LookupValue("b", idList);
   if (idList->GetNumberOfIds() != 1)
   {
-    cerr << "Expected 1 b, found " << idList->GetNumberOfIds() << " of them\n";
+    cerr << "Expected 1 b, found " << idList->GetNumberOfIds()
+         << " of them\n";
     return 1;
   }
 
@@ -87,7 +91,8 @@ int TestLookup()
   array->LookupValue("a", idList);
   if (idList->GetNumberOfIds() != 2)
   {
-    cerr << "Expected 2 a's, found " << idList->GetNumberOfIds() << " of them\n";
+    cerr << "Expected 2 a's, found " << idList->GetNumberOfIds()
+         << " of them\n";
     return 1;
   }
 
@@ -100,7 +105,8 @@ int TestLookup()
   array->LookupValue("b", idList);
   if (idList->GetNumberOfIds() != 2)
   {
-    cerr << "Expected 2 b's, found " << idList->GetNumberOfIds() << " of them\n";
+    cerr << "Expected 2 b's, found " << idList->GetNumberOfIds()
+         << " of them\n";
     return 1;
   }
 
@@ -117,7 +123,7 @@ int TestVariantArray(int, char*[])
 {
   cerr << "CTEST_FULL_OUTPUT" << endl;
 
-  long seed = time(nullptr);
+  long seed = time(NULL);
   cerr << "Seed: " << seed << endl;
   vtkMath::RandomSeed(seed);
 
@@ -128,11 +134,11 @@ int TestVariantArray(int, char*[])
   vector<double> vec;
 
   // Resizing
-  // * vtkTypeBool Allocate(vtkIdType sz);
+  // * int Allocate(vtkIdType sz);
   // * void Initialize();
   // * void SetNumberOfTuples(vtkIdType number);
   // * void Squeeze();
-  // * vtkTypeBool Resize(vtkIdType numTuples);
+  // * int Resize(vtkIdType numTuples);
   // * void SetNumberOfValues(vtkIdType number);
   // * void SetVoidArray(void *arr, vtkIdType size, int save);
   // * void SetArray(vtkVariant* arr, vtkIdType size, int save);
@@ -328,8 +334,9 @@ int TestVariantArray(int, char*[])
     exit(1);
   }
 
-  if (arr->GetActualMemorySize() == 0 || arr->GetDataTypeSize() == 0 ||
-    arr->GetElementComponentSize() == 0)
+  if (arr->GetActualMemorySize() == 0
+    || arr->GetDataTypeSize() == 0
+    || arr->GetElementComponentSize() == 0)
   {
     cerr << "One of the size functions returned zero." << endl;
     exit(1);
@@ -337,8 +344,8 @@ int TestVariantArray(int, char*[])
 
   if (arr->GetNumberOfValues() != static_cast<vtkIdType>(vec.size()))
   {
-    cerr << "Sizes do not match (" << arr->GetNumberOfValues() << " != " << vec.size() << ")"
-         << endl;
+    cerr << "Sizes do not match ("
+         << arr->GetNumberOfValues() << " != " << vec.size() << ")" << endl;
     exit(1);
   }
 
@@ -354,8 +361,8 @@ int TestVariantArray(int, char*[])
   }
 
   cerr << "Check using an iterator." << endl;
-  vtkArrayIteratorTemplate<vtkVariant>* iter =
-    static_cast<vtkArrayIteratorTemplate<vtkVariant>*>(arr->NewIterator());
+  vtkArrayIteratorTemplate<vtkVariant>* iter
+    = static_cast<vtkArrayIteratorTemplate<vtkVariant>*>(arr->NewIterator());
   for (vtkIdType i = 0; i < iter->GetNumberOfValues(); i++)
   {
     double arrVal = iter->GetValue(i).ToDouble();
@@ -402,3 +409,4 @@ int TestVariantArray(int, char*[])
 
   return 0;
 }
+

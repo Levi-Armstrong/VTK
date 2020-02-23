@@ -130,10 +130,7 @@ public class vtkInteractorForwarder implements MouseListener, MouseMotionListene
     }
 
     // Update scale factor if needed
-    this.scaleFactor = 1;
-    if (e.getComponent().getGraphicsConfiguration() != null) {
-      this.scaleFactor = vtkInteractorForwarder.getGraphicDeviceScale(e.getComponent().getGraphicsConfiguration().getDevice());
-    }
+    this.scaleFactor = vtkInteractorForwarder.getGraphicDeviceScale(e.getComponent().getGraphicsConfiguration().getDevice());
 
     try {
       component.getVTKLock().lockInterruptibly();
@@ -382,7 +379,7 @@ public class vtkInteractorForwarder implements MouseListener, MouseMotionListene
           System.out.println("Invalid scale type: " + scale);
       }
     } catch (Exception e) {
-      // Don't care, at least we tried.
+      e.printStackTrace();
     }
     return 1;
   }

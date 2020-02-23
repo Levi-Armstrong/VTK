@@ -30,7 +30,7 @@
  * @sa
  * vtkInteractorStyleTrackballActor vtkInteractorStyleJoystickCamera
  * vtkInteractorStyleJoystickActor
- */
+*/
 
 #ifndef vtkInteractorStyleTrackballCamera_h
 #define vtkInteractorStyleTrackballCamera_h
@@ -41,54 +41,54 @@
 class VTKINTERACTIONSTYLE_EXPORT vtkInteractorStyleTrackballCamera : public vtkInteractorStyle
 {
 public:
-  static vtkInteractorStyleTrackballCamera* New();
-  vtkTypeMacro(vtkInteractorStyleTrackballCamera, vtkInteractorStyle);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkInteractorStyleTrackballCamera *New();
+  vtkTypeMacro(vtkInteractorStyleTrackballCamera,vtkInteractorStyle);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
    * Event bindings controlling the effects of pressing mouse buttons
    * or moving the mouse.
    */
-  void OnMouseMove() override;
-  void OnLeftButtonDown() override;
-  void OnLeftButtonUp() override;
-  void OnMiddleButtonDown() override;
-  void OnMiddleButtonUp() override;
-  void OnRightButtonDown() override;
-  void OnRightButtonUp() override;
-  void OnMouseWheelForward() override;
-  void OnMouseWheelBackward() override;
+  virtual void OnMouseMove();
+  virtual void OnLeftButtonDown();
+  virtual void OnLeftButtonUp();
+  virtual void OnMiddleButtonDown();
+  virtual void OnMiddleButtonUp();
+  virtual void OnRightButtonDown();
+  virtual void OnRightButtonUp();
+  virtual void OnMouseWheelForward();
+  virtual void OnMouseWheelBackward();
   //@}
 
   // These methods for the different interactions in different modes
   // are overridden in subclasses to perform the correct motion. Since
   // they are called by OnTimer, they do not have mouse coord parameters
   // (use interactor's GetEventPosition and GetLastEventPosition)
-  void Rotate() override;
-  void Spin() override;
-  void Pan() override;
-  void Dolly() override;
+  virtual void Rotate();
+  virtual void Spin();
+  virtual void Pan();
+  virtual void Dolly();
 
   //@{
   /**
    * Set the apparent sensitivity of the interactor style to mouse motion.
    */
-  vtkSetMacro(MotionFactor, double);
-  vtkGetMacro(MotionFactor, double);
+  vtkSetMacro(MotionFactor,double);
+  vtkGetMacro(MotionFactor,double);
   //@}
 
 protected:
   vtkInteractorStyleTrackballCamera();
-  ~vtkInteractorStyleTrackballCamera() override;
+  ~vtkInteractorStyleTrackballCamera();
 
   double MotionFactor;
 
   virtual void Dolly(double factor);
 
 private:
-  vtkInteractorStyleTrackballCamera(const vtkInteractorStyleTrackballCamera&) = delete;
-  void operator=(const vtkInteractorStyleTrackballCamera&) = delete;
+  vtkInteractorStyleTrackballCamera(const vtkInteractorStyleTrackballCamera&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkInteractorStyleTrackballCamera&) VTK_DELETE_FUNCTION;
 };
 
 #endif

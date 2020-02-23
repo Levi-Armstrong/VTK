@@ -1,11 +1,11 @@
-set(classes
-  vtkImageCanvasSource2D
-  vtkImageEllipsoidSource
-  vtkImageGaussianSource
-  vtkImageGridSource
-  vtkImageMandelbrotSource
-  vtkImageNoiseSource
-  vtkImageSinusoidSource)
+set(Module_SRCS
+  vtkImageCanvasSource2D.cxx
+  vtkImageEllipsoidSource.cxx
+  vtkImageGaussianSource.cxx
+  vtkImageGridSource.cxx
+  vtkImageMandelbrotSource.cxx
+  vtkImageNoiseSource.cxx
+  vtkImageSinusoidSource.cxx
+  )
 
-vtk_module_add_module(VTK::ImagingSources
-  CLASSES ${classes})
+vtk_module_library(${vtk-module} ${Module_SRCS})

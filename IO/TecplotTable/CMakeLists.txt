@@ -1,5 +1,5 @@
-set(classes
-  vtkTecplotTableReader)
+set(Module_SRCS
+  vtkTecplotTableReader.cxx
+  )
 
-vtk_module_add_module(VTK::IOTecplotTable
-  CLASSES ${classes})
+vtk_module_library(vtkIOTecplotTable ${Module_SRCS})

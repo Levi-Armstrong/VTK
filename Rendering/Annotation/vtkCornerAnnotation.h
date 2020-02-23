@@ -31,13 +31,13 @@
  *
  * @sa
  * vtkActor2D vtkTextMapper
- */
+*/
 
 #ifndef vtkCornerAnnotation_h
 #define vtkCornerAnnotation_h
 
-#include "vtkActor2D.h"
 #include "vtkRenderingAnnotationModule.h" // For export macro
+#include "vtkActor2D.h"
 
 class vtkTextMapper;
 class vtkImageMapToWindowLevelColors;
@@ -47,28 +47,28 @@ class vtkTextProperty;
 class VTKRENDERINGANNOTATION_EXPORT vtkCornerAnnotation : public vtkActor2D
 {
 public:
-  vtkTypeMacro(vtkCornerAnnotation, vtkActor2D);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkCornerAnnotation,vtkActor2D);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Instantiate object with a rectangle in normaled view coordinates
    * of (0.2,0.85, 0.8, 0.95).
    */
-  static vtkCornerAnnotation* New();
+  static vtkCornerAnnotation *New();
 
   //@{
   /**
    * Draw the scalar bar and annotation text to the screen.
    */
-  int RenderOpaqueGeometry(vtkViewport* viewport) override;
-  int RenderTranslucentPolygonalGeometry(vtkViewport*) override { return 0; }
-  int RenderOverlay(vtkViewport* viewport) override;
+  int RenderOpaqueGeometry(vtkViewport* viewport);
+  virtual int RenderTranslucentPolygonalGeometry(vtkViewport* ) {return 0;};
+  int RenderOverlay(vtkViewport* viewport);
   //@}
 
   /**
    * Does this prop have some translucent polygonal geometry?
    */
-  vtkTypeBool HasTranslucentPolygonalGeometry() override;
+  virtual int HasTranslucentPolygonalGeometry();
 
   //@{
   /**
@@ -76,8 +76,8 @@ public:
    * percentage of the vertical area allocated to this
    * scaled text actor. Defaults to 1.0
    */
-  vtkSetMacro(MaximumLineHeight, double);
-  vtkGetMacro(MaximumLineHeight, double);
+  vtkSetMacro(MaximumLineHeight,double);
+  vtkGetMacro(MaximumLineHeight,double);
   //@}
 
   //@{
@@ -85,10 +85,10 @@ public:
    * Set/Get the minimum/maximum size font that will be shown.
    * If the font drops below the minimum size it will not be rendered.
    */
-  vtkSetMacro(MinimumFontSize, int);
-  vtkGetMacro(MinimumFontSize, int);
-  vtkSetMacro(MaximumFontSize, int);
-  vtkGetMacro(MaximumFontSize, int);
+  vtkSetMacro(MinimumFontSize,int);
+  vtkGetMacro(MinimumFontSize,int);
+  vtkSetMacro(MaximumFontSize,int);
+  vtkGetMacro(MaximumFontSize,int);
   //@}
 
   //@{
@@ -101,10 +101,10 @@ public:
    * without being too big.
    * f' = linearScale * pow(f,nonlinearScale)
    */
-  vtkSetMacro(LinearFontScaleFactor, double);
-  vtkGetMacro(LinearFontScaleFactor, double);
-  vtkSetMacro(NonlinearFontScaleFactor, double);
-  vtkGetMacro(NonlinearFontScaleFactor, double);
+  vtkSetMacro( LinearFontScaleFactor, double );
+  vtkGetMacro( LinearFontScaleFactor, double );
+  vtkSetMacro( NonlinearFontScaleFactor, double );
+  vtkGetMacro( NonlinearFontScaleFactor, double );
   //@}
 
   /**
@@ -112,7 +112,7 @@ public:
    * The parameter window could be used to determine which graphic
    * resources to release.
    */
-  void ReleaseGraphicsResources(vtkWindow*) override;
+  virtual void ReleaseGraphicsResources(vtkWindow *);
 
   //@{
   /**
@@ -138,10 +138,10 @@ public:
    * Set/Get the text to be displayed for each corner
    * \sa TextPosition
    */
-  void SetText(int i, const char* text);
+  void SetText(int i, const char *text);
   const char* GetText(int i);
   void ClearAllTexts();
-  void CopyAllTextsFrom(vtkCornerAnnotation* ca);
+  void CopyAllTextsFrom(vtkCornerAnnotation *ca);
   //@}
 
   //@{
@@ -149,7 +149,7 @@ public:
    * Set an image actor to look at for slice information
    */
   void SetImageActor(vtkImageActor*);
-  vtkGetObjectMacro(ImageActor, vtkImageActor);
+  vtkGetObjectMacro(ImageActor,vtkImageActor);
   //@}
 
   //@{
@@ -158,7 +158,7 @@ public:
    * looking at window level changes
    */
   void SetWindowLevel(vtkImageMapToWindowLevelColors*);
-  vtkGetObjectMacro(WindowLevel, vtkImageMapToWindowLevelColors);
+  vtkGetObjectMacro(WindowLevel,vtkImageMapToWindowLevelColors);
   //@}
 
   //@{
@@ -181,40 +181,40 @@ public:
   /**
    * Set/Get the text property of all corners.
    */
-  virtual void SetTextProperty(vtkTextProperty* p);
-  vtkGetObjectMacro(TextProperty, vtkTextProperty);
+  virtual void SetTextProperty(vtkTextProperty *p);
+  vtkGetObjectMacro(TextProperty,vtkTextProperty);
   //@}
 
   //@{
   /**
    * Even if there is an image actor, should `slice' and `image' be displayed?
    */
-  vtkBooleanMacro(ShowSliceAndImage, vtkTypeBool);
-  vtkSetMacro(ShowSliceAndImage, vtkTypeBool);
-  vtkGetMacro(ShowSliceAndImage, vtkTypeBool);
+  vtkBooleanMacro(ShowSliceAndImage, int);
+  vtkSetMacro(ShowSliceAndImage, int);
+  vtkGetMacro(ShowSliceAndImage, int);
   //@}
 
 protected:
   vtkCornerAnnotation();
-  ~vtkCornerAnnotation() override;
+  ~vtkCornerAnnotation();
 
   double MaximumLineHeight;
 
-  vtkTextProperty* TextProperty;
+  vtkTextProperty *TextProperty;
 
-  vtkImageMapToWindowLevelColors* WindowLevel;
+  vtkImageMapToWindowLevelColors *WindowLevel;
   double LevelShift;
   double LevelScale;
-  vtkImageActor* ImageActor;
-  vtkImageActor* LastImageActor;
+  vtkImageActor *ImageActor;
+  vtkImageActor *LastImageActor;
 
-  char* CornerText[NumTextPositions];
+  char *CornerText[NumTextPositions];
 
   int FontSize;
-  vtkActor2D* TextActor[NumTextPositions];
-  vtkTimeStamp BuildTime;
-  int LastSize[2];
-  vtkTextMapper* TextMapper[NumTextPositions];
+  vtkActor2D    *TextActor[NumTextPositions];
+  vtkTimeStamp   BuildTime;
+  int            LastSize[2];
+  vtkTextMapper *TextMapper[NumTextPositions];
 
   int MinimumFontSize;
   int MaximumFontSize;
@@ -222,12 +222,13 @@ protected:
   double LinearFontScaleFactor;
   double NonlinearFontScaleFactor;
 
-  vtkTypeBool ShowSliceAndImage;
+  int ShowSliceAndImage;
 
   /**
-   * Search for replaceable tokens and replace
+   * Search for replacable tokens and replace
    */
-  virtual void TextReplace(vtkImageActor* ia, vtkImageMapToWindowLevelColors* wl);
+  virtual void TextReplace(
+    vtkImageActor *ia, vtkImageMapToWindowLevelColors *wl);
 
   //@{
   /**
@@ -238,8 +239,12 @@ protected:
   //@}
 
 private:
-  vtkCornerAnnotation(const vtkCornerAnnotation&) = delete;
-  void operator=(const vtkCornerAnnotation&) = delete;
+  vtkCornerAnnotation(const vtkCornerAnnotation&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkCornerAnnotation&) VTK_DELETE_FUNCTION;
 };
 
+
 #endif
+
+
+

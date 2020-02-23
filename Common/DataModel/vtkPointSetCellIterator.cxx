@@ -15,36 +15,37 @@
 
 #include "vtkPointSetCellIterator.h"
 
-#include "vtkIdList.h"
-#include "vtkObjectFactory.h"
 #include "vtkPointSet.h"
+#include "vtkObjectFactory.h"
 #include "vtkPoints.h"
+#include "vtkIdList.h"
 
-vtkStandardNewMacro(vtkPointSetCellIterator);
+vtkStandardNewMacro(vtkPointSetCellIterator)
 
 //------------------------------------------------------------------------------
-void vtkPointSetCellIterator::PrintSelf(ostream& os, vtkIndent indent)
+void vtkPointSetCellIterator::PrintSelf(ostream &os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
-  os << indent << "PointSet: " << this->PointSet << endl;
+  os << indent << "PointSet: " << this->PointSet.GetPointer() << endl;
 }
 
 //------------------------------------------------------------------------------
-void vtkPointSetCellIterator::SetPointSet(vtkPointSet* ds)
+void vtkPointSetCellIterator::SetPointSet(vtkPointSet *ds)
 {
   this->PointSet = ds;
-  this->PointSetPoints = ds ? ds->GetPoints() : nullptr;
+  this->PointSetPoints = ds ? ds->GetPoints() : NULL;
   this->CellId = 0;
-  if (this->PointSetPoints)
+  if(ds)
   {
-    this->Points->SetDataType(this->PointSetPoints->GetDataType());
+    this->Points->SetDataType(ds->GetPoints()->GetDataType());
   }
 }
 
 //------------------------------------------------------------------------------
 bool vtkPointSetCellIterator::IsDoneWithTraversal()
 {
-  return this->PointSet == nullptr || this->CellId >= this->PointSet->GetNumberOfCells();
+  return this->PointSet.GetPointer() == NULL
+      || this->CellId >= this->PointSet->GetNumberOfCells();
 }
 
 //------------------------------------------------------------------------------
@@ -61,15 +62,17 @@ void vtkPointSetCellIterator::IncrementToNextCell()
 
 //------------------------------------------------------------------------------
 vtkPointSetCellIterator::vtkPointSetCellIterator()
-  : vtkCellIterator()
-  , PointSet(nullptr)
-  , PointSetPoints(nullptr)
-  , CellId(0)
+  : vtkCellIterator(),
+    PointSet(NULL),
+    PointSetPoints(NULL),
+    CellId(0)
 {
 }
 
 //------------------------------------------------------------------------------
-vtkPointSetCellIterator::~vtkPointSetCellIterator() = default;
+vtkPointSetCellIterator::~vtkPointSetCellIterator()
+{
+}
 
 //------------------------------------------------------------------------------
 void vtkPointSetCellIterator::ResetToFirstCell()
@@ -92,6 +95,6 @@ void vtkPointSetCellIterator::FetchPointIds()
 //------------------------------------------------------------------------------
 void vtkPointSetCellIterator::FetchPoints()
 {
-  vtkIdList* pointIds = this->GetPointIds();
+  vtkIdList *pointIds = this->GetPointIds();
   this->PointSetPoints->GetPoints(pointIds, this->Points);
 }

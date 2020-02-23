@@ -31,11 +31,10 @@
  * 2) Whenever you add, subtract, or set points you must call Modified()
  * on the vtkPoints object, or the transformation might not update.
  * 3) Collinear point configurations (except those that lie in the XY plane)
- * result in an unstable transformation. Forward transform can be computed
- * for any configuration by disabling bulk transform regularization.
+ * result in an unstable transformation.
  * @sa
  * vtkGridTransform vtkGeneralTransform
- */
+*/
 
 #ifndef vtkThinPlateSplineTransform_h
 #define vtkThinPlateSplineTransform_h
@@ -44,22 +43,22 @@
 #include "vtkWarpTransform.h"
 
 #define VTK_RBF_CUSTOM 0
-#define VTK_RBF_R 1
+#define VTK_RBF_R      1
 #define VTK_RBF_R2LOGR 2
 
 class VTKCOMMONTRANSFORMS_EXPORT vtkThinPlateSplineTransform : public vtkWarpTransform
 {
 public:
-  vtkTypeMacro(vtkThinPlateSplineTransform, vtkWarpTransform);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
-  static vtkThinPlateSplineTransform* New();
+  vtkTypeMacro(vtkThinPlateSplineTransform,vtkWarpTransform);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  static vtkThinPlateSplineTransform *New();
 
   //@{
   /**
    * Specify the 'stiffness' of the spline. The default is 1.0.
    */
-  vtkGetMacro(Sigma, double);
-  vtkSetMacro(Sigma, double);
+  vtkGetMacro(Sigma,double);
+  vtkSetMacro(Sigma,double);
   //@}
 
   //@{
@@ -71,10 +70,10 @@ public:
    * thin-plate spline.
    */
   void SetBasis(int basis);
-  vtkGetMacro(Basis, int);
-  void SetBasisToR() { this->SetBasis(VTK_RBF_R); }
-  void SetBasisToR2LogR() { this->SetBasis(VTK_RBF_R2LOGR); }
-  const char* GetBasisAsString();
+  vtkGetMacro(Basis,int);
+  void SetBasisToR() { this->SetBasis(VTK_RBF_R); };
+  void SetBasisToR2LogR() { this->SetBasis(VTK_RBF_R2LOGR); };
+  const char *GetBasisAsString();
   //@}
 
   //@{
@@ -82,21 +81,14 @@ public:
    * Set the radial basis function to a custom function.  You must
    * supply both the function and its derivative with respect to r.
    */
-  void SetBasisFunction(double (*U)(double r))
-  {
-    if (this->BasisFunction == U)
-    {
-      return;
-    }
+  void SetBasisFunction(double (*U)(double r)) {
+    if (this->BasisFunction == U) { return; }
     this->SetBasis(VTK_RBF_CUSTOM);
     this->BasisFunction = U;
-    this->Modified();
-  }
-  void SetBasisDerivative(double (*dUdr)(double r, double& dU))
-  {
+    this->Modified(); };
+  void SetBasisDerivative(double (*dUdr)(double r, double &dU)) {
     this->BasisDerivative = dUdr;
-    this->Modified();
-  }
+    this->Modified(); };
   //@}
 
   //@{
@@ -105,8 +97,8 @@ public:
    * vtkPoints object, you must call Modified() on it or the transformation
    * might not update.
    */
-  void SetSourceLandmarks(vtkPoints* source);
-  vtkGetObjectMacro(SourceLandmarks, vtkPoints);
+  void SetSourceLandmarks(vtkPoints *source);
+  vtkGetObjectMacro(SourceLandmarks,vtkPoints);
   //@}
 
   //@{
@@ -115,66 +107,45 @@ public:
    * vtkPoints object, you must call Modified() on it or the transformation
    * might not update.
    */
-  void SetTargetLandmarks(vtkPoints* target);
-  vtkGetObjectMacro(TargetLandmarks, vtkPoints);
+  void SetTargetLandmarks(vtkPoints *target);
+  vtkGetObjectMacro(TargetLandmarks,vtkPoints);
   //@}
 
   /**
    * Get the MTime.
    */
-  vtkMTimeType GetMTime() override;
+  vtkMTimeType GetMTime() VTK_OVERRIDE;
 
   /**
    * Make another transform of the same type.
    */
-  vtkAbstractTransform* MakeTransform() override;
-
-  //@{
-  /**
-   * Get/set whether the bulk linear transformation matrix is regularized.
-   *
-   * If regularization is enabled: If all landmark points are on the
-   * XY plane then forward and inverse transforms are computed correctly.
-   * For other coplanar configurations, both forward an inverse transform
-   * computation is unstable.
-   *
-   * If regularization is disabled: Forward transform is computed correctly
-   * for all point configurations. Inverse transform computation is unstable
-   * if source and/or target points are coplanar.
-   *
-   * If landmarks points are not coplanar then this setting has no effect.
-   *
-   * The default is true.
-   */
-  vtkGetMacro(RegularizeBulkTransform, bool);
-  vtkSetMacro(RegularizeBulkTransform, bool);
-  vtkBooleanMacro(RegularizeBulkTransform, bool);
-  //@}
+  vtkAbstractTransform *MakeTransform() VTK_OVERRIDE;
 
 protected:
   vtkThinPlateSplineTransform();
-  ~vtkThinPlateSplineTransform() override;
+  ~vtkThinPlateSplineTransform() VTK_OVERRIDE;
 
   /**
    * Prepare the transformation for application.
    */
-  void InternalUpdate() override;
+  void InternalUpdate() VTK_OVERRIDE;
 
   /**
    * This method does no type checking, use DeepCopy instead.
    */
-  void InternalDeepCopy(vtkAbstractTransform* transform) override;
+  void InternalDeepCopy(vtkAbstractTransform *transform) VTK_OVERRIDE;
 
-  void ForwardTransformPoint(const float in[3], float out[3]) override;
-  void ForwardTransformPoint(const double in[3], double out[3]) override;
+  void ForwardTransformPoint(const float in[3], float out[3]) VTK_OVERRIDE;
+  void ForwardTransformPoint(const double in[3], double out[3]) VTK_OVERRIDE;
 
-  void ForwardTransformDerivative(const float in[3], float out[3], float derivative[3][3]) override;
-  void ForwardTransformDerivative(
-    const double in[3], double out[3], double derivative[3][3]) override;
+  void ForwardTransformDerivative(const float in[3], float out[3],
+                                  float derivative[3][3]) VTK_OVERRIDE;
+  void ForwardTransformDerivative(const double in[3], double out[3],
+                                  double derivative[3][3]) VTK_OVERRIDE;
 
   double Sigma;
-  vtkPoints* SourceLandmarks;
-  vtkPoints* TargetLandmarks;
+  vtkPoints *SourceLandmarks;
+  vtkPoints *TargetLandmarks;
 
   // the radial basis function to use
   double (*BasisFunction)(double r);
@@ -183,13 +154,15 @@ protected:
   int Basis;
 
   int NumberOfPoints;
-  double** MatrixW;
-
-  bool RegularizeBulkTransform;
-
+  double **MatrixW;
 private:
-  vtkThinPlateSplineTransform(const vtkThinPlateSplineTransform&) = delete;
-  void operator=(const vtkThinPlateSplineTransform&) = delete;
+  vtkThinPlateSplineTransform(const vtkThinPlateSplineTransform&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkThinPlateSplineTransform&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+
+
+
+

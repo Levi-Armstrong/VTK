@@ -20,18 +20,18 @@
  * a mask image.  It removes any island that has less than AreaThreshold
  * pixels.  Output has the same ScalarType as input.  It generates
  * the whole 2D output image for any output request.
- */
+*/
 
 #ifndef vtkImageIslandRemoval2D_h
 #define vtkImageIslandRemoval2D_h
 
-#include "vtkImageAlgorithm.h"
-#include "vtkImagingMorphologicalModule.h" // For export macro
 
-typedef struct
-{
-  void* inPtr;
-  void* outPtr;
+#include "vtkImagingMorphologicalModule.h" // For export macro
+#include "vtkImageAlgorithm.h"
+
+typedef struct{
+  void *inPtr;
+  void *outPtr;
   int idx0;
   int idx1;
 } vtkImage2DIslandPixel;
@@ -43,9 +43,9 @@ public:
   /**
    * Constructor: Sets default filter to be identity.
    */
-  static vtkImageIslandRemoval2D* New();
-  vtkTypeMacro(vtkImageIslandRemoval2D, vtkImageAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkImageIslandRemoval2D *New();
+  vtkTypeMacro(vtkImageIslandRemoval2D,vtkImageAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   //@{
@@ -60,9 +60,9 @@ public:
   /**
    * Set/Get whether to use 4 or 8 neighbors
    */
-  vtkSetMacro(SquareNeighborhood, vtkTypeBool);
-  vtkGetMacro(SquareNeighborhood, vtkTypeBool);
-  vtkBooleanMacro(SquareNeighborhood, vtkTypeBool);
+  vtkSetMacro(SquareNeighborhood, int);
+  vtkGetMacro(SquareNeighborhood, int);
+  vtkBooleanMacro(SquareNeighborhood, int);
   //@}
 
   //@{
@@ -83,18 +83,23 @@ public:
 
 protected:
   vtkImageIslandRemoval2D();
-  ~vtkImageIslandRemoval2D() override {}
+  ~vtkImageIslandRemoval2D() {}
 
   int AreaThreshold;
-  vtkTypeBool SquareNeighborhood;
+  int SquareNeighborhood;
   double IslandValue;
   double ReplaceValue;
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int RequestData(vtkInformation *,
+                          vtkInformationVector **,
+                          vtkInformationVector *);
 
 private:
-  vtkImageIslandRemoval2D(const vtkImageIslandRemoval2D&) = delete;
-  void operator=(const vtkImageIslandRemoval2D&) = delete;
+  vtkImageIslandRemoval2D(const vtkImageIslandRemoval2D&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkImageIslandRemoval2D&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+
+

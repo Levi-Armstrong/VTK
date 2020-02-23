@@ -26,53 +26,53 @@
 #define QVTK_WIDGET_PLUGIN
 
 // Disable warnings that Qt headers give.
-#if defined(__GNUC__)
+#if defined(__GNUC__) && (__GNUC__>4) || (__GNUC__==4 && __GNUC_MINOR__>=6)
 #pragma GCC diagnostic push
+#endif
+#if defined(__GNUC__)
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #endif
 
-#include <QDesignerCustomWidgetCollectionInterface>
 #include <QDesignerCustomWidgetInterface>
+#include <QDesignerCustomWidgetCollectionInterface>
 #include <QObject>
-#include <QWidget>
 #include <QtPlugin>
+#include <QWidget>
+
 
 // implement Designer Custom Widget interface
 class QVTKWidgetPlugin : public QDesignerCustomWidgetInterface
 {
-public:
-  QVTKWidgetPlugin();
-  ~QVTKWidgetPlugin() override;
+  public:
+    QVTKWidgetPlugin();
+    ~QVTKWidgetPlugin();
 
-  QString name() const override;
-  QString domXml() const override;
-  QWidget* createWidget(QWidget* parent = 0) override;
-  QString group() const override;
-  QIcon icon() const override;
-  QString includeFile() const override;
-  QString toolTip() const override;
-  QString whatsThis() const override;
-  bool isContainer() const override;
+    QString name() const;
+    QString domXml() const;
+    QWidget* createWidget(QWidget* parent = 0);
+    QString group() const;
+    QIcon icon() const;
+    QString includeFile() const;
+    QString toolTip() const;
+    QString whatsThis() const;
+    bool isContainer() const;
 };
 
 // implement designer widget collection interface
-class QVTKPlugin
-  : public QObject
-  , public QDesignerCustomWidgetCollectionInterface
+class QVTKPlugin : public QObject, public QDesignerCustomWidgetCollectionInterface
 {
   Q_OBJECT
-#if QT_VERSION >= 0x050000
+  #if QT_VERSION >= 0x050000
   Q_PLUGIN_METADATA(IID "org.vtk.qvtkplugin")
-#endif
+  #endif
   Q_INTERFACES(QDesignerCustomWidgetCollectionInterface)
-public:
+  public:
   QVTKPlugin();
-  ~QVTKPlugin() override;
+  virtual ~QVTKPlugin();
 
-  QList<QDesignerCustomWidgetInterface*> customWidgets() const override;
-
-private:
-  QVTKWidgetPlugin* mQVTKWidgetPlugin;
+  virtual QList<QDesignerCustomWidgetInterface*> customWidgets() const;
+  private:
+    QVTKWidgetPlugin* mQVTKWidgetPlugin;
 };
 
 // fake QVTKWidget class to satisfy the designer
@@ -80,15 +80,12 @@ class QVTKWidget : public QWidget
 {
   Q_OBJECT
 public:
-  QVTKWidget(QWidget* p)
-    : QWidget(p)
-  {
-  }
+  QVTKWidget(QWidget* p) : QWidget(p) {}
 };
 
 // Undo disabling of warning.
-#if defined(__GNUC__)
+#if defined(__GNUC__) && (__GNUC__>4) || (__GNUC__==4 && __GNUC_MINOR__>=6)
 #pragma GCC diagnostic pop
 #endif
 
-#endif // QVTK_WIDGET_PLUGIN
+#endif //QVTK_WIDGET_PLUGIN

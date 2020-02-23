@@ -21,12 +21,11 @@
 
 #include "vtkObjectFactory.h"
 #include "vtkSQLiteDatabase.h"
-#include "vtkSQLiteDatabaseInternals.h"
 #include "vtkStringArray.h"
 #include "vtkVariant.h"
 #include "vtkVariantArray.h"
 
-#include "vtk_sqlite.h"
+#include <vtksqlite/vtk_sqlite3.h>
 
 #include <cassert>
 
@@ -37,74 +36,67 @@
 #define COMMIT_TRANSACTION "COMMIT"
 #define ROLLBACK_TRANSACTION "ROLLBACK"
 
-class vtkSQLiteQuery::Priv
-{
-public:
-  sqlite3_stmt* Statement;
-};
-
 vtkStandardNewMacro(vtkSQLiteQuery);
 
 // ----------------------------------------------------------------------
 vtkSQLiteQuery::vtkSQLiteQuery()
 {
-  this->Private = new Priv;
-  this->Private->Statement = nullptr;
+  this->Statement = NULL;
   this->InitialFetch = true;
-  this->InitialFetchResult = SQLITE_DONE;
-  this->LastErrorText = nullptr;
+  this->InitialFetchResult=VTK_SQLITE_DONE;
+  this->LastErrorText = NULL;
   this->TransactionInProgress = false;
 }
 
 // ----------------------------------------------------------------------
 vtkSQLiteQuery::~vtkSQLiteQuery()
 {
-  this->SetLastErrorText(nullptr);
+  this->SetLastErrorText(NULL);
   if (this->TransactionInProgress)
   {
     this->RollbackTransaction();
   }
 
-  if (this->Private->Statement != nullptr)
+  if (this->Statement != NULL)
   {
-    if (this->Database != nullptr)
+    if (this->Database != NULL)
     {
-      sqlite3_finalize(this->Private->Statement);
-      this->Private->Statement = nullptr;
+      vtk_sqlite3_finalize(this->Statement);
+      this->Statement = NULL;
     }
   }
-  delete this->Private;
 }
 
 // ----------------------------------------------------------------------
-void vtkSQLiteQuery::PrintSelf(ostream& os, vtkIndent indent)
+void vtkSQLiteQuery::PrintSelf(ostream  &os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 
   os << indent << "Statement: ";
-  if (this->Private->Statement)
+  if (this->Statement)
   {
-    os << this->Private->Statement << "\n";
+    os << this->Statement << "\n";
   }
   else
   {
-    os << "(null)"
-       << "\n";
+    os << "(null)" << "\n";
   }
   os << indent << "InitialFetch: " << this->InitialFetch << "\n";
   os << indent << "InitialFetchResult: " << this->InitialFetchResult << "\n";
-  os << indent << "TransactionInProgress: " << this->TransactionInProgress << "\n";
-  os << indent << "LastErrorText: " << (this->LastErrorText ? this->LastErrorText : "(null)")
-     << endl;
+  os << indent << "TransactionInProgress: " << this->TransactionInProgress
+     << "\n";
+  os << indent << "LastErrorText: "
+    << (this->LastErrorText ? this->LastErrorText : "(null)") << endl;
 }
 
 // ----------------------------------------------------------------------
-bool vtkSQLiteQuery::SetQuery(const char* newQuery)
+bool vtkSQLiteQuery::SetQuery(const char *newQuery)
 {
-  vtkDebugMacro(<< this->GetClassName() << " (" << this << "): setting Query to "
-                << (newQuery ? newQuery : "(null)"));
+  vtkDebugMacro(<< this->GetClassName()
+                << " (" << this << "): setting Query to "
+                << (newQuery?newQuery:"(null)") );
 
-  if (this->Query == nullptr && newQuery == nullptr)
+  if (this->Query == NULL && newQuery == NULL)
   {
     return true;
   }
@@ -114,63 +106,64 @@ bool vtkSQLiteQuery::SetQuery(const char* newQuery)
     return true; // we've already got that query
   }
 
-  delete[] this->Query;
+  delete [] this->Query;
 
   if (newQuery)
   {
     // Keep a local copy of the query - this is from vtkSetGet.h
     size_t n = strlen(newQuery) + 1;
-    char* cp1 = new char[n];
-    const char* cp2 = (newQuery);
+    char *cp1 =  new char[n];
+    const char *cp2 = (newQuery);
     this->Query = cp1;
-    do
-    {
-      *cp1++ = *cp2++;
-    } while (--n);
+    do { *cp1++ = *cp2++; } while ( --n );
   }
-  else
-  {
-    this->Query = nullptr;
-  }
+   else
+   {
+    this->Query = NULL;
+   }
 
   // If we get to this point the query has changed.  We need to
   // finalize the already-prepared statement if one exists and then
   // prepare a new statement.
-  if (this->Private->Statement)
+  if (this->Statement)
   {
-    vtkDebugMacro(<< "Finalizing old statement");
-    int finalizeStatus = sqlite3_finalize(this->Private->Statement);
-    if (finalizeStatus != SQLITE_OK)
+    vtkDebugMacro(<<"Finalizing old statement");
+    int finalizeStatus = vtk_sqlite3_finalize(this->Statement);
+    if (finalizeStatus != VTK_SQLITE_OK)
     {
-      vtkWarningMacro(<< "SetQuery(): Finalize returned unexpected code " << finalizeStatus);
+      vtkWarningMacro(<<"SetQuery(): Finalize returned unexpected code "
+                      << finalizeStatus);
     }
-    this->Private->Statement = nullptr;
+    this->Statement = NULL;
   }
 
   if (this->Query)
   {
-    vtkSQLiteDatabase* dbContainer = vtkSQLiteDatabase::SafeDownCast(this->Database);
+    vtkSQLiteDatabase *dbContainer =
+      vtkSQLiteDatabase::SafeDownCast(this->Database);
 
-    if (dbContainer == nullptr)
+    if (dbContainer == NULL)
     {
-      vtkErrorMacro(<< "This should never happen: SetQuery() called when there is no underlying "
-                       "database.  You probably instantiated vtkSQLiteQuery directly instead of "
-                       "calling vtkSQLDatabase::GetInstance().  This also happens during "
-                       "TestSetGet in the CDash testing.");
+      vtkErrorMacro(<<"This should never happen: SetQuery() called when there is no underlying database.  You probably instantiated vtkSQLiteQuery directly instead of calling vtkSQLDatabase::GetInstance().  This also happens during TestSetGet in the CDash testing.");
       return false;
     }
 
-    sqlite3* db = dbContainer->Internal->SQLiteInstance;
-    const char* unused_statement;
+    vtk_sqlite3 *db = dbContainer->SQLiteInstance;
+    const char *unused_statement;
 
-    int prepareStatus = sqlite3_prepare_v2(db, this->Query, static_cast<int>(strlen(this->Query)),
-      &this->Private->Statement, &unused_statement);
+    int prepareStatus = vtk_sqlite3_prepare_v2(db,
+                                               this->Query,
+                                               static_cast<int>(strlen(this->Query)),
+                                               &this->Statement,
+                                               &unused_statement);
 
-    if (prepareStatus != SQLITE_OK)
+    if (prepareStatus != VTK_SQLITE_OK)
     {
-      this->SetLastErrorText(sqlite3_errmsg(db));
-      vtkWarningMacro(<< "SetQuery(): sqlite3_prepare_v2() failed with error message "
-                      << this->GetLastErrorText() << " on statement: '" << this->Query << "'");
+      this->SetLastErrorText(vtk_sqlite3_errmsg(db));
+      vtkWarningMacro(<<"SetQuery(): vtk_sqlite3_prepare_v2() failed with error message "
+                    << this->GetLastErrorText()
+                    << " on statement: '"
+                    << this->Query << "'");
       this->Active = false;
       return false;
     }
@@ -184,51 +177,51 @@ bool vtkSQLiteQuery::SetQuery(const char* newQuery)
 bool vtkSQLiteQuery::Execute()
 {
 
-  if (this->Query == nullptr)
+  if (this->Query == NULL)
   {
-    vtkErrorMacro(<< "Cannot execute before a query has been set.");
+    vtkErrorMacro(<<"Cannot execute before a query has been set.");
     return false;
   }
 
-  if (this->Private->Statement == nullptr)
+  if (this->Statement == NULL)
   {
-    vtkErrorMacro(<< "Execute(): Query is not null but prepared statement is.  There may have been "
-                     "an error during SetQuery().");
+    vtkErrorMacro(<<"Execute(): Query is not null but prepared statement is.  There may have been an error during SetQuery().");
     this->Active = false;
     return false;
   }
   else
   {
-    sqlite3_reset(this->Private->Statement);
+    vtk_sqlite3_reset(this->Statement);
   }
 
-  vtkDebugMacro(<< "Execute(): Query ready to execute.");
+  vtkDebugMacro(<<"Execute(): Query ready to execute.");
 
   this->InitialFetch = true;
-  int result = sqlite3_step(this->Private->Statement);
+  int result = vtk_sqlite3_step(this->Statement);
   this->InitialFetchResult = result;
 
-  if (result == SQLITE_DONE)
+  if (result == VTK_SQLITE_DONE)
   {
-    this->SetLastErrorText(nullptr);
+    this->SetLastErrorText(NULL);
     this->Active = true;
     return true;
   }
-  else if (result != SQLITE_ROW)
+  else if (result != VTK_SQLITE_ROW)
   {
-    vtkSQLiteDatabase* dbContainer = vtkSQLiteDatabase::SafeDownCast(this->Database);
-    assert(dbContainer != nullptr);
+    vtkSQLiteDatabase *dbContainer =
+      vtkSQLiteDatabase::SafeDownCast(this->Database);
+    assert(dbContainer != NULL);
 
-    sqlite3* db = dbContainer->Internal->SQLiteInstance;
+    vtk_sqlite3 *db = dbContainer->SQLiteInstance;
 
-    this->SetLastErrorText(sqlite3_errmsg(db));
-    vtkDebugMacro(<< "Execute(): sqlite3_step() returned error message "
+    this->SetLastErrorText(vtk_sqlite3_errmsg(db));
+    vtkDebugMacro(<< "Execute(): vtk_sqlite3_step() returned error message "
                   << this->GetLastErrorText());
     this->Active = false;
     return false;
   }
 
-  this->SetLastErrorText(nullptr);
+  this->SetLastErrorText(NULL);
   this->Active = true;
   return true;
 }
@@ -236,68 +229,71 @@ bool vtkSQLiteQuery::Execute()
 // ----------------------------------------------------------------------
 int vtkSQLiteQuery::GetNumberOfFields()
 {
-  if (!this->Active)
+  if (! this->Active)
   {
-    vtkErrorMacro(<< "GetNumberOfFields(): Query is not active!");
+    vtkErrorMacro(<<"GetNumberOfFields(): Query is not active!");
     return 0;
   }
   else
   {
-    return sqlite3_column_count(this->Private->Statement);
+    return vtk_sqlite3_column_count(this->Statement);
   }
 }
 
 // ----------------------------------------------------------------------
-const char* vtkSQLiteQuery::GetFieldName(int column)
+const char * vtkSQLiteQuery::GetFieldName(int column)
 {
-  if (!this->Active)
+  if (! this->Active)
   {
-    vtkErrorMacro(<< "GetFieldName(): Query is not active!");
-    return nullptr;
+    vtkErrorMacro(<<"GetFieldName(): Query is not active!");
+    return NULL;
   }
   else if (column < 0 || column >= this->GetNumberOfFields())
   {
-    vtkErrorMacro(<< "GetFieldName(): Illegal field index " << column);
-    return nullptr;
+    vtkErrorMacro(<<"GetFieldName(): Illegal field index "
+                  << column);
+    return NULL;
   }
   else
   {
-    return sqlite3_column_name(this->Private->Statement, column);
+    return vtk_sqlite3_column_name(this->Statement, column);
   }
 }
 
 // ----------------------------------------------------------------------
 int vtkSQLiteQuery::GetFieldType(int column)
 {
-  if (!this->Active)
+  if (! this->Active)
   {
-    vtkErrorMacro(<< "GetFieldType(): Query is not active!");
+    vtkErrorMacro(<<"GetFieldType(): Query is not active!");
     return -1;
   }
   else if (column < 0 || column >= this->GetNumberOfFields())
   {
-    vtkErrorMacro(<< "GetFieldType(): Illegal field index " << column);
+    vtkErrorMacro(<<"GetFieldType(): Illegal field index "
+                  << column);
     return -1;
   }
   else
   {
-    switch (sqlite3_column_type(this->Private->Statement, column))
+    switch (vtk_sqlite3_column_type(this->Statement, column))
     {
-      case SQLITE_INTEGER:
+      case VTK_SQLITE_INTEGER:
         return VTK_INT;
-      case SQLITE_FLOAT:
+      case VTK_SQLITE_FLOAT:
         return VTK_FLOAT;
-      case SQLITE_TEXT:
+      case VTK_SQLITE_TEXT:
         return VTK_STRING;
-      case SQLITE_BLOB:
+      case VTK_SQLITE_BLOB:
         return VTK_STRING; // until we have a BLOB type of our own
-      case SQLITE_NULL:
+      case VTK_SQLITE_NULL:
         return VTK_VOID; // ??? what makes sense here?
       default:
       {
-        vtkErrorMacro(<< "GetFieldType(): Unknown data type "
-                      << sqlite3_column_type(this->Private->Statement, column) << " from SQLite.");
-        return VTK_VOID;
+      vtkErrorMacro(<<"GetFieldType(): Unknown data type "
+                    << vtk_sqlite3_column_type(this->Statement, column)
+                    <<" from SQLite.");
+      return VTK_VOID;
       }
     }
   }
@@ -306,17 +302,17 @@ int vtkSQLiteQuery::GetFieldType(int column)
 // ----------------------------------------------------------------------
 bool vtkSQLiteQuery::NextRow()
 {
-  if (!this->IsActive())
+  if (! this->IsActive())
   {
-    vtkErrorMacro(<< "NextRow(): Query is not active!");
+    vtkErrorMacro(<<"NextRow(): Query is not active!");
     return false;
   }
 
   if (this->InitialFetch)
   {
-    vtkDebugMacro(<< "NextRow(): Initial fetch being handled.");
+    vtkDebugMacro(<<"NextRow(): Initial fetch being handled.");
     this->InitialFetch = false;
-    if (this->InitialFetchResult == SQLITE_DONE)
+    if (this->InitialFetchResult == VTK_SQLITE_DONE)
     {
       return false;
     }
@@ -327,23 +323,24 @@ bool vtkSQLiteQuery::NextRow()
   }
   else
   {
-    int result = sqlite3_step(this->Private->Statement);
-    if (result == SQLITE_DONE)
+    int result = vtk_sqlite3_step(this->Statement);
+    if (result == VTK_SQLITE_DONE)
     {
       return false;
     }
-    else if (result == SQLITE_ROW)
+    else if (result == VTK_SQLITE_ROW)
     {
       return true;
     }
     else
     {
-      vtkSQLiteDatabase* dbContainer = vtkSQLiteDatabase::SafeDownCast(this->Database);
-      assert(dbContainer != nullptr);
-      sqlite3* db = dbContainer->Internal->SQLiteInstance;
-      this->SetLastErrorText(sqlite3_errmsg(db));
-      vtkErrorMacro(<< "NextRow(): Database returned error code " << result
-                    << " with the following message: " << this->GetLastErrorText());
+      vtkSQLiteDatabase *dbContainer = vtkSQLiteDatabase::SafeDownCast( this->Database );
+      assert(dbContainer != NULL);
+      vtk_sqlite3 *db = dbContainer->SQLiteInstance;
+      this->SetLastErrorText(vtk_sqlite3_errmsg(db));
+      vtkErrorMacro(<<"NextRow(): Database returned error code "
+                    << result << " with the following message: "
+                    << this->GetLastErrorText());
       this->Active = false;
       return false;
     }
@@ -355,43 +352,44 @@ vtkVariant vtkSQLiteQuery::DataValue(vtkIdType column)
 {
   if (this->IsActive() == false)
   {
-    vtkWarningMacro(<< "DataValue() called on inactive query");
+    vtkWarningMacro(<<"DataValue() called on inactive query");
     return vtkVariant();
   }
   else if (column < 0 || column >= this->GetNumberOfFields())
   {
-    vtkWarningMacro(<< "DataValue() called with out-of-range column index " << column);
+    vtkWarningMacro(<<"DataValue() called with out-of-range column index "
+                    << column);
     return vtkVariant();
   }
   else
   {
-    switch (sqlite3_column_type(this->Private->Statement, column))
+    switch (vtk_sqlite3_column_type(this->Statement, column))
     {
-      case SQLITE_INTEGER:
-        return vtkVariant(sqlite3_column_int(this->Private->Statement, column));
+      case VTK_SQLITE_INTEGER:
+        return vtkVariant(vtk_sqlite3_column_int(this->Statement, column));
 
-      case SQLITE_FLOAT:
-        return vtkVariant(sqlite3_column_double(this->Private->Statement, column));
+      case VTK_SQLITE_FLOAT:
+        return vtkVariant(vtk_sqlite3_column_double(this->Statement, column));
 
-      case SQLITE_TEXT:
+      case VTK_SQLITE_TEXT:
       {
-        std::ostringstream str;
-        str << sqlite3_column_text(this->Private->Statement, column);
-        return vtkVariant(vtkStdString(str.str()));
+      std::ostringstream str;
+      str << vtk_sqlite3_column_text(this->Statement, column);
+      return vtkVariant(vtkStdString(str.str()));
       }
 
-      case SQLITE_BLOB:
+      case VTK_SQLITE_BLOB:
       {
-        // This is a hack ... by passing the BLOB to vtkStdString with an explicit
-        // byte count, we ensure that the string will store all of the BLOB's bytes,
-        // even if there are nullptr values.
+      // This is a hack ... by passing the BLOB to vtkStdString with an explicit
+      // byte count, we ensure that the string will store all of the BLOB's bytes,
+      // even if there are NULL values.
 
-        return vtkVariant(vtkStdString(
-          static_cast<const char*>(sqlite3_column_blob(this->Private->Statement, column)),
-          sqlite3_column_bytes(this->Private->Statement, column)));
+      return vtkVariant(vtkStdString(
+        static_cast<const char*>(vtk_sqlite3_column_blob(this->Statement, column)),
+        vtk_sqlite3_column_bytes(this->Statement, column)));
       }
 
-      case SQLITE_NULL:
+      case VTK_SQLITE_NULL:
       default:
         return vtkVariant();
     }
@@ -399,7 +397,7 @@ vtkVariant vtkSQLiteQuery::DataValue(vtkIdType column)
 }
 
 // ----------------------------------------------------------------------
-const char* vtkSQLiteQuery::GetLastErrorText()
+const char * vtkSQLiteQuery::GetLastErrorText()
 {
   return this->LastErrorText;
 }
@@ -407,7 +405,7 @@ const char* vtkSQLiteQuery::GetLastErrorText()
 // ----------------------------------------------------------------------
 bool vtkSQLiteQuery::HasError()
 {
-  return (this->GetLastErrorText() != nullptr);
+  return (this->GetLastErrorText() != NULL);
 }
 
 // ----------------------------------------------------------------------
@@ -415,27 +413,27 @@ bool vtkSQLiteQuery::BeginTransaction()
 {
   if (this->TransactionInProgress)
   {
-    vtkErrorMacro(<< "Cannot start a transaction.  One is already in progress.");
+    vtkErrorMacro(<<"Cannot start a transaction.  One is already in progress.");
     return false;
   }
 
-  vtkSQLiteDatabase* dbContainer = vtkSQLiteDatabase::SafeDownCast(this->Database);
-  assert(dbContainer != nullptr);
+  vtkSQLiteDatabase *dbContainer = vtkSQLiteDatabase::SafeDownCast( this->Database );
+  assert(dbContainer != NULL);
 
-  sqlite3* db = dbContainer->Internal->SQLiteInstance;
-  char* errorMessage = nullptr;
-  int result = sqlite3_exec(db, BEGIN_TRANSACTION, nullptr, nullptr, &errorMessage);
+  vtk_sqlite3 *db = dbContainer->SQLiteInstance;
+  char *errorMessage = NULL;
+  int result = vtk_sqlite3_exec(db, BEGIN_TRANSACTION, NULL, NULL, &errorMessage);
 
-  if (result == SQLITE_OK)
+  if (result == VTK_SQLITE_OK)
   {
     this->TransactionInProgress = true;
-    this->SetLastErrorText(nullptr);
-    vtkDebugMacro(<< "BeginTransaction() succeeded.");
+    this->SetLastErrorText(NULL);
+    vtkDebugMacro(<<"BeginTransaction() succeeded.");
     return true;
   }
   else
   {
-    vtkErrorMacro(<< "BeginTransaction(): sqlite3_exec returned unexpected result code " << result);
+    vtkErrorMacro(<<"BeginTransaction(): sqlite3_exec returned unexpected result code " << result);
     if (errorMessage)
     {
       vtkErrorMacro(<< " and error message " << errorMessage);
@@ -448,43 +446,43 @@ bool vtkSQLiteQuery::BeginTransaction()
 // ----------------------------------------------------------------------
 bool vtkSQLiteQuery::CommitTransaction()
 {
-  if (this->Private->Statement)
+  if (this->Statement)
   {
-    sqlite3_finalize(this->Private->Statement);
-    this->Private->Statement = nullptr;
+    vtk_sqlite3_finalize(this->Statement);
+    this->Statement = NULL;
   }
 
   if (!this->TransactionInProgress)
   {
-    vtkErrorMacro(<< "Cannot commit.  There is no transaction in progress.");
+    vtkErrorMacro(<<"Cannot commit.  There is no transaction in progress.");
     return false;
   }
 
-  vtkSQLiteDatabase* dbContainer = vtkSQLiteDatabase::SafeDownCast(this->Database);
-  assert(dbContainer != nullptr);
-  sqlite3* db = dbContainer->Internal->SQLiteInstance;
-  char* errorMessage = nullptr;
-  int result = sqlite3_exec(db, COMMIT_TRANSACTION, nullptr, nullptr, &errorMessage);
+  vtkSQLiteDatabase *dbContainer = vtkSQLiteDatabase::SafeDownCast( this->Database );
+  assert(dbContainer != NULL);
+  vtk_sqlite3 *db = dbContainer->SQLiteInstance;
+  char *errorMessage = NULL;
+  int result = vtk_sqlite3_exec(db, COMMIT_TRANSACTION, NULL, NULL, &errorMessage);
 
-  if (result == SQLITE_OK)
+  if (result == VTK_SQLITE_OK)
   {
     this->TransactionInProgress = false;
-    this->SetLastErrorText(nullptr);
-    vtkDebugMacro(<< "CommitTransaction() succeeded.");
+    this->SetLastErrorText(NULL);
+    vtkDebugMacro(<<"CommitTransaction() succeeded.");
     return true;
   }
   else
   {
-    vtkErrorMacro(<< "CommitTransaction(): sqlite3_exec returned unexpected result code "
-                  << result);
+    vtkErrorMacro(<<"CommitTransaction(): sqlite3_exec returned unexpected result code " << result);
     if (errorMessage)
     {
       this->SetLastErrorText(errorMessage);
       vtkErrorMacro(<< " and error message " << errorMessage);
     }
-    assert(1 == 0);
+    assert(1==0);
     return false;
   }
+
 }
 
 // ----------------------------------------------------------------------
@@ -492,27 +490,26 @@ bool vtkSQLiteQuery::RollbackTransaction()
 {
   if (!this->TransactionInProgress)
   {
-    vtkErrorMacro(<< "Cannot rollback.  There is no transaction in progress.");
+    vtkErrorMacro(<<"Cannot rollback.  There is no transaction in progress.");
     return false;
   }
 
-  vtkSQLiteDatabase* dbContainer = vtkSQLiteDatabase::SafeDownCast(this->Database);
-  assert(dbContainer != nullptr);
-  sqlite3* db = dbContainer->Internal->SQLiteInstance;
-  char* errorMessage = nullptr;
-  int result = sqlite3_exec(db, ROLLBACK_TRANSACTION, nullptr, nullptr, &errorMessage);
+  vtkSQLiteDatabase *dbContainer = vtkSQLiteDatabase::SafeDownCast( this->Database );
+  assert(dbContainer != NULL);
+  vtk_sqlite3 *db = dbContainer->SQLiteInstance;
+  char *errorMessage = NULL;
+  int result = vtk_sqlite3_exec(db, ROLLBACK_TRANSACTION, NULL, NULL, &errorMessage);
 
-  if (result == SQLITE_OK)
+  if (result == VTK_SQLITE_OK)
   {
     this->TransactionInProgress = false;
-    this->SetLastErrorText(nullptr);
-    vtkDebugMacro(<< "RollbackTransaction() succeeded.");
+    this->SetLastErrorText(NULL);
+    vtkDebugMacro(<<"RollbackTransaction() succeeded.");
     return true;
   }
   else
   {
-    vtkErrorMacro(<< "RollbackTransaction(): sqlite3_exec returned unexpected result code "
-                  << result);
+    vtkErrorMacro(<<"RollbackTransaction(): sqlite3_exec returned unexpected result code " << result);
     if (errorMessage)
     {
       this->SetLastErrorText(errorMessage);
@@ -608,28 +605,28 @@ bool vtkSQLiteQuery::BindParameter(int index, double value)
 
 // ----------------------------------------------------------------------
 
-bool vtkSQLiteQuery::BindParameter(int index, const char* value)
+bool vtkSQLiteQuery::BindParameter(int index, const char *value)
 {
   return this->BindParameter(index, value, strlen(value));
 }
 
 // ----------------------------------------------------------------------
 
-bool vtkSQLiteQuery::BindParameter(int index, const char* data, size_t length)
+bool vtkSQLiteQuery::BindParameter(int index, const char *data, size_t length)
 {
   return this->BindStringParameter(index, data, static_cast<int>(length));
 }
 
 // ----------------------------------------------------------------------
 
-bool vtkSQLiteQuery::BindParameter(int index, const vtkStdString& value)
+bool vtkSQLiteQuery::BindParameter(int index, const vtkStdString &value)
 {
   return this->BindParameter(index, value.c_str());
 }
 
 // ----------------------------------------------------------------------
 
-bool vtkSQLiteQuery::BindParameter(int index, const void* data, size_t length)
+bool vtkSQLiteQuery::BindParameter(int index, const void *data, size_t length)
 {
   return this->BindBlobParameter(index, data, static_cast<int>(length));
 }
@@ -638,83 +635,84 @@ bool vtkSQLiteQuery::BindParameter(int index, const void* data, size_t length)
 
 bool vtkSQLiteQuery::BindIntegerParameter(int index, int value)
 {
-  if (!this->Private->Statement)
+  if (!this->Statement)
   {
-    vtkErrorMacro(<< "No statement available.  Did you forget to call SetQuery?");
+    vtkErrorMacro(<<"No statement available.  Did you forget to call SetQuery?");
     return false;
   }
 
   if (this->Active)
   {
     this->Active = false;
-    sqlite3_reset(this->Private->Statement);
+    vtk_sqlite3_reset(this->Statement);
   }
-  int status = sqlite3_bind_int(this->Private->Statement, index + 1, value);
+  int status = vtk_sqlite3_bind_int(this->Statement, index+1, value);
 
-  if (status != SQLITE_OK)
+  if (status != VTK_SQLITE_OK)
   {
     std::ostringstream errormessage;
     errormessage << "sqlite_bind_int returned error: " << status;
     this->SetLastErrorText(errormessage.str().c_str());
-    vtkErrorMacro(<< errormessage.str().c_str());
+    vtkErrorMacro(<<errormessage.str().c_str());
     return false;
   }
   return true;
 }
+
 
 // ----------------------------------------------------------------------
 
 bool vtkSQLiteQuery::BindInt64Parameter(int index, vtkTypeInt64 value)
 {
-  if (!this->Private->Statement)
+  if (!this->Statement)
   {
-    vtkErrorMacro(<< "No statement available.  Did you forget to call SetQuery?");
+    vtkErrorMacro(<<"No statement available.  Did you forget to call SetQuery?");
     return false;
   }
 
   if (this->Active)
   {
     this->Active = false;
-    sqlite3_reset(this->Private->Statement);
+    vtk_sqlite3_reset(this->Statement);
   }
-  int status =
-    sqlite3_bind_int(this->Private->Statement, index + 1, static_cast<sqlite_int64>(value));
+  int status = vtk_sqlite3_bind_int(this->Statement, index+1, static_cast<vtk_sqlite_int64>(value));
 
-  if (status != SQLITE_OK)
+  if (status != VTK_SQLITE_OK)
   {
     std::ostringstream errormessage;
     errormessage << "sqlite_bind_int64 returned error: " << status;
     this->SetLastErrorText(errormessage.str().c_str());
-    vtkErrorMacro(<< this->GetLastErrorText());
+    vtkErrorMacro(<<this->GetLastErrorText());
     return false;
   }
   return true;
 }
+
 
 // ----------------------------------------------------------------------
 
 bool vtkSQLiteQuery::BindDoubleParameter(int index, double value)
 {
-  if (!this->Private->Statement)
+  if (!this->Statement)
   {
-    vtkErrorMacro(<< "No statement available.  Did you forget to call SetQuery?");
+    vtkErrorMacro(<<"No statement available.  Did you forget to call SetQuery?");
     return false;
   }
 
   if (this->Active)
   {
     this->Active = false;
-    sqlite3_reset(this->Private->Statement);
+    vtk_sqlite3_reset(this->Statement);
   }
 
-  int status = sqlite3_bind_double(this->Private->Statement, index + 1, value);
+  int status = vtk_sqlite3_bind_double(this->Statement, index+1, value);
 
-  if (status != SQLITE_OK)
+  if (status != VTK_SQLITE_OK)
   {
     std::ostringstream errormessage;
     errormessage << "sqlite_bind_double returned error: " << status;
     this->SetLastErrorText(errormessage.str().c_str());
-    vtkErrorMacro(<< this->GetLastErrorText());
+    vtkErrorMacro(<<this->GetLastErrorText());
     return false;
   }
   return true;
@@ -722,29 +720,28 @@ bool vtkSQLiteQuery::BindDoubleParameter(int index, double value)
 
 // ----------------------------------------------------------------------
 
-bool vtkSQLiteQuery::BindStringParameter(int index, const char* value, int length)
+bool vtkSQLiteQuery::BindStringParameter(int index, const char *value, int length)
 {
-  if (!this->Private->Statement)
+  if (!this->Statement)
   {
-    vtkErrorMacro(<< "No statement available.  Did you forget to call SetQuery?");
+    vtkErrorMacro(<<"No statement available.  Did you forget to call SetQuery?");
     return false;
   }
 
   if (this->Active)
   {
     this->Active = false;
-    sqlite3_reset(this->Private->Statement);
+    vtk_sqlite3_reset(this->Statement);
   }
 
-  int status =
-    sqlite3_bind_text(this->Private->Statement, index + 1, value, length, SQLITE_TRANSIENT);
+  int status = vtk_sqlite3_bind_text(this->Statement, index+1, value, length, VTK_SQLITE_TRANSIENT);
 
-  if (status != SQLITE_OK)
+  if (status != VTK_SQLITE_OK)
   {
     std::ostringstream errormessage;
     errormessage << "sqlite_bind_text returned error: " << status;
     this->SetLastErrorText(errormessage.str().c_str());
-    vtkErrorMacro(<< this->GetLastErrorText());
+    vtkErrorMacro(<<this->GetLastErrorText());
     return false;
   }
   return true;
@@ -752,29 +749,33 @@ bool vtkSQLiteQuery::BindStringParameter(int index, const char* value, int lengt
 
 // ----------------------------------------------------------------------
 
-bool vtkSQLiteQuery::BindBlobParameter(int index, const void* data, int length)
+bool vtkSQLiteQuery::BindBlobParameter(int index, const void *data, int length)
 {
-  if (!this->Private->Statement)
+  if (!this->Statement)
   {
-    vtkErrorMacro(<< "No statement available.  Did you forget to call SetQuery?");
+    vtkErrorMacro(<<"No statement available.  Did you forget to call SetQuery?");
     return false;
   }
 
   if (this->Active)
   {
     this->Active = false;
-    sqlite3_reset(this->Private->Statement);
+    vtk_sqlite3_reset(this->Statement);
   }
 
   int status =
-    sqlite3_bind_blob(this->Private->Statement, index + 1, data, length, SQLITE_TRANSIENT);
+    vtk_sqlite3_bind_blob(this->Statement,
+                          index+1,
+                          data,
+                          length,
+                          VTK_SQLITE_TRANSIENT);
 
-  if (status != SQLITE_OK)
+  if (status != VTK_SQLITE_OK)
   {
     std::ostringstream errormessage;
     errormessage << "sqlite_bind_blob returned error: " << status;
     this->SetLastErrorText(errormessage.str().c_str());
-    vtkErrorMacro(<< this->GetLastErrorText());
+    vtkErrorMacro(<<this->GetLastErrorText());
     return false;
   }
   return true;
@@ -784,26 +785,26 @@ bool vtkSQLiteQuery::BindBlobParameter(int index, const void* data, int length)
 
 bool vtkSQLiteQuery::ClearParameterBindings()
 {
-  if (!this->Private->Statement)
+  if (!this->Statement)
   {
-    vtkErrorMacro(<< "No statement available.  Did you forget to call SetQuery?");
+    vtkErrorMacro(<<"No statement available.  Did you forget to call SetQuery?");
     return false;
   }
 
   if (this->Active)
   {
     this->Active = false;
-    sqlite3_reset(this->Private->Statement);
+    vtk_sqlite3_reset(this->Statement);
   }
 
-  int status = sqlite3_clear_bindings(this->Private->Statement);
+  int status = vtk_sqlite3_clear_bindings(this->Statement);
 
-  if (status != SQLITE_OK)
+  if (status != VTK_SQLITE_OK)
   {
     std::ostringstream errormessage;
     errormessage << "sqlite_clear_bindings returned error: " << status;
     this->SetLastErrorText(errormessage.str().c_str());
-    vtkErrorMacro(<< this->GetLastErrorText());
+    vtkErrorMacro(<<this->GetLastErrorText());
     return false;
   }
   return true;

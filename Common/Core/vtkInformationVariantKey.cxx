@@ -17,15 +17,18 @@
 #include "vtkInformation.h"
 #include "vtkVariant.h"
 
+
 //----------------------------------------------------------------------------
-vtkInformationVariantKey::vtkInformationVariantKey(const char* name, const char* location)
-  : vtkInformationKey(name, location)
+vtkInformationVariantKey::vtkInformationVariantKey(const char* name, const char* location):
+  vtkInformationKey(name, location)
 {
   vtkCommonInformationKeyManager::Register(this);
 }
 
 //----------------------------------------------------------------------------
-vtkInformationVariantKey::~vtkInformationVariantKey() = default;
+vtkInformationVariantKey::~vtkInformationVariantKey()
+{
+}
 
 //----------------------------------------------------------------------------
 void vtkInformationVariantKey::PrintSelf(ostream& os, vtkIndent indent)
@@ -34,7 +37,7 @@ void vtkInformationVariantKey::PrintSelf(ostream& os, vtkIndent indent)
 }
 
 //----------------------------------------------------------------------------
-class vtkInformationVariantValue : public vtkObjectBase
+class vtkInformationVariantValue: public vtkObjectBase
 {
 public:
   vtkBaseTypeMacro(vtkInformationVariantValue, vtkObjectBase);
@@ -47,8 +50,9 @@ vtkVariant vtkInformationVariantValue::Invalid;
 //----------------------------------------------------------------------------
 void vtkInformationVariantKey::Set(vtkInformation* info, const vtkVariant& value)
 {
-  if (vtkInformationVariantValue* oldv =
-        static_cast<vtkInformationVariantValue*>(this->GetAsObjectBase(info)))
+  if(vtkInformationVariantValue* oldv =
+     static_cast<vtkInformationVariantValue *>(
+       this->GetAsObjectBase(info)))
   {
     if (oldv->Value != value)
     {
@@ -75,8 +79,9 @@ void vtkInformationVariantKey::Set(vtkInformation* info, const vtkVariant& value
 const vtkVariant& vtkInformationVariantKey::Get(vtkInformation* info)
 {
   vtkInformationVariantValue* v =
-    static_cast<vtkInformationVariantValue*>(this->GetAsObjectBase(info));
-  return v ? v->Value : vtkInformationVariantValue::Invalid;
+    static_cast<vtkInformationVariantValue *>(
+      this->GetAsObjectBase(info));
+  return v?v->Value:vtkInformationVariantValue::Invalid;
 }
 
 //----------------------------------------------------------------------------
@@ -88,7 +93,7 @@ void vtkInformationVariantKey::ShallowCopy(vtkInformation* from, vtkInformation*
   }
   else
   {
-    this->SetAsObjectBase(to, nullptr); // doesn't exist in from, so remove the key
+    this->SetAsObjectBase(to, 0); // doesn't exist in from, so remove the key
   }
 }
 
@@ -96,7 +101,7 @@ void vtkInformationVariantKey::ShallowCopy(vtkInformation* from, vtkInformation*
 void vtkInformationVariantKey::Print(ostream& os, vtkInformation* info)
 {
   // Print the value.
-  if (this->Has(info))
+  if(this->Has(info))
   {
     os << this->Get(info);
   }
@@ -105,10 +110,11 @@ void vtkInformationVariantKey::Print(ostream& os, vtkInformation* info)
 //----------------------------------------------------------------------------
 vtkVariant* vtkInformationVariantKey::GetWatchAddress(vtkInformation* info)
 {
-  if (vtkInformationVariantValue* v =
-        static_cast<vtkInformationVariantValue*>(this->GetAsObjectBase(info)))
+  if(vtkInformationVariantValue* v =
+     static_cast<vtkInformationVariantValue *>(
+       this->GetAsObjectBase(info)))
   {
     return &v->Value;
   }
-  return nullptr;
+  return 0;
 }

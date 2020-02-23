@@ -27,17 +27,17 @@
  * @par Thanks:
  * Thanks to Brian Wylie from Sandia National Laboratories for implementing
  * this class
- */
+*/
 
 #ifndef vtkQtListView_h
 #define vtkQtListView_h
 
-#include "vtkQtView.h"
 #include "vtkViewsQtModule.h" // For export macro
+#include "vtkQtView.h"
 
+#include <QPointer> // Needed for the internal list view
+#include <QImage> // Needed for the icon methods
 #include "vtkSmartPointer.h" // Needed for member variables
-#include <QImage>            // Needed for the icon methods
-#include <QPointer>          // Needed for the internal list view
 
 class vtkApplyColors;
 class vtkDataObjectToTable;
@@ -48,12 +48,12 @@ class vtkQtTableModelAdapter;
 
 class VTKVIEWSQT_EXPORT vtkQtListView : public vtkQtView
 {
-  Q_OBJECT
+Q_OBJECT
 
 public:
-  static vtkQtListView* New();
+  static vtkQtListView *New();
   vtkTypeMacro(vtkQtListView, vtkQtView);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Get the main container of this view (a  QWidget).
@@ -61,7 +61,7 @@ public:
    * to GetWidget(): something like this
    * this->ui->box->layout()->addWidget(this->View->GetWidget());
    */
-  QWidget* GetWidget() override;
+  virtual QWidget* GetWidget();
 
   enum
   {
@@ -137,22 +137,22 @@ public:
   void SetIconArrayName(const char* name);
   //@}
 
-  void ApplyViewTheme(vtkViewTheme* theme) override;
+  virtual void ApplyViewTheme(vtkViewTheme* theme);
 
   /**
    * Updates the view.
    */
-  void Update() override;
+  virtual void Update();
 
 protected:
   vtkQtListView();
-  ~vtkQtListView() override;
+  ~vtkQtListView();
 
-  void AddRepresentationInternal(vtkDataRepresentation* rep) override;
-  void RemoveRepresentationInternal(vtkDataRepresentation* rep) override;
+  virtual void AddRepresentationInternal(vtkDataRepresentation* rep);
+  virtual void RemoveRepresentationInternal(vtkDataRepresentation* rep);
 
 private slots:
-  void slotQtSelectionChanged(const QItemSelection&, const QItemSelection&);
+  void slotQtSelectionChanged(const QItemSelection&,const QItemSelection&);
 
 private:
   void SetVTKSelection();
@@ -180,8 +180,9 @@ private:
   vtkSmartPointer<vtkDataObjectToTable> DataObjectToTable;
   vtkSmartPointer<vtkApplyColors> ApplyColors;
 
-  vtkQtListView(const vtkQtListView&) = delete;
-  void operator=(const vtkQtListView&) = delete;
+  vtkQtListView(const vtkQtListView&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkQtListView&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif

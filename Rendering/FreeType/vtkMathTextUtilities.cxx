@@ -18,8 +18,8 @@
 #include "vtkDebugLeaks.h" // Must be included before any singletons
 #include "vtkMath.h"
 #include "vtkObjectFactory.h"
-#include "vtkTextActor.h"
 #include "vtkTextProperty.h"
+#include "vtkTextActor.h"
 #include "vtkViewport.h"
 #include "vtkWindow.h"
 
@@ -27,20 +27,22 @@
 
 //----------------------------------------------------------------------------
 // The singleton, and the singleton cleanup
-vtkMathTextUtilities* vtkMathTextUtilities::Instance = nullptr;
+vtkMathTextUtilities* vtkMathTextUtilities::Instance = NULL;
 vtkMathTextUtilitiesCleanup vtkMathTextUtilities::Cleanup;
 
 //----------------------------------------------------------------------------
 // Create the singleton cleanup
 // Register our singleton cleanup callback against the FTLibrary so that
 // it might be called before the FTLibrary singleton is destroyed.
-vtkMathTextUtilitiesCleanup::vtkMathTextUtilitiesCleanup() = default;
+vtkMathTextUtilitiesCleanup::vtkMathTextUtilitiesCleanup()
+{
+}
 
 //----------------------------------------------------------------------------
 // Delete the singleton cleanup
 vtkMathTextUtilitiesCleanup::~vtkMathTextUtilitiesCleanup()
 {
-  vtkMathTextUtilities::SetInstance(nullptr);
+  vtkMathTextUtilities::SetInstance(NULL);
 }
 
 //----------------------------------------------------------------------------
@@ -48,8 +50,8 @@ vtkMathTextUtilities* vtkMathTextUtilities::GetInstance()
 {
   if (!vtkMathTextUtilities::Instance)
   {
-    vtkMathTextUtilities::Instance =
-      static_cast<vtkMathTextUtilities*>(vtkObjectFactory::CreateInstance("vtkMathTextUtilities"));
+    vtkMathTextUtilities::Instance = static_cast<vtkMathTextUtilities *>(
+      vtkObjectFactory::CreateInstance("vtkMathTextUtilities"));
   }
 
   return vtkMathTextUtilities::Instance;
@@ -73,15 +75,19 @@ void vtkMathTextUtilities::SetInstance(vtkMathTextUtilities* instance)
   // User will call ->Delete() after setting instance
   if (instance)
   {
-    instance->Register(nullptr);
+    instance->Register(NULL);
   }
 }
 
 //----------------------------------------------------------------------------
-int vtkMathTextUtilities::GetConstrainedFontSize(
-  const char* str, vtkTextProperty* tprop, int targetWidth, int targetHeight, int dpi)
+int vtkMathTextUtilities::GetConstrainedFontSize(const char *str,
+                                                 vtkTextProperty *tprop,
+                                                 int targetWidth,
+                                                 int targetHeight,
+                                                 int dpi)
 {
-  if (str == nullptr || str[0] == '\0' || targetWidth == 0 || targetHeight == 0 || tprop == nullptr)
+  if (str == NULL || str[0] == '\0' || targetWidth == 0 || targetHeight == 0 ||
+      tprop == NULL)
   {
     return 0;
   }
@@ -93,21 +99,22 @@ int vtkMathTextUtilities::GetConstrainedFontSize(
   {
     return -1;
   }
-  int width = bbox[1] - bbox[0];
+  int width  = bbox[1] - bbox[0];
   int height = bbox[3] - bbox[2];
 
   // Bad assumption but better than nothing -- assume the bbox grows linearly
   // with the font size:
   if (width != 0 && height != 0)
   {
-    fontSize *= std::min(static_cast<double>(targetWidth) / static_cast<double>(width),
-      static_cast<double>(targetHeight) / static_cast<double>(height));
+    fontSize *= std::min(
+          static_cast<double>(targetWidth)  / static_cast<double>(width),
+          static_cast<double>(targetHeight) / static_cast<double>(height));
     tprop->SetFontSize(static_cast<int>(fontSize));
     if (!this->GetBoundingBox(tprop, str, dpi, bbox))
     {
       return -1;
     }
-    width = bbox[1] - bbox[0];
+    width  = bbox[1] - bbox[0];
     height = bbox[3] - bbox[2];
   }
 
@@ -120,7 +127,7 @@ int vtkMathTextUtilities::GetConstrainedFontSize(
     {
       return -1;
     }
-    width = bbox[1] - bbox[0];
+    width  = bbox[1] - bbox[0];
     height = bbox[3] - bbox[2];
   }
 
@@ -132,7 +139,7 @@ int vtkMathTextUtilities::GetConstrainedFontSize(
     {
       return -1;
     }
-    width = bbox[1] - bbox[0];
+    width  = bbox[1] - bbox[0];
     height = bbox[3] - bbox[2];
   }
 
@@ -145,19 +152,23 @@ vtkMathTextUtilities* vtkMathTextUtilities::New()
   vtkMathTextUtilities* ret = vtkMathTextUtilities::GetInstance();
   if (ret)
   {
-    ret->Register(nullptr);
+    ret->Register(NULL);
   }
   return ret;
 }
 
 //----------------------------------------------------------------------------
-vtkMathTextUtilities::vtkMathTextUtilities() = default;
+vtkMathTextUtilities::vtkMathTextUtilities()
+{
+}
 
 //----------------------------------------------------------------------------
-vtkMathTextUtilities::~vtkMathTextUtilities() = default;
+vtkMathTextUtilities::~vtkMathTextUtilities()
+{
+}
 
 //----------------------------------------------------------------------------
-void vtkMathTextUtilities::PrintSelf(ostream& os, vtkIndent indent)
+void vtkMathTextUtilities::PrintSelf(ostream &os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 

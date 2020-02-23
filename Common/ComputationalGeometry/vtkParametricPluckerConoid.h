@@ -21,12 +21,12 @@
  * possible to set the number of folds in this class via the parameter 'N'.
  *
  * For more information, see the Wikipedia page on
- * <a href="https://en.wikipedia.org/wiki/Pl%c3%bccker%27s_conoid">Plucker's Conoid</a>.
+ * <a href="https://en.wikipedia.org/wiki/Plücker%27s_conoid">Plucker's Conoid</a>.
  * @warning
  * I haven't done any special checking on the number of folds parameter, N.
  * @par Thanks:
  * Tim Meehan
- */
+*/
 
 #ifndef vtkParametricPluckerConoid_h
 #define vtkParametricPluckerConoid_h
@@ -34,12 +34,13 @@
 #include "vtkCommonComputationalGeometryModule.h" // For export macro
 #include "vtkParametricFunction.h"
 
-class VTKCOMMONCOMPUTATIONALGEOMETRY_EXPORT vtkParametricPluckerConoid
-  : public vtkParametricFunction
+class VTKCOMMONCOMPUTATIONALGEOMETRY_EXPORT vtkParametricPluckerConoid : public vtkParametricFunction
 {
 public:
-  vtkTypeMacro(vtkParametricPluckerConoid, vtkParametricFunction);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+
+
+  vtkTypeMacro(vtkParametricPluckerConoid,vtkParametricFunction);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   //@{
   /**
@@ -52,18 +53,18 @@ public:
   /**
    * Construct Plucker's conoid surface with the following parameters:
    * (MinimumU, MaximumU) = (0., 3.),
-   * (MinimumV, MaximumV) = (0., 2*pi),
+   * (MinimumV, MaximumV) = (0., pi),
    * JoinU = 0, JoinV = 0,
    * TwistU = 0, TwistV = 0;
-   * ClockwiseOrdering = 0,
+   * ClockwiseOrdering = 1,
    * DerivativesAvailable = 1,
    */
-  static vtkParametricPluckerConoid* New();
+  static vtkParametricPluckerConoid *New();
 
   /**
    * Return the parametric dimension of the class.
    */
-  int GetDimension() override { return 2; }
+  int GetDimension() VTK_OVERRIDE {return 2;}
 
   /**
    * Plucker's conoid surface.
@@ -73,24 +74,24 @@ public:
    * \f$Pt = (x, y, z), D_u\vec{f} = (dx/du, dy/du, dz/du), D_v\vec{f} = (dx/dv, dy/dv, dz/dv)\f$ .
    * Then the normal is \f$N = D_u\vec{f} \times D_v\vec{f}\f$ .
    */
-  void Evaluate(double uvw[3], double Pt[3], double Duvw[9]) override;
+  void Evaluate(double uvw[3], double Pt[3], double Duvw[9]) VTK_OVERRIDE;
 
   /**
    * Calculate a user defined scalar using one or all of uvw, Pt, Duvw.
    * This method simply returns 0.
    */
-  double EvaluateScalar(double uvw[3], double Pt[3], double Duvw[9]) override;
+  double EvaluateScalar(double uvw[3], double Pt[3], double Duvw[9]) VTK_OVERRIDE;
 
 protected:
   vtkParametricPluckerConoid();
-  ~vtkParametricPluckerConoid() override;
+  ~vtkParametricPluckerConoid() VTK_OVERRIDE;
 
   // Variables
   int N;
 
 private:
-  vtkParametricPluckerConoid(const vtkParametricPluckerConoid&) = delete;
-  void operator=(const vtkParametricPluckerConoid&) = delete;
+  vtkParametricPluckerConoid(const vtkParametricPluckerConoid&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkParametricPluckerConoid&) VTK_DELETE_FUNCTION;
 };
 
 #endif

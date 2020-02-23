@@ -19,13 +19,14 @@
  * Writes debug/warning/error output to a log file instead of the console.
  * To use this class, instantiate it and then call SetInstance(this).
  *
- */
+*/
 
 #ifndef vtkFileOutputWindow_h
 #define vtkFileOutputWindow_h
 
 #include "vtkCommonCoreModule.h" // For export macro
 #include "vtkOutputWindow.h"
+
 
 class VTKCOMMONCORE_EXPORT vtkFileOutputWindow : public vtkOutputWindow
 {
@@ -34,13 +35,13 @@ public:
 
   static vtkFileOutputWindow* New();
 
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Put the text into the log file.
    * New lines are converted to carriage return new lines.
    */
-  void DisplayText(const char*) override;
+  void DisplayText(const char*) VTK_OVERRIDE;
 
   //@{
   /**
@@ -55,9 +56,9 @@ public:
    * Turns on buffer flushing for the output
    * to the log file.
    */
-  vtkSetMacro(Flush, vtkTypeBool);
-  vtkGetMacro(Flush, vtkTypeBool);
-  vtkBooleanMacro(Flush, vtkTypeBool);
+  vtkSetMacro(Flush, int);
+  vtkGetMacro(Flush, int);
+  vtkBooleanMacro(Flush, int);
   //@}
 
   //@{
@@ -67,24 +68,25 @@ public:
    * it will be overwritten each time the vtkFileOutputWindow
    * is created.
    */
-  vtkSetMacro(Append, vtkTypeBool);
-  vtkGetMacro(Append, vtkTypeBool);
-  vtkBooleanMacro(Append, vtkTypeBool);
+  vtkSetMacro(Append, int);
+  vtkGetMacro(Append, int);
+  vtkBooleanMacro(Append, int);
   //@}
 
 protected:
   vtkFileOutputWindow();
-  ~vtkFileOutputWindow() override;
+  ~vtkFileOutputWindow() VTK_OVERRIDE;
   void Initialize();
 
   char* FileName;
-  ostream* OStream;
-  vtkTypeBool Flush;
-  vtkTypeBool Append;
+  ofstream* OStream;
+  int Flush;
+  int Append;
 
 private:
-  vtkFileOutputWindow(const vtkFileOutputWindow&) = delete;
-  void operator=(const vtkFileOutputWindow&) = delete;
+  vtkFileOutputWindow(const vtkFileOutputWindow&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkFileOutputWindow&) VTK_DELETE_FUNCTION;
 };
+
 
 #endif

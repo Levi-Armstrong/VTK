@@ -27,7 +27,7 @@
  * 2. initialize the planes with vtkPlanes::SetFrustumPlanes() with the planes
  * coefficients
  * 3. pass the vtkPlanes to a vtkFrustumSource.
- */
+*/
 
 #ifndef vtkFrustumSource_h
 #define vtkFrustumSource_h
@@ -39,33 +39,33 @@ class vtkPlanes;
 class VTKFILTERSSOURCES_EXPORT vtkFrustumSource : public vtkPolyDataAlgorithm
 {
 public:
-  static vtkFrustumSource* New();
-  vtkTypeMacro(vtkFrustumSource, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkFrustumSource *New();
+  vtkTypeMacro(vtkFrustumSource,vtkPolyDataAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   //@{
   /**
-   * Return the 6 planes defining the frustum. Initial value is nullptr.
+   * Return the 6 planes defining the frustum. Initial value is NULL.
    * The 6 planes are defined in this order: left,right,bottom,top,far,near.
-   * If Planes==nullptr or if Planes->GetNumberOfPlanes()!=6 when RequestData()
+   * If Planes==NULL or if Planes->GetNumberOfPlanes()!=6 when RequestData()
    * is called, an error message will be emitted and RequestData() will
    * return right away.
    */
-  vtkGetObjectMacro(Planes, vtkPlanes);
+  vtkGetObjectMacro(Planes,vtkPlanes);
   //@}
 
   /**
    * Set the 6 planes defining the frustum.
    */
-  virtual void SetPlanes(vtkPlanes* planes);
+  virtual void SetPlanes(vtkPlanes *planes);
 
   //@{
   /**
    * Tells if some extra lines will be generated. Initial value is true.
    */
-  vtkGetMacro(ShowLines, bool);
-  vtkSetMacro(ShowLines, bool);
-  vtkBooleanMacro(ShowLines, bool);
+  vtkGetMacro(ShowLines,bool);
+  vtkSetMacro(ShowLines,bool);
+  vtkBooleanMacro(ShowLines,bool);
   //@}
 
   //@{
@@ -73,14 +73,14 @@ public:
    * Length of the extra lines. This a stricly positive value.
    * Initial value is 1.0.
    */
-  vtkGetMacro(LinesLength, double);
-  vtkSetMacro(LinesLength, double);
+  vtkGetMacro(LinesLength,double);
+  vtkSetMacro(LinesLength,double);
   //@}
 
   /**
    * Modified GetMTime because of Planes.
    */
-  vtkMTimeType GetMTime() override;
+  vtkMTimeType GetMTime() VTK_OVERRIDE;
 
   //@{
   /**
@@ -88,34 +88,36 @@ public:
    * vtkAlgorithm::SINGLE_PRECISION - Output single-precision floating point.
    * vtkAlgorithm::DOUBLE_PRECISION - Output double-precision floating point.
    */
-  vtkSetMacro(OutputPointsPrecision, int);
-  vtkGetMacro(OutputPointsPrecision, int);
+  vtkSetMacro(OutputPointsPrecision,int);
+  vtkGetMacro(OutputPointsPrecision,int);
   //@}
 
 protected:
   /**
-   * Default constructor. Planes=nullptr. ShowLines=true. LinesLength=1.0.
+   * Default construtor. Planes=NULL. ShowLines=true. LinesLength=1.0.
    */
   vtkFrustumSource();
 
-  ~vtkFrustumSource() override;
+  ~vtkFrustumSource() VTK_OVERRIDE;
 
-  int RequestData(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  int RequestData(vtkInformation *request,
+                          vtkInformationVector **inputVector,
+                          vtkInformationVector *outputVector) VTK_OVERRIDE;
 
   /**
    * Compute the intersection of 3 planes.
    */
-  void ComputePoint(int planes[3], double* pt);
+  void ComputePoint(int planes[3],
+                    double *pt);
 
-  vtkPlanes* Planes;
+  vtkPlanes *Planes;
   bool ShowLines;
   double LinesLength;
   int OutputPointsPrecision;
 
 private:
-  vtkFrustumSource(const vtkFrustumSource&) = delete;
-  void operator=(const vtkFrustumSource&) = delete;
+  vtkFrustumSource(const vtkFrustumSource&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkFrustumSource&) VTK_DELETE_FUNCTION;
 };
 
 #endif

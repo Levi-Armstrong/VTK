@@ -22,13 +22,13 @@
  *
  * @sa
  * vtkVolumeMapper vtkUnstructuredGridVolumeMapper
- */
+*/
 
 #ifndef vtkAbstractVolumeMapper_h
 #define vtkAbstractVolumeMapper_h
 
-#include "vtkAbstractMapper3D.h"
 #include "vtkRenderingCoreModule.h" // For export macro
+#include "vtkAbstractMapper3D.h"
 
 class vtkRenderer;
 class vtkVolume;
@@ -38,15 +38,15 @@ class vtkDataSet;
 class VTKRENDERINGCORE_EXPORT vtkAbstractVolumeMapper : public vtkAbstractMapper3D
 {
 public:
-  vtkTypeMacro(vtkAbstractVolumeMapper, vtkAbstractMapper3D);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkAbstractVolumeMapper,vtkAbstractMapper3D);
+  void PrintSelf( ostream& os, vtkIndent indent );
 
   //@{
   /**
    * Set/Get the input data
    */
-  virtual vtkDataSet* GetDataSetInput();
-  virtual vtkDataObject* GetDataObjectInput();
+  vtkDataSet *GetDataSetInput();
+  vtkDataObject *GetDataObjectInput();
   //@}
 
   //@{
@@ -54,8 +54,9 @@ public:
    * Return bounding box (array of six doubles) of data expressed as
    * (xmin,xmax, ymin,ymax, zmin,zmax).
    */
-  double* GetBounds() VTK_SIZEHINT(6) override;
-  void GetBounds(double bounds[6]) override { this->vtkAbstractMapper3D::GetBounds(bounds); }
+  virtual double *GetBounds();
+  virtual void GetBounds(double bounds[6])
+    { this->vtkAbstractMapper3D::GetBounds(bounds); };
   //@}
 
   //@{
@@ -70,20 +71,18 @@ public:
    * (ScalarModeToUseCellFieldData).  If scalars are coming from a field
    * data array, you must call SelectScalarArray.
    */
-  vtkSetMacro(ScalarMode, int);
-  vtkGetMacro(ScalarMode, int);
-  vtkSetMacro(ArrayAccessMode, int);
-  void SetScalarModeToDefault() { this->SetScalarMode(VTK_SCALAR_MODE_DEFAULT); }
-  void SetScalarModeToUsePointData() { this->SetScalarMode(VTK_SCALAR_MODE_USE_POINT_DATA); }
-  void SetScalarModeToUseCellData() { this->SetScalarMode(VTK_SCALAR_MODE_USE_CELL_DATA); }
-  void SetScalarModeToUsePointFieldData()
-  {
-    this->SetScalarMode(VTK_SCALAR_MODE_USE_POINT_FIELD_DATA);
-  }
-  void SetScalarModeToUseCellFieldData()
-  {
-    this->SetScalarMode(VTK_SCALAR_MODE_USE_CELL_FIELD_DATA);
-  }
+  vtkSetMacro(ScalarMode,int);
+  vtkGetMacro(ScalarMode,int);
+  void SetScalarModeToDefault() {
+    this->SetScalarMode(VTK_SCALAR_MODE_DEFAULT);};
+  void SetScalarModeToUsePointData() {
+    this->SetScalarMode(VTK_SCALAR_MODE_USE_POINT_DATA);};
+  void SetScalarModeToUseCellData() {
+    this->SetScalarMode(VTK_SCALAR_MODE_USE_CELL_DATA);};
+  void SetScalarModeToUsePointFieldData() {
+    this->SetScalarMode(VTK_SCALAR_MODE_USE_POINT_FIELD_DATA);};
+  void SetScalarModeToUseCellFieldData() {
+    this->SetScalarMode(VTK_SCALAR_MODE_USE_CELL_FIELD_DATA);};
   //@}
 
   //@{
@@ -107,24 +106,25 @@ public:
   /**
    * Return the method for obtaining scalar data.
    */
-  const char* GetScalarModeAsString();
+  const char *GetScalarModeAsString();
 
   //@{
   /**
    * WARNING: INTERNAL METHOD - NOT INTENDED FOR GENERAL USE
    */
-  virtual float GetGradientMagnitudeScale() { return 1.0f; }
-  virtual float GetGradientMagnitudeBias() { return 0.0f; }
-  virtual float GetGradientMagnitudeScale(int) { return 1.0f; }
-  virtual float GetGradientMagnitudeBias(int) { return 0.0f; }
+  virtual float GetGradientMagnitudeScale() {return 1.0f;};
+  virtual float GetGradientMagnitudeBias()  {return 0.0f;};
+  virtual float GetGradientMagnitudeScale(int) {return 1.0f;};
+  virtual float GetGradientMagnitudeBias(int)  {return 0.0f;};
   //@}
+
 
   /**
    * WARNING: INTERNAL METHOD - NOT INTENDED FOR GENERAL USE
    * DO NOT USE THIS METHOD OUTSIDE OF THE RENDERING PROCESS
    * Render the volume
    */
-  virtual void Render(vtkRenderer* ren, vtkVolume* vol) = 0;
+  virtual void Render(vtkRenderer *ren, vtkVolume *vol)=0;
 
   /**
    * WARNING: INTERNAL METHOD - NOT INTENDED FOR GENERAL USE
@@ -132,23 +132,26 @@ public:
    * The parameter window could be used to determine which graphic
    * resources to release.
    */
-  void ReleaseGraphicsResources(vtkWindow*) override {}
+  virtual void ReleaseGraphicsResources(vtkWindow *) {}
 
 protected:
   vtkAbstractVolumeMapper();
-  ~vtkAbstractVolumeMapper() override;
+  ~vtkAbstractVolumeMapper();
 
   // see algorithm for more info
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  virtual int FillInputPortInformation(int port, vtkInformation* info);
 
-  int ScalarMode;
-  char* ArrayName;
-  int ArrayId;
-  int ArrayAccessMode;
+  int         ScalarMode;
+  char       *ArrayName;
+  int         ArrayId;
+  int         ArrayAccessMode;
 
 private:
-  vtkAbstractVolumeMapper(const vtkAbstractVolumeMapper&) = delete;
-  void operator=(const vtkAbstractVolumeMapper&) = delete;
+  vtkAbstractVolumeMapper(const vtkAbstractVolumeMapper&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkAbstractVolumeMapper&) VTK_DELETE_FUNCTION;
 };
 
+
 #endif
+
+

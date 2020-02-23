@@ -34,20 +34,20 @@
  *
  * @par Thanks:
  * Thanks to Jason Shepherd for implementing this class
- */
+*/
 
 #ifndef vtkTreeRingView_h
 #define vtkTreeRingView_h
 
-#include "vtkTreeAreaView.h"
 #include "vtkViewsInfovisModule.h" // For export macro
+#include "vtkTreeAreaView.h"
 
 class VTKVIEWSINFOVIS_EXPORT vtkTreeRingView : public vtkTreeAreaView
 {
 public:
-  static vtkTreeRingView* New();
+  static vtkTreeRingView *New();
   vtkTypeMacro(vtkTreeRingView, vtkTreeAreaView);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Set the root angles for laying out the hierarchy.
@@ -91,11 +91,11 @@ public:
 
 protected:
   vtkTreeRingView();
-  ~vtkTreeRingView() override;
+  ~vtkTreeRingView();
 
 private:
-  vtkTreeRingView(const vtkTreeRingView&) = delete;
-  void operator=(const vtkTreeRingView&) = delete;
+  vtkTreeRingView(const vtkTreeRingView&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTreeRingView&) VTK_DELETE_FUNCTION;
 };
 
 #endif

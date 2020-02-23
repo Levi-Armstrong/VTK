@@ -26,16 +26,16 @@
  * using the SetLayoutStrategy() function.  The layout strategies do the
  * actual work.
  *
- * .SECTION Thanks
+ * .SECION Thanks
  * Thanks to Brian Wylie from Sandia National Laboratories for adding incremental
  * layout capabilities.
- */
+*/
 
 #ifndef vtkGraphLayout_h
 #define vtkGraphLayout_h
 
-#include "vtkGraphAlgorithm.h"
 #include "vtkInfovisLayoutModule.h" // For export macro
+#include "vtkGraphAlgorithm.h"
 
 class vtkAbstractTransform;
 class vtkEventForwarderCommand;
@@ -44,15 +44,15 @@ class vtkGraphLayoutStrategy;
 class VTKINFOVISLAYOUT_EXPORT vtkGraphLayout : public vtkGraphAlgorithm
 {
 public:
-  static vtkGraphLayout* New();
+  static vtkGraphLayout *New();
   vtkTypeMacro(vtkGraphLayout, vtkGraphAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
    * The layout strategy to use during graph layout.
    */
-  void SetLayoutStrategy(vtkGraphLayoutStrategy* strategy);
+  void SetLayoutStrategy(vtkGraphLayoutStrategy *strategy);
   vtkGetObjectMacro(LayoutStrategy, vtkGraphLayoutStrategy);
   //@}
 
@@ -64,7 +64,7 @@ public:
   /**
    * Get the modification time of the layout algorithm.
    */
-  vtkMTimeType GetMTime() override;
+  virtual vtkMTimeType GetMTime();
 
   //@{
   /**
@@ -96,7 +96,7 @@ public:
 
 protected:
   vtkGraphLayout();
-  ~vtkGraphLayout() override;
+  ~vtkGraphLayout();
 
   vtkGraphLayoutStrategy* LayoutStrategy;
 
@@ -104,11 +104,12 @@ protected:
    * This intercepts events from the strategy object and re-emits them
    * as if they came from the layout engine itself.
    */
-  vtkEventForwarderCommand* EventForwarder;
+  vtkEventForwarderCommand *EventForwarder;
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 
 private:
+
   vtkGraph* LastInput;
   vtkGraph* InternalGraph;
   vtkMTimeType LastInputMTime;
@@ -117,8 +118,8 @@ private:
   vtkAbstractTransform* Transform;
   bool UseTransform;
 
-  vtkGraphLayout(const vtkGraphLayout&) = delete;
-  void operator=(const vtkGraphLayout&) = delete;
+  vtkGraphLayout(const vtkGraphLayout&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkGraphLayout&) VTK_DELETE_FUNCTION;
 };
 
 #endif

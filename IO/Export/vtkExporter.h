@@ -34,7 +34,7 @@
  *
  * @sa
  * vtkOBJExporter vtkRenderWindow vtkWriter
- */
+*/
 
 #ifndef vtkExporter_h
 #define vtkExporter_h
@@ -42,13 +42,12 @@
 #include "vtkIOExportModule.h" // For export macro
 #include "vtkObject.h"
 class vtkRenderWindow;
-class vtkRenderer;
 
 class VTKIOEXPORT_EXPORT vtkExporter : public vtkObject
 {
 public:
-  vtkTypeMacro(vtkExporter, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkExporter,vtkObject);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Write data to output. Method executes subclasses WriteData() method, as
@@ -66,22 +65,7 @@ public:
    * Set/Get the rendering window that contains the scene to be written.
    */
   virtual void SetRenderWindow(vtkRenderWindow*);
-  vtkGetObjectMacro(RenderWindow, vtkRenderWindow);
-  //@}
-
-  //@{
-  /**
-   * Set/Get the renderer that contains actors to be written.
-   * If it is set to nullptr (by default), then in most subclasses
-   * the behavior is to only export actors of the first renderer.
-   * In some subclasses, if ActiveRenderer is nullptr then
-   * actors of all renderers will be exported.
-   * The renderer must be in the renderer collection of the specified
-   * RenderWindow.
-   * \sa SetRenderWindow()
-   */
-  virtual void SetActiveRenderer(vtkRenderer*);
-  vtkGetObjectMacro(ActiveRenderer, vtkRenderer);
+  vtkGetObjectMacro(RenderWindow,vtkRenderWindow);
   //@}
 
   //@{
@@ -89,55 +73,55 @@ public:
    * These methods are provided for backward compatibility. Will disappear
    * soon.
    */
-  void SetInput(vtkRenderWindow* renWin) { this->SetRenderWindow(renWin); }
-  vtkRenderWindow* GetInput() { return this->GetRenderWindow(); }
+  void SetInput(vtkRenderWindow *renWin) {this->SetRenderWindow(renWin);};
+  vtkRenderWindow *GetInput() {return this->GetRenderWindow();};
   //@}
 
   /**
    * Specify a function to be called before data is written.  Function will
    * be called with argument provided.
    */
-  void SetStartWrite(void (*f)(void*), void* arg);
+  void SetStartWrite(void (*f)(void *), void *arg);
 
   /**
    * Specify a function to be called after data is written.
    * Function will be called with argument provided.
    */
-  void SetEndWrite(void (*f)(void*), void* arg);
+  void SetEndWrite(void (*f)(void *), void *arg);
 
   /**
    * Set the arg delete method. This is used to free user memory.
    */
-  void SetStartWriteArgDelete(void (*f)(void*));
+  void SetStartWriteArgDelete(void (*f)(void *));
 
   /**
    * Set the arg delete method. This is used to free user memory.
    */
-  void SetEndWriteArgDelete(void (*f)(void*));
+  void SetEndWriteArgDelete(void (*f)(void *));
 
   /**
    * Returns the MTime also considering the RenderWindow.
    */
-  vtkMTimeType GetMTime() override;
+  vtkMTimeType GetMTime();
 
 protected:
   vtkExporter();
-  ~vtkExporter() override;
+  ~vtkExporter();
 
-  vtkRenderWindow* RenderWindow;
-  vtkRenderer* ActiveRenderer;
+  vtkRenderWindow *RenderWindow;
   virtual void WriteData() = 0;
 
-  void (*StartWrite)(void*);
-  void (*StartWriteArgDelete)(void*);
-  void* StartWriteArg;
-  void (*EndWrite)(void*);
-  void (*EndWriteArgDelete)(void*);
-  void* EndWriteArg;
-
+  void (*StartWrite)(void *);
+  void (*StartWriteArgDelete)(void *);
+  void *StartWriteArg;
+  void (*EndWrite)(void *);
+  void (*EndWriteArgDelete)(void *);
+  void *EndWriteArg;
 private:
-  vtkExporter(const vtkExporter&) = delete;
-  void operator=(const vtkExporter&) = delete;
+  vtkExporter(const vtkExporter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkExporter&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+

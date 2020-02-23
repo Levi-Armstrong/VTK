@@ -19,10 +19,10 @@
 #include "vtkSmartPointer.h"
 #include "vtkStringArray.h"
 
-#include <algorithm>
-#include <list>
 #include <string>
 #include <vector>
+#include <list>
+#include <algorithm>
 #include <vtksys/SystemTools.hxx>
 
 #include <cctype>
@@ -36,38 +36,37 @@ class vtkStringArrayVector
 public:
   typedef std::vector<vtkSmartPointer<vtkStringArray> > VectorType;
 
-  static vtkStringArrayVector* New() { return new vtkStringArrayVector; }
+  static vtkStringArrayVector *New() {
+    return new vtkStringArrayVector; };
 
-  void Delete() { delete this; }
+  void Delete() {
+    delete this; };
 
-  void Reset() { this->Container.clear(); }
+  void Reset() {
+    this->Container.clear(); };
 
-  void InsertNextStringArray(vtkStringArray* stringArray)
-  {
-    this->Container.push_back(stringArray);
-  }
+  void InsertNextStringArray(vtkStringArray *stringArray) {
+    this->Container.push_back(stringArray); };
 
-  vtkStringArray* GetStringArray(int i)
-  {
-    return this->Container[static_cast<VectorType::size_type>(i)];
-  }
+  vtkStringArray *GetStringArray(int i) {
+    return this->Container[static_cast<VectorType::size_type>(i)]; };
 
-  int GetNumberOfStringArrays() { return static_cast<int>(this->Container.size()); }
+  int GetNumberOfStringArrays() {
+    return static_cast<int>(this->Container.size()); };
+
 
 private:
-  vtkStringArrayVector()
-    : Container()
-  {
-  }
-  ~vtkStringArrayVector() { this->Container.clear(); }
+  vtkStringArrayVector() : Container() {};
+  ~vtkStringArrayVector() { this->Container.clear(); };
 
   VectorType Container;
 };
 
+
 //----------------------------------------------------------------------------
 vtkSortFileNames::vtkSortFileNames()
 {
-  this->InputFileNames = nullptr;
+  this->InputFileNames = 0;
   this->NumericSort = 0;
   this->IgnoreCase = 0;
   this->Grouping = 0;
@@ -81,17 +80,17 @@ vtkSortFileNames::~vtkSortFileNames()
   if (this->InputFileNames)
   {
     this->InputFileNames->Delete();
-    this->InputFileNames = nullptr;
+    this->InputFileNames = 0;
   }
   if (this->FileNames)
   {
     this->FileNames->Delete();
-    this->FileNames = nullptr;
+    this->FileNames = 0;
   }
   if (this->Groups)
   {
     this->Groups->Delete();
-    this->Groups = nullptr;
+    this->Groups = 0;
   }
 }
 
@@ -99,10 +98,14 @@ void vtkSortFileNames::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
   os << indent << "InputFileNames:  (" << this->GetInputFileNames() << ")\n";
-  os << indent << "NumericSort:  " << (this->GetNumericSort() ? "On\n" : "Off\n");
-  os << indent << "IgnoreCase:  " << (this->GetIgnoreCase() ? "On\n" : "Off\n");
-  os << indent << "Grouping:  " << (this->GetGrouping() ? "On\n" : "Off\n");
-  os << indent << "SkipDirectories:  " << (this->GetSkipDirectories() ? "On\n" : "Off\n");
+  os << indent << "NumericSort:  " <<
+    (this->GetNumericSort() ? "On\n" : "Off\n");
+  os << indent << "IgnoreCase:  " <<
+    (this->GetIgnoreCase() ? "On\n" : "Off\n");
+  os << indent << "Grouping:  " <<
+    (this->GetGrouping() ? "On\n" : "Off\n");
+  os << indent << "SkipDirectories:  " <<
+    (this->GetSkipDirectories() ? "On\n" : "Off\n");
 
   os << indent << "NumberOfGroups: " << this->GetNumberOfGroups() << "\n";
 
@@ -110,16 +113,18 @@ void vtkSortFileNames::PrintSelf(ostream& os, vtkIndent indent)
   {
     for (int i = 0; i < this->GetNumberOfGroups(); i++)
     {
-      os << indent.GetNextIndent() << "Group[" << i << "]:  (" << this->GetNthGroup(i) << ")\n";
+      os << indent.GetNextIndent() << "Group[" << i << "]:  (" <<
+        this->GetNthGroup(i) << ")\n";
     }
   }
   else
   {
-    os << indent.GetNextIndent() << "FileNames:  (" << this->GetFileNames() << ")\n";
+    os << indent.GetNextIndent() << "FileNames:  ("
+       << this->GetFileNames() << ")\n";
   }
 }
 
-void vtkSortFileNames::SetInputFileNames(vtkStringArray* input)
+void vtkSortFileNames::SetInputFileNames(vtkStringArray *input)
 {
   vtkSetObjectBodyMacro(InputFileNames, vtkStringArray, input);
 }
@@ -131,14 +136,14 @@ int vtkSortFileNames::GetNumberOfGroups()
   return this->Groups->GetNumberOfStringArrays();
 }
 
-vtkStringArray* vtkSortFileNames::GetNthGroup(int i)
+vtkStringArray *vtkSortFileNames::GetNthGroup(int i)
 {
   this->Update();
 
   if (!this->GetGrouping())
   {
     vtkErrorMacro(<< "GetNthGroup(): Grouping not on.");
-    return nullptr;
+    return 0;
   }
 
   int n = this->Groups->GetNumberOfStringArrays();
@@ -150,18 +155,19 @@ vtkStringArray* vtkSortFileNames::GetNthGroup(int i)
   else
   {
     vtkErrorMacro(<< "GetNthGroup(i): index " << i << " is out of range");
-    return nullptr;
+    return 0;
   }
 }
 
-vtkStringArray* vtkSortFileNames::GetFileNames()
+vtkStringArray *vtkSortFileNames::GetFileNames()
 {
   this->Update();
 
   return this->FileNames;
 }
 
-void vtkSortFileNames::GroupFileNames(vtkStringArray* input, vtkStringArrayVector* output)
+void vtkSortFileNames::GroupFileNames(vtkStringArray *input,
+                                      vtkStringArrayVector *output)
 {
   std::string baseName;
   std::string extension;
@@ -209,7 +215,8 @@ void vtkSortFileNames::GroupFileNames(vtkStringArray* input, vtkStringArrayVecto
       {
         if (!inDigitBlock && k != 0)
         {
-          reducedName.append(baseName.substr(charBlockStart, k - charBlockStart));
+          reducedName.append(baseName.substr(charBlockStart,
+                                             k-charBlockStart));
           reducedName.append("0");
         }
         inDigitBlock = 1;
@@ -225,7 +232,8 @@ void vtkSortFileNames::GroupFileNames(vtkStringArray* input, vtkStringArrayVecto
     }
     if (!inDigitBlock)
     {
-      reducedName.append(baseName.substr(charBlockStart, stringLength - charBlockStart));
+      reducedName.append(baseName.substr(charBlockStart,
+                                         stringLength-charBlockStart));
     }
 
     // Add extension back to the filename.
@@ -255,7 +263,7 @@ void vtkSortFileNames::GroupFileNames(vtkStringArray* input, vtkStringArrayVecto
     unsigned int fileIndex = ungroupedFiles.front();
     std::string& reducedFileName = reducedFileNames[fileIndex];
 
-    vtkStringArray* newGroup = vtkStringArray::New();
+    vtkStringArray *newGroup = vtkStringArray::New();
 
     // find all matches and move them into the group
     std::list<unsigned int>::iterator p = ungroupedFiles.begin();
@@ -270,7 +278,7 @@ void vtkSortFileNames::GroupFileNames(vtkStringArray* input, vtkStringArrayVecto
       }
       else
       {
-        ++p;
+        p++;
       }
     }
 
@@ -281,7 +289,8 @@ void vtkSortFileNames::GroupFileNames(vtkStringArray* input, vtkStringArrayVecto
 }
 
 // Sort filenames lexicographically, ignoring case.
-static bool vtkCompareFileNamesIgnoreCase(const std::string& s1, const std::string& s2)
+static bool vtkCompareFileNamesIgnoreCase(const std::string& s1,
+                                          const std::string& s2)
 {
   unsigned int n1 = static_cast<unsigned int>(s1.length());
   unsigned int n2 = static_cast<unsigned int>(s2.length());
@@ -326,7 +335,8 @@ static bool vtkCompareFileNamesIgnoreCase(const std::string& s1, const std::stri
 }
 
 // Sort filenames numerically
-static bool vtkCompareFileNamesNumeric(const std::string& s1, const std::string& s2)
+static bool vtkCompareFileNamesNumeric(const std::string& s1,
+                                       const std::string& s2)
 {
   unsigned int n1 = static_cast<unsigned int>(s1.length());
   unsigned int n2 = static_cast<unsigned int>(s2.length());
@@ -407,7 +417,8 @@ static bool vtkCompareFileNamesNumeric(const std::string& s1, const std::string&
 }
 
 // Sort filenames numerically
-static bool vtkCompareFileNamesNumericIgnoreCase(const std::string& s1, const std::string& s2)
+static bool vtkCompareFileNamesNumericIgnoreCase(const std::string& s1,
+                                                 const std::string& s2)
 {
   unsigned int n1 = static_cast<unsigned int>(s1.length());
   unsigned int n2 = static_cast<unsigned int>(s2.length());
@@ -490,7 +501,9 @@ static bool vtkCompareFileNamesNumericIgnoreCase(const std::string& s1, const st
   return 0;
 }
 
-void vtkSortFileNames::SortFileNames(vtkStringArray* input, vtkStringArray* output)
+
+void vtkSortFileNames::SortFileNames(vtkStringArray *input,
+                                     vtkStringArray *output)
 {
   // convert vtkStringArray into an STL vector
   std::vector<std::string> fileNames;
@@ -500,7 +513,8 @@ void vtkSortFileNames::SortFileNames(vtkStringArray* input, vtkStringArray* outp
     std::string& fileName = input->GetValue(j);
 
     // skip anything that is a directory
-    if (this->SkipDirectories && vtksys::SystemTools::FileIsDirectory(fileName))
+    if (this->SkipDirectories &&
+        vtksys::SystemTools::FileIsDirectory(fileName.c_str()))
     {
       continue;
     }
@@ -515,12 +529,14 @@ void vtkSortFileNames::SortFileNames(vtkStringArray* input, vtkStringArray* outp
     if (this->NumericSort)
     {
       // numeric sort without case sensitivity
-      std::sort(fileNames.begin(), fileNames.end(), vtkCompareFileNamesNumericIgnoreCase);
+      std::sort(fileNames.begin(), fileNames.end(),
+                   vtkCompareFileNamesNumericIgnoreCase);
     }
     else
     {
       // lexicographic sort without case sensitivity
-      std::sort(fileNames.begin(), fileNames.end(), vtkCompareFileNamesIgnoreCase);
+      std::sort(fileNames.begin(), fileNames.end(),
+                   vtkCompareFileNamesIgnoreCase);
     }
   }
   else
@@ -528,7 +544,8 @@ void vtkSortFileNames::SortFileNames(vtkStringArray* input, vtkStringArray* outp
     if (this->NumericSort)
     {
       // numeric sort
-      std::sort(fileNames.begin(), fileNames.end(), vtkCompareFileNamesNumeric);
+      std::sort(fileNames.begin(), fileNames.end(),
+                   vtkCompareFileNamesNumeric);
     }
     else
     {
@@ -545,6 +562,7 @@ void vtkSortFileNames::SortFileNames(vtkStringArray* input, vtkStringArray* outp
   }
 }
 
+
 void vtkSortFileNames::Execute()
 {
   // sort the input file names
@@ -559,12 +577,13 @@ void vtkSortFileNames::Execute()
   }
 }
 
+
 void vtkSortFileNames::Update()
 {
-  if (this->InputFileNames != nullptr)
+  if (this->InputFileNames != 0)
   {
     if (this->GetMTime() > this->UpdateTime.GetMTime() ||
-      this->InputFileNames->GetMTime() > this->UpdateTime.GetMTime())
+        this->InputFileNames->GetMTime() > this->UpdateTime.GetMTime())
     {
       this->Execute();
       this->UpdateTime.Modified();

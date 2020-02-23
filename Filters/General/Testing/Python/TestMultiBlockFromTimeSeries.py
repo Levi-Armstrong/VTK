@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import vtk
+from vtk.test import Testing
 from vtk.util.vtkAlgorithm import VTKPythonAlgorithmBase
 
 class MovingSphereSource(VTKPythonAlgorithmBase):

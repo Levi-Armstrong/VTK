@@ -19,13 +19,13 @@
  *
  * A reader to load MRC images.  See http://bio3d.colorado.edu/imod/doc/mrc_format.txt
  * for the file format specification.
- */
+*/
 
 #ifndef vtkMRCReader_h
 #define vtkMRCReader_h
 
-#include "vtkIOImageModule.h" // For export macro
 #include "vtkImageAlgorithm.h"
+#include "vtkIOImageModule.h" // For export macro
 
 class vtkInformation;
 class vtkInformationVector;
@@ -34,9 +34,9 @@ class VTKIOIMAGE_EXPORT vtkMRCReader : public vtkImageAlgorithm
 {
 public:
   static vtkMRCReader* New();
-  vtkTypeMacro(vtkMRCReader, vtkImageAlgorithm);
+  vtkTypeMacro(vtkMRCReader, vtkImageAlgorithm)
 
-  void PrintSelf(ostream& stream, vtkIndent indent) override;
+  void PrintSelf(ostream& stream, vtkIndent indent);
 
   // .Description
   // Get/Set the file to read
@@ -45,19 +45,22 @@ public:
 
 protected:
   vtkMRCReader();
-  ~vtkMRCReader() override;
+  virtual ~vtkMRCReader();
 
-  int RequestInformation(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
-  void ExecuteDataWithInformation(vtkDataObject* output, vtkInformation* outInfo) override;
+  virtual int RequestInformation(vtkInformation* request,
+                                 vtkInformationVector** inputVector,
+                                 vtkInformationVector* outputVector);
+  virtual void ExecuteDataWithInformation(vtkDataObject *output,
+                                          vtkInformation* outInfo);
 
   char* FileName;
 
 private:
-  vtkMRCReader(const vtkMRCReader&) = delete;
-  void operator=(const vtkMRCReader&) = delete;
+  vtkMRCReader(const vtkMRCReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkMRCReader&) VTK_DELETE_FUNCTION;
   class vtkInternal;
   vtkInternal* Internals;
+
 };
 
 #endif

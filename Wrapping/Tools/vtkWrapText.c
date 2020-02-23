@@ -19,10 +19,10 @@
 #include "vtkParseExtras.h"
 #include "vtkParseMangle.h"
 
+#include <string.h>
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 /* -------------------------------------------------------------------- */
 /* Convert special characters in a string into their escape codes
@@ -30,14 +30,12 @@
  * maxlen must be at least 32 chars, and should not be over 2047 since
  * that is the maximum length of a string literal on some systems */
 
-const char* vtkWrapText_QuoteString(const char* comment, size_t maxlen)
+const char *vtkWrapText_QuoteString(
+  const char *comment, size_t maxlen)
 {
-  static char* result = 0;
+  static char *result = 0;
   static size_t oldmaxlen = 0;
-  size_t i = 0;
-  size_t j = 0;
-  size_t k, n, m;
-  unsigned short x;
+  size_t i, j, n;
 
   if (maxlen > oldmaxlen)
   {
@@ -45,7 +43,7 @@ const char* vtkWrapText_QuoteString(const char* comment, size_t maxlen)
     {
       free(result);
     }
-    result = (char*)malloc((size_t)(maxlen + 1));
+    result = (char *)malloc((size_t)(maxlen+1));
     oldmaxlen = maxlen;
   }
 
@@ -54,76 +52,46 @@ const char* vtkWrapText_QuoteString(const char* comment, size_t maxlen)
     return "";
   }
 
-  while (comment[i] != '\0')
+  j = 0;
+
+  n = strlen(comment);
+  for (i = 0; i < n; i++)
   {
-    n = 1; /* "n" stores number of input bytes consumed */
-    m = 1; /* "m" stores number of output bytes written */
-
-    if ((comment[i] & 0x80) != 0)
+    if (comment[i] == '\"')
     {
-      /* check for trailing bytes in utf-8 sequence */
-      while ((comment[i + n] & 0xC0) == 0x80)
-      {
-        n++;
-      }
-
-      /* the first two bytes will be used to check for validity */
-      x = (((unsigned char)(comment[i]) << 8) | (unsigned char)(comment[i + 1]));
-
-      /* check for valid 2, 3, or 4 byte utf-8 sequences */
-      if ((n == 2 && x >= 0xC280 && x < 0xE000) ||
-        (n == 3 && x >= 0xE0A0 && x < 0xF000 && (x >= 0xEE80 || x < 0xEDA0)) ||
-        (n == 4 && x >= 0xF090 && x < 0xF490))
-      {
-        /* write the valid utf-8 sequence */
-        for (k = 0; k < n; k++)
-        {
-          sprintf(&result[j + 4 * k], "\\%3.3o", (unsigned char)(comment[i + k]));
-        }
-        m = 4 * n;
-      }
-      else
-      {
-        /* bad sequence, write the replacement character code U+FFFD */
-        sprintf(&result[j], "%s", "\\357\\277\\275");
-        m = 12;
-      }
+      strcpy(&result[j],"\\\"");
+      j += 2;
     }
-    else if (comment[i] == '\"' || comment[i] == '\\')
+    else if (comment[i] == '\\')
     {
-      result[j] = '\\';
-      result[j + 1] = comment[i];
-      m = 2;
-    }
-    else if (isprint(comment[i]))
-    {
-      result[j] = comment[i];
+      strcpy(&result[j],"\\\\");
+      j += 2;
     }
     else if (comment[i] == '\n')
     {
-      result[j] = '\\';
-      result[j + 1] = 'n';
-      m = 2;
+      strcpy(&result[j],"\\n");
+      j += 2;
+    }
+    else if ((comment[i] & 0x80) != 0 || isprint(comment[i]))
+    {
+      // all characters in extended-ASCII set are printable. Some compilers (VS
+      // 2010, in debug mode) asserts when isprint() is passed a negative value.
+      // Hence, we simply skip the check.
+      result[j] = comment[i];
+      j++;
     }
     else
     {
-      /* use octal escape sequences for other control codes */
-      sprintf(&result[j], "\\%3.3o", comment[i]);
-      m = 4;
+      sprintf(&result[j],"\\%3.3o",comment[i]);
+      j += 4;
     }
-
-    /* check if output limit is reached */
-    if (j + m >= maxlen - 20)
+    if (j >= maxlen - 21)
     {
-      sprintf(&result[j], " ...\\n [Truncated]\\n");
-      j += strlen(" ...\\n [Truncated]\\n");
+      sprintf(&result[j]," ...\\n [Truncated]\\n");
+      j += (int)strlen(" ...\\n [Truncated]\\n");
       break;
     }
-
-    i += n;
-    j += m;
   }
-
   result[j] = '\0';
 
   return result;
@@ -134,33 +102,36 @@ const char* vtkWrapText_QuoteString(const char* comment, size_t maxlen)
 
 struct vtkWPString
 {
-  char* str;
+  char *str;
   size_t len;
   size_t maxlen;
 };
 
 /* -- append ---------- */
-static void vtkWPString_Append(struct vtkWPString* str, const char* text)
+static void vtkWPString_Append(
+  struct vtkWPString *str, const char *text)
 {
   size_t n = strlen(text);
 
   if (str->len + n + 1 > str->maxlen)
   {
-    str->maxlen = (str->len + n + 1 + 2 * str->maxlen);
-    str->str = (char*)realloc(str->str, str->maxlen);
+    str->maxlen = (str->len + n + 1 + 2*str->maxlen);
+    str->str = (char *)realloc(str->str, str->maxlen);
   }
 
-  strncpy(&str->str[str->len], text, n + 1);
+  strncpy(&str->str[str->len], text, n);
   str->len += n;
+  str->str[str->len] = '\0';
 }
 
 /* -- add a char ---------- */
-static void vtkWPString_PushChar(struct vtkWPString* str, char c)
+static void vtkWPString_PushChar(
+  struct vtkWPString *str, char c)
 {
   if (str->len + 2 > str->maxlen)
   {
-    str->maxlen = (str->len + 2 + 2 * str->maxlen);
-    str->str = (char*)realloc(str->str, str->maxlen);
+    str->maxlen = (str->len + 2 + 2*str->maxlen);
+    str->str = (char *)realloc(str->str, str->maxlen);
   }
 
   str->str[str->len++] = c;
@@ -168,10 +139,11 @@ static void vtkWPString_PushChar(struct vtkWPString* str, char c)
 }
 
 /* -- strip any of the given chars from the end ---------- */
-static void vtkWPString_Strip(struct vtkWPString* str, const char* trailers)
+static void vtkWPString_Strip(
+  struct vtkWPString *str, const char *trailers)
 {
   size_t k = str->len;
-  char* cp = str->str;
+  char *cp = str->str;
   size_t j = 0;
   size_t n;
 
@@ -183,7 +155,7 @@ static void vtkWPString_Strip(struct vtkWPString* str, const char* trailers)
     {
       for (j = 0; j < n; j++)
       {
-        if (cp[k - 1] == trailers[j])
+        if (cp[k-1] == trailers[j])
         {
           k--;
           break;
@@ -197,25 +169,26 @@ static void vtkWPString_Strip(struct vtkWPString* str, const char* trailers)
 }
 
 /* -- Return the last char ---------- */
-static char vtkWPString_LastChar(struct vtkWPString* str)
+static char vtkWPString_LastChar(
+  struct vtkWPString *str)
 {
   if (str->str && str->len > 0)
   {
-    return str->str[str->len - 1];
+    return str->str[str->len-1];
   }
   return '\0';
 }
 
 /* -- do a linebreak on a method declaration ---------- */
 static void vtkWPString_BreakSignatureLine(
-  struct vtkWPString* str, size_t* linestart, size_t indentation)
+  struct vtkWPString *str, size_t *linestart, size_t indentation)
 {
   size_t i = 0;
   size_t m = 0;
   size_t j = *linestart;
   size_t l = str->len;
   size_t k = str->len;
-  char* text = str->str;
+  char *text = str->str;
   char delim;
 
   if (!text)
@@ -223,18 +196,18 @@ static void vtkWPString_BreakSignatureLine(
     return;
   }
 
-  while (
-    l > j && text[l - 1] != '\n' && text[l - 1] != ',' && text[l - 1] != '(' && text[l - 1] != ')')
+  while (l > j && text[l-1] != '\n' && text[l-1] != ',' &&
+    text[l-1] != '(' && text[l-1] != ')')
   {
     /* treat each string as a unit */
-    if (l > 4 && (text[l - 1] == '\'' || text[l - 1] == '\"'))
+    if (l > 4 && (text[l-1] == '\'' || text[l-1] == '\"'))
     {
-      delim = text[l - 1];
+      delim = text[l-1];
       l -= 2;
-      while (l > 3 && (text[l - 1] != delim || text[l - 3] == '\\'))
+      while (l > 3 && (text[l-1] != delim || text[l-3] == '\\'))
       {
         l--;
-        if (text[l - 1] == '\\')
+        if (text[l-1] == '\\')
         {
           l--;
         }
@@ -248,7 +221,8 @@ static void vtkWPString_BreakSignatureLine(
   }
 
   /* if none of these chars was found, split is impossible */
-  if (text[l - 1] != ',' && text[l - 1] != '(' && text[l - 1] != ')' && text[l - 1] != '\n')
+  if (text[l-1] != ',' && text[l-1] != '(' &&
+      text[l-1] != ')' && text[l-1] != '\n')
   {
     j++;
   }
@@ -268,19 +242,18 @@ static void vtkWPString_BreakSignatureLine(
     if (k > l)
     {
       m = 0;
-      while (m < indentation + 2 && text[l + m] == ' ')
+      while (m < indentation+2 && text[l+m] == ' ')
       {
         m++;
       }
-      memmove(&text[l + indentation + 2 - m], &text[l], k - l);
-      k += indentation + 2 - m;
+      memmove(&text[l+indentation+2-m], &text[l], k-l);
+      k += indentation+2-m;
     }
     else
     {
-      k += indentation + 2;
+      k += indentation+2;
     }
-    text[l++] = '\\';
-    text[l++] = 'n';
+    text[l++] = '\\'; text[l++] = 'n';
     j = l;
     for (i = 0; i < indentation; i++)
     {
@@ -295,12 +268,13 @@ static void vtkWPString_BreakSignatureLine(
 }
 
 /* -- do a linebreak on regular text ---------- */
-static void vtkWPString_BreakCommentLine(struct vtkWPString* str, size_t* linestart, size_t indent)
+static void vtkWPString_BreakCommentLine(
+  struct vtkWPString *str, size_t *linestart, size_t indent)
 {
   size_t i = 0;
   size_t j = *linestart;
   size_t l = str->len;
-  char* text = str->str;
+  char *text = str->str;
 
   if (!text)
   {
@@ -308,14 +282,14 @@ static void vtkWPString_BreakCommentLine(struct vtkWPString* str, size_t* linest
   }
 
   /* try to break the line at a word */
-  while (l > 0 && text[l - 1] != ' ' && text[l - 1] != '\n')
+  while (l > 0 && text[l-1] != ' ' && text[l-1] != '\n')
   {
     l--;
   }
-  if (l > 0 && text[l - 1] != '\n' && l - j > indent)
+  if (l > 0 && text[l-1] != '\n' && l-j > indent)
   {
     /* replace space with newline */
-    text[l - 1] = '\n';
+    text[l-1] = '\n';
     j = l;
 
     /* Append some chars to guarantee size */
@@ -327,11 +301,11 @@ static void vtkWPString_BreakCommentLine(struct vtkWPString* str, size_t* linest
     }
     /* re-get the char pointer, it may have been reallocated */
     text = str->str;
-    str->len -= indent + 2;
+    str->len -= indent+2;
 
     if (str->len > l && indent > 0)
     {
-      memmove(&text[l + indent], &text[l], str->len - l);
+      memmove(&text[l+indent], &text[l], str->len-l);
       memset(&text[l], ' ', indent);
       str->len += indent;
     }
@@ -353,12 +327,13 @@ static void vtkWPString_BreakCommentLine(struct vtkWPString* str, size_t* linest
 
 /* -------------------------------------------------------------------- */
 /* Format a signature to a 70 char linewidth and char limit */
-const char* vtkWrapText_FormatSignature(const char* signature, size_t width, size_t maxlen)
+const char *vtkWrapText_FormatSignature(
+  const char *signature, size_t width, size_t maxlen)
 {
   static struct vtkWPString staticString = { NULL, 0, 0 };
-  struct vtkWPString* text;
+  struct vtkWPString *text;
   size_t i, j, n;
-  const char* cp = signature;
+  const char *cp = signature;
   char delim;
   size_t lastSigStart = 0;
   size_t sigCount = 0;
@@ -473,11 +448,12 @@ const char* vtkWrapText_FormatSignature(const char* signature, size_t width, siz
  * 4) re-break the lines
  */
 
-const char* vtkWrapText_FormatComment(const char* comment, size_t width)
+const char *vtkWrapText_FormatComment(
+  const char *comment, size_t width)
 {
   static struct vtkWPString staticString = { NULL, 0, 0 };
-  struct vtkWPString* text;
-  const char* cp;
+  struct vtkWPString *text;
+  const char *cp;
   size_t i, j, l;
   size_t indent = 0;
   int nojoin = 0;
@@ -491,14 +467,13 @@ const char* vtkWrapText_FormatComment(const char* comment, size_t width)
     return "";
   }
 
-  i = 0;
-  j = 0;
-  l = 0;
+  i = 0; j = 0; l = 0;
   start = 1;
   cp = comment;
 
   /* skip any leading whitespace */
-  while (cp[i] == '\n' || cp[i] == '\r' || cp[i] == '\t' || cp[i] == ' ')
+  while (cp[i] == '\n' || cp[i] == '\r' ||
+         cp[i] == '\t' || cp[i] == ' ')
   {
     i++;
   }
@@ -506,7 +481,7 @@ const char* vtkWrapText_FormatComment(const char* comment, size_t width)
   while (cp[i] != '\0')
   {
     /* Add characters until the output line is complete */
-    while (cp[i] != '\0' && text->len - j < width)
+    while (cp[i] != '\0' && text->len-j < width)
     {
       /* if the end of the line was found, see how next line begins */
       if (start)
@@ -533,7 +508,7 @@ const char* vtkWrapText_FormatComment(const char* comment, size_t width)
             vtkWPString_PushChar(text, '\n');
             vtkWPString_PushChar(text, '\n');
           }
-          i = l + 8;
+          i = l+8;
           while (cp[i] == '\r' || cp[i] == '\t' || cp[i] == ' ')
           {
             i++;
@@ -563,12 +538,18 @@ const char* vtkWrapText_FormatComment(const char* comment, size_t width)
         /* handle doxygen tags that appear at start of line */
         if (cp[l] == '\\' || cp[l] == '@')
         {
-          if (strncmp(&cp[l + 1], "brief", 5) == 0 || strncmp(&cp[l + 1], "short", 5) == 0 ||
-            strncmp(&cp[l + 1], "pre", 3) == 0 || strncmp(&cp[l + 1], "post", 4) == 0 ||
-            strncmp(&cp[l + 1], "param", 5) == 0 || strncmp(&cp[l + 1], "tparam", 6) == 0 ||
-            strncmp(&cp[l + 1], "cmdparam", 8) == 0 || strncmp(&cp[l + 1], "exception", 9) == 0 ||
-            strncmp(&cp[l + 1], "return", 6) == 0 || strncmp(&cp[l + 1], "warning", 7) == 0 ||
-            strncmp(&cp[l + 1], "sa", 2) == 0 || strncmp(&cp[l + 1], "li", 2) == 0)
+          if (strncmp(&cp[l+1], "brief", 5) == 0 ||
+              strncmp(&cp[l+1], "short", 5) == 0 ||
+              strncmp(&cp[l+1], "pre", 3) == 0 ||
+              strncmp(&cp[l+1], "post", 4) == 0 ||
+              strncmp(&cp[l+1], "param", 5) == 0 ||
+              strncmp(&cp[l+1], "tparam", 6) == 0 ||
+              strncmp(&cp[l+1], "cmdparam", 8) == 0 ||
+              strncmp(&cp[l+1], "exception", 9) == 0 ||
+              strncmp(&cp[l+1], "return", 6) == 0 ||
+              strncmp(&cp[l+1], "warning", 7) == 0 ||
+              strncmp(&cp[l+1], "sa", 2) == 0 ||
+              strncmp(&cp[l+1], "li", 2) == 0)
           {
             nojoin = 2;
             indent = 4;
@@ -580,7 +561,8 @@ const char* vtkWrapText_FormatComment(const char* comment, size_t width)
             i = l;
 
             /* remove these two tags from the output text */
-            if (strncmp(&cp[l + 1], "brief", 5) == 0 || strncmp(&cp[l + 1], "short", 5) == 0)
+            if (strncmp(&cp[l+1], "brief", 5) == 0 ||
+                strncmp(&cp[l+1], "short", 5) == 0)
             {
               i = l + 6;
               while (cp[i] == ' ')
@@ -593,11 +575,11 @@ const char* vtkWrapText_FormatComment(const char* comment, size_t width)
 
         /* handle bullets and numbering */
         else if (cp[l] == '-' || cp[l] == '*' || cp[l] == '#' ||
-          (cp[l] >= '0' && cp[l] <= '9' && (cp[l + 1] == ')' || cp[l + 1] == '.') &&
-            cp[l + 2] == ' '))
+                 (cp[l] >= '0' && cp[l] <= '9' &&
+                  (cp[l+1] == ')' || cp[l+1] == '.') && cp[l+2] == ' '))
         {
           indent = 0;
-          while (indent < 3 && cp[l + indent] != ' ')
+          while (indent < 3 && cp[l+indent] != ' ')
           {
             indent++;
           }
@@ -613,7 +595,7 @@ const char* vtkWrapText_FormatComment(const char* comment, size_t width)
         /* keep paragraph breaks */
         else if (cp[l] == '\n')
         {
-          i = l + 1;
+          i = l+1;
           vtkWPString_Strip(text, "\n");
           if (text->len > 0)
           {
@@ -628,7 +610,8 @@ const char* vtkWrapText_FormatComment(const char* comment, size_t width)
         }
 
         /* add newline if nojoin is not set */
-        else if (nojoin || (cp[i] == ' ' && !indent))
+        else if (nojoin ||
+                (cp[i] == ' ' && !indent))
         {
           if (nojoin == 2)
           {
@@ -655,7 +638,8 @@ const char* vtkWrapText_FormatComment(const char* comment, size_t width)
 
         /* try to keep the quote whole */
         vtkWPString_PushChar(text, cp[i++]);
-        while (cp[i] != '\"' && cp[i] != '\r' && cp[i] != '\n' && cp[i] != '\0')
+        while (cp[i] != '\"' && cp[i] != '\r' &&
+               cp[i] != '\n' && cp[i] != '\0')
         {
           vtkWPString_PushChar(text, cp[i++]);
         }
@@ -673,7 +657,8 @@ const char* vtkWrapText_FormatComment(const char* comment, size_t width)
 
         /* try to keep the quote whole */
         vtkWPString_PushChar(text, cp[i++]);
-        while (cp[i] != '\'' && cp[i] != '\r' && cp[i] != '\n' && cp[i] != '\0')
+        while (cp[i] != '\'' && cp[i] != '\r' &&
+               cp[i] != '\n' && cp[i] != '\0')
         {
           vtkWPString_PushChar(text, cp[i++]);
         }
@@ -688,19 +673,15 @@ const char* vtkWrapText_FormatComment(const char* comment, size_t width)
       /* handle simple html tags */
       else if (cp[i] == '<')
       {
-        l = i + 1;
-        if (cp[l] == '/')
-        {
-          l++;
-        }
-        while ((cp[l] >= 'a' && cp[l] <= 'z') || (cp[l] >= 'A' && cp[l] <= 'Z'))
-        {
-          l++;
-        }
+        l = i+1;
+        if (cp[l] == '/') { l++; }
+        while ((cp[l] >= 'a' && cp[l] <= 'z') ||
+               (cp[l] >= 'A' && cp[l] <= 'Z')) { l++; }
         if (cp[l] == '>')
         {
-          if (cp[i + 1] == 'p' || cp[i + 1] == 'P' || (cp[i + 1] == 'b' && cp[i + 2] == 'r') ||
-            (cp[i + 1] == 'B' && cp[i + 2] == 'R'))
+          if (cp[i+1] == 'p' || cp[i+1] == 'P' ||
+              (cp[i+1] == 'b' && cp[i+2] == 'r') ||
+              (cp[i+1] == 'B' && cp[i+2] == 'R'))
           {
             vtkWPString_Strip(text, " \n");
             vtkWPString_PushChar(text, '\n');
@@ -708,7 +689,7 @@ const char* vtkWrapText_FormatComment(const char* comment, size_t width)
             j = text->len;
             indent = 0;
           }
-          i = l + 1;
+          i = l+1;
           while (cp[i] == '\r' || cp[i] == '\t' || cp[i] == ' ')
           {
             i++;
@@ -718,40 +699,44 @@ const char* vtkWrapText_FormatComment(const char* comment, size_t width)
       else if (cp[i] == '\\' || cp[i] == '@')
       {
         /* handle simple doxygen tags */
-        if (strncmp(&cp[i + 1], "em ", 3) == 0)
+        if (strncmp(&cp[i+1], "em ", 3) == 0)
         {
           i += 4;
         }
-        else if (strncmp(&cp[i + 1], "a ", 2) == 0 || strncmp(&cp[i + 1], "e ", 2) == 0 ||
-          strncmp(&cp[i + 1], "c ", 2) == 0 || strncmp(&cp[i + 1], "b ", 2) == 0 ||
-          strncmp(&cp[i + 1], "p ", 2) == 0 || strncmp(&cp[i + 1], "f$", 2) == 0 ||
-          strncmp(&cp[i + 1], "f[", 2) == 0 || strncmp(&cp[i + 1], "f]", 2) == 0)
+        else if (strncmp(&cp[i+1], "a ", 2) == 0 ||
+                 strncmp(&cp[i+1], "e ", 2) == 0 ||
+                 strncmp(&cp[i+1], "c ", 2) == 0 ||
+                 strncmp(&cp[i+1], "b ", 2) == 0 ||
+                 strncmp(&cp[i+1], "p ", 2) == 0 ||
+                 strncmp(&cp[i+1], "f$", 2) == 0 ||
+                 strncmp(&cp[i+1], "f[", 2) == 0 ||
+                 strncmp(&cp[i+1], "f]", 2) == 0)
         {
-          if (i > 0 && cp[i - 1] != ' ')
+          if (i > 0 && cp[i-1] != ' ')
           {
             vtkWPString_PushChar(text, ' ');
           }
-          if (cp[i + 1] == 'f')
+          if (cp[i+1] == 'f')
           {
-            if (cp[i + 2] == '$')
+            if (cp[i+2] == '$')
             {
               vtkWPString_PushChar(text, '$');
             }
             else
             {
               vtkWPString_PushChar(text, '\\');
-              vtkWPString_PushChar(text, cp[i + 2]);
+              vtkWPString_PushChar(text, cp[i+2]);
             }
           }
           i += 3;
         }
-        else if (cp[i + 1] == '&' || cp[i + 1] == '$' || cp[i + 1] == '#' || cp[i + 1] == '<' ||
-          cp[i + 1] == '>' || cp[i + 1] == '%' || cp[i + 1] == '@' || cp[i + 1] == '\\' ||
-          cp[i + 1] == '\"')
+        else if (cp[i+1] == '&' || cp[i+1] == '$' || cp[i+1] == '#' ||
+                 cp[i+1] == '<' || cp[i+1] == '>' || cp[i+1] == '%' ||
+                 cp[i+1] == '@' || cp[i+1] == '\\' || cp[i+1] == '\"')
         {
           i++;
         }
-        else if (cp[i + 1] == 'n')
+        else if (cp[i+1] == 'n')
         {
           vtkWPString_Strip(text, " \n");
           vtkWPString_PushChar(text, '\n');
@@ -760,7 +745,7 @@ const char* vtkWrapText_FormatComment(const char* comment, size_t width)
           i += 2;
           j = text->len;
         }
-        else if (strncmp(&cp[i + 1], "brief", 5) == 0)
+        else if (strncmp(&cp[i+1], "brief", 5) == 0)
         {
           i += 6;
           while (cp[i] == ' ' || cp[i] == '\r' || cp[i] == '\t')
@@ -768,16 +753,17 @@ const char* vtkWrapText_FormatComment(const char* comment, size_t width)
             i++;
           }
         }
-        else if (strncmp(&cp[i + 1], "code", 4) == 0)
+        else if (strncmp(&cp[i+1], "code", 4) == 0)
         {
           nojoin = 1;
           i += 5;
-          while (cp[i] == ' ' || cp[i] == '\r' || cp[i] == '\t' || cp[i] == '\n')
+          while (cp[i] == ' ' || cp[i] == '\r' ||
+                 cp[i] == '\t' || cp[i] == '\n')
           {
             i++;
           }
         }
-        else if (strncmp(&cp[i + 1], "endcode", 7) == 0)
+        else if (strncmp(&cp[i+1], "endcode", 7) == 0)
         {
           nojoin = 0;
           i += 8;
@@ -793,11 +779,11 @@ const char* vtkWrapText_FormatComment(const char* comment, size_t width)
             j = text->len;
           }
         }
-        else if (strncmp(&cp[i + 1], "verbatim", 8) == 0)
+        else if (strncmp(&cp[i+1], "verbatim", 8) == 0)
         {
           i += 9;
-          while (cp[i] != '\0' &&
-            ((cp[i] != '@' && cp[i] != '\\') || strncmp(&cp[i + 1], "endverbatim", 11) != 0))
+          while (cp[i] != '\0' && ((cp[i] != '@' && cp[i] != '\\') ||
+                 strncmp(&cp[i+1], "endverbatim", 11) != 0))
           {
             if (cp[i] != '\r')
             {
@@ -825,7 +811,7 @@ const char* vtkWrapText_FormatComment(const char* comment, size_t width)
       }
       if (cp[l] == '\n')
       {
-        i = l + 1;
+        i = l+1;
         start = 1;
       }
 
@@ -856,20 +842,22 @@ const char* vtkWrapText_FormatComment(const char* comment, size_t width)
 /* Create a signature for the python version of a method. */
 
 static void vtkWrapText_PythonTypeSignature(
-  struct vtkWPString* result, const char* delims[2], ValueInfo* arg);
+  struct vtkWPString *result, const char *delims[2], ValueInfo *arg);
 
-static void vtkWrapText_PythonArraySignature(struct vtkWPString* result, const char* classname,
-  const char* delims[2], int ndim, const char** dims);
+static void vtkWrapText_PythonArraySignature(
+  struct vtkWPString *result, const char *classname,
+  const char *delims[2], int ndim, const char **dims);
 
-const char* vtkWrapText_PythonSignature(FunctionInfo* currentFunction)
+const char *vtkWrapText_PythonSignature(
+  FunctionInfo *currentFunction)
 {
   /* string is intentionally not freed until the program exits */
   static struct vtkWPString staticString = { NULL, 0, 0 };
-  struct vtkWPString* result;
+  struct vtkWPString *result;
   ValueInfo *arg, *ret;
-  const char* parens[2] = { "(", ")" };
-  const char* braces[2] = { "[", "]" };
-  const char** delims;
+  const char *parens[2] = { "(", ")" };
+  const char *braces[2] = { "[", "]" };
+  const char **delims;
   int i, n;
 
   n = vtkWrap_CountWrappedParameters(currentFunction);
@@ -894,7 +882,8 @@ const char* vtkWrapText_PythonSignature(FunctionInfo* currentFunction)
     }
 
     delims = parens;
-    if (!vtkWrap_IsConst(arg) && !vtkWrap_IsSetVectorMethod(currentFunction))
+    if (!vtkWrap_IsConst(arg) &&
+        !vtkWrap_IsSetVectorMethod(currentFunction))
     {
       delims = braces;
     }
@@ -924,11 +913,11 @@ const char* vtkWrapText_PythonSignature(FunctionInfo* currentFunction)
 }
 
 static void vtkWrapText_PythonTypeSignature(
-  struct vtkWPString* result, const char* braces[2], ValueInfo* arg)
+  struct vtkWPString *result, const char *braces[2], ValueInfo *arg)
 {
   char text[256];
-  const char* dimension;
-  const char* classname = "";
+  const char *dimension;
+  const char *classname = "";
 
   if (vtkWrap_IsVoid(arg))
   {
@@ -968,7 +957,8 @@ static void vtkWrapText_PythonTypeSignature(
     classname = text;
   }
 
-  if ((vtkWrap_IsArray(arg) && arg->CountHint) || vtkWrap_IsPODPointer(arg))
+  if ((vtkWrap_IsArray(arg) && arg->CountHint) ||
+      vtkWrap_IsPODPointer(arg))
   {
     vtkWPString_Append(result, braces[0]);
     vtkWPString_Append(result, classname);
@@ -979,12 +969,13 @@ static void vtkWrapText_PythonTypeSignature(
   {
     sprintf(text, "%d", arg->Count);
     dimension = text;
-    vtkWrapText_PythonArraySignature(result, classname, braces, 1, &dimension);
+    vtkWrapText_PythonArraySignature(result, classname, braces,
+      1, &dimension);
   }
   else if (vtkWrap_IsNArray(arg))
   {
-    vtkWrapText_PythonArraySignature(
-      result, classname, braces, arg->NumberOfDimensions, arg->Dimensions);
+    vtkWrapText_PythonArraySignature(result, classname, braces,
+      arg->NumberOfDimensions, arg->Dimensions);
   }
   else
   {
@@ -992,8 +983,9 @@ static void vtkWrapText_PythonTypeSignature(
   }
 }
 
-static void vtkWrapText_PythonArraySignature(struct vtkWPString* result, const char* classname,
-  const char* braces[2], int ndim, const char** dims)
+static void vtkWrapText_PythonArraySignature(
+  struct vtkWPString *result, const char *classname,
+  const char *braces[2], int ndim, const char **dims)
 {
   int j, n;
 
@@ -1003,21 +995,16 @@ static void vtkWrapText_PythonArraySignature(struct vtkWPString* result, const c
   {
     for (j = 0; j < n; j++)
     {
-      if (j != 0)
-      {
-        vtkWPString_Append(result, ", ");
-      }
-      vtkWrapText_PythonArraySignature(result, classname, braces, ndim - 1, dims + 1);
+      if (j != 0) { vtkWPString_Append(result, ", "); }
+      vtkWrapText_PythonArraySignature(result, classname,
+        braces, ndim-1, dims+1);
     }
   }
   else
   {
     for (j = 0; j < n; j++)
     {
-      if (j != 0)
-      {
-        vtkWPString_Append(result, ", ");
-      }
+      if (j != 0) { vtkWPString_Append(result, ", "); }
       vtkWPString_Append(result, classname);
     }
   }
@@ -1025,12 +1012,12 @@ static void vtkWrapText_PythonArraySignature(struct vtkWPString* result, const c
 }
 
 /* convert C++ identifier to a valid python identifier by mangling */
-void vtkWrapText_PythonName(const char* name, char* pname)
+void vtkWrapText_PythonName(const char *name, char *pname)
 {
   size_t j = 0;
   size_t i;
   size_t l;
-  char* cp;
+  char *cp;
   int scoped = 0;
 
   /* look for first char that is not alphanumeric or underscore */
@@ -1044,19 +1031,13 @@ void vtkWrapText_PythonName(const char* name, char* pname)
     /* put dots after namespaces */
     i = 0;
     cp = pname;
-    if (cp[0] == 'S' && cp[1] >= 'a' && cp[1] <= 'z')
-    {
-      /* keep std:: namespace abbreviations */
-      pname[j++] = *cp++;
-      pname[j++] = *cp++;
-    }
     while (*cp == 'N')
     {
       scoped++;
       cp++;
       while (*cp >= '0' && *cp <= '9')
       {
-        i = i * 10 + (*cp++ - '0');
+        i = i*10 + (*cp++ - '0');
       }
       i += j;
       while (j < i)
@@ -1070,7 +1051,7 @@ void vtkWrapText_PythonName(const char* name, char* pname)
     i = 0;
     while (*cp >= '0' && *cp <= '9')
     {
-      i = i * 10 + (*cp++ - '0');
+      i = i*10 + (*cp++ - '0');
     }
     i += j;
     while (j < i)
@@ -1093,9 +1074,9 @@ void vtkWrapText_PythonName(const char* name, char* pname)
   if (scoped)
   {
     j = strlen(pname);
-    if (j > 2 && pname[j - 2] == '_' && pname[j - 1] == 'E')
+    if (j > 2 && pname[j-2] == '_' && pname[j-1] == 'E')
     {
-      pname[j - 2] = '\0';
+      pname[j-2] = '\0';
     }
   }
 }

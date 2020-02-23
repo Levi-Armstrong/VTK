@@ -20,7 +20,7 @@
  * time steps from the input into one multiblock dataset.  It will assign each
  * time step from the input to one group of the multi-block dataset and will
  * assign each timestep's data as a block in the multi-block datset.
- */
+*/
 
 #ifndef vtkMultiBlockFromTimeSeriesFilter_h
 #define vtkMultiBlockFromTimeSeriesFilter_h
@@ -33,28 +33,33 @@
 
 class vtkMultiBlockDataSet;
 
-class VTKFILTERSGENERAL_EXPORT vtkMultiBlockFromTimeSeriesFilter
-  : public vtkMultiBlockDataSetAlgorithm
+class VTKFILTERSGENERAL_EXPORT vtkMultiBlockFromTimeSeriesFilter : public vtkMultiBlockDataSetAlgorithm
 {
 public:
-  vtkTypeMacro(vtkMultiBlockFromTimeSeriesFilter, vtkMultiBlockDataSetAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkMultiBlockFromTimeSeriesFilter,vtkMultiBlockDataSetAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
-  static vtkMultiBlockFromTimeSeriesFilter* New();
+  static vtkMultiBlockFromTimeSeriesFilter *New();
 
 protected:
   vtkMultiBlockFromTimeSeriesFilter();
-  ~vtkMultiBlockFromTimeSeriesFilter() override;
+  ~vtkMultiBlockFromTimeSeriesFilter() VTK_OVERRIDE;
 
-  int FillInputPortInformation(int, vtkInformation*) override;
+  int FillInputPortInformation(int, vtkInformation *) VTK_OVERRIDE;
 
-  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int RequestUpdateExtent(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestInformation(vtkInformation *,
+                  vtkInformationVector **,
+                  vtkInformationVector *) VTK_OVERRIDE;
+  int RequestUpdateExtent(vtkInformation *,
+                  vtkInformationVector **,
+                  vtkInformationVector *) VTK_OVERRIDE;
+  int RequestData(vtkInformation *,
+                  vtkInformationVector **,
+                  vtkInformationVector *) VTK_OVERRIDE;
 
 private:
-  vtkMultiBlockFromTimeSeriesFilter(const vtkMultiBlockFromTimeSeriesFilter&) = delete;
-  void operator=(const vtkMultiBlockFromTimeSeriesFilter&) = delete;
+  vtkMultiBlockFromTimeSeriesFilter(const vtkMultiBlockFromTimeSeriesFilter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkMultiBlockFromTimeSeriesFilter&) VTK_DELETE_FUNCTION;
 
   int UpdateTimeIndex;
   std::vector<double> TimeSteps;

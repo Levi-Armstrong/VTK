@@ -59,15 +59,16 @@
  *   vtkCommand::InteractionEvent (on vtkWidgetEvent::Move)
  * </pre>
  *
- */
+*/
 
 #ifndef vtkContinuousValueWidget_h
 #define vtkContinuousValueWidget_h
 
-#include "vtkAbstractWidget.h"
 #include "vtkInteractionWidgetsModule.h" // For export macro
+#include "vtkAbstractWidget.h"
 
 class vtkContinuousValueWidgetRepresentation;
+
 
 class VTKINTERACTIONWIDGETS_EXPORT vtkContinuousValueWidget : public vtkAbstractWidget
 {
@@ -76,8 +77,8 @@ public:
   /**
    * Standard macros.
    */
-  vtkTypeMacro(vtkContinuousValueWidget, vtkAbstractWidget);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkContinuousValueWidget,vtkAbstractWidget);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   /**
@@ -85,18 +86,15 @@ public:
    * widget in the scene. Note that the representation is a subclass of vtkProp
    * so it can be added to the renderer independent of the widget.
    */
-  void SetRepresentation(vtkContinuousValueWidgetRepresentation* r)
-  {
-    this->Superclass::SetWidgetRepresentation(reinterpret_cast<vtkWidgetRepresentation*>(r));
-  }
+  void SetRepresentation(vtkContinuousValueWidgetRepresentation *r)
+  {this->Superclass::SetWidgetRepresentation
+     (reinterpret_cast<vtkWidgetRepresentation*>(r));}
 
   /**
    * Return the representation as a vtkContinuousValueWidgetRepresentation.
    */
-  vtkContinuousValueWidgetRepresentation* GetContinuousValueWidgetRepresentation()
-  {
-    return reinterpret_cast<vtkContinuousValueWidgetRepresentation*>(this->WidgetRep);
-  }
+  vtkContinuousValueWidgetRepresentation *GetContinuousValueWidgetRepresentation()
+    {return reinterpret_cast<vtkContinuousValueWidgetRepresentation*>(this->WidgetRep);}
 
   //@{
   /**
@@ -108,7 +106,7 @@ public:
 
 protected:
   vtkContinuousValueWidget();
-  ~vtkContinuousValueWidget() override {}
+  ~vtkContinuousValueWidget() {}
 
   // These are the events that are handled
   static void SelectAction(vtkAbstractWidget*);
@@ -119,7 +117,7 @@ protected:
   int WidgetState;
   enum _WidgetState
   {
-    Start = 0,
+    Start=0,
     Highlighting,
     Adjusting
   };
@@ -127,8 +125,8 @@ protected:
   double Value;
 
 private:
-  vtkContinuousValueWidget(const vtkContinuousValueWidget&) = delete;
-  void operator=(const vtkContinuousValueWidget&) = delete;
+  vtkContinuousValueWidget(const vtkContinuousValueWidget&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkContinuousValueWidget&) VTK_DELETE_FUNCTION;
 };
 
 #endif

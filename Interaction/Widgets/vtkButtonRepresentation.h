@@ -22,7 +22,7 @@
  * defines an API, and a default implementation, that the vtkButtonWidget
  * interacts with to render itself in the scene.
  *
- * The vtkButtonWidget assumes an n-state button so that traversal methods
+ * The vtkButtonWidget assumes an n-state button so that traveral methods
  * are available for changing, querying and manipulating state. Derived
  * classed determine the actual appearance. The state is represented by an
  * integral value 0<=state<numStates.
@@ -33,13 +33,14 @@
  *
  * @sa
  * vtkButtonWidget
- */
+*/
 
 #ifndef vtkButtonRepresentation_h
 #define vtkButtonRepresentation_h
 
 #include "vtkInteractionWidgetsModule.h" // For export macro
 #include "vtkWidgetRepresentation.h"
+
 
 class VTKINTERACTIONWIDGETS_EXPORT vtkButtonRepresentation : public vtkWidgetRepresentation
 {
@@ -48,28 +49,28 @@ public:
   /**
    * Standard methods for the class.
    */
-  vtkTypeMacro(vtkButtonRepresentation, vtkWidgetRepresentation);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkButtonRepresentation,vtkWidgetRepresentation);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   //@{
   /**
    * Retrieve the current button state.
    */
-  vtkSetClampMacro(NumberOfStates, int, 1, VTK_INT_MAX);
+  vtkSetClampMacro(NumberOfStates,int,1,VTK_INT_MAX);
   //@}
 
   //@{
   /**
    * Retrieve the current button state.
    */
-  vtkGetMacro(State, int);
+  vtkGetMacro(State,int);
   //@}
 
   //@{
   /**
    * Manipulate the state. Note that the NextState() and PreviousState() methods
-   * use modulo traversal. The "state" integral value will be clamped within
+   * use modulo traveral. The "state" integral value will be clamped within
    * the possible state values (0<=state<NumberOfStates). Note that subclasses
    * will override these methods in many cases.
    */
@@ -80,7 +81,7 @@ public:
 
   enum _InteractionState
   {
-    Outside = 0,
+    Outside=0,
     Inside
   };
 
@@ -93,24 +94,19 @@ public:
    * Otherwise, the HighlightNormal is used. The Highlight() method will throw
    * a vtkCommand::HighlightEvent.
    */
-  enum _HighlightState
-  {
-    HighlightNormal,
-    HighlightHovering,
-    HighlightSelecting
-  };
-  void Highlight(int) override;
-  vtkGetMacro(HighlightState, int);
+  enum _HighlightState {HighlightNormal,HighlightHovering,HighlightSelecting};
+  virtual void Highlight(int);
+  vtkGetMacro(HighlightState,int);
   //@}
 
   /**
    * Satisfy some of vtkProp's API.
    */
-  void ShallowCopy(vtkProp* prop) override;
+  virtual void ShallowCopy(vtkProp *prop);
 
 protected:
   vtkButtonRepresentation();
-  ~vtkButtonRepresentation() override;
+  ~vtkButtonRepresentation();
 
   // Values
   int NumberOfStates;
@@ -118,8 +114,8 @@ protected:
   int HighlightState;
 
 private:
-  vtkButtonRepresentation(const vtkButtonRepresentation&) = delete;
-  void operator=(const vtkButtonRepresentation&) = delete;
+  vtkButtonRepresentation(const vtkButtonRepresentation&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkButtonRepresentation&) VTK_DELETE_FUNCTION;
 };
 
 #endif

@@ -50,24 +50,25 @@ POSSIBILITY OF SUCH DAMAGES.
 
 #include "vtkObjectFactory.h"
 
-#include "vtkCollection.h"
-#include "vtkDoubleArray.h"
-#include "vtkGeneralTransform.h"
-#include "vtkGridTransform.h"
 #include "vtkImageData.h"
+#include "vtkMINCImageReader.h"
+#include "vtkStreamingDemandDrivenPipeline.h"
+#include "vtkCollection.h"
+#include "vtkTransform.h"
+#include "vtkGeneralTransform.h"
+#include "vtkThinPlateSplineTransform.h"
+#include "vtkGridTransform.h"
+#include "vtkDoubleArray.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
-#include "vtkMINCImageReader.h"
 #include "vtkPoints.h"
-#include "vtkStreamingDemandDrivenPipeline.h"
-#include "vtkThinPlateSplineTransform.h"
-#include "vtkTransform.h"
 
 #include <cctype>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #include <string>
 #include <vector>
-#include <vtksys/FStream.hxx>
 #include <vtksys/SystemTools.hxx>
 
 //--------------------------------------------------------------------------
@@ -76,11 +77,11 @@ vtkStandardNewMacro(vtkMNITransformReader);
 //-------------------------------------------------------------------------
 vtkMNITransformReader::vtkMNITransformReader()
 {
-  this->FileName = nullptr;
-  this->Transform = nullptr;
+  this->FileName = 0;
+  this->Transform = 0;
   this->Transforms = vtkCollection::New();
   this->LineNumber = 0;
-  this->Comments = nullptr;
+  this->Comments = 0;
 }
 
 //-------------------------------------------------------------------------
@@ -94,23 +95,26 @@ vtkMNITransformReader::~vtkMNITransformReader()
   {
     this->Transform->Delete();
   }
-  delete[] this->FileName;
-  delete[] this->Comments;
+  delete [] this->FileName;
+  delete [] this->Comments;
 }
 
 //-------------------------------------------------------------------------
 void vtkMNITransformReader::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 
-  os << indent << "FileName: " << (this->FileName ? this->FileName : "none") << "\n";
+  os << indent << "FileName: "
+     << (this->FileName ? this->FileName : "none") << "\n";
   os << indent << "Transform: " << this->Transform << "\n";
   if (this->Transform)
   {
     this->Transform->PrintSelf(os, indent.GetNextIndent());
   }
-  os << indent << "NumberOfTransforms: " << this->Transforms->GetNumberOfItems() << "\n";
-  os << indent << "Comments: " << (this->Comments ? this->Comments : "none") << "\n";
+  os << indent << "NumberOfTransforms: "
+     << this->Transforms->GetNumberOfItems() << "\n";
+  os << indent << "Comments: "
+     << (this->Comments ? this->Comments : "none") << "\n";
 }
 
 //-------------------------------------------------------------------------
@@ -118,8 +122,8 @@ int vtkMNITransformReader::CanReadFile(const char* fname)
 {
   // First make sure the file exists.  This prevents an empty file
   // from being created on older compilers.
-  vtksys::SystemTools::Stat_t fs;
-  if (vtksys::SystemTools::Stat(fname, &fs) != 0)
+  struct stat fs;
+  if(stat(fname, &fs) != 0)
   {
     return 0;
   }
@@ -127,7 +131,7 @@ int vtkMNITransformReader::CanReadFile(const char* fname)
   // Try to read the first line of the file.
   int status = 0;
 
-  vtksys::ifstream infile(fname);
+  ifstream infile(fname);
 
   if (infile.good())
   {
@@ -148,11 +152,12 @@ int vtkMNITransformReader::CanReadFile(const char* fname)
 //-------------------------------------------------------------------------
 // Internal function to read in a line up to 256 characters and then
 // skip to the next line in the file.
-int vtkMNITransformReader::ReadLine(istream& infile, char result[256])
+int vtkMNITransformReader::ReadLine(
+  istream &infile, char result[256])
 {
   this->LineNumber++;
 
-  infile.getline(result, 256);
+  infile.getline(result,256);
   if (infile.fail())
   {
     if (infile.eof())
@@ -164,8 +169,8 @@ int vtkMNITransformReader::ReadLine(istream& infile, char result[256])
       // Read 256 chars; ignoring the rest of the line.
       infile.clear();
       infile.ignore(VTK_INT_MAX, '\n');
-      vtkWarningMacro(
-        "Overlength line (limit is 255) in " << this->FileName << ":" << this->LineNumber);
+      vtkWarningMacro("Overlength line (limit is 255) in "
+                      << this->FileName << ":" << this->LineNumber);
     }
   }
 
@@ -174,7 +179,8 @@ int vtkMNITransformReader::ReadLine(istream& infile, char result[256])
 
 //-------------------------------------------------------------------------
 // Skip all blank lines or comment lines and return the first useful line
-int vtkMNITransformReader::ReadLineAfterComments(istream& infile, char result[256])
+int vtkMNITransformReader::ReadLineAfterComments(
+  istream &infile, char result[256])
 {
   // Skip over any comment lines or blank lines.
   // Comment lines start with '%'
@@ -182,7 +188,7 @@ int vtkMNITransformReader::ReadLineAfterComments(istream& infile, char result[25
   do
   {
     this->ReadLine(infile, result);
-    const char* cp = result;
+    const char *cp = result;
     while (*cp && isspace(*cp))
     {
       cp++;
@@ -197,22 +203,24 @@ int vtkMNITransformReader::ReadLineAfterComments(istream& infile, char result[25
     }
     else if (*cp != '\0')
     {
-      delete[] this->Comments;
+      delete [] this->Comments;
       this->Comments = new char[comments.length() + 1];
       strncpy(this->Comments, comments.c_str(), comments.length());
       this->Comments[comments.length()] = '\0';
       return 1;
     }
-  } while (infile.good());
+  }
+  while (infile.good());
 
   return 0;
 }
 
 //-------------------------------------------------------------------------
 // Skip all whitespace, reading additional lines if necessary
-int vtkMNITransformReader::SkipWhitespace(istream& infile, char linetext[256], char** cpp)
+int vtkMNITransformReader::SkipWhitespace(
+  istream &infile, char linetext[256], char **cpp)
 {
-  char* cp = *cpp;
+  char *cp = *cpp;
 
   while (infile.good())
   {
@@ -239,10 +247,10 @@ int vtkMNITransformReader::SkipWhitespace(istream& infile, char linetext[256], c
 // Read the left hand side of a statement, including the equals sign
 // and any whitespace following the equals.
 int vtkMNITransformReader::ParseLeftHandSide(
-  istream& infile, char linetext[256], char** cpp, char identifier[256])
+  istream &infile, char linetext[256], char **cpp, char identifier[256])
 {
   int i = 0;
-  char* cp = *cpp;
+  char *cp = *cpp;
 
   // Read alphanumeric plus underscore
   if (!isdigit(*cp))
@@ -264,7 +272,8 @@ int vtkMNITransformReader::ParseLeftHandSide(
   this->SkipWhitespace(infile, linetext, &cp);
   if (*cp != '=')
   {
-    vtkErrorMacro("Missing \'=\' " << this->FileName << ":" << this->LineNumber);
+    vtkErrorMacro("Missing \'=\' " << this->FileName
+                  << ":" << this->LineNumber);
     return 0;
   }
   cp++;
@@ -283,10 +292,10 @@ int vtkMNITransformReader::ParseLeftHandSide(
 // whitespace occurring before the semicolon. The string may not be
 // split across multiple lines.
 int vtkMNITransformReader::ParseStringValue(
-  istream& infile, char linetext[256], char** cpp, char data[256])
+  istream &infile, char linetext[256], char **cpp, char data[256])
 {
   int i = 0;
-  char* cp = *cpp;
+  char *cp = *cpp;
 
   this->SkipWhitespace(infile, linetext, &cp);
 
@@ -297,7 +306,7 @@ int vtkMNITransformReader::ParseStringValue(
   }
 
   // Remove trailing whitespace
-  while (i > 0 && isspace(data[i - 1]))
+  while (i > 0 && isspace(data[i-1]))
   {
     i--;
   }
@@ -307,7 +316,8 @@ int vtkMNITransformReader::ParseStringValue(
   this->SkipWhitespace(infile, linetext, &cp);
   if (*cp != ';')
   {
-    vtkErrorMacro("Missing semicolon " << this->FileName << ":" << this->LineNumber);
+    vtkErrorMacro("Missing semicolon " << this->FileName
+                  << ":" << this->LineNumber);
     return 0;
   }
   cp++;
@@ -321,18 +331,19 @@ int vtkMNITransformReader::ParseStringValue(
 // Read floating-point values into a vtkDoubleArray until a semicolon
 // is reached.  The semicolon is also read.
 int vtkMNITransformReader::ParseFloatValues(
-  istream& infile, char linetext[256], char** cpp, vtkDoubleArray* array)
+  istream &infile, char linetext[256], char **cpp, vtkDoubleArray *array)
 {
-  char* cp = *cpp;
+  char *cp = *cpp;
 
   this->SkipWhitespace(infile, linetext, &cp);
   while (infile.good() && *cp != ';')
   {
-    char* tmp = cp;
+    char *tmp = cp;
     double val = strtod(cp, &cp);
     if (cp == tmp)
     {
-      vtkErrorMacro("Syntax error " << this->FileName << ":" << this->LineNumber);
+      vtkErrorMacro("Syntax error " << this->FileName
+                    << ":" << this->LineNumber);
       return 0;
     }
     array->InsertNextValue(val);
@@ -341,7 +352,8 @@ int vtkMNITransformReader::ParseFloatValues(
 
   if (*cp != ';')
   {
-    vtkErrorMacro("Missing semicolon " << this->FileName << ":" << this->LineNumber);
+    vtkErrorMacro("Missing semicolon " << this->FileName
+                  << ":" << this->LineNumber);
     return 0;
   }
   cp++;
@@ -353,7 +365,7 @@ int vtkMNITransformReader::ParseFloatValues(
 
 //-------------------------------------------------------------------------
 int vtkMNITransformReader::ParseInvertFlagValue(
-  istream& infile, char linetext[256], char** cpp, int* invertFlag)
+  istream &infile, char linetext[256], char **cpp, int *invertFlag)
 {
   char data[256];
 
@@ -371,16 +383,18 @@ int vtkMNITransformReader::ParseInvertFlagValue(
   }
   else
   {
-    vtkErrorMacro(
-      "Invert_Flag must be \'True\' or \'False\' " << this->FileName << ":" << this->LineNumber);
+    vtkErrorMacro("Invert_Flag must be \'True\' or \'False\' "
+                  << this->FileName << ":" << this->LineNumber);
     return 0;
   }
 
   return 1;
 }
 
+
 //-------------------------------------------------------------------------
-int vtkMNITransformReader::ReadLinearTransform(istream& infile, char linetext[256], char** cpp)
+int vtkMNITransformReader::ReadLinearTransform(
+  istream &infile, char linetext[256], char **cpp)
 {
   // Read the first variable
   this->SkipWhitespace(infile, linetext, cpp);
@@ -409,12 +423,13 @@ int vtkMNITransformReader::ReadLinearTransform(istream& infile, char linetext[25
   // Check for Linear_Transform
   if (strcmp(identifier, "Linear_Transform") != 0)
   {
-    vtkErrorMacro("Expected \'Linear_Transform\' in " << this->FileName << ":" << this->LineNumber);
+    vtkErrorMacro("Expected \'Linear_Transform\' in "
+                  << this->FileName << ":" << this->LineNumber);
     return 0;
   }
 
   // Read twelve array elements from the file
-  vtkDoubleArray* array = vtkDoubleArray::New();
+  vtkDoubleArray *array = vtkDoubleArray::New();
   if (!this->ParseFloatValues(infile, linetext, cpp, array))
   {
     return 0;
@@ -422,8 +437,8 @@ int vtkMNITransformReader::ReadLinearTransform(istream& infile, char linetext[25
 
   if (array->GetNumberOfTuples() != 12)
   {
-    vtkErrorMacro("Linear transform must have exactly 12 elements " << this->FileName << ":"
-                                                                    << this->LineNumber);
+    vtkErrorMacro("Linear transform must have exactly 12 elements "
+                  << this->FileName << ":" << this->LineNumber);
     array->Delete();
     return 0;
   }
@@ -435,7 +450,7 @@ int vtkMNITransformReader::ReadLinearTransform(istream& infile, char linetext[25
   array->InsertNextValue(1.0);
 
   // Create the transform
-  vtkTransform* transform = vtkTransform::New();
+  vtkTransform *transform = vtkTransform::New();
   transform->Concatenate(array->GetPointer(0));
   array->Delete();
   if (invertFlag)
@@ -451,7 +466,7 @@ int vtkMNITransformReader::ReadLinearTransform(istream& infile, char linetext[25
 
 //-------------------------------------------------------------------------
 int vtkMNITransformReader::ReadThinPlateSplineTransform(
-  istream& infile, char linetext[256], char** cpp)
+  istream &infile, char linetext[256], char **cpp)
 {
   // Read the first variable
   this->SkipWhitespace(infile, linetext, cpp);
@@ -480,8 +495,8 @@ int vtkMNITransformReader::ReadThinPlateSplineTransform(
   // Number_Dimensions: vtkThinPlateSplineTransform supports 2 and 3
   if (strcmp(identifier, "Number_Dimensions") != 0)
   {
-    vtkErrorMacro(
-      "Expected \'Number_Dimensions\' in " << this->FileName << ":" << this->LineNumber);
+    vtkErrorMacro("Expected \'Number_Dimensions\' in "
+                  << this->FileName << ":" << this->LineNumber);
     return 0;
   }
 
@@ -494,8 +509,8 @@ int vtkMNITransformReader::ReadThinPlateSplineTransform(
   int numDimensions = data[0] - '0';
   if (data[1] != '\0' || numDimensions < 2 || numDimensions > 3)
   {
-    vtkErrorMacro(
-      "Number_Dimensions must be 2 or 3 in " << this->FileName << ":" << this->LineNumber);
+    vtkErrorMacro("Number_Dimensions must be 2 or 3 in "
+                  << this->FileName << ":" << this->LineNumber);
     return 0;
   }
 
@@ -508,11 +523,12 @@ int vtkMNITransformReader::ReadThinPlateSplineTransform(
 
   if (strcmp(identifier, "Points") != 0)
   {
-    vtkErrorMacro("Expected \'Points\' in " << this->FileName << ":" << this->LineNumber);
+    vtkErrorMacro("Expected \'Points\' in "
+                  << this->FileName << ":" << this->LineNumber);
     return 0;
   }
 
-  vtkDoubleArray* points = vtkDoubleArray::New();
+  vtkDoubleArray *points = vtkDoubleArray::New();
   if (!this->ParseFloatValues(infile, linetext, cpp, points))
   {
     points->Delete();
@@ -522,8 +538,8 @@ int vtkMNITransformReader::ReadThinPlateSplineTransform(
   if (points->GetNumberOfTuples() % numDimensions != 0)
   {
     points->Delete();
-    vtkErrorMacro("Points list not divisible by Number_Dimensions in " << this->FileName << ":"
-                                                                       << this->LineNumber);
+    vtkErrorMacro("Points list not divisible by Number_Dimensions in "
+                  << this->FileName << ":" << this->LineNumber);
     return 0;
   }
 
@@ -538,11 +554,12 @@ int vtkMNITransformReader::ReadThinPlateSplineTransform(
   if (strcmp(identifier, "Displacements") != 0)
   {
     points->Delete();
-    vtkErrorMacro("Expected \'Displacements\' in " << this->FileName << ":" << this->LineNumber);
+    vtkErrorMacro("Expected \'Displacements\' in "
+                  << this->FileName << ":" << this->LineNumber);
     return 0;
   }
 
-  vtkDoubleArray* displacements = vtkDoubleArray::New();
+  vtkDoubleArray *displacements = vtkDoubleArray::New();
   if (!this->ParseFloatValues(infile, linetext, cpp, displacements))
   {
     displacements->Delete();
@@ -551,12 +568,12 @@ int vtkMNITransformReader::ReadThinPlateSplineTransform(
   }
 
   if (displacements->GetNumberOfTuples() !=
-    points->GetNumberOfTuples() + numDimensions * (numDimensions + 1))
+      points->GetNumberOfTuples() + numDimensions*(numDimensions + 1))
   {
     displacements->Delete();
     points->Delete();
-    vtkErrorMacro(
-      "Incorrect number of Displacements in " << this->FileName << ":" << this->LineNumber);
+    vtkErrorMacro("Incorrect nubmer of Displacements in "
+                  << this->FileName << ":" << this->LineNumber);
     return 0;
   }
 
@@ -565,23 +582,23 @@ int vtkMNITransformReader::ReadThinPlateSplineTransform(
   // to perform a thin-plate spline transform to get the points
   // that we need.
 
-  int numPoints = points->GetNumberOfTuples() / numDimensions;
+  int numPoints = points->GetNumberOfTuples()/numDimensions;
   int i = 0;
   int j = 0;
 
   // Convert points and displacements to 3D
-  double(*q)[3] = new double[numPoints][3];
-  double(*W)[3] = new double[numPoints][3];
+  double (*q)[3] = new double[numPoints][3];
+  double (*W)[3] = new double[numPoints][3];
   for (i = 0; i < numPoints; i++)
   {
-    double* point = q[i];
-    double* displacement = W[i];
+    double *point = q[i];
+    double *displacement = W[i];
     point[0] = point[1] = point[2] = 0.0;
     displacement[0] = displacement[1] = displacement[2] = 0.0;
     for (j = 0; j < numDimensions; j++)
     {
-      point[j] = points->GetValue(i * numDimensions + j);
-      displacement[j] = displacements->GetValue(i * numDimensions + j);
+      point[j] = points->GetValue(i*numDimensions + j);
+      displacement[j] = displacements->GetValue(i*numDimensions + j);
     }
   }
 
@@ -590,7 +607,7 @@ int vtkMNITransformReader::ReadThinPlateSplineTransform(
   C[0] = C[1] = C[2] = 0.0;
   for (j = 0; j < numDimensions; j++)
   {
-    C[j] = displacements->GetValue(numPoints * numDimensions + j);
+    C[j] = displacements->GetValue(numPoints*numDimensions + j);
   }
 
   // Get the square matrix portion of the TPS matrix
@@ -601,7 +618,8 @@ int vtkMNITransformReader::ReadThinPlateSplineTransform(
   {
     for (j = 0; j < numDimensions; j++)
     {
-      A[i][j] = displacements->GetValue((numPoints + 1 + i) * numDimensions + j);
+      A[i][j] = displacements->GetValue(
+        (numPoints + 1 + i)*numDimensions + j);
     }
   }
 
@@ -609,11 +627,11 @@ int vtkMNITransformReader::ReadThinPlateSplineTransform(
   points->Delete();
 
   // Create the source and target point lists
-  vtkPoints* source = vtkPoints::New();
-  vtkPoints* target = vtkPoints::New();
+  vtkPoints *source = vtkPoints::New();
+  vtkPoints *target = vtkPoints::New();
   for (i = 0; i < numPoints; i++)
   {
-    double* p = q[i];
+    double *p = q[i];
     double x = 0.0;
     double y = 0.0;
     double z = 0.0;
@@ -623,26 +641,26 @@ int vtkMNITransformReader::ReadThinPlateSplineTransform(
       double dx = p[0] - q[j][0];
       double dy = p[1] - q[j][1];
       double dz = p[2] - q[j][2];
-      double r = sqrt(dx * dx + dy * dy + dz * dz);
-      double U = ((numDimensions == 2 && r != 0) ? r * r * log(r) : r);
-      x += U * W[j][0];
-      y += U * W[j][1];
-      z += U * W[j][2];
+      double r = sqrt(dx*dx + dy*dy + dz*dz);
+      double U = ((numDimensions == 2 && r != 0) ? r*r*log(r) : r);
+      x += U*W[j][0];
+      y += U*W[j][1];
+      z += U*W[j][2];
     }
 
-    x += C[0] + p[0] * A[0][0] + p[1] * A[1][0] + p[2] * A[2][0];
-    y += C[1] + p[0] * A[0][1] + p[1] * A[1][1] + p[2] * A[2][1];
-    z += C[2] + p[0] * A[0][2] + p[1] * A[1][2] + p[2] * A[2][2];
+    x += C[0] + p[0]*A[0][0] + p[1]*A[1][0] + p[2]*A[2][0];
+    y += C[1] + p[0]*A[0][1] + p[1]*A[1][1] + p[2]*A[2][1];
+    z += C[2] + p[0]*A[0][2] + p[1]*A[1][2] + p[2]*A[2][2];
 
     source->InsertNextPoint(p);
     target->InsertNextPoint(x, y, z);
   }
 
-  delete[] q;
-  delete[] W;
+  delete [] q;
+  delete [] W;
 
   // Create the thin plate spline transform
-  vtkThinPlateSplineTransform* transform = vtkThinPlateSplineTransform::New();
+  vtkThinPlateSplineTransform *transform = vtkThinPlateSplineTransform::New();
   transform->SetSourceLandmarks(source);
   transform->SetTargetLandmarks(target);
   if (numDimensions == 2)
@@ -669,7 +687,8 @@ int vtkMNITransformReader::ReadThinPlateSplineTransform(
 }
 
 //-------------------------------------------------------------------------
-int vtkMNITransformReader::ReadGridTransform(istream& infile, char linetext[256], char** cpp)
+int vtkMNITransformReader::ReadGridTransform(
+  istream &infile, char linetext[256], char **cpp)
 {
   // Read the first variable
   this->SkipWhitespace(infile, linetext, cpp);
@@ -698,8 +717,8 @@ int vtkMNITransformReader::ReadGridTransform(istream& infile, char linetext[256]
   // Displacement_Volume must be a minc file
   if (strcmp(identifier, "Displacement_Volume") != 0)
   {
-    vtkErrorMacro(
-      "Expected \'Displacement_Volume\' in " << this->FileName << ":" << this->LineNumber);
+    vtkErrorMacro("Expected \'Displacement_Volume\' in "
+                  << this->FileName << ":" << this->LineNumber);
     return 0;
   }
 
@@ -710,7 +729,7 @@ int vtkMNITransformReader::ReadGridTransform(istream& infile, char linetext[256]
   }
 
   // Create the minc reader
-  vtkMINCImageReader* reader = vtkMINCImageReader::New();
+  vtkMINCImageReader *reader = vtkMINCImageReader::New();
 
   std::vector<std::string> xfmpath;
   std::vector<std::string> mincpath;
@@ -719,10 +738,10 @@ int vtkMNITransformReader::ReadGridTransform(istream& infile, char linetext[256]
   vtksys::SystemTools::SplitPath(filename, mincpath);
 
   // Join minc filename to this->FileName if filename is relative
-  if (mincpath[0].empty())
+  if (mincpath[0] == "")
   {
     xfmpath.pop_back();
-    xfmpath.insert(xfmpath.end(), mincpath.begin() + 1, mincpath.end());
+    xfmpath.insert(xfmpath.end(), mincpath.begin()+1, mincpath.end());
     reader->SetFileName(vtksys::SystemTools::JoinPath(xfmpath).c_str());
   }
   else
@@ -734,7 +753,7 @@ int vtkMNITransformReader::ReadGridTransform(istream& infile, char linetext[256]
   reader->Update();
 
   // Create the transform
-  vtkGridTransform* transform = vtkGridTransform::New();
+  vtkGridTransform *transform = vtkGridTransform::New();
   transform->SetDisplacementGridConnection(reader->GetOutputPort());
   transform->SetDisplacementShift(reader->GetRescaleIntercept());
   transform->SetDisplacementScale(reader->GetRescaleSlope());
@@ -755,7 +774,7 @@ int vtkMNITransformReader::ReadGridTransform(istream& infile, char linetext[256]
 }
 
 //-------------------------------------------------------------------------
-int vtkMNITransformReader::ReadNextTransform(istream& infile, char linetext[256])
+int vtkMNITransformReader::ReadNextTransform(istream &infile, char linetext[256])
 {
   // Check for errors
   if (infile.eof())
@@ -769,7 +788,7 @@ int vtkMNITransformReader::ReadNextTransform(istream& infile, char linetext[256]
   }
 
   // Parse the file
-  char* cp = linetext;
+  char *cp = linetext;
 
   // Check for Transform_Type
   char identifier[256];
@@ -781,7 +800,8 @@ int vtkMNITransformReader::ReadNextTransform(istream& infile, char linetext[256]
 
   if (strcmp(identifier, "Transform_Type") != 0)
   {
-    vtkErrorMacro("Expected Transform_Type in " << this->FileName << ":" << this->LineNumber);
+    vtkErrorMacro("Expected Transform_Type in "
+                  << this->FileName << ":" << this->LineNumber);
     return 0;
   }
 
@@ -806,8 +826,8 @@ int vtkMNITransformReader::ReadNextTransform(istream& infile, char linetext[256]
     return this->ReadGridTransform(infile, linetext, &cp);
   }
 
-  vtkErrorMacro(
-    "Unrecognized type " << transformType << " in " << this->FileName << ":" << this->LineNumber);
+  vtkErrorMacro("Unrecognized type " << transformType << " in "
+                << this->FileName << ":" << this->LineNumber);
   return 0;
 }
 
@@ -815,7 +835,7 @@ int vtkMNITransformReader::ReadNextTransform(istream& infile, char linetext[256]
 int vtkMNITransformReader::ReadFile()
 {
   this->Transforms->RemoveAllItems();
-  this->SetTransform(nullptr);
+  this->SetTransform(0);
 
   // Check that the file name has been set.
   if (!this->FileName)
@@ -825,15 +845,15 @@ int vtkMNITransformReader::ReadFile()
   }
 
   // Make sure that the file exists.
-  vtksys::SystemTools::Stat_t fs;
-  if (vtksys::SystemTools::Stat(this->FileName, &fs) != 0)
+  struct stat fs;
+  if(stat(this->FileName, &fs) != 0)
   {
     vtkErrorMacro("ReadFile: Can't open file " << this->FileName);
     return 0;
   }
 
   // Make sure that the file is readable.
-  vtksys::ifstream infile(this->FileName);
+  ifstream infile(this->FileName);
 
   if (infile.fail())
   {
@@ -874,7 +894,8 @@ int vtkMNITransformReader::ReadFile()
   int n = this->Transforms->GetNumberOfItems();
   if (n == 1)
   {
-    this->SetTransform((vtkAbstractTransform*)this->Transforms->GetItemAsObject(0));
+    this->SetTransform(
+      (vtkAbstractTransform *)this->Transforms->GetItemAsObject(0));
   }
   else
   {
@@ -894,12 +915,12 @@ int vtkMNITransformReader::ReadFile()
     // else use vtkGeneralTransform.
     if (linear)
     {
-      vtkTransform* transform = vtkTransform::New();
+      vtkTransform *transform = vtkTransform::New();
       transform->PostMultiply();
       for (i = 0; i < n; i++)
       {
-        vtkLinearTransform* linearTransform =
-          (vtkLinearTransform*)this->Transforms->GetItemAsObject(i);
+        vtkLinearTransform *linearTransform =
+          (vtkLinearTransform *)this->Transforms->GetItemAsObject(i);
         transform->Concatenate(linearTransform->GetMatrix());
       }
       this->SetTransform(transform);
@@ -907,15 +928,16 @@ int vtkMNITransformReader::ReadFile()
     }
     else
     {
-      vtkGeneralTransform* transform = vtkGeneralTransform::New();
+      vtkGeneralTransform *transform = vtkGeneralTransform::New();
       transform->PostMultiply();
       for (i = 0; i < n; i++)
       {
-        vtkAbstractTransform* abstractTransform =
-          (vtkAbstractTransform*)this->Transforms->GetItemAsObject(i);
+        vtkAbstractTransform *abstractTransform =
+          (vtkAbstractTransform *)this->Transforms->GetItemAsObject(i);
         if (abstractTransform->IsA("vtkLinearTransform"))
         {
-          transform->Concatenate(((vtkLinearTransform*)abstractTransform)->GetMatrix());
+          transform->Concatenate(
+            ((vtkLinearTransform *)abstractTransform)->GetMatrix());
         }
         else
         {
@@ -931,10 +953,11 @@ int vtkMNITransformReader::ReadFile()
 }
 
 //-------------------------------------------------------------------------
-vtkTypeBool vtkMNITransformReader::ProcessRequest(
-  vtkInformation* request, vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+int vtkMNITransformReader::ProcessRequest(vtkInformation *request,
+                                    vtkInformationVector **inputVector,
+                                    vtkInformationVector *outputVector)
 {
-  if (request->Has(vtkDemandDrivenPipeline::REQUEST_DATA()))
+  if(request->Has(vtkDemandDrivenPipeline::REQUEST_DATA()))
   {
     return this->ReadFile();
   }
@@ -943,7 +966,7 @@ vtkTypeBool vtkMNITransformReader::ProcessRequest(
 }
 
 //-------------------------------------------------------------------------
-void vtkMNITransformReader::SetTransform(vtkAbstractTransform* transform)
+void vtkMNITransformReader::SetTransform(vtkAbstractTransform *transform)
 {
   if (this->Transform != transform)
   {
@@ -960,7 +983,7 @@ void vtkMNITransformReader::SetTransform(vtkAbstractTransform* transform)
 }
 
 //-------------------------------------------------------------------------
-vtkAbstractTransform* vtkMNITransformReader::GetTransform()
+vtkAbstractTransform *vtkMNITransformReader::GetTransform()
 {
   this->Update();
 
@@ -976,20 +999,20 @@ int vtkMNITransformReader::GetNumberOfTransforms()
 }
 
 //-------------------------------------------------------------------------
-vtkAbstractTransform* vtkMNITransformReader::GetNthTransform(int i)
+vtkAbstractTransform *vtkMNITransformReader::GetNthTransform(int i)
 {
   this->Update();
 
   if (i < 0 || i >= this->Transforms->GetNumberOfItems())
   {
-    return nullptr;
+    return 0;
   }
 
-  return (vtkAbstractTransform*)this->Transforms->GetItemAsObject(i);
+  return (vtkAbstractTransform *)this->Transforms->GetItemAsObject(i);
 }
 
 //-------------------------------------------------------------------------
-const char* vtkMNITransformReader::GetComments()
+const char *vtkMNITransformReader::GetComments()
 {
   this->Update();
 

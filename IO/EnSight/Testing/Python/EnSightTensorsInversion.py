@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import vtk
+from vtk.test import Testing
 from vtk.util.misc import vtkGetDataRoot
 VTK_DATA_ROOT = vtkGetDataRoot()
 
@@ -20,7 +21,7 @@ geom = vtk.vtkGeometryFilter()
 geom.SetInputConnection(reader.GetOutputPort())
 calc = vtk.vtkArrayCalculator()
 calc.SetInputConnection(geom.GetOutputPort())
-calc.SetAttributeTypeToPointData()
+calc.SetAttributeModeToUsePointData()
 calc.SetFunction("pointTensors_XZ - pointTensors_YZ")
 calc.AddScalarVariable("pointTensors_XZ","pointTensors", 5)
 calc.AddScalarVariable("pointTensors_YZ","pointTensors", 4)

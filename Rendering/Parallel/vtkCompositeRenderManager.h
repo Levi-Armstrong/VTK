@@ -21,13 +21,13 @@
  * uses compositing to do parallel rendering.  This class has
  * replaced vtkCompositeManager.
  *
- */
+*/
 
 #ifndef vtkCompositeRenderManager_h
 #define vtkCompositeRenderManager_h
 
-#include "vtkParallelRenderManager.h"
 #include "vtkRenderingParallelModule.h" // For export macro
+#include "vtkParallelRenderManager.h"
 
 class vtkCompositer;
 class vtkFloatArray;
@@ -36,35 +36,42 @@ class VTKRENDERINGPARALLEL_EXPORT vtkCompositeRenderManager : public vtkParallel
 {
 public:
   vtkTypeMacro(vtkCompositeRenderManager, vtkParallelRenderManager);
-  static vtkCompositeRenderManager* New();
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkCompositeRenderManager *New();
+  virtual void PrintSelf(ostream &os, vtkIndent indent);
 
   //@{
   /**
    * Set/Get the composite algorithm.
    */
-  void SetCompositer(vtkCompositer* c);
+  void SetCompositer(vtkCompositer *c);
   vtkGetObjectMacro(Compositer, vtkCompositer);
+  //@}
+
+  //@{
+  /**
+   * Get rendering metrics.
+   */
+  vtkGetMacro(ImageProcessingTime, double);
   //@}
 
 protected:
   vtkCompositeRenderManager();
-  ~vtkCompositeRenderManager() override;
+  ~vtkCompositeRenderManager();
 
-  vtkCompositer* Compositer;
+  vtkCompositer *Compositer;
 
-  void PreRenderProcessing() override;
-  void PostRenderProcessing() override;
+  virtual void PreRenderProcessing();
+  virtual void PostRenderProcessing();
 
-  vtkFloatArray* DepthData;
-  vtkUnsignedCharArray* TmpPixelData;
-  vtkFloatArray* TmpDepthData;
+  vtkFloatArray *DepthData;
+  vtkUnsignedCharArray *TmpPixelData;
+  vtkFloatArray *TmpDepthData;
 
   int SavedMultiSamplesSetting;
 
 private:
-  vtkCompositeRenderManager(const vtkCompositeRenderManager&) = delete;
-  void operator=(const vtkCompositeRenderManager&) = delete;
+  vtkCompositeRenderManager(const vtkCompositeRenderManager &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkCompositeRenderManager &) VTK_DELETE_FUNCTION;
 };
 
-#endif // vtkCompositeRenderManager_h
+#endif //vtkCompositeRenderManager_h

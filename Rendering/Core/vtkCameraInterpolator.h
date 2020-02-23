@@ -44,24 +44,25 @@
  * Currently position, focal point and view up are interpolated to define
  * the orientation of the camera. Quaternion interpolation may be added in the
  * future as an alternative interpolation method for camera orientation.
- */
+*/
 
 #ifndef vtkCameraInterpolator_h
 #define vtkCameraInterpolator_h
 
-#include "vtkObject.h"
 #include "vtkRenderingCoreModule.h" // For export macro
+#include "vtkObject.h"
 
 class vtkCamera;
 class vtkCameraList;
 class vtkTupleInterpolator;
 class vtkCameraList;
 
+
 class VTKRENDERINGCORE_EXPORT vtkCameraInterpolator : public vtkObject
 {
 public:
   vtkTypeMacro(vtkCameraInterpolator, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Instantiate the class.
@@ -93,7 +94,7 @@ public:
    * more than once replaces the previous camera value at t.
    * At least one camera must be added to define a function.
    */
-  void AddCamera(double t, vtkCamera* camera);
+  void AddCamera(double t, vtkCamera *camera);
 
   /**
    * Delete the camera at a particular parameter t. If there is no
@@ -106,16 +107,14 @@ public:
    * fill in the camera provided). If t is outside the range of
    * (min,max) values, then t is clamped to lie within this range.
    */
-  void InterpolateCamera(double t, vtkCamera* camera);
+  void InterpolateCamera(double t, vtkCamera *camera);
 
   /**
    * Enums to control the type of interpolation to use.
    */
-  enum
-  {
-    INTERPOLATION_TYPE_LINEAR = 0,
-    INTERPOLATION_TYPE_SPLINE,
-    INTERPOLATION_TYPE_MANUAL
+  enum {INTERPOLATION_TYPE_LINEAR=0,
+        INTERPOLATION_TYPE_SPLINE,
+        INTERPOLATION_TYPE_MANUAL
   };
 
   //@{
@@ -129,11 +128,15 @@ public:
    * class does not forward the request for interpolation type to its
    * interpolators.
    */
-  vtkSetClampMacro(InterpolationType, int, INTERPOLATION_TYPE_LINEAR, INTERPOLATION_TYPE_MANUAL);
-  vtkGetMacro(InterpolationType, int);
-  void SetInterpolationTypeToLinear() { this->SetInterpolationType(INTERPOLATION_TYPE_LINEAR); }
-  void SetInterpolationTypeToSpline() { this->SetInterpolationType(INTERPOLATION_TYPE_SPLINE); }
-  void SetInterpolationTypeToManual() { this->SetInterpolationType(INTERPOLATION_TYPE_MANUAL); }
+  vtkSetClampMacro(InterpolationType, int, INTERPOLATION_TYPE_LINEAR,
+                   INTERPOLATION_TYPE_MANUAL);
+  vtkGetMacro(InterpolationType,int);
+  void SetInterpolationTypeToLinear()
+    {this->SetInterpolationType(INTERPOLATION_TYPE_LINEAR);}
+  void SetInterpolationTypeToSpline()
+    {this->SetInterpolationType(INTERPOLATION_TYPE_SPLINE);}
+  void SetInterpolationTypeToManual()
+    {this->SetInterpolationType(INTERPOLATION_TYPE_MANUAL);}
   //@}
 
   //@{
@@ -206,22 +209,22 @@ public:
    * Override GetMTime() because we depend on the interpolators which may be
    * modified outside of this class.
    */
-  vtkMTimeType GetMTime() override;
+  vtkMTimeType GetMTime();
 
 protected:
   vtkCameraInterpolator();
-  ~vtkCameraInterpolator() override;
+  virtual ~vtkCameraInterpolator();
 
   // Control the interpolation type
   int InterpolationType;
 
   // These perform the interpolation
-  vtkTupleInterpolator* PositionInterpolator;
-  vtkTupleInterpolator* FocalPointInterpolator;
-  vtkTupleInterpolator* ViewUpInterpolator;
-  vtkTupleInterpolator* ViewAngleInterpolator;
-  vtkTupleInterpolator* ParallelScaleInterpolator;
-  vtkTupleInterpolator* ClippingRangeInterpolator;
+  vtkTupleInterpolator *PositionInterpolator;
+  vtkTupleInterpolator *FocalPointInterpolator;
+  vtkTupleInterpolator *ViewUpInterpolator;
+  vtkTupleInterpolator *ViewAngleInterpolator;
+  vtkTupleInterpolator *ParallelScaleInterpolator;
+  vtkTupleInterpolator *ClippingRangeInterpolator;
 
   // Initialize the interpolating splines
   int Initialized;
@@ -229,11 +232,11 @@ protected:
   void InitializeInterpolation();
 
   // Hold the list of cameras. PIMPL'd STL list.
-  vtkCameraList* CameraList;
+  vtkCameraList *CameraList;
 
 private:
-  vtkCameraInterpolator(const vtkCameraInterpolator&) = delete;
-  void operator=(const vtkCameraInterpolator&) = delete;
+  vtkCameraInterpolator(const vtkCameraInterpolator&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkCameraInterpolator&) VTK_DELETE_FUNCTION;
 };
 
 #endif

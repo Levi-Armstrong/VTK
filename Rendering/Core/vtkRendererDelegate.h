@@ -24,26 +24,26 @@
  *
  * @sa
  * vtkRenderer
- */
+*/
 
 #ifndef vtkRendererDelegate_h
 #define vtkRendererDelegate_h
 
-#include "vtkObject.h"
 #include "vtkRenderingCoreModule.h" // For export macro
+#include "vtkObject.h"
 
 class vtkRenderer;
 
 class VTKRENDERINGCORE_EXPORT vtkRendererDelegate : public vtkObject
 {
 public:
-  vtkTypeMacro(vtkRendererDelegate, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkRendererDelegate,vtkObject);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Render the props of vtkRenderer if Used is on.
    */
-  virtual void Render(vtkRenderer* r) = 0;
+  virtual void Render(vtkRenderer *r)=0;
 
   //@{
   /**
@@ -57,13 +57,13 @@ public:
 
 protected:
   vtkRendererDelegate();
-  ~vtkRendererDelegate() override;
+  virtual ~vtkRendererDelegate();
 
   bool Used;
 
 private:
-  vtkRendererDelegate(const vtkRendererDelegate&) = delete;
-  void operator=(const vtkRendererDelegate&) = delete;
+  vtkRendererDelegate(const vtkRendererDelegate&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkRendererDelegate&) VTK_DELETE_FUNCTION;
 };
 
 #endif

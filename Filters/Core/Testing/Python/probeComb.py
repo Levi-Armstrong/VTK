@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import vtk
+from vtk.test import Testing
 from vtk.util.misc import vtkGetDataRoot
 VTK_DATA_ROOT = vtkGetDataRoot()
 
@@ -100,6 +101,5 @@ cam1.SetFocalPoint(8.88908,0.595038,29.3342)
 cam1.SetPosition(-12.3332,31.7479,41.2387)
 cam1.SetViewUp(0.060772,-0.319905,0.945498)
 iren.Initialize()
-renWin.Render()
-iren.Start()
+# prevent the tk window from showing up then start the event loop
 # --- end of script --

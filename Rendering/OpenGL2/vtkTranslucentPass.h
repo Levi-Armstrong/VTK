@@ -26,28 +26,28 @@
  *
  * @sa
  * vtkRenderPass vtkDefaultPass
- */
+*/
 
 #ifndef vtkTranslucentPass_h
 #define vtkTranslucentPass_h
 
-#include "vtkDefaultPass.h"
 #include "vtkRenderingOpenGL2Module.h" // For export macro
+#include "vtkDefaultPass.h"
 
 class VTKRENDERINGOPENGL2_EXPORT vtkTranslucentPass : public vtkDefaultPass
 {
 public:
-  static vtkTranslucentPass* New();
-  vtkTypeMacro(vtkTranslucentPass, vtkDefaultPass);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkTranslucentPass *New();
+  vtkTypeMacro(vtkTranslucentPass,vtkDefaultPass);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Perform rendering according to a render state \p s.
    * \pre s_exists: s!=0
    */
-  void Render(const vtkRenderState* s) override;
+  virtual void Render(const vtkRenderState *s);
 
-protected:
+ protected:
   /**
    * Default constructor.
    */
@@ -56,11 +56,11 @@ protected:
   /**
    * Destructor.
    */
-  ~vtkTranslucentPass() override;
+  virtual ~vtkTranslucentPass();
 
-private:
-  vtkTranslucentPass(const vtkTranslucentPass&) = delete;
-  void operator=(const vtkTranslucentPass&) = delete;
+ private:
+  vtkTranslucentPass(const vtkTranslucentPass&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTranslucentPass&) VTK_DELETE_FUNCTION;
 };
 
 #endif

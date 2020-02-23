@@ -19,14 +19,14 @@
  * vtkDoubleArray is an array of values of type double.  It provides
  * methods for insertion and retrieval of values and will
  * automatically resize itself to hold new data.
- */
+*/
 
 #ifndef vtkDoubleArray_h
 #define vtkDoubleArray_h
 
-#include "vtkAOSDataArrayTemplate.h" // Real Superclass
-#include "vtkCommonCoreModule.h"     // For export macro
+#include "vtkCommonCoreModule.h" // For export macro
 #include "vtkDataArray.h"
+#include "vtkAOSDataArrayTemplate.h" // Real Superclass
 
 // Fake the superclass for the wrappers.
 #ifndef __VTK_WRAP__
@@ -35,24 +35,24 @@
 class VTKCOMMONCORE_EXPORT vtkDoubleArray : public vtkDataArray
 {
 public:
-  vtkTypeMacro(vtkDoubleArray, vtkDataArray);
+  vtkTypeMacro(vtkDoubleArray, vtkDataArray)
 #ifndef __VTK_WRAP__
 #undef vtkDataArray
 #endif
   static vtkDoubleArray* New();
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   // This macro expands to the set of method declarations that
   // make up the interface of vtkAOSDataArrayTemplate, which is ignored
   // by the wrappers.
-#if defined(__VTK_WRAP__) || defined(__WRAP_GCCXML__)
+#if defined(__VTK_WRAP__) || defined (__WRAP_GCCXML__)
   vtkCreateWrappedArrayInterface(double);
 #endif
 
   /**
    * A faster alternative to SafeDownCast for downcasting vtkAbstractArrays.
    */
-  static vtkDoubleArray* FastDownCast(vtkAbstractArray* source)
+  static vtkDoubleArray* FastDownCast(vtkAbstractArray *source)
   {
     return static_cast<vtkDoubleArray*>(Superclass::FastDownCast(source));
   }
@@ -69,16 +69,18 @@ public:
 
 protected:
   vtkDoubleArray();
-  ~vtkDoubleArray() override;
+  ~vtkDoubleArray() VTK_OVERRIDE;
 
 private:
+
   typedef vtkAOSDataArrayTemplate<double> RealSuperclass;
 
-  vtkDoubleArray(const vtkDoubleArray&) = delete;
-  void operator=(const vtkDoubleArray&) = delete;
+  vtkDoubleArray(const vtkDoubleArray&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkDoubleArray&) VTK_DELETE_FUNCTION;
 };
 
 // Define vtkArrayDownCast implementation:
-vtkArrayDownCast_FastCastMacro(vtkDoubleArray);
+vtkArrayDownCast_FastCastMacro(vtkDoubleArray)
+
 
 #endif

@@ -59,15 +59,16 @@
  *   vtkCommand::InteractionEvent (on vtkWidgetEvent::Move)
  * </pre>
  *
- */
+*/
 
 #ifndef vtkHandleWidget_h
 #define vtkHandleWidget_h
 
-#include "vtkAbstractWidget.h"
 #include "vtkInteractionWidgetsModule.h" // For export macro
+#include "vtkAbstractWidget.h"
 
 class vtkHandleRepresentation;
+
 
 class VTKINTERACTIONWIDGETS_EXPORT vtkHandleWidget : public vtkAbstractWidget
 {
@@ -75,14 +76,14 @@ public:
   /**
    * Instantiate this class.
    */
-  static vtkHandleWidget* New();
+  static vtkHandleWidget *New();
 
   //@{
   /**
    * Standard VTK class macros.
    */
-  vtkTypeMacro(vtkHandleWidget, vtkAbstractWidget);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkHandleWidget,vtkAbstractWidget);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   /**
@@ -90,24 +91,20 @@ public:
    * widget in the scene. Note that the representation is a subclass of vtkProp
    * so it can be added to the renderer independent of the widget.
    */
-  void SetRepresentation(vtkHandleRepresentation* r)
-  {
-    this->Superclass::SetWidgetRepresentation(reinterpret_cast<vtkWidgetRepresentation*>(r));
-  }
+  void SetRepresentation(vtkHandleRepresentation *r)
+    {this->Superclass::SetWidgetRepresentation(reinterpret_cast<vtkWidgetRepresentation*>(r));}
 
   /**
    * Return the representation as a vtkHandleRepresentation.
    */
-  vtkHandleRepresentation* GetHandleRepresentation()
-  {
-    return reinterpret_cast<vtkHandleRepresentation*>(this->WidgetRep);
-  }
+  vtkHandleRepresentation *GetHandleRepresentation()
+    {return reinterpret_cast<vtkHandleRepresentation*>(this->WidgetRep);}
 
   /**
    * Create the default widget representation if one is not set. By default
-   * an instance of vtkPointHandleRepresentation3D is created.
+   * an instance of vtkPointHandleRepresenation3D is created.
    */
-  void CreateDefaultRepresentation() override;
+  void CreateDefaultRepresentation();
 
   //@{
   /**
@@ -115,18 +112,9 @@ public:
    * widget responds to the shift modifier to constrain the handle along the
    * axis closest aligned with the motion vector.
    */
-  vtkSetMacro(EnableAxisConstraint, vtkTypeBool);
-  vtkGetMacro(EnableAxisConstraint, vtkTypeBool);
-  vtkBooleanMacro(EnableAxisConstraint, vtkTypeBool);
-  //@}
-
-  //@{
-  /**
-   * Enable moving of handles. By default, the handle can be moved.
-   */
-  vtkSetMacro(EnableTranslation, vtkTypeBool);
-  vtkGetMacro(EnableTranslation, vtkTypeBool);
-  vtkBooleanMacro(EnableTranslation, vtkTypeBool);
+  vtkSetMacro( EnableAxisConstraint, int );
+  vtkGetMacro( EnableAxisConstraint, int );
+  vtkBooleanMacro( EnableAxisConstraint, int );
   //@}
 
   //@{
@@ -134,46 +122,24 @@ public:
    * Allow resizing of handles ? By default the right mouse button scales
    * the handle size.
    */
-  vtkSetMacro(AllowHandleResize, vtkTypeBool);
-  vtkGetMacro(AllowHandleResize, vtkTypeBool);
-  vtkBooleanMacro(AllowHandleResize, vtkTypeBool);
+  vtkSetMacro( AllowHandleResize, int );
+  vtkGetMacro( AllowHandleResize, int );
+  vtkBooleanMacro( AllowHandleResize, int );
   //@}
 
   //@{
   /**
    * Get the widget state.
    */
-  vtkGetMacro(WidgetState, int);
-  //@}
-
-  //@{
-  /**
-   * Allow the widget to be visible as an inactive representation when disabled.
-   * By default, this is false i.e. the representation is not visible when the
-   * widget is disabled.
-   */
-  vtkSetMacro(ShowInactive, vtkTypeBool);
-  vtkGetMacro(ShowInactive, vtkTypeBool);
-  vtkBooleanMacro(ShowInactive, vtkTypeBool);
+  vtkGetMacro( WidgetState, int );
   //@}
 
   // Manage the state of the widget
-  enum _WidgetState
-  {
-    Start = 0,
-    Active,
-    Inactive
-  };
-
-  /**
-   * Enable/disable widget.
-   * Custom override for the SetEnabled method to allow for the inactive state.
-   **/
-  void SetEnabled(int enabling) override;
+  enum _WidgetState {Start=0,Active};
 
 protected:
   vtkHandleWidget();
-  ~vtkHandleWidget() override;
+  ~vtkHandleWidget();
 
   // These are the callbacks for this widget
   static void GenericAction(vtkHandleWidget*);
@@ -182,28 +148,19 @@ protected:
   static void TranslateAction(vtkAbstractWidget*);
   static void ScaleAction(vtkAbstractWidget*);
   static void MoveAction(vtkAbstractWidget*);
-  static void SelectAction3D(vtkAbstractWidget*);
-  static void MoveAction3D(vtkAbstractWidget*);
-  static void ProcessKeyEvents(vtkObject*, unsigned long, void*, void*);
 
   // helper methods for cursor management
-  void SetCursor(int state) override;
+  void SetCursor(int state);
 
   int WidgetState;
-  vtkTypeBool EnableAxisConstraint;
-  vtkTypeBool EnableTranslation;
+  int EnableAxisConstraint;
 
   // Allow resizing of handles.
-  vtkTypeBool AllowHandleResize;
-
-  // Keep representation visible when disabled
-  vtkTypeBool ShowInactive;
-
-  vtkCallbackCommand* KeyEventCallbackCommand;
+  int AllowHandleResize;
 
 private:
-  vtkHandleWidget(const vtkHandleWidget&) = delete;
-  void operator=(const vtkHandleWidget&) = delete;
+  vtkHandleWidget(const vtkHandleWidget&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkHandleWidget&) VTK_DELETE_FUNCTION;
 };
 
 #endif

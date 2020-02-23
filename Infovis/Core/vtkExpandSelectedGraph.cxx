@@ -41,7 +41,8 @@
 
 #include <set>
 
-#define VTK_CREATE(type, name) vtkSmartPointer<type> name = vtkSmartPointer<type>::New()
+#define VTK_CREATE(type, name) \
+  vtkSmartPointer<type> name = vtkSmartPointer<type>::New()
 
 vtkStandardNewMacro(vtkExpandSelectedGraph);
 
@@ -51,12 +52,12 @@ vtkExpandSelectedGraph::vtkExpandSelectedGraph()
   this->BFSDistance = 1;
   this->IncludeShortestPaths = false;
   this->UseDomain = false;
-  this->Domain = nullptr;
+  this->Domain = 0;
 }
 
 vtkExpandSelectedGraph::~vtkExpandSelectedGraph()
 {
-  this->SetDomain(nullptr);
+  this->SetDomain(0);
 }
 
 int vtkExpandSelectedGraph::FillInputPortInformation(int port, vtkInformation* info)
@@ -79,8 +80,10 @@ void vtkExpandSelectedGraph::SetGraphConnection(vtkAlgorithmOutput* in)
   this->SetInputConnection(1, in);
 }
 
-int vtkExpandSelectedGraph::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+int vtkExpandSelectedGraph::RequestData(
+  vtkInformation* vtkNotUsed(request),
+  vtkInformationVector** inputVector,
+  vtkInformationVector* outputVector)
 {
   vtkSelection* input = vtkSelection::GetData(inputVector[0]);
   vtkGraph* graph = vtkGraph::GetData(inputVector[1]);
@@ -97,7 +100,7 @@ int vtkExpandSelectedGraph::RequestData(vtkInformation* vtkNotUsed(request),
   // expanding each child selection and merging them which creates
   // duplicates.
   std::set<vtkIdType> indexSet;
-  for (int i = 0; i < indexArray->GetNumberOfTuples(); ++i)
+  for(int i=0; i<indexArray->GetNumberOfTuples(); ++i)
   {
     indexSet.insert(indexArray->GetValue(i));
   }
@@ -105,7 +108,7 @@ int vtkExpandSelectedGraph::RequestData(vtkInformation* vtkNotUsed(request),
   indexArray->Reset();
   // Convert the stl set into the selection list
   std::set<vtkIdType>::iterator I;
-  for (I = indexSet.begin(); I != indexSet.end(); ++I)
+  for(I = indexSet.begin(); I != indexSet.end(); ++I)
   {
     indexArray->InsertNextValue(*I);
   }
@@ -118,26 +121,26 @@ int vtkExpandSelectedGraph::RequestData(vtkInformation* vtkNotUsed(request),
   node->SetFieldType(vtkSelectionNode::VERTEX);
   node->SetContentType(vtkSelectionNode::INDICES);
   VTK_CREATE(vtkSelection, pedigreeIdSelection);
-  pedigreeIdSelection.TakeReference(
-    vtkConvertSelection::ToPedigreeIdSelection(indexSelection, graph));
+  pedigreeIdSelection.TakeReference(vtkConvertSelection::ToPedigreeIdSelection(indexSelection, graph));
   output->DeepCopy(pedigreeIdSelection);
 
   return 1;
 }
 
-void vtkExpandSelectedGraph::Expand(vtkIdTypeArray* indexArray, vtkGraph* graph)
+void vtkExpandSelectedGraph::Expand(vtkIdTypeArray *indexArray, vtkGraph *graph)
 {
   // Now expand the selection to include neighborhoods around
   // the selected vertices
   int distance = this->BFSDistance;
-  while (distance > 0)
+  while(distance > 0)
   {
     this->BFSExpandSelection(indexArray, graph);
     --distance;
   }
 }
 
-void vtkExpandSelectedGraph::BFSExpandSelection(vtkIdTypeArray* indexArray, vtkGraph* graph)
+void vtkExpandSelectedGraph::BFSExpandSelection(vtkIdTypeArray *indexArray,
+                                            vtkGraph *graph)
 {
   // For each vertex in the selection get its adjacent vertices
   VTK_CREATE(vtkInEdgeIterator, inIt);
@@ -145,7 +148,7 @@ void vtkExpandSelectedGraph::BFSExpandSelection(vtkIdTypeArray* indexArray, vtkG
 
   vtkAbstractArray* domainArr = graph->GetVertexData()->GetAbstractArray("domain");
   std::set<vtkIdType> indexSet;
-  for (int i = 0; i < indexArray->GetNumberOfTuples(); ++i)
+  for (int i=0; i<indexArray->GetNumberOfTuples(); ++i)
   {
     // First insert myself
     indexSet.insert(indexArray->GetValue(i));
@@ -155,7 +158,7 @@ void vtkExpandSelectedGraph::BFSExpandSelection(vtkIdTypeArray* indexArray, vtkG
     while (inIt->HasNext())
     {
       vtkInEdgeType e = inIt->Next();
-      if (this->UseDomain && this->Domain &&
+      if(this->UseDomain && this->Domain &&
         domainArr->GetVariantValue(e.Source).ToString() != this->Domain)
       {
         continue;
@@ -166,7 +169,7 @@ void vtkExpandSelectedGraph::BFSExpandSelection(vtkIdTypeArray* indexArray, vtkG
     while (outIt->HasNext())
     {
       vtkOutEdgeType e = outIt->Next();
-      if (this->UseDomain && this->Domain && domainArr &&
+      if(this->UseDomain && this->Domain && domainArr &&
         domainArr->GetVariantValue(e.Target).ToString() != this->Domain)
       {
         continue;
@@ -180,7 +183,7 @@ void vtkExpandSelectedGraph::BFSExpandSelection(vtkIdTypeArray* indexArray, vtkG
 
   // Convert the stl set into the selection list
   std::set<vtkIdType>::iterator I;
-  for (I = indexSet.begin(); I != indexSet.end(); ++I)
+  for(I = indexSet.begin(); I != indexSet.end(); ++I)
   {
     indexArray->InsertNextValue(*I);
   }
@@ -190,7 +193,11 @@ void vtkExpandSelectedGraph::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
   os << indent << "BFSDistance: " << this->BFSDistance << endl;
-  os << indent << "IncludeShortestPaths: " << (this->IncludeShortestPaths ? "on" : "off") << endl;
-  os << indent << "Domain: " << (this->Domain ? this->Domain : "(null)") << endl;
-  os << indent << "UseDomain: " << (this->UseDomain ? "on" : "off") << endl;
+  os << indent << "IncludeShortestPaths: "
+     << (this->IncludeShortestPaths ? "on" : "off") << endl;
+  os << indent << "Domain: "
+     << (this->Domain ? this->Domain : "(null)") << endl;
+  os << indent << "UseDomain: "
+     << (this->UseDomain ? "on" : "off") << endl;
 }
+

@@ -16,8 +16,8 @@
 
 #include "metaSurface.h"
 
-#include <cctype>
-#include <cstdio>
+#include <stdio.h>
+#include <ctype.h>
 #include <string>
 
 #if (METAIO_USE_NAMESPACE)
@@ -128,7 +128,7 @@ PointDim(const char* pointDim)
 }
 
 const char* MetaSurface::
-PointDim() const
+PointDim(void) const
 {
   return m_PointDim;
 }
@@ -140,14 +140,14 @@ NPoints(int npnt)
 }
 
 int MetaSurface::
-NPoints() const
+NPoints(void) const
 {
   return m_NPoints;
 }
 
 /** Clear Surface information */
 void MetaSurface::
-Clear()
+Clear(void)
 {
   if(META_DEBUG) METAIO_STREAM::cout << "MetaSurface: Clear" << METAIO_STREAM::endl;
   MetaObject::Clear();
@@ -157,7 +157,7 @@ Clear()
   while(it != m_PointList.end())
   {
     SurfacePnt* pnt = *it;
-    ++it;
+    it++;
     delete pnt;
   }
   m_PointList.clear();
@@ -167,14 +167,14 @@ Clear()
 
 /** Destroy Surface information */
 void MetaSurface::
-M_Destroy()
+M_Destroy(void)
 {
   MetaObject::M_Destroy();
 }
 
 /** Set Read fields */
 void MetaSurface::
-M_SetupReadFields()
+M_SetupReadFields(void)
 {
   if(META_DEBUG) METAIO_STREAM::cout << "MetaSurface: M_SetupReadFields" << METAIO_STREAM::endl;
 
@@ -203,7 +203,7 @@ M_SetupReadFields()
 }
 
 void MetaSurface::
-M_SetupWriteFields()
+M_SetupWriteFields(void)
 {
   if(META_DEBUG) METAIO_STREAM::cout << "MetaSurface: M_SetupWriteFields" << METAIO_STREAM::endl;
 
@@ -238,7 +238,7 @@ M_SetupWriteFields()
 }
 
 MET_ValueEnumType MetaSurface::
-ElementType() const
+ElementType(void) const
 {
   return m_ElementType;
 }
@@ -251,7 +251,7 @@ ElementType(MET_ValueEnumType _elementType)
 
 
 bool MetaSurface::
-M_Read()
+M_Read(void)
 {
   if(META_DEBUG) METAIO_STREAM::cout << "MetaSurface: M_Read: Loading Header" << METAIO_STREAM::endl;
 
@@ -284,7 +284,7 @@ M_Read()
   }
 
   int pntDim;
-  char** pntVal = nullptr;
+  char** pntVal = NULL;
   MET_StringToWordArray(m_PointDim, &pntDim, &pntVal);
 
   int i;
@@ -409,7 +409,7 @@ M_Read()
 
 
 bool MetaSurface::
-M_Write()
+M_Write(void)
 {
 
   if(META_DEBUG) METAIO_STREAM::cout << "MetaSurface: M_Write" << METAIO_STREAM::endl;
@@ -455,7 +455,7 @@ M_Write()
         MET_DoubleToValue((double)c,m_ElementType,data,i++);
       }
 
-      ++it;
+      it++;
     }
 
     m_WriteStream->write((char *)data,(m_NDims*2+4)*m_NPoints*elementSize);
@@ -486,7 +486,7 @@ M_Write()
       }
 
       *m_WriteStream << METAIO_STREAM::endl;
-      ++it;
+      it++;
     }
   }
 

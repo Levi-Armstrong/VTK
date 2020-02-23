@@ -20,7 +20,7 @@
  * reasonable scalings and centered on the page which is assumed to be
  * about 8.5 by 11 inches. This is based loosely off of the code from
  * pnmtops.c. Right now there aren't any real options.
- */
+*/
 
 #ifndef vtkPostScriptWriter_h
 #define vtkPostScriptWriter_h
@@ -31,21 +31,23 @@
 class VTKIOIMAGE_EXPORT vtkPostScriptWriter : public vtkImageWriter
 {
 public:
-  static vtkPostScriptWriter* New();
-  vtkTypeMacro(vtkPostScriptWriter, vtkImageWriter);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkPostScriptWriter *New();
+  vtkTypeMacro(vtkPostScriptWriter,vtkImageWriter);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
 protected:
   vtkPostScriptWriter() {}
-  ~vtkPostScriptWriter() override {}
+  ~vtkPostScriptWriter() {}
 
-  void WriteFile(ostream* file, vtkImageData* data, int extent[6], int wExt[6]) override;
-  void WriteFileHeader(ostream*, vtkImageData*, int wExt[6]) override;
-  void WriteFileTrailer(ostream*, vtkImageData*) override;
-
+  virtual void WriteFile(
+    ofstream *file, vtkImageData *data, int extent[6], int wExt[6]);
+  virtual void WriteFileHeader(ofstream *, vtkImageData *, int wExt[6]);
+  virtual void WriteFileTrailer(ofstream *, vtkImageData *);
 private:
-  vtkPostScriptWriter(const vtkPostScriptWriter&) = delete;
-  void operator=(const vtkPostScriptWriter&) = delete;
+  vtkPostScriptWriter(const vtkPostScriptWriter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPostScriptWriter&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+

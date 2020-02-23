@@ -26,7 +26,7 @@
  * vtkPlotPoints3D
  * vtkPlotLine
  *
- */
+*/
 
 #ifndef vtkPlotLine3D_h
 #define vtkPlotLine3D_h
@@ -38,25 +38,26 @@ class VTKCHARTSCORE_EXPORT vtkPlotLine3D : public vtkPlotPoints3D
 {
 public:
   vtkTypeMacro(vtkPlotLine3D, vtkPlotPoints3D);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  virtual void PrintSelf(ostream &os, vtkIndent indent);
 
   /**
    * Creates a 3D Chart object.
    */
-  static vtkPlotLine3D* New();
+  static vtkPlotLine3D *New();
 
   /**
    * Paint event for the XYZ plot, called whenever the chart needs to be drawn.
    */
-  bool Paint(vtkContext2D* painter) override;
+  virtual bool Paint(vtkContext2D *painter);
 
 protected:
   vtkPlotLine3D();
-  ~vtkPlotLine3D() override;
+  ~vtkPlotLine3D();
 
 private:
-  vtkPlotLine3D(const vtkPlotLine3D&) = delete;
-  void operator=(const vtkPlotLine3D&) = delete;
+  vtkPlotLine3D(const vtkPlotLine3D &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPlotLine3D &) VTK_DELETE_FUNCTION;
+
 };
 
-#endif // vtkPlotLine3D_h
+#endif //vtkPlotLine3D_h

@@ -18,15 +18,15 @@
  *
  * vtkPDataSetWriter will write a piece of a file, and will also create
  * a metadata file that lists all of the files in a data set.
- */
+*/
 
 #ifndef vtkPDataSetWriter_h
 #define vtkPDataSetWriter_h
 
-#include "vtkDataSetWriter.h"
 #include "vtkIOParallelModule.h" // For export macro
+#include "vtkDataSetWriter.h"
 
-#include <map>    // for keeping track of extents
+#include <map> // for keeping track of extents
 #include <vector> // for keeping track of extents
 
 class vtkImageData;
@@ -37,14 +37,14 @@ class vtkMultiProcessController;
 class VTKIOPARALLEL_EXPORT vtkPDataSetWriter : public vtkDataSetWriter
 {
 public:
-  void PrintSelf(ostream& os, vtkIndent indent) override;
-  vtkTypeMacro(vtkPDataSetWriter, vtkDataSetWriter);
-  static vtkPDataSetWriter* New();
+  void PrintSelf(ostream& os, vtkIndent indent);
+  vtkTypeMacro(vtkPDataSetWriter,vtkDataSetWriter);
+  static vtkPDataSetWriter *New();
 
   /**
    * Write the pvtk file and cooresponding vtk files.
    */
-  int Write() override;
+  virtual int Write();
 
   //@{
   /**
@@ -79,7 +79,7 @@ public:
   //@{
   /**
    * This file pattern uses the file name and piece number
-   * to construct a file name for the piece file.
+   * to contruct a file name for the piece file.
    */
   vtkSetStringMacro(FilePattern);
   vtkGetStringMacro(FilePattern);
@@ -92,9 +92,9 @@ public:
    * names in the meta data pvtk file are relative to this directory.
    * This should make moving the whole lot to another directory, an easier task.
    */
-  vtkSetMacro(UseRelativeFileNames, vtkTypeBool);
-  vtkGetMacro(UseRelativeFileNames, vtkTypeBool);
-  vtkBooleanMacro(UseRelativeFileNames, vtkTypeBool);
+  vtkSetMacro(UseRelativeFileNames, int);
+  vtkGetMacro(UseRelativeFileNames, int);
+  vtkBooleanMacro(UseRelativeFileNames, int);
   //@}
 
   //@{
@@ -109,25 +109,26 @@ public:
 
 protected:
   vtkPDataSetWriter();
-  ~vtkPDataSetWriter() override;
+  ~vtkPDataSetWriter();
 
-  ostream* OpenFile();
-  int WriteUnstructuredMetaData(
-    vtkDataSet* input, char* root, char* str, size_t strSize, ostream* fptr);
-  int WriteImageMetaData(vtkImageData* input, char* root, char* str, size_t strSize, ostream* fptr);
-  int WriteRectilinearGridMetaData(
-    vtkRectilinearGrid* input, char* root, char* str, size_t strSize, ostream* fptr);
-  int WriteStructuredGridMetaData(
-    vtkStructuredGrid* input, char* root, char* str, size_t strSize, ostream* fptr);
+  ostream *OpenFile();
+  int WriteUnstructuredMetaData(vtkDataSet *input,
+                                char *root, char *str, ostream *fptr);
+  int WriteImageMetaData(vtkImageData *input,
+                         char *root, char *str, ostream *fptr);
+  int WriteRectilinearGridMetaData(vtkRectilinearGrid *input,
+                                   char *root, char *str, ostream *fptr);
+  int WriteStructuredGridMetaData(vtkStructuredGrid *input,
+                                  char *root, char *str, ostream *fptr);
 
   int StartPiece;
   int EndPiece;
   int NumberOfPieces;
   int GhostLevel;
 
-  vtkTypeBool UseRelativeFileNames;
+  int UseRelativeFileNames;
 
-  char* FilePattern;
+  char *FilePattern;
 
   void DeleteFiles();
 
@@ -137,8 +138,8 @@ protected:
   vtkMultiProcessController* Controller;
 
 private:
-  vtkPDataSetWriter(const vtkPDataSetWriter&) = delete;
-  void operator=(const vtkPDataSetWriter&) = delete;
+  vtkPDataSetWriter(const vtkPDataSetWriter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPDataSetWriter&) VTK_DELETE_FUNCTION;
 };
 
 #endif

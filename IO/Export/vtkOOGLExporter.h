@@ -22,13 +22,13 @@
  *
  * @sa
  * vtkExporter
- */
+*/
 
 #ifndef vtkOOGLExporter_h
 #define vtkOOGLExporter_h
 
-#include "vtkExporter.h"
 #include "vtkIOExportModule.h" // For export macro
+#include "vtkExporter.h"
 
 class vtkLight;
 class vtkActor;
@@ -36,9 +36,9 @@ class vtkActor;
 class VTKIOEXPORT_EXPORT vtkOOGLExporter : public vtkExporter
 {
 public:
-  static vtkOOGLExporter* New();
-  vtkTypeMacro(vtkOOGLExporter, vtkExporter);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkOOGLExporter *New();
+  vtkTypeMacro(vtkOOGLExporter,vtkExporter);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -50,16 +50,17 @@ public:
 
 protected:
   vtkOOGLExporter();
-  ~vtkOOGLExporter() override;
+  ~vtkOOGLExporter();
 
-  void WriteData() override;
-  void WriteALight(vtkLight* aLight, FILE* fp);
-  void WriteAnActor(vtkActor* anActor, FILE* fp, int count);
-  char* FileName;
+  void WriteData();
+  void WriteALight(vtkLight *aLight, FILE *fp);
+  void WriteAnActor(vtkActor *anActor, FILE *fp, int count);
+  char *FileName;
 
 private:
-  vtkOOGLExporter(const vtkOOGLExporter&) = delete;
-  void operator=(const vtkOOGLExporter&) = delete;
+  vtkOOGLExporter(const vtkOOGLExporter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkOOGLExporter&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

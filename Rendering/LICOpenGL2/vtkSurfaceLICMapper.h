@@ -42,7 +42,7 @@
  * DEP   - depth test and copy to back buffer
  *
  * The result of each stage is cached in a texture so that during interaction
- * a stage may be skipped if the user has not modified its parameters or input
+ * a stage may be skipped if the user has not modified its paramters or input
  * data.
  *
  * The parallel parts of algorithm are implemented in vtkPSurfaceLICMapper.
@@ -51,13 +51,13 @@
  *
  * @sa
  * vtkLineIntegralConvolution2D
- */
+*/
 
 #ifndef vtkSurfaceLICMapper_h
 #define vtkSurfaceLICMapper_h
 
-#include "vtkOpenGLPolyDataMapper.h"
 #include "vtkRenderingLICOpenGL2Module.h" // For export macro
+#include "vtkOpenGLPolyDataMapper.h"
 
 class vtkSurfaceLICInterface;
 class vtkPainterCommunicator;
@@ -67,35 +67,35 @@ class VTKRENDERINGLICOPENGL2_EXPORT vtkSurfaceLICMapper : public vtkOpenGLPolyDa
 public:
   static vtkSurfaceLICMapper* New();
   vtkTypeMacro(vtkSurfaceLICMapper, vtkOpenGLPolyDataMapper);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Release any graphics resources that are being consumed by this mapper.
    * The parameter window could be used to determine which graphic
    * resources to release. In this case, releases the display lists.
    */
-  void ReleaseGraphicsResources(vtkWindow* win) override;
+  virtual void ReleaseGraphicsResources(vtkWindow * win);
 
   /**
    * Implemented by sub classes. Actual rendering is done here.
    */
-  void RenderPiece(vtkRenderer* ren, vtkActor* act) override;
+  virtual void RenderPiece(vtkRenderer *ren, vtkActor *act);
 
   /**
    * Shallow copy of an actor.
    */
-  void ShallowCopy(vtkAbstractMapper*) override;
+  void ShallowCopy(vtkAbstractMapper *);
 
   //@{
   /**
    * Get the vtkSurfaceLICInterface used by this mapper
    */
-  vtkGetObjectMacro(LICInterface, vtkSurfaceLICInterface);
+  vtkGetObjectMacro(LICInterface,vtkSurfaceLICInterface);
   //@}
 
 protected:
   vtkSurfaceLICMapper();
-  ~vtkSurfaceLICMapper() override;
+  ~vtkSurfaceLICMapper();
 
   /**
    * Methods used for parallel benchmarks. Use cmake to define
@@ -103,31 +103,35 @@ protected:
    * update timing information is stored, it can be written to
    * disk by calling WriteLog.
    */
-  virtual void StartTimerEvent(const char*) {}
-  virtual void EndTimerEvent(const char*) {}
+  virtual void StartTimerEvent(const char *){}
+  virtual void EndTimerEvent(const char *){}
 
   /**
    * Build the VBO/IBO, called by UpdateBufferObjects
    */
-  void BuildBufferObjects(vtkRenderer* ren, vtkActor* act) override;
+  virtual void BuildBufferObjects(vtkRenderer *ren, vtkActor *act);
 
 protected:
   /**
    * Set the shader parameteres related to the mapper/input data, called by UpdateShader
    */
-  void SetMapperShaderParameters(vtkOpenGLHelper& cellBO, vtkRenderer* ren, vtkActor* act) override;
+  virtual void SetMapperShaderParameters(vtkOpenGLHelper &cellBO, vtkRenderer *ren, vtkActor *act);
 
   /**
-   * Perform string replacements on the shader templates
+   * Perform string replacments on the shader templates
    */
-  void ReplaceShaderValues(
-    std::map<vtkShader::Type, vtkShader*> shaders, vtkRenderer* ren, vtkActor* act) override;
+  virtual void ReplaceShaderValues(
+    std::map<vtkShader::Type, vtkShader *> shaders,
+    vtkRenderer *ren, vtkActor *act);
 
-  vtkSurfaceLICInterface* LICInterface;
+  // The vector VBO and its layout.
+  vtkOpenGLVertexBufferObject *VectorVBO;
+
+  vtkSurfaceLICInterface *LICInterface;
 
 private:
-  vtkSurfaceLICMapper(const vtkSurfaceLICMapper&) = delete;
-  void operator=(const vtkSurfaceLICMapper&) = delete;
+  vtkSurfaceLICMapper(const vtkSurfaceLICMapper&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkSurfaceLICMapper&) VTK_DELETE_FUNCTION;
 };
 
 #endif

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import vtk
+from vtk.test import Testing
 from vtk.util.misc import vtkGetDataRoot
 VTK_DATA_ROOT = vtkGetDataRoot()
 
@@ -7,7 +8,6 @@ VTK_DATA_ROOT = vtkGetDataRoot()
 
 # Parameters for debugging
 NPts = 1000000
-#NPts = 100000000
 math = vtk.vtkMath()
 math.RandomSeed(31415)
 
@@ -113,4 +113,4 @@ iren.Initialize()
 #
 renWin.Render()
 
-iren.Start()
+#iren.Start()

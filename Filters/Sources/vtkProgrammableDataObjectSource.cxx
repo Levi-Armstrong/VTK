@@ -24,11 +24,11 @@ vtkStandardNewMacro(vtkProgrammableDataObjectSource);
 // Construct programmable filter with empty execute method.
 vtkProgrammableDataObjectSource::vtkProgrammableDataObjectSource()
 {
-  this->ExecuteMethod = nullptr;
-  this->ExecuteMethodArg = nullptr;
-  this->ExecuteMethodArgDelete = nullptr;
+  this->ExecuteMethod = NULL;
+  this->ExecuteMethodArg = NULL;
+  this->ExecuteMethodArgDelete = NULL;
 
-  vtkDataObject* output = vtkDataObject::New();
+  vtkDataObject *output = vtkDataObject::New();
   this->SetOutput(output);
   // Releasing data for pipeline parallism.
   // Filters will know it is empty.
@@ -41,7 +41,7 @@ vtkProgrammableDataObjectSource::vtkProgrammableDataObjectSource()
 vtkProgrammableDataObjectSource::~vtkProgrammableDataObjectSource()
 {
   // delete the current arg if there is one and a delete meth
-  if ((this->ExecuteMethodArg) && (this->ExecuteMethodArgDelete))
+  if ((this->ExecuteMethodArg)&&(this->ExecuteMethodArgDelete))
   {
     (*this->ExecuteMethodArgDelete)(this->ExecuteMethodArg);
   }
@@ -49,12 +49,13 @@ vtkProgrammableDataObjectSource::~vtkProgrammableDataObjectSource()
 
 // Specify the function to use to generate the source data. Note
 // that the function takes a single (void *) argument.
-void vtkProgrammableDataObjectSource::SetExecuteMethod(void (*f)(void*), void* arg)
+void vtkProgrammableDataObjectSource::SetExecuteMethod(
+  void (*f)(void *), void *arg)
 {
-  if (f != this->ExecuteMethod || arg != this->ExecuteMethodArg)
+  if ( f != this->ExecuteMethod || arg != this->ExecuteMethodArg )
   {
     // delete the current arg if there is one and a delete meth
-    if ((this->ExecuteMethodArg) && (this->ExecuteMethodArgDelete))
+    if ((this->ExecuteMethodArg)&&(this->ExecuteMethodArgDelete))
     {
       (*this->ExecuteMethodArgDelete)(this->ExecuteMethodArg);
     }
@@ -65,9 +66,10 @@ void vtkProgrammableDataObjectSource::SetExecuteMethod(void (*f)(void*), void* a
 }
 
 // Set the arg delete method. This is used to free user memory.
-void vtkProgrammableDataObjectSource::SetExecuteMethodArgDelete(void (*f)(void*))
+void vtkProgrammableDataObjectSource::SetExecuteMethodArgDelete(
+  void (*f)(void *))
 {
-  if (f != this->ExecuteMethodArgDelete)
+  if ( f != this->ExecuteMethodArgDelete)
   {
     this->ExecuteMethodArgDelete = f;
     this->Modified();
@@ -75,12 +77,14 @@ void vtkProgrammableDataObjectSource::SetExecuteMethodArgDelete(void (*f)(void*)
 }
 
 int vtkProgrammableDataObjectSource::RequestData(
-  vtkInformation*, vtkInformationVector**, vtkInformationVector*)
+  vtkInformation *,
+  vtkInformationVector **,
+  vtkInformationVector *)
 {
-  vtkDebugMacro(<< "Executing programmable data object filter");
+  vtkDebugMacro(<<"Executing programmable data object filter");
 
   // Now invoke the procedure, if specified.
-  if (this->ExecuteMethod != nullptr)
+  if ( this->ExecuteMethod != NULL )
   {
     (*this->ExecuteMethod)(this->ExecuteMethodArg);
   }
@@ -90,9 +94,9 @@ int vtkProgrammableDataObjectSource::RequestData(
 
 void vtkProgrammableDataObjectSource::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 
-  if (this->ExecuteMethod)
+  if ( this->ExecuteMethod )
   {
     os << indent << "An ExecuteMethod has been defined\n";
   }

@@ -23,30 +23,29 @@
 #include <vtkNew.h>
 #include <vtkPiecewiseFunction.h>
 #include <vtkRegressionTestImage.h>
+#include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
-#include <vtkRenderer.h>
 #include <vtkSmartPointer.h>
 #include <vtkTestUtilities.h>
 #include <vtkVolumeProperty.h>
 #include <vtkXMLImageDataReader.h>
 
-#include <vtkActor.h>
-#include <vtkContourFilter.h>
 #include <vtkLightActor.h>
+#include <vtkContourFilter.h>
 #include <vtkPolyDataMapper.h>
+#include <vtkActor.h>
 
-int TestGPURayCastPositionalLights(int argc, char* argv[])
+int TestGPURayCastPositionalLights(int argc, char *argv[])
 {
   double scalarRange[2];
 
   vtkNew<vtkGPUVolumeRayCastMapper> volumeMapper;
   vtkNew<vtkXMLImageDataReader> reader;
-  const char* volumeFile = vtkTestUtilities::ExpandDataFileName(argc, argv, "Data/vase_1comp.vti");
+  const char* volumeFile = vtkTestUtilities::ExpandDataFileName(
+                            argc, argv, "Data/vase_1comp.vti");
   reader->SetFileName(volumeFile);
   volumeMapper->SetInputConnection(reader->GetOutputPort());
-
-  delete[] volumeFile;
 
   volumeMapper->GetInput()->GetScalarRange(scalarRange);
   volumeMapper->SetBlendModeToComposite();
@@ -62,28 +61,28 @@ int TestGPURayCastPositionalLights(int argc, char* argv[])
   vtkNew<vtkLight> light1;
   light1->SetLightTypeToSceneLight();
   light1->SetPositional(true);
-  light1->SetDiffuseColor(1, 0, 0);
-  light1->SetAmbientColor(0, 0, 0);
-  light1->SetSpecularColor(1, 1, 1);
+  light1->SetDiffuseColor(1,0,0);
+  light1->SetAmbientColor(0,0,0);
+  light1->SetSpecularColor(1,1,1);
   light1->SetConeAngle(60);
   light1->SetPosition(0.0, 0.0, 100.0);
   light1->SetFocalPoint(0.0, 0.0, 0.0);
-  //  light1->SetColor(1,0,0);
-  //  light1->SetPosition(40,40,301);
-  //  light1->SetPosition(-57, -50, -360);
+//  light1->SetColor(1,0,0);
+//  light1->SetPosition(40,40,301);
+//  light1->SetPosition(-57, -50, -360);
 
   vtkNew<vtkLightActor> lightActor;
-  lightActor->SetLight(light1);
-  ren->AddViewProp(lightActor);
+  lightActor->SetLight(light1.GetPointer());
+  ren->AddViewProp(lightActor.GetPointer());
   vtkNew<vtkLight> light2;
   vtkNew<vtkLight> light3;
   vtkNew<vtkLight> light4;
 
-  renWin->AddRenderer(ren);
+  renWin->AddRenderer(ren.GetPointer());
   renWin->SetSize(400, 400);
 
   vtkNew<vtkRenderWindowInteractor> iren;
-  iren->SetRenderWindow(renWin);
+  iren->SetRenderWindow(renWin.GetPointer());
 
   vtkNew<vtkPiecewiseFunction> scalarOpacity;
   scalarOpacity->AddPoint(50, 0.0);
@@ -92,7 +91,7 @@ int TestGPURayCastPositionalLights(int argc, char* argv[])
   vtkNew<vtkVolumeProperty> volumeProperty;
   volumeProperty->ShadeOn();
   volumeProperty->SetInterpolationType(VTK_LINEAR_INTERPOLATION);
-  volumeProperty->SetScalarOpacity(scalarOpacity);
+  volumeProperty->SetScalarOpacity(scalarOpacity.GetPointer());
 
   vtkSmartPointer<vtkColorTransferFunction> colorTransferFunction =
     volumeProperty->GetRGBTransferFunction(0);
@@ -101,35 +100,35 @@ int TestGPURayCastPositionalLights(int argc, char* argv[])
   colorTransferFunction->AddRGBPoint(scalarRange[1], 1.0, 1.0, 1.0);
 
   vtkNew<vtkVolume> volume;
-  volume->SetMapper(volumeMapper);
-  volume->SetProperty(volumeProperty);
+  volume->SetMapper(volumeMapper.GetPointer());
+  volume->SetProperty(volumeProperty.GetPointer());
 
-  ren->AddViewProp(volume);
+  ren->AddViewProp(volume.GetPointer());
 
   vtkNew<vtkPolyDataMapper> pm;
   vtkNew<vtkActor> ac;
   vtkNew<vtkContourFilter> cf;
-  ac->SetMapper(pm);
+  ac->SetMapper(pm.GetPointer());
   pm->SetInputConnection(cf->GetOutputPort());
   pm->SetScalarVisibility(0);
   cf->SetValue(0, 60.0);
   cf->SetInputConnection(reader->GetOutputPort());
   ac->SetPosition(-89.0, 0.0, 0.0);
   volume->SetPosition(-30.0, 0.0, 0.0);
-  ren->AddActor(ac);
+  ren->AddActor(ac.GetPointer());
   vtkNew<vtkActor> ac1;
-  ac1->SetMapper(pm);
-  ac1->SetPosition(0, 0, 0);
+  ac1->SetMapper(pm.GetPointer());
+  ac1->SetPosition(0,0,0);
   ren->SetTwoSidedLighting(0);
 
-  ren->AddLight(light1);
+  ren->AddLight(light1.GetPointer());
   renWin->Render();
 
   ren->ResetCamera();
   iren->Initialize();
 
-  int retVal = vtkRegressionTestImage(renWin);
-  if (retVal == vtkRegressionTester::DO_INTERACTOR)
+  int retVal = vtkRegressionTestImage( renWin.GetPointer() );
+  if( retVal == vtkRegressionTester::DO_INTERACTOR)
   {
     iren->Start();
   }

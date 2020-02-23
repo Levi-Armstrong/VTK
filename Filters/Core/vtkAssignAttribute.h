@@ -29,12 +29,21 @@
  *            vtkAssignAttribute::POINT_DATA);
  * @endverbatim
  * tells vtkAssignAttribute to make the active vectors also the active
- * scalars.
+ * scalars. The same can be done more easily from Tcl by using the Assign()
+ * method which takes strings:
+ * @verbatim
+ * aa Assign "foo" SCALARS POINT_DATA
+ * or
+ * aa Assign SCALARS VECTORS POINT_DATA
+ *
+ * AttributeTypes: SCALARS, VECTORS, NORMALS, TCOORDS, TENSORS
+ * Attribute locations: POINT_DATA, CELL_DATA
+ * @endverbatim
  *
  * @warning
- * When using Java, Python or Visual Basic bindings, the array name
+ * When using Tcl, Java, Python or Visual Basic bindings, the array name
  * can not be one of the  AttributeTypes when calling Assign() which takes
- * strings as arguments. The wrapped command will
+ * strings as arguments. The Tcl (Java etc.) command will
  * always assume the string corresponds to an attribute type when
  * the argument is one of the AttributeTypes. In this situation,
  * use the Assign() which takes enums.
@@ -43,7 +52,7 @@
  * vtkFieldData vtkDataSet vtkDataObjectToDataSetFilter
  * vtkDataSetAttributes vtkDataArray vtkRearrangeFields
  * vtkSplitField vtkMergeFields
- */
+*/
 
 #ifndef vtkAssignAttribute_h
 #define vtkAssignAttribute_h
@@ -58,13 +67,13 @@ class vtkFieldData;
 class VTKFILTERSCORE_EXPORT vtkAssignAttribute : public vtkPassInputTypeAlgorithm
 {
 public:
-  vtkTypeMacro(vtkAssignAttribute, vtkPassInputTypeAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkAssignAttribute,vtkPassInputTypeAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Create a new vtkAssignAttribute.
    */
-  static vtkAssignAttribute* New();
+  static vtkAssignAttribute *New();
 
   /**
    * Label an attribute as another attribute.
@@ -80,19 +89,21 @@ public:
    * Helper method used by other language bindings. Allows the caller to
    * specify arguments as strings instead of enums.
    */
-  void Assign(const char* name, const char* attributeType, const char* attributeLoc);
+  void Assign(const char* name, const char* attributeType,
+              const char* attributeLoc);
 
   // Always keep NUM_ATTRIBUTE_LOCS as the last entry
   enum AttributeLocation
   {
-    POINT_DATA = 0,
-    CELL_DATA = 1,
-    VERTEX_DATA = 2,
-    EDGE_DATA = 3,
+    POINT_DATA=0,
+    CELL_DATA=1,
+    VERTEX_DATA=2,
+    EDGE_DATA=3,
     NUM_ATTRIBUTE_LOCS
   };
 
 protected:
+
   enum FieldType
   {
     NAME,
@@ -100,11 +111,11 @@ protected:
   };
 
   vtkAssignAttribute();
-  ~vtkAssignAttribute() override;
+  ~vtkAssignAttribute() VTK_OVERRIDE;
 
-  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int FillInputPortInformation(int, vtkInformation*) override;
+  int RequestInformation(vtkInformation *, vtkInformationVector **, vtkInformationVector *) VTK_OVERRIDE;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *) VTK_OVERRIDE;
+  int FillInputPortInformation(int, vtkInformation *) VTK_OVERRIDE;
 
   char* FieldName;
   int FieldTypeAssignment;
@@ -114,10 +125,9 @@ protected:
 
   static char AttributeLocationNames[vtkAssignAttribute::NUM_ATTRIBUTE_LOCS][12];
   static char AttributeNames[vtkDataSetAttributes::NUM_ATTRIBUTES][20];
-
 private:
-  vtkAssignAttribute(const vtkAssignAttribute&) = delete;
-  void operator=(const vtkAssignAttribute&) = delete;
+  vtkAssignAttribute(const vtkAssignAttribute&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkAssignAttribute&) VTK_DELETE_FUNCTION;
 };
 
 #endif

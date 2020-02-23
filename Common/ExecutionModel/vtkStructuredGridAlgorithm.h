@@ -26,14 +26,14 @@
  * constructor for the default. This class also provides a FillInputPortInfo
  * method that by default says that all inputs will be StructuredGrid. If that
  * isn't the case then please override this method in your subclass.
- */
+*/
 
 #ifndef vtkStructuredGridAlgorithm_h
 #define vtkStructuredGridAlgorithm_h
 
-#include "vtkAlgorithm.h"
 #include "vtkCommonExecutionModelModule.h" // For export macro
-#include "vtkStructuredGrid.h"             // makes things a bit easier
+#include "vtkAlgorithm.h"
+#include "vtkStructuredGrid.h" // makes things a bit easier
 
 class vtkDataSet;
 class vtkStructuredGrid;
@@ -41,9 +41,9 @@ class vtkStructuredGrid;
 class VTKCOMMONEXECUTIONMODEL_EXPORT vtkStructuredGridAlgorithm : public vtkAlgorithm
 {
 public:
-  static vtkStructuredGridAlgorithm* New();
-  vtkTypeMacro(vtkStructuredGridAlgorithm, vtkAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkStructuredGridAlgorithm *New();
+  vtkTypeMacro(vtkStructuredGridAlgorithm,vtkAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   //@{
   /**
@@ -57,14 +57,15 @@ public:
   /**
    * see vtkAlgorithm for details
    */
-  vtkTypeBool ProcessRequest(
-    vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int ProcessRequest(vtkInformation*,
+                             vtkInformationVector**,
+                             vtkInformationVector*) VTK_OVERRIDE;
 
   // this method is not recommended for use, but lots of old style filters
   // use it
   vtkDataObject* GetInput();
-  vtkDataObject* GetInput(int port);
-  vtkStructuredGrid* GetStructuredGridInput(int port);
+  vtkDataObject *GetInput(int port);
+  vtkStructuredGrid *GetStructuredGridInput(int port);
 
   //@{
   /**
@@ -72,7 +73,7 @@ public:
    * establish a pipeline connection. Use SetInputConnection() to
    * setup a pipeline connection.
    */
-  void SetInputData(vtkDataObject*);
+  void SetInputData(vtkDataObject *);
   void SetInputData(int, vtkDataObject*);
   //@}
 
@@ -82,43 +83,47 @@ public:
    * establish a pipeline connection. Use AddInputConnection() to
    * setup a pipeline connection.
    */
-  void AddInputData(vtkDataObject*);
+  void AddInputData(vtkDataObject *);
   void AddInputData(int, vtkDataObject*);
   //@}
 
 protected:
   vtkStructuredGridAlgorithm();
-  ~vtkStructuredGridAlgorithm() override;
+  ~vtkStructuredGridAlgorithm() VTK_OVERRIDE;
 
   // convenience method
-  virtual int RequestInformation(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector);
+  virtual int RequestInformation(vtkInformation* request,
+                                 vtkInformationVector** inputVector,
+                                 vtkInformationVector* outputVector);
 
   /**
    * This is called by the superclass.
    * This is the method you should override.
    */
-  virtual int RequestData(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector);
+  virtual int RequestData(vtkInformation* request,
+                          vtkInformationVector** inputVector,
+                          vtkInformationVector* outputVector);
 
   //@{
   /**
    * This is called by the superclass.
    * This is the method you should override.
    */
-  virtual int RequestUpdateExtent(vtkInformation*, vtkInformationVector**, vtkInformationVector*)
+  virtual int RequestUpdateExtent(vtkInformation*,
+                                  vtkInformationVector**,
+                                  vtkInformationVector*)
   {
-    return 1;
+      return 1;
   };
   //@}
 
   // see algorithm for more info
-  int FillOutputPortInformation(int port, vtkInformation* info) override;
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  int FillOutputPortInformation(int port, vtkInformation* info) VTK_OVERRIDE;
+  int FillInputPortInformation(int port, vtkInformation* info) VTK_OVERRIDE;
 
 private:
-  vtkStructuredGridAlgorithm(const vtkStructuredGridAlgorithm&) = delete;
-  void operator=(const vtkStructuredGridAlgorithm&) = delete;
+  vtkStructuredGridAlgorithm(const vtkStructuredGridAlgorithm&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkStructuredGridAlgorithm&) VTK_DELETE_FUNCTION;
 };
 
 #endif

@@ -28,8 +28,8 @@
 #include <arpa/inet.h>
 #endif
 
-#include <cstring>
-#include <ctime>
+#include <string.h>
+#include <time.h>
 
 #include <typeinfo>
 
@@ -56,7 +56,7 @@ MetaOutputStream()
   m_Enable = true;
   m_IsStdStream = false;
   m_Name = "";
-  m_MetaOutput = nullptr;
+  m_MetaOutput = NULL;
 }
 
 void MetaOutputStream::
@@ -196,7 +196,7 @@ GetFileName()
 MetaOutput::
 MetaOutput()
 {
-  m_MetaCommand = nullptr;
+  m_MetaCommand = 0;
   m_CurrentVersion = "0.1";
   }
 
@@ -241,9 +241,10 @@ AddFloatField(METAIO_STL::string name,
               METAIO_STL::string rangeMax
               )
 {
-  char val[20];
-  snprintf(val,sizeof(val),"%f",value);
+  char* val = new char[20];
+  sprintf(val,"%f",value);
   this->AddField(name,description,FLOAT,val,rangeMin,rangeMax);
+  delete [] val;
   return true;
 }
 
@@ -256,9 +257,10 @@ AddIntField(METAIO_STL::string name,
             METAIO_STL::string rangeMax
             )
 {
-  char val[10];
-  snprintf(val,sizeof(val),"%d",value);
+  char* val = new char[10];
+  sprintf(val,"%d",value);
   this->AddField(name,description,INT,val,rangeMin,rangeMax);
+  delete [] val;
   return true;
 }
 
@@ -274,7 +276,7 @@ bool MetaOutput::AddListField(METAIO_STL::string name,
   while(it != list.end())
     {
     field.value.push_back(*it);
-    ++it;
+    it++;
     }
   field.type = LIST;
   m_FieldVector.push_back(field);
@@ -302,14 +304,14 @@ METAIO_STL::string MetaOutput::
 GetUsername()
 {
 #if defined (_WIN32) && !defined(__CYGWIN__)
-    char buf[1024];
+    static char buf[1024];
     DWORD size = sizeof(buf);
     buf[0] = '\0';
     GetUserName( buf, &size);
-    return  METAIO_STL::string(buf);
+    return buf;
 #else  // not _WIN32
     struct passwd *pw = getpwuid(getuid());
-    if ( pw == nullptr )
+    if ( pw == NULL )
       {
         METAIO_STREAM::cout << "getpwuid() failed " << METAIO_STREAM::endl;
         return "";
@@ -345,7 +347,7 @@ METAIO_STL::string MetaOutput::GetHostip()
   #endif
 
   struct hostent *phe = gethostbyname(GetHostname().c_str());
-  if (phe == nullptr)
+  if (phe == 0)
       return "";
 
   struct in_addr addr;
@@ -423,7 +425,7 @@ METAIO_STL::string MetaOutput::GenerateXML(const char* filename)
     {
     if((*itInput).name == "GenerateMetaOutput")
       {
-      ++itInput;
+      itInput++;
       continue;
       }
 
@@ -434,7 +436,7 @@ METAIO_STL::string MetaOutput::GenerateXML(const char* filename)
       {
       if((*itInput).fields.size() == 1)
         {
-        buffer += "  <Input name=\"" + (*itInput).name +"\"";
+        buffer += "  <Input name=\"" + (*itInput).name +"\"";;
         }
       else
         {
@@ -466,9 +468,9 @@ METAIO_STL::string MetaOutput::GenerateXML(const char* filename)
         buffer += " externalData=\"out\"";
         }
       buffer += "/>\n";
-      ++itField;
+      itField++;
       }
-    ++itInput;
+    itInput++;
     }
 
   buffer += "</Inputs>\n";
@@ -492,29 +494,31 @@ METAIO_STL::string MetaOutput::GenerateXML(const char* filename)
       buffer += " value";
       if((*itOutput).value.size()>1)
         {
-        char val[10];
-        snprintf(val,sizeof(val),"%u",index);
+        char* val = new char[10];
+        sprintf(val,"%u",index);
         buffer += val;
+        delete [] val;
         }
       buffer += "=\"" + *itValue + "\"";
-      ++itValue;
+      itValue++;
       index++;
       }
     buffer += "/>\n";
-    ++itOutput;
+    itOutput++;
     }
   buffer += "</Outputs>\n";
 
   // CRC32
   unsigned long crc = crc32(0L,(const Bytef*)buffer.c_str(),
     static_cast<int>(buffer.size()));
-  char crcstring[10];
-  snprintf(crcstring,sizeof(crcstring),"%lu",crc);
+  char * crcstring = new char[10];
+  sprintf(crcstring,"%lu",crc);
   // Compute the crc
   buffer += "<CRC32>";
   buffer += crcstring;
   buffer += "</CRC32>\n";
   buffer += "</MetaOutputFile>\n";
+  delete [] crcstring;
   return buffer;
 }
 
@@ -556,7 +560,7 @@ void MetaOutput::Write()
     {
     if(!(*itStream)->IsEnable())
       {
-      ++itStream;
+      itStream++;
       continue;
       }
 
@@ -583,7 +587,7 @@ void MetaOutput::Write()
         {
         (*itStream)->Write(this->GenerateXML().c_str());
         }
-      ++it;
+      it++;
       }
 
     if(!(*itStream)->Close())
@@ -592,7 +596,7 @@ void MetaOutput::Write()
                           << METAIO_STREAM::endl;
       return;
       }
-    ++itStream;
+    itStream++;
     }
 }
 
@@ -628,7 +632,7 @@ void MetaOutput::EnableStream(const char* name)
       {
       (*itStream)->Enable();
       }
-    ++itStream;
+    itStream++;
     }
 }
 
@@ -642,7 +646,7 @@ void MetaOutput::DisableStream(const char* name)
       {
       (*itStream)->Disable();
       }
-    ++itStream;
+    itStream++;
     }
 }
 

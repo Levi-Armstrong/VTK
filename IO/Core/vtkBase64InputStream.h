@@ -18,7 +18,7 @@
  *
  * vtkBase64InputStream implements base64 decoding with the
  * vtkInputStream interface.
- */
+*/
 
 #ifndef vtkBase64InputStream_h
 #define vtkBase64InputStream_h
@@ -29,28 +29,28 @@
 class VTKIOCORE_EXPORT vtkBase64InputStream : public vtkInputStream
 {
 public:
-  vtkTypeMacro(vtkBase64InputStream, vtkInputStream);
-  static vtkBase64InputStream* New();
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkBase64InputStream,vtkInputStream);
+  static vtkBase64InputStream *New();
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Called after the stream position has been set by the caller, but
    * before any Seek or Read calls.  The stream position should not be
    * adjusted by the caller until after an EndReading call.
    */
-  void StartReading() override;
+  void StartReading();
 
   /**
    * Seek to the given offset in the input data.  Returns 1 for
    * success, 0 for failure.
    */
-  int Seek(vtkTypeInt64 offset) override;
+  int Seek(vtkTypeInt64 offset);
 
   /**
    * Read input data of the given length.  Returns amount actually
    * read.
    */
-  size_t Read(void* data, size_t length) override;
+  size_t Read(void* data, size_t length);
 
   /**
    * Called after all desired calls to Seek and Read have been made.
@@ -58,11 +58,11 @@ public:
    * stream.  Additional reads should not be done until after another
    * call to StartReading.
    */
-  void EndReading() override;
+  void EndReading();
 
 protected:
   vtkBase64InputStream();
-  ~vtkBase64InputStream() override;
+  ~vtkBase64InputStream();
 
   // Number of decoded bytes left in Buffer from last call to Read.
   int BufferLength;
@@ -72,8 +72,8 @@ protected:
   int DecodeTriplet(unsigned char& c0, unsigned char& c1, unsigned char& c2);
 
 private:
-  vtkBase64InputStream(const vtkBase64InputStream&) = delete;
-  void operator=(const vtkBase64InputStream&) = delete;
+  vtkBase64InputStream(const vtkBase64InputStream&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkBase64InputStream&) VTK_DELETE_FUNCTION;
 };
 
 #endif

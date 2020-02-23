@@ -33,10 +33,11 @@
  * @par Thanks:
  * Thanks to Jason Shepherd from Sandia National Laboratories
  * for help developing this class.
- */
+*/
 
 #ifndef vtkAreaLayoutStrategy_h
 #define vtkAreaLayoutStrategy_h
+
 
 #include "vtkInfovisLayoutModule.h" // For export macro
 #include "vtkObject.h"
@@ -47,8 +48,8 @@ class vtkDataArray;
 class VTKINFOVISLAYOUT_EXPORT vtkAreaLayoutStrategy : public vtkObject
 {
 public:
-  vtkTypeMacro(vtkAreaLayoutStrategy, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkAreaLayoutStrategy,vtkObject);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Perform the layout of the input tree, and store the sector
@@ -58,10 +59,11 @@ public:
    * For rectangular layout, this is
    * (xmin, xmax, ymin, ymax).
 
-   * The sizeArray may be nullptr, or may contain the desired
+   * The sizeArray may be NULL, or may contain the desired
    * size of each vertex in the tree.
    */
-  virtual void Layout(vtkTree* inputTree, vtkDataArray* areaArray, vtkDataArray* sizeArray) = 0;
+  virtual void Layout(vtkTree *inputTree, vtkDataArray *areaArray,
+      vtkDataArray* sizeArray) = 0;
 
   // Modify edgeLayoutTree to have point locations appropriate
   // for routing edges on a graph overlaid on the tree.
@@ -69,8 +71,8 @@ public:
   // layout locations.
   // If you do not override this method,
   // the edgeLayoutTree vertex locations are the same as the input tree.
-  virtual void LayoutEdgePoints(
-    vtkTree* inputTree, vtkDataArray* areaArray, vtkDataArray* sizeArray, vtkTree* edgeLayoutTree);
+  virtual void LayoutEdgePoints(vtkTree *inputTree, vtkDataArray *areaArray,
+      vtkDataArray* sizeArray, vtkTree *edgeLayoutTree);
 
   /**
    * Returns the vertex id that contains pnt (or -1 if no one contains it)
@@ -85,13 +87,14 @@ public:
 
 protected:
   vtkAreaLayoutStrategy();
-  ~vtkAreaLayoutStrategy() override;
+  ~vtkAreaLayoutStrategy();
 
   double ShrinkPercentage;
 
 private:
-  vtkAreaLayoutStrategy(const vtkAreaLayoutStrategy&) = delete;
-  void operator=(const vtkAreaLayoutStrategy&) = delete;
+  vtkAreaLayoutStrategy(const vtkAreaLayoutStrategy&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkAreaLayoutStrategy&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

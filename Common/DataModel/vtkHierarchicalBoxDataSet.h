@@ -16,11 +16,11 @@
  * @brief   Backwards compatibility class
  *
  *
- * An empty class for backwards compatibility
+ * An empty class for backwards compatiblity
  *
  * @sa
  * vtkUniformGridAM vtkOverlappingAMR vtkNonOverlappingAMR
- */
+*/
 
 #ifndef vtkHierarchicalBoxDataSet_h
 #define vtkHierarchicalBoxDataSet_h
@@ -31,38 +31,39 @@
 class vtkInformation;
 class vtkInformationVector;
 
-class VTKCOMMONDATAMODEL_EXPORT vtkHierarchicalBoxDataSet : public vtkOverlappingAMR
+class VTKCOMMONDATAMODEL_EXPORT vtkHierarchicalBoxDataSet:
+  public vtkOverlappingAMR
 {
 public:
-  static vtkHierarchicalBoxDataSet* New();
-  vtkTypeMacro(vtkHierarchicalBoxDataSet, vtkOverlappingAMR);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkHierarchicalBoxDataSet *New();
+  vtkTypeMacro(vtkHierarchicalBoxDataSet,vtkOverlappingAMR);
+  void PrintSelf(ostream &os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Return a new iterator (the iterator has to be deleted by user).
    */
-  VTK_NEWINSTANCE vtkCompositeDataIterator* NewIterator() override;
+  VTK_NEWINSTANCE vtkCompositeDataIterator* NewIterator() VTK_OVERRIDE;
 
   /**
    * Return class name of data type (see vtkType.h for definitions).
    */
-  int GetDataObjectType() override { return VTK_HIERARCHICAL_BOX_DATA_SET; }
+  int GetDataObjectType() VTK_OVERRIDE {return VTK_HIERARCHICAL_BOX_DATA_SET;}
 
   //@{
   /**
    * Retrieve an instance of this class from an information object.
    */
   static vtkHierarchicalBoxDataSet* GetData(vtkInformation* info);
-  static vtkHierarchicalBoxDataSet* GetData(vtkInformationVector* v, int i = 0);
+  static vtkHierarchicalBoxDataSet* GetData(vtkInformationVector* v, int i=0);
   //@}
 
 protected:
   vtkHierarchicalBoxDataSet();
-  ~vtkHierarchicalBoxDataSet() override;
+  ~vtkHierarchicalBoxDataSet() VTK_OVERRIDE;
 
 private:
-  vtkHierarchicalBoxDataSet(const vtkHierarchicalBoxDataSet&) = delete;
-  void operator=(const vtkHierarchicalBoxDataSet&) = delete;
+  vtkHierarchicalBoxDataSet(const vtkHierarchicalBoxDataSet&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkHierarchicalBoxDataSet&) VTK_DELETE_FUNCTION;
 };
 
 #endif

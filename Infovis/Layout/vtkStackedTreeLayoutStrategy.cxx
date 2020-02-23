@@ -22,22 +22,23 @@
 
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
-#include "vtkDataArray.h"
 #include "vtkDoubleArray.h"
-#include "vtkFloatArray.h"
+#include "vtkMath.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
-#include "vtkIntArray.h"
-#include "vtkMath.h"
 #include "vtkObjectFactory.h"
-#include "vtkPointData.h"
 #include "vtkPoints.h"
+#include "vtkPointData.h"
+#include "vtkFloatArray.h"
+#include "vtkDataArray.h"
+#include "vtkIntArray.h"
 #include "vtkTree.h"
 #include "vtkTreeDFSIterator.h"
 #include "vtkTreeLevelsFilter.h"
 
 #include "vtkSmartPointer.h"
-#define VTK_CREATE(type, name) vtkSmartPointer<type> name = vtkSmartPointer<type>::New()
+#define VTK_CREATE(type, name)                                  \
+  vtkSmartPointer<type> name = vtkSmartPointer<type>::New()
 
 vtkStandardNewMacro(vtkStackedTreeLayoutStrategy);
 
@@ -52,11 +53,13 @@ vtkStackedTreeLayoutStrategy::vtkStackedTreeLayoutStrategy()
   this->InteriorLogSpacingValue = 1.0;
 }
 
-vtkStackedTreeLayoutStrategy::~vtkStackedTreeLayoutStrategy() = default;
+vtkStackedTreeLayoutStrategy::~vtkStackedTreeLayoutStrategy()
+{
+}
 
 void vtkStackedTreeLayoutStrategy::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
   os << indent << "InteriorRadius: " << this->InteriorRadius << endl;
   os << indent << "RingThickness: " << this->RingThickness << endl;
   os << indent << "RootStartAngle: " << this->RootStartAngle << endl;
@@ -66,10 +69,11 @@ void vtkStackedTreeLayoutStrategy::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "InteriorLogSpacingValue: " << this->InteriorLogSpacingValue << endl;
 }
 
-void vtkStackedTreeLayoutStrategy::Layout(
-  vtkTree* inputTree, vtkDataArray* coordsArray, vtkDataArray* sizeArray)
+void vtkStackedTreeLayoutStrategy::Layout(vtkTree* inputTree,
+                                          vtkDataArray* coordsArray,
+                                          vtkDataArray* sizeArray)
 {
-  if (!inputTree || inputTree->GetNumberOfVertices() == 0)
+  if( !inputTree || inputTree->GetNumberOfVertices() == 0 )
   {
     return;
   }
@@ -82,44 +86,44 @@ void vtkStackedTreeLayoutStrategy::Layout(
   vtkDataSetAttributes* data = inputTree->GetVertexData();
 
   VTK_CREATE(vtkDoubleArray, textRotationArray);
-  textRotationArray->SetName("TextRotation");
+  textRotationArray->SetName( "TextRotation" );
   textRotationArray->SetNumberOfComponents(1);
   textRotationArray->SetNumberOfTuples(inputTree->GetNumberOfVertices());
-  data->AddArray(textRotationArray);
+  data->AddArray( textRotationArray );
 
   VTK_CREATE(vtkDoubleArray, textBoundedSizeArray);
-  textBoundedSizeArray->SetName("TextBoundedSize");
+  textBoundedSizeArray->SetName( "TextBoundedSize" );
   textBoundedSizeArray->SetNumberOfComponents(2);
   textBoundedSizeArray->SetNumberOfTuples(inputTree->GetNumberOfVertices());
-  data->AddArray(textBoundedSizeArray);
+  data->AddArray( textBoundedSizeArray );
 
   double outer_radius = 0.0;
   if (this->Reverse)
   {
     VTK_CREATE(vtkTreeLevelsFilter, levelFilter);
     VTK_CREATE(vtkTree, newTree);
-    newTree->ShallowCopy(inputTree);
-    levelFilter->SetInputData(newTree);
+    newTree->ShallowCopy( inputTree );
+    levelFilter->SetInputData( newTree );
     levelFilter->Update();
     vtkTree* levelTree = levelFilter->GetOutput();
 
-    vtkIntArray* levelArray =
-      vtkArrayDownCast<vtkIntArray>(levelTree->GetVertexData()->GetAbstractArray("level"));
+    vtkIntArray *levelArray = vtkArrayDownCast<vtkIntArray>(
+        levelTree->GetVertexData()->GetAbstractArray("level"));
     int max_level = 0;
-    for (int i = 0; i < levelTree->GetNumberOfVertices(); i++)
+    for( int i = 0; i < levelTree->GetNumberOfVertices(); i++ )
     {
       int level = levelArray->GetValue(i);
-      if (level > max_level)
+      if( level > max_level )
       {
         max_level = level;
       }
     }
-    outer_radius = max_level * this->RingThickness + this->InteriorRadius;
+    outer_radius = max_level*this->RingThickness + this->InteriorRadius;
   }
 
   // Get the root vertex and set it
   vtkIdType rootId = inputTree->GetRoot();
-  float coords[4] = { this->RootStartAngle, this->RootEndAngle, 0.0, 0.0 };
+  float coords[4] = {this->RootStartAngle, this->RootEndAngle, 0.0, 0.0};
   if (this->Reverse)
   {
     coords[2] = outer_radius - this->RingThickness;
@@ -132,78 +136,78 @@ void vtkStackedTreeLayoutStrategy::Layout(
   coordsArray->SetTuple(rootId, coords);
 
   // Now layout the children vertices
-  this->LayoutChildren(inputTree, coordsArray, sizeArray, inputTree->GetNumberOfChildren(rootId),
-    rootId, 0, coords[2], coords[3], coords[0], coords[1]);
+  this->LayoutChildren(inputTree, coordsArray, sizeArray,
+      inputTree->GetNumberOfChildren(rootId),
+      rootId, 0, coords[2], coords[3], coords[0], coords[1]);
 
   vtkPoints* points = vtkPoints::New();
   vtkIdType numVerts = inputTree->GetNumberOfVertices();
   points->SetNumberOfPoints(numVerts);
-  for (vtkIdType i = 0; i < numVerts; i++)
+  for( vtkIdType i = 0; i < numVerts; i++ )
   {
     double sector_coords[4];
-    coordsArray->GetTuple(i, sector_coords);
+    coordsArray->GetTuple( i, sector_coords );
     double x, y, z;
-    if (this->UseRectangularCoordinates)
+    if( this->UseRectangularCoordinates )
     {
-      x = 0.5 * (sector_coords[0] + sector_coords[1]);
-      y = 0.5 * (sector_coords[2] + sector_coords[3]);
+      x = 0.5*(sector_coords[0] + sector_coords[1]);
+      y = 0.5*(sector_coords[2] + sector_coords[3]);
       z = 0.;
 
-      textRotationArray->SetValue(i, 0);
-      textBoundedSizeArray->SetValue(2 * i, sector_coords[1] - sector_coords[0]);
-      textBoundedSizeArray->SetValue(2 * i + 1, sector_coords[3] - sector_coords[2]);
+      textRotationArray->SetValue( i, 0 );
+      textBoundedSizeArray->SetValue( 2*i, sector_coords[1] - sector_coords[0]);
+      textBoundedSizeArray->SetValue( 2*i + 1, sector_coords[3] - sector_coords[2] );
     }
     else
     {
-      if (i == rootId)
+      if( i == rootId )
       {
         x = y = z = 0.;
 
-        textRotationArray->SetValue(i, 0);
-        textBoundedSizeArray->SetValue(2 * i, 0);
-        textBoundedSizeArray->SetValue(2 * i + 1, 0);
+        textRotationArray->SetValue( i, 0 );
+        textBoundedSizeArray->SetValue( 2*i, 0 );
+        textBoundedSizeArray->SetValue( 2*i + 1, 0 );
       }
       else
       {
-        double r = (0.5 * (sector_coords[3] - sector_coords[2])) + sector_coords[2];
-        double theta = sector_coords[0] + (0.5 * (sector_coords[1] - sector_coords[0]));
-        x = r * cos(vtkMath::RadiansFromDegrees(theta));
-        y = r * sin(vtkMath::RadiansFromDegrees(theta));
+        double r = (0.5*(sector_coords[3] - sector_coords[2])) + sector_coords[2];
+        double theta = sector_coords[0] + (0.5*(sector_coords[1]-sector_coords[0]));
+        x = r * cos( vtkMath::RadiansFromDegrees( theta ) );
+        y = r * sin( vtkMath::RadiansFromDegrees( theta ) );
         z = 0.;
 
-        double sector_arc_length =
-          r * vtkMath::RadiansFromDegrees(sector_coords[1] - sector_coords[0]);
+        double sector_arc_length = r * vtkMath::RadiansFromDegrees(sector_coords[1] - sector_coords[0]);
         double radial_arc_length = sector_coords[3] - sector_coords[2];
         double aspect_ratio = sector_arc_length / radial_arc_length;
-        if (aspect_ratio > 1)
+        if( aspect_ratio > 1 )
         {
-          // sector length is greater than radial length;
+          //sector length is greater than radial length;
           // align text with the sector
-          if (theta > 0. && theta < 180.)
+          if( theta > 0. && theta < 180. )
           {
-            textRotationArray->SetValue(i, theta - 90.);
+            textRotationArray->SetValue( i, theta - 90. );
           }
           else
           {
-            textRotationArray->SetValue(i, theta + 90.);
+            textRotationArray->SetValue( i, theta + 90. );
           }
-          textBoundedSizeArray->SetValue(2 * i, sector_arc_length);
-          textBoundedSizeArray->SetValue(2 * i + 1, radial_arc_length);
+          textBoundedSizeArray->SetValue( 2*i, sector_arc_length );
+          textBoundedSizeArray->SetValue( 2*i + 1, radial_arc_length );
         }
         else
         {
-          // radial length is greater than sector length;
+          //radial length is greater than sector length;
           // align text radially...
-          if (theta > 90. && theta < 270.)
+          if( theta > 90. && theta < 270. )
           {
-            textRotationArray->SetValue(i, theta - 180.);
+            textRotationArray->SetValue( i, theta - 180. );
           }
           else
           {
-            textRotationArray->SetValue(i, theta);
+            textRotationArray->SetValue( i, theta );
           }
-          textBoundedSizeArray->SetValue(2 * i, radial_arc_length);
-          textBoundedSizeArray->SetValue(2 * i + 1, sector_arc_length);
+          textBoundedSizeArray->SetValue( 2*i, radial_arc_length );
+          textBoundedSizeArray->SetValue( 2*i + 1, sector_arc_length );
         }
       }
     }
@@ -213,33 +217,36 @@ void vtkStackedTreeLayoutStrategy::Layout(
   points->Delete();
 }
 
-void vtkStackedTreeLayoutStrategy::LayoutEdgePoints(vtkTree* inputTree, vtkDataArray* sectorsArray,
-  vtkDataArray* vtkNotUsed(sizeArray), vtkTree* outputTree)
+void vtkStackedTreeLayoutStrategy::LayoutEdgePoints(
+  vtkTree* inputTree,
+  vtkDataArray* sectorsArray,
+  vtkDataArray* vtkNotUsed(sizeArray),
+  vtkTree* outputTree)
 {
   VTK_CREATE(vtkTreeLevelsFilter, levelFilter);
   VTK_CREATE(vtkTree, newTree);
-  newTree->ShallowCopy(inputTree);
-  levelFilter->SetInputData(newTree);
+  newTree->ShallowCopy( inputTree );
+  levelFilter->SetInputData( newTree );
   levelFilter->Update();
   vtkTree* levelTree = levelFilter->GetOutput();
-  outputTree->ShallowCopy(levelTree);
+  outputTree->ShallowCopy( levelTree );
 
-  vtkIntArray* levelArray =
-    vtkArrayDownCast<vtkIntArray>(levelTree->GetVertexData()->GetAbstractArray("level"));
+  vtkIntArray* levelArray = vtkArrayDownCast<vtkIntArray>(
+      levelTree->GetVertexData()->GetAbstractArray("level"));
 
   double exteriorRadius = VTK_DOUBLE_MAX;
   double sector_coords[4];
   int max_level = 0;
-  for (int i = 0; i < outputTree->GetNumberOfVertices(); i++)
+  for( int i = 0; i < outputTree->GetNumberOfVertices(); i++ )
   {
     int level = levelArray->GetValue(i);
-    if (level > max_level)
+    if( level > max_level )
     {
       max_level = level;
     }
     if (inputTree->IsLeaf(i))
     {
-      sectorsArray->GetTuple(i, sector_coords);
+      sectorsArray->GetTuple( i, sector_coords );
       if (sector_coords[2] < exteriorRadius)
       {
         exteriorRadius = sector_coords[2];
@@ -265,31 +272,31 @@ void vtkStackedTreeLayoutStrategy::LayoutEdgePoints(vtkTree* inputTree, vtkDataA
   double diff = spacing - 1.0 > 0 ? spacing - 1.0 : 1.0 - spacing;
   if (diff > eps)
   {
-    maxHeight = (pow(spacing, max_level + 1.0) - 1.0) / (spacing - 1.0) - 1.0;
+    maxHeight = (pow(spacing, max_level+1.0) - 1.0)/(spacing - 1.0) - 1.0;
   }
 
   vtkPoints* points = vtkPoints::New();
   vtkIdType rootId = outputTree->GetRoot();
   vtkIdType numVerts = outputTree->GetNumberOfVertices();
   points->SetNumberOfPoints(numVerts);
-  for (vtkIdType i = 0; i < numVerts; i++)
+  for( vtkIdType i = 0; i < numVerts; i++ )
   {
-    if (!this->UseRectangularCoordinates && i == rootId)
+    if( !this->UseRectangularCoordinates && i == rootId )
     {
-      points->SetPoint(i, 0, 0, 0);
+      points->SetPoint( i, 0, 0, 0 );
       continue;
     }
 
-    sectorsArray->GetTuple(i, sector_coords);
+    sectorsArray->GetTuple( i, sector_coords );
 
     double x = 0.0;
     double y = 0.0;
     double z = 0.0;
-    if (this->UseRectangularCoordinates)
+    if( this->UseRectangularCoordinates )
     {
-      if (inputTree->IsLeaf(i))
+      if( inputTree->IsLeaf(i) )
       {
-        if (this->Reverse)
+        if( this->Reverse )
         {
           y = sector_coords[2];
         }
@@ -300,24 +307,22 @@ void vtkStackedTreeLayoutStrategy::LayoutEdgePoints(vtkTree* inputTree, vtkDataA
       }
       else
       {
-        if (this->Reverse)
+        if( this->Reverse )
         {
-          y = this->InteriorRadius -
-            this->RingThickness * (maxHeight + maxHeight - inputTree->GetLevel(i));
+          y = this->InteriorRadius - this->RingThickness*(maxHeight + maxHeight - inputTree->GetLevel(i));
         }
         else
         {
-          y = this->InteriorRadius +
-            this->RingThickness * (maxHeight + maxHeight - inputTree->GetLevel(i));
+          y = this->InteriorRadius + this->RingThickness*(maxHeight + maxHeight - inputTree->GetLevel(i));
         }
       }
-      x = 0.5 * (sector_coords[0] + sector_coords[1]);
+      x = 0.5*(sector_coords[0] + sector_coords[1]);
       z = 0.;
     }
     else
     {
       double r;
-      if (inputTree->IsLeaf(i))
+      if( inputTree->IsLeaf(i) )
       {
         r = sector_coords[2];
       }
@@ -325,21 +330,20 @@ void vtkStackedTreeLayoutStrategy::LayoutEdgePoints(vtkTree* inputTree, vtkDataA
       {
         if (diff <= eps)
         {
-          r = outputTree->GetLevel(i) / maxHeight;
+          r = outputTree->GetLevel(i)/maxHeight;
         }
         else
         {
-          r = ((pow(spacing, outputTree->GetLevel(i) + 1.0) - 1.0) / (spacing - 1.0) - 1.0) /
-            maxHeight;
+          r = ((pow(spacing, outputTree->GetLevel(i)+1.0) - 1.0)/(spacing - 1.0) - 1.0)/maxHeight;
         }
         // scale the spacing value based on the radius of the
         // circle we have to work with...
         r *= exteriorRadius;
       }
 
-      double theta = sector_coords[0] + (0.5 * (sector_coords[1] - sector_coords[0]));
-      x = r * cos(vtkMath::RadiansFromDegrees(theta));
-      y = r * sin(vtkMath::RadiansFromDegrees(theta));
+      double theta = sector_coords[0] + (0.5*(sector_coords[1]-sector_coords[0]));
+      x = r * cos( vtkMath::RadiansFromDegrees( theta ) );
+      y = r * sin( vtkMath::RadiansFromDegrees( theta ) );
       z = 0.;
     }
     points->SetPoint(i, x, y, z);
@@ -348,9 +352,11 @@ void vtkStackedTreeLayoutStrategy::LayoutEdgePoints(vtkTree* inputTree, vtkDataA
   points->Delete();
 }
 
-void vtkStackedTreeLayoutStrategy::LayoutChildren(vtkTree* tree, vtkDataArray* coordsArray,
-  vtkDataArray* sizeArray, vtkIdType nchildren, vtkIdType parent, vtkIdType begin,
-  float parentInnerRad, float parentOuterRad, float parentStartAng, float parentEndAng)
+void vtkStackedTreeLayoutStrategy::LayoutChildren(
+  vtkTree *tree, vtkDataArray *coordsArray, vtkDataArray *sizeArray,
+  vtkIdType nchildren, vtkIdType parent, vtkIdType begin,
+  float parentInnerRad, float parentOuterRad,
+  float parentStartAng, float parentEndAng)
 {
   double new_interior_rad = 0.0;
   double new_outer_rad = 0.0;
@@ -364,22 +370,23 @@ void vtkStackedTreeLayoutStrategy::LayoutChildren(vtkTree* tree, vtkDataArray* c
     new_interior_rad = parentOuterRad;
     new_outer_rad = new_interior_rad + this->RingThickness;
   }
-  // FIXME - we may want to do this instead...
-  // double new_outer_rad = new_interior_rad +this->RingThickness[level];
+  //FIXME - we may want to do this instead...
+  //double new_outer_rad = new_interior_rad +this->RingThickness[level];
 
   double radial_spacing = this->ShrinkPercentage * this->RingThickness;
   new_outer_rad -= radial_spacing;
-  // new_interior_rad += 0.5*radial_spacing;
+  //new_interior_rad += 0.5*radial_spacing;
 
-  // now calculate the width of each of the sectors for each vertex
+  //now calculate the width of each of the sectors for each vertex
   // first calculate the total summed weight for each of the children vertices
   double total_weighted_sum = 0;
   vtkIdType i;
-  for (i = begin; i < nchildren; i++)
+  for( i = begin; i < nchildren; i++)
   {
     if (sizeArray)
     {
-      total_weighted_sum += static_cast<float>(sizeArray->GetTuple1(tree->GetChild(parent, i)));
+      total_weighted_sum +=
+        static_cast<float>(sizeArray->GetTuple1(tree->GetChild(parent, i)));
     }
     else
     {
@@ -396,7 +403,7 @@ void vtkStackedTreeLayoutStrategy::LayoutChildren(vtkTree* tree, vtkDataArray* c
     num_spaces = nchildren;
   }
   double available_angle = parent_angle;
-  double conversion = vtkMath::Pi() / 180.0;
+  double conversion = vtkMath::Pi()/180.0;
   double spacing = 0.0;
   if (nchildren > 1)
   {
@@ -433,7 +440,7 @@ void vtkStackedTreeLayoutStrategy::LayoutChildren(vtkTree* tree, vtkDataArray* c
 
   float coords[4];
   double current_angle = parentStartAng;
-  for (i = begin; i < nchildren; i++)
+  for( i = begin; i < nchildren; i++)
   {
     int id = tree->GetChild(parent, i);
     float cur_size = 1.0;
@@ -441,7 +448,8 @@ void vtkStackedTreeLayoutStrategy::LayoutChildren(vtkTree* tree, vtkDataArray* c
     {
       cur_size = static_cast<float>(sizeArray->GetTuple1(id));
     }
-    double this_arc = available_angle * (cur_size / total_weighted_sum);
+    double this_arc = available_angle *
+      ( cur_size / total_weighted_sum );
 
     coords[2] = new_interior_rad;
     coords[3] = new_outer_rad;
@@ -455,29 +463,31 @@ void vtkStackedTreeLayoutStrategy::LayoutChildren(vtkTree* tree, vtkDataArray* c
     vtkIdType numNewChildren = tree->GetNumberOfChildren(id);
     if (numNewChildren > 0)
     {
-      this->LayoutChildren(tree, coordsArray, sizeArray, numNewChildren, id, 0, coords[2],
-        coords[3], coords[0], coords[1]);
+      this->LayoutChildren(tree, coordsArray, sizeArray, numNewChildren, id, 0,
+                           coords[2], coords[3], coords[0], coords[1]);
     }
   }
 }
 
 vtkIdType vtkStackedTreeLayoutStrategy::FindVertex(
-  vtkTree* otree, vtkDataArray* array, float pnt[2])
+    vtkTree* otree,
+    vtkDataArray* array,
+    float pnt[2])
 {
   if (this->UseRectangularCoordinates)
   {
     float blimits[4];
     vtkIdType vertex = otree->GetRoot();
-    if (vertex < 0)
+    if(vertex < 0)
     {
       return vertex;
     }
-    vtkFloatArray* boundsInfo = vtkArrayDownCast<vtkFloatArray>(array);
+    vtkFloatArray *boundsInfo = vtkArrayDownCast<vtkFloatArray>(array);
 
     // Now try to find the vertex that contains the point
     boundsInfo->GetTypedTuple(vertex, blimits); // Get the extents of the root
-    if (((pnt[1] > blimits[2]) && (pnt[1] < blimits[3])) &&
-      ((pnt[0] > blimits[0]) && (pnt[0] < blimits[1])))
+    if( ((pnt[1] > blimits[2]) && (pnt[1] < blimits[3])) &&
+        ((pnt[0] > blimits[0]) && (pnt[0] < blimits[1])) )
     {
       // Point is at the root vertex.
       return vertex;
@@ -487,8 +497,8 @@ vtkIdType vtkStackedTreeLayoutStrategy::FindVertex(
     // the vertex that contains the point
     vtkIdType child;
     VTK_CREATE(vtkTreeDFSIterator, it);
-    it->SetTree(otree);
-    it->SetStartVertex(vertex);
+    it->SetTree( otree );
+    it->SetStartVertex( vertex );
 
     while (it->HasNext())
     {
@@ -496,12 +506,12 @@ vtkIdType vtkStackedTreeLayoutStrategy::FindVertex(
       boundsInfo->GetTypedTuple(child, blimits); // Get the extents of the child
       bool beyond_radial_bounds = false;
       bool beyond_angle_bounds = false;
-      if ((pnt[1] < blimits[2]) || (pnt[1] > blimits[3]))
+      if( (pnt[1] < blimits[2]) || (pnt[1] > blimits[3]))
         beyond_radial_bounds = true;
-      if ((pnt[0] < blimits[0]) || (pnt[0] > blimits[1]))
+      if( (pnt[0] < blimits[0]) || (pnt[0] > blimits[1]))
         beyond_angle_bounds = true;
 
-      if (beyond_radial_bounds || beyond_angle_bounds)
+      if( beyond_radial_bounds || beyond_angle_bounds )
       {
         continue;
       }
@@ -513,23 +523,23 @@ vtkIdType vtkStackedTreeLayoutStrategy::FindVertex(
   {
     // Radial layout
     float polar_location[2];
-    polar_location[0] = sqrt((pnt[0] * pnt[0]) + (pnt[1] * pnt[1]));
-    polar_location[1] = vtkMath::DegreesFromRadians(atan2(pnt[1], pnt[0]));
-    if (polar_location[1] < 0)
+    polar_location[0] = sqrt( ( pnt[0] * pnt[0] ) + ( pnt[1] * pnt[1] ) );
+    polar_location[1] = vtkMath::DegreesFromRadians( atan2( pnt[1], pnt[0] ) );
+    if( polar_location[1] < 0 )
       polar_location[1] += 360.;
 
     float blimits[4];
     vtkIdType vertex = otree->GetRoot();
-    if (vertex < 0)
+    if(vertex < 0)
     {
       return vertex;
     }
-    vtkFloatArray* boundsInfo = vtkArrayDownCast<vtkFloatArray>(array);
+    vtkFloatArray *boundsInfo = vtkArrayDownCast<vtkFloatArray>(array);
 
     // Now try to find the vertex that contains the point
     boundsInfo->GetTypedTuple(vertex, blimits); // Get the extents of the root
-    if (((polar_location[0] > blimits[2]) && (polar_location[0] < blimits[3])) &&
-      ((polar_location[1] > blimits[0]) && (polar_location[1] < blimits[1])))
+    if( ((polar_location[0] > blimits[2]) && (polar_location[0] < blimits[3])) &&
+        ((polar_location[1] > blimits[0]) && (polar_location[1] < blimits[1])) )
     {
       // Point is at the root vertex.
       // but we don't want the root to be pickable, so return -1.
@@ -542,8 +552,8 @@ vtkIdType vtkStackedTreeLayoutStrategy::FindVertex(
     // the vertex that contains the point
     vtkIdType child;
     VTK_CREATE(vtkTreeDFSIterator, it);
-    it->SetTree(otree);
-    it->SetStartVertex(vertex);
+    it->SetTree( otree );
+    it->SetStartVertex( vertex );
 
     while (it->HasNext())
     {
@@ -563,7 +573,7 @@ vtkIdType vtkStackedTreeLayoutStrategy::FindVertex(
         blimits[1] -= 360.0;
       }
       else if ((blimits[0] < 360.0) && (blimits[1] > 360.0) && (polar_location[1] < 360.0))
-      { // if the range spans the rollover at 0/360 on the circle
+      {  // if the range spans the rollover at 0/360 on the circle
         if (polar_location[1] < 90.0)
         {
           blimits[0] = 0.0;
@@ -576,12 +586,12 @@ vtkIdType vtkStackedTreeLayoutStrategy::FindVertex(
       }
       bool beyond_radial_bounds = false;
       bool beyond_angle_bounds = false;
-      if ((polar_location[0] < blimits[2]) || (polar_location[0] > blimits[3]))
+      if( (polar_location[0] < blimits[2]) || (polar_location[0] > blimits[3]))
         beyond_radial_bounds = true;
-      if ((polar_location[1] < blimits[0]) || (polar_location[1] > blimits[1]))
+      if( (polar_location[1] < blimits[0]) || (polar_location[1] > blimits[1]))
         beyond_angle_bounds = true;
 
-      if (beyond_radial_bounds || beyond_angle_bounds)
+      if( beyond_radial_bounds || beyond_angle_bounds )
       {
         continue;
       }
@@ -591,3 +601,4 @@ vtkIdType vtkStackedTreeLayoutStrategy::FindVertex(
   }
   return -1;
 }
+

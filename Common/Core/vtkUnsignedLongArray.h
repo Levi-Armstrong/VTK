@@ -25,14 +25,14 @@
  * unsigned integers is needed, prefer vtkTypeUInt32Array to this class.
  * If an array of 64 bit unsigned integers is needed, prefer
  * vtkUTypeInt64Array to this class.
- */
+*/
 
 #ifndef vtkUnsignedLongArray_h
 #define vtkUnsignedLongArray_h
 
-#include "vtkAOSDataArrayTemplate.h" // Real Superclass
-#include "vtkCommonCoreModule.h"     // For export macro
+#include "vtkCommonCoreModule.h" // For export macro
 #include "vtkDataArray.h"
+#include "vtkAOSDataArrayTemplate.h" // Real Superclass
 
 // Fake the superclass for the wrappers.
 #ifndef __VTK_WRAP__
@@ -41,24 +41,24 @@
 class VTKCOMMONCORE_EXPORT vtkUnsignedLongArray : public vtkDataArray
 {
 public:
-  vtkTypeMacro(vtkUnsignedLongArray, vtkDataArray);
+  vtkTypeMacro(vtkUnsignedLongArray, vtkDataArray)
 #ifndef __VTK_WRAP__
 #undef vtkDataArray
 #endif
   static vtkUnsignedLongArray* New();
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   // This macro expands to the set of method declarations that
   // make up the interface of vtkAOSDataArrayTemplate, which is ignored
   // by the wrappers.
-#if defined(__VTK_WRAP__) || defined(__WRAP_GCCXML__)
+#if defined(__VTK_WRAP__) || defined (__WRAP_GCCXML__)
   vtkCreateWrappedArrayInterface(unsigned long);
 #endif
 
   /**
    * A faster alternative to SafeDownCast for downcasting vtkAbstractArrays.
    */
-  static vtkUnsignedLongArray* FastDownCast(vtkAbstractArray* source)
+  static vtkUnsignedLongArray* FastDownCast(vtkAbstractArray *source)
   {
     return static_cast<vtkUnsignedLongArray*>(Superclass::FastDownCast(source));
   }
@@ -75,16 +75,17 @@ public:
 
 protected:
   vtkUnsignedLongArray();
-  ~vtkUnsignedLongArray() override;
+  ~vtkUnsignedLongArray() VTK_OVERRIDE;
 
 private:
+
   typedef vtkAOSDataArrayTemplate<unsigned long> RealSuperclass;
 
-  vtkUnsignedLongArray(const vtkUnsignedLongArray&) = delete;
-  void operator=(const vtkUnsignedLongArray&) = delete;
+  vtkUnsignedLongArray(const vtkUnsignedLongArray&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkUnsignedLongArray&) VTK_DELETE_FUNCTION;
 };
 
 // Define vtkArrayDownCast implementation:
-vtkArrayDownCast_FastCastMacro(vtkUnsignedLongArray);
+vtkArrayDownCast_FastCastMacro(vtkUnsignedLongArray)
 
 #endif

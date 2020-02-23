@@ -22,7 +22,7 @@
  * @sa
  * vtkXMLImageDataReader vtkXMLStructuredGridReader
  * vtkXMLRectilinearGridReader
- */
+*/
 
 #ifndef vtkXMLStructuredDataReader_h
 #define vtkXMLStructuredDataReader_h
@@ -30,21 +30,22 @@
 #include "vtkIOXMLModule.h" // For export macro
 #include "vtkXMLDataReader.h"
 
+
 class VTKIOXML_EXPORT vtkXMLStructuredDataReader : public vtkXMLDataReader
 {
 public:
-  vtkTypeMacro(vtkXMLStructuredDataReader, vtkXMLDataReader);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkXMLStructuredDataReader,vtkXMLDataReader);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Get the number of points in the output.
    */
-  vtkIdType GetNumberOfPoints() override;
+  virtual vtkIdType GetNumberOfPoints();
 
   /**
    * Get the number of cells in the output.
    */
-  vtkIdType GetNumberOfCells() override;
+  virtual vtkIdType GetNumberOfCells();
 
   //@{
   /**
@@ -53,28 +54,28 @@ public:
    * necessary, but prevents many short reads from interacting poorly
    * with the compression and encoding schemes.
    */
-  vtkSetMacro(WholeSlices, vtkTypeBool);
-  vtkGetMacro(WholeSlices, vtkTypeBool);
-  vtkBooleanMacro(WholeSlices, vtkTypeBool);
+  vtkSetMacro(WholeSlices, int);
+  vtkGetMacro(WholeSlices, int);
+  vtkBooleanMacro(WholeSlices, int);
   //@}
 
   /**
    * For the specified port, copy the information this reader sets up in
    * SetupOutputInformation to outInfo
    */
-  void CopyOutputInformation(vtkInformation* outInfo, int port) override;
+  virtual void CopyOutputInformation(vtkInformation *outInfo, int port);
 
 protected:
   vtkXMLStructuredDataReader();
-  ~vtkXMLStructuredDataReader() override;
+  ~vtkXMLStructuredDataReader();
 
-  virtual void SetOutputExtent(int* extent) = 0;
-  int ReadPrimaryElement(vtkXMLDataElement* ePrimary) override;
+  virtual void SetOutputExtent(int* extent)=0;
+  int ReadPrimaryElement(vtkXMLDataElement* ePrimary);
 
   // Pipeline execute data driver.  Called by vtkXMLReader.
-  void ReadXMLData() override;
+  void ReadXMLData();
 
-  void SetupOutputInformation(vtkInformation* outInfo) override;
+  void SetupOutputInformation(vtkInformation *outInfo);
 
   // Internal representation of pieces in the file that may have come
   // from a streamed write.
@@ -85,7 +86,7 @@ protected:
   vtkIdType* PieceCellIncrements;
 
   // Whether to read in whole slices mode.
-  vtkTypeBool WholeSlices;
+  int WholeSlices;
 
   // The update extent and corresponding increments and dimensions.
   int UpdateExtent[6];
@@ -102,21 +103,25 @@ protected:
   int SubCellDimensions[3];
 
   // Override methods from superclass.
-  void SetupEmptyOutput() override;
-  void SetupPieces(int numPieces) override;
-  void DestroyPieces() override;
-  int ReadArrayForPoints(vtkXMLDataElement* da, vtkAbstractArray* outArray) override;
-  int ReadArrayForCells(vtkXMLDataElement* da, vtkAbstractArray* outArray) override;
+  void SetupEmptyOutput();
+  void SetupPieces(int numPieces);
+  void DestroyPieces();
+  virtual int ReadArrayForPoints(vtkXMLDataElement* da,
+    vtkAbstractArray* outArray);
+  virtual int ReadArrayForCells(vtkXMLDataElement* da,
+    vtkAbstractArray* outArray);
 
   // Internal utility methods.
-  int ReadPiece(vtkXMLDataElement* ePiece) override;
-  virtual int ReadSubExtent(int* inExtent, int* inDimensions, vtkIdType* inIncrements,
-    int* outExtent, int* outDimensions, vtkIdType* outIncrements, int* subExtent,
-    int* subDimensions, vtkXMLDataElement* da, vtkAbstractArray* array, FieldType type);
+  int ReadPiece(vtkXMLDataElement* ePiece);
+  virtual int ReadSubExtent(
+    int* inExtent, int* inDimensions, vtkIdType* inIncrements,
+    int* outExtent,int* outDimensions,vtkIdType* outIncrements,
+    int* subExtent, int* subDimensions, vtkXMLDataElement* da,
+    vtkAbstractArray* array, FieldType type);
 
 private:
-  vtkXMLStructuredDataReader(const vtkXMLStructuredDataReader&) = delete;
-  void operator=(const vtkXMLStructuredDataReader&) = delete;
+  vtkXMLStructuredDataReader(const vtkXMLStructuredDataReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkXMLStructuredDataReader&) VTK_DELETE_FUNCTION;
 };
 
 #endif

@@ -25,36 +25,38 @@
  *
  * @sa
  * vtkFixedPointVolumeRayCastMapper
- */
+*/
 
 #ifndef vtkFixedPointVolumeRayCastCompositeGOHelper_h
 #define vtkFixedPointVolumeRayCastCompositeGOHelper_h
 
-#include "vtkFixedPointVolumeRayCastHelper.h"
 #include "vtkRenderingVolumeModule.h" // For export macro
+#include "vtkFixedPointVolumeRayCastHelper.h"
 
 class vtkFixedPointVolumeRayCastMapper;
 class vtkVolume;
 
-class VTKRENDERINGVOLUME_EXPORT vtkFixedPointVolumeRayCastCompositeGOHelper
-  : public vtkFixedPointVolumeRayCastHelper
+class VTKRENDERINGVOLUME_EXPORT vtkFixedPointVolumeRayCastCompositeGOHelper : public vtkFixedPointVolumeRayCastHelper
 {
 public:
-  static vtkFixedPointVolumeRayCastCompositeGOHelper* New();
-  vtkTypeMacro(vtkFixedPointVolumeRayCastCompositeGOHelper, vtkFixedPointVolumeRayCastHelper);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkFixedPointVolumeRayCastCompositeGOHelper *New();
+  vtkTypeMacro(vtkFixedPointVolumeRayCastCompositeGOHelper,vtkFixedPointVolumeRayCastHelper);
+  void PrintSelf( ostream& os, vtkIndent indent );
 
-  void GenerateImage(int threadID, int threadCount, vtkVolume* vol,
-    vtkFixedPointVolumeRayCastMapper* mapper) override;
+  virtual void  GenerateImage( int threadID,
+                               int threadCount,
+                               vtkVolume *vol,
+                               vtkFixedPointVolumeRayCastMapper *mapper);
 
 protected:
   vtkFixedPointVolumeRayCastCompositeGOHelper();
-  ~vtkFixedPointVolumeRayCastCompositeGOHelper() override;
+  ~vtkFixedPointVolumeRayCastCompositeGOHelper();
 
 private:
-  vtkFixedPointVolumeRayCastCompositeGOHelper(
-    const vtkFixedPointVolumeRayCastCompositeGOHelper&) = delete;
-  void operator=(const vtkFixedPointVolumeRayCastCompositeGOHelper&) = delete;
+  vtkFixedPointVolumeRayCastCompositeGOHelper(const vtkFixedPointVolumeRayCastCompositeGOHelper&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkFixedPointVolumeRayCastCompositeGOHelper&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+

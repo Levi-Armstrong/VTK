@@ -29,20 +29,20 @@
  *
  * @par Thanks:
  * Developed by Timothy M. Shead (tshead@sandia.gov) at Sandia National Laboratories.
- */
+*/
 
 #ifndef vtkBoostLogWeighting_h
 #define vtkBoostLogWeighting_h
 
-#include "vtkArrayDataAlgorithm.h"
 #include "vtkInfovisBoostGraphAlgorithmsModule.h" // For export macro
+#include "vtkArrayDataAlgorithm.h"
 
 class VTKINFOVISBOOSTGRAPHALGORITHMS_EXPORT vtkBoostLogWeighting : public vtkArrayDataAlgorithm
 {
 public:
   static vtkBoostLogWeighting* New();
   vtkTypeMacro(vtkBoostLogWeighting, vtkArrayDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   enum
   {
@@ -69,16 +69,21 @@ public:
 
 protected:
   vtkBoostLogWeighting();
-  ~vtkBoostLogWeighting() override;
+  ~vtkBoostLogWeighting();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(
+    vtkInformation*,
+    vtkInformationVector**,
+    vtkInformationVector*);
 
 private:
-  vtkBoostLogWeighting(const vtkBoostLogWeighting&) = delete;
-  void operator=(const vtkBoostLogWeighting&) = delete;
+  vtkBoostLogWeighting(const vtkBoostLogWeighting&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkBoostLogWeighting&) VTK_DELETE_FUNCTION;
 
   int Base;
   bool EmitProgress;
+
 };
 
 #endif
+

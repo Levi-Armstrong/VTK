@@ -16,6 +16,7 @@
   Copyright 2016 Menno Deij - van Rijswijk (MARIN)
 -------------------------------------------------------------------------*/
 
+
 /**
  * @class   vtkTecplotTableReader
  * @brief   reads in Tecplot tabular data
@@ -28,22 +29,22 @@
  * @par Thanks:
  * Thanks to vtkDelimitedTextReader authors.
  *
- */
+*/
 
 #ifndef vtkTecplotTableReader_h
 #define vtkTecplotTableReader_h
 
 #include "vtkIOTecplotTableModule.h" // For export macro
-#include "vtkStdString.h"            // Needed for vtkStdString
 #include "vtkTableAlgorithm.h"
 #include "vtkUnicodeString.h" // Needed for vtkUnicodeString
+#include "vtkStdString.h" // Needed for vtkStdString
 
 class VTKIOTECPLOTTABLE_EXPORT vtkTecplotTableReader : public vtkTableAlgorithm
 {
 public:
   static vtkTecplotTableReader* New();
   vtkTypeMacro(vtkTecplotTableReader, vtkTableAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -86,6 +87,8 @@ public:
   vtkSetMacro(SkipColumnNames, vtkIdType);
   //@}
 
+
+
   //@{
   /**
    * The name of the array for generating or assigning pedigree ids
@@ -123,9 +126,12 @@ public:
 
 protected:
   vtkTecplotTableReader();
-  ~vtkTecplotTableReader() override;
+  ~vtkTecplotTableReader();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(
+    vtkInformation*,
+    vtkInformationVector**,
+    vtkInformationVector*);
 
   char* FileName;
   vtkIdType MaxRecords;
@@ -138,8 +144,9 @@ protected:
   vtkStdString LastError;
 
 private:
-  vtkTecplotTableReader(const vtkTecplotTableReader&) = delete;
-  void operator=(const vtkTecplotTableReader&) = delete;
+  vtkTecplotTableReader(const vtkTecplotTableReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTecplotTableReader&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif

@@ -21,7 +21,7 @@
  *
  * @sa
  * vtkXMLPolyDataReader vtkXMLUnstructuredGridReader
- */
+*/
 
 #ifndef vtkXMLUnstructuredDataReader_h
 #define vtkXMLUnstructuredDataReader_h
@@ -37,18 +37,18 @@ class vtkUnsignedCharArray;
 class VTKIOXML_EXPORT vtkXMLUnstructuredDataReader : public vtkXMLDataReader
 {
 public:
-  vtkTypeMacro(vtkXMLUnstructuredDataReader, vtkXMLDataReader);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkXMLUnstructuredDataReader,vtkXMLDataReader);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Get the number of points in the output.
    */
-  vtkIdType GetNumberOfPoints() override;
+  virtual vtkIdType GetNumberOfPoints();
 
   /**
    * Get the number of cells in the output.
    */
-  vtkIdType GetNumberOfCells() override;
+  virtual vtkIdType GetNumberOfCells();
 
   /**
    * Get the number of pieces in the file
@@ -65,53 +65,53 @@ public:
 
   // For the specified port, copy the information this reader sets up in
   // SetupOutputInformation to outInfo
-  void CopyOutputInformation(vtkInformation* outInfo, int port) override;
+  virtual void CopyOutputInformation(vtkInformation *outInfo, int port);
+
 
 protected:
   vtkXMLUnstructuredDataReader();
-  ~vtkXMLUnstructuredDataReader() override;
+  ~vtkXMLUnstructuredDataReader();
 
   vtkPointSet* GetOutputAsPointSet();
-  vtkXMLDataElement* FindDataArrayWithName(vtkXMLDataElement* eParent, const char* name);
-
-  // note that these decref the input array and return an array with a
-  // new reference:
+  vtkXMLDataElement* FindDataArrayWithName(vtkXMLDataElement* eParent,
+                                           const char* name);
   vtkIdTypeArray* ConvertToIdTypeArray(vtkDataArray* a);
   vtkUnsignedCharArray* ConvertToUnsignedCharArray(vtkDataArray* a);
 
   // Pipeline execute data driver.  Called by vtkXMLReader.
-  void ReadXMLData() override;
+  void ReadXMLData();
 
-  void SetupEmptyOutput() override;
-  virtual void GetOutputUpdateExtent(int& piece, int& numberOfPieces, int& ghostLevel) = 0;
+  virtual void SetupEmptyOutput();
+  virtual void GetOutputUpdateExtent(int& piece, int& numberOfPieces,
+                                     int& ghostLevel)=0;
   virtual void SetupOutputTotals();
   virtual void SetupNextPiece();
-  void SetupPieces(int numPieces) override;
-  void DestroyPieces() override;
+  void SetupPieces(int numPieces);
+  void DestroyPieces();
 
   // Setup the output's information.
-  void SetupOutputInformation(vtkInformation* outInfo) override;
+  void SetupOutputInformation(vtkInformation *outInfo);
 
-  void SetupOutputData() override;
-  int ReadPiece(vtkXMLDataElement* ePiece) override;
-  int ReadPieceData() override;
+  void SetupOutputData();
+  int ReadPiece(vtkXMLDataElement* ePiece);
+  int ReadPieceData();
   int ReadCellArray(vtkIdType numberOfCells, vtkIdType totalNumberOfCells,
-    vtkXMLDataElement* eCells, vtkCellArray* outCells);
+                    vtkXMLDataElement* eCells, vtkCellArray* outCells);
 
   // Read faces and faceoffsets arrays for unstructured grid with polyhedon cells
-  int ReadFaceArray(vtkIdType numberOfCells, vtkXMLDataElement* eCells, vtkIdTypeArray* outFaces,
-    vtkIdTypeArray* outFaceOffsets);
+  int ReadFaceArray(vtkIdType numberOfCells, vtkXMLDataElement* eCells,
+                    vtkIdTypeArray* outFaces, vtkIdTypeArray* outFaceOffsets);
 
   // Read a data array whose tuples coorrespond to points.
-  int ReadArrayForPoints(vtkXMLDataElement* da, vtkAbstractArray* outArray) override;
+  virtual int ReadArrayForPoints(vtkXMLDataElement* da, vtkAbstractArray* outArray);
 
   // Get the number of points/cells in the given piece.  Valid after
   // UpdateInformation.
   virtual vtkIdType GetNumberOfPointsInPiece(int piece);
-  virtual vtkIdType GetNumberOfCellsInPiece(int piece) = 0;
+  virtual vtkIdType GetNumberOfCellsInPiece(int piece)=0;
 
   // The update request.
-  int UpdatePieceId;
+  int UpdatePiece;
   int UpdateNumberOfPieces;
   int UpdateGhostLevel;
 
@@ -128,13 +128,14 @@ protected:
 
   int PointsTimeStep;
   unsigned long PointsOffset;
-  int PointsNeedToReadTimeStep(vtkXMLDataElement* eNested);
-  int CellsNeedToReadTimeStep(
-    vtkXMLDataElement* eNested, int& cellstimestep, unsigned long& cellsoffset);
+  int PointsNeedToReadTimeStep(vtkXMLDataElement *eNested);
+  int CellsNeedToReadTimeStep(vtkXMLDataElement *eNested, int &cellstimestep,
+    unsigned long &cellsoffset);
+
 
 private:
-  vtkXMLUnstructuredDataReader(const vtkXMLUnstructuredDataReader&) = delete;
-  void operator=(const vtkXMLUnstructuredDataReader&) = delete;
+  vtkXMLUnstructuredDataReader(const vtkXMLUnstructuredDataReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkXMLUnstructuredDataReader&) VTK_DELETE_FUNCTION;
 };
 
 #endif

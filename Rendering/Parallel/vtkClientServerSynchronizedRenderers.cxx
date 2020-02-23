@@ -14,17 +14,21 @@
 =========================================================================*/
 #include "vtkClientServerSynchronizedRenderers.h"
 
-#include "vtkMultiProcessController.h"
 #include "vtkObjectFactory.h"
+#include "vtkMultiProcessController.h"
 
 #include <cassert>
 
 vtkStandardNewMacro(vtkClientServerSynchronizedRenderers);
 //----------------------------------------------------------------------------
-vtkClientServerSynchronizedRenderers::vtkClientServerSynchronizedRenderers() {}
+vtkClientServerSynchronizedRenderers::vtkClientServerSynchronizedRenderers()
+{
+}
 
 //----------------------------------------------------------------------------
-vtkClientServerSynchronizedRenderers::~vtkClientServerSynchronizedRenderers() {}
+vtkClientServerSynchronizedRenderers::~vtkClientServerSynchronizedRenderers()
+{
+}
 
 //----------------------------------------------------------------------------
 void vtkClientServerSynchronizedRenderers::MasterEndRender()
@@ -32,7 +36,8 @@ void vtkClientServerSynchronizedRenderers::MasterEndRender()
   // receive image from slave.
   assert(this->ParallelController->IsA("vtkSocketController"));
 
-  vtkRawImage& rawImage = this->Image;
+  vtkRawImage& rawImage = (this->ImageReductionFactor == 1)?
+    this->FullImage : this->ReducedImage;
 
   int header[4];
   this->ParallelController->Receive(header, 4, 1, 0x023430);
@@ -49,13 +54,14 @@ void vtkClientServerSynchronizedRenderers::SlaveEndRender()
 {
   assert(this->ParallelController->IsA("vtkSocketController"));
 
-  vtkRawImage& rawImage = this->CaptureRenderedImage();
+  vtkRawImage &rawImage = this->CaptureRenderedImage();
 
   int header[4];
-  header[0] = rawImage.IsValid() ? 1 : 0;
+  header[0] = rawImage.IsValid()? 1 : 0;
   header[1] = rawImage.GetWidth();
   header[2] = rawImage.GetHeight();
-  header[3] = rawImage.IsValid() ? rawImage.GetRawPtr()->GetNumberOfComponents() : 0;
+  header[3] = rawImage.IsValid()?
+    rawImage.GetRawPtr()->GetNumberOfComponents() : 0;
 
   // send the image to the client.
   this->ParallelController->Send(header, 4, 1, 0x023430);
@@ -70,3 +76,4 @@ void vtkClientServerSynchronizedRenderers::PrintSelf(ostream& os, vtkIndent inde
 {
   this->Superclass::PrintSelf(os, indent);
 }
+

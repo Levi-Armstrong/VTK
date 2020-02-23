@@ -19,13 +19,17 @@
 vtkStandardNewMacro(vtkTransmitImageDataPiece);
 
 //----------------------------------------------------------------------------
-vtkTransmitImageDataPiece::vtkTransmitImageDataPiece() = default;
+vtkTransmitImageDataPiece::vtkTransmitImageDataPiece()
+{
+}
 
 //----------------------------------------------------------------------------
-vtkTransmitImageDataPiece::~vtkTransmitImageDataPiece() = default;
+vtkTransmitImageDataPiece::~vtkTransmitImageDataPiece()
+{
+}
 
 //----------------------------------------------------------------------------
 void vtkTransmitImageDataPiece::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 }

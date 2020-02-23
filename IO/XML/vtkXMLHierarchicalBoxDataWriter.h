@@ -20,7 +20,7 @@
  * vtkXMLHierarchicalBoxDataWriter is an empty subclass of
  * vtkXMLUniformGridAMRWriter for writing vtkUniformGridAMR datasets in
  * VTK-XML format.
- */
+*/
 
 #ifndef vtkXMLHierarchicalBoxDataWriter_h
 #define vtkXMLHierarchicalBoxDataWriter_h
@@ -32,20 +32,22 @@ class VTKIOXML_EXPORT vtkXMLHierarchicalBoxDataWriter : public vtkXMLUniformGrid
 public:
   static vtkXMLHierarchicalBoxDataWriter* New();
   vtkTypeMacro(vtkXMLHierarchicalBoxDataWriter, vtkXMLUniformGridAMRWriter);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Get the default file extension for files written by this writer.
    */
-  const char* GetDefaultFileExtension() override { return "vth"; }
+  virtual const char* GetDefaultFileExtension()
+    { return "vth"; }
 
 protected:
   vtkXMLHierarchicalBoxDataWriter();
-  ~vtkXMLHierarchicalBoxDataWriter() override;
+  ~vtkXMLHierarchicalBoxDataWriter();
 
 private:
-  vtkXMLHierarchicalBoxDataWriter(const vtkXMLHierarchicalBoxDataWriter&) = delete;
-  void operator=(const vtkXMLHierarchicalBoxDataWriter&) = delete;
+  vtkXMLHierarchicalBoxDataWriter(const vtkXMLHierarchicalBoxDataWriter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkXMLHierarchicalBoxDataWriter&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif

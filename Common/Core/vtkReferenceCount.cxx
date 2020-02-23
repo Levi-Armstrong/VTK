@@ -17,11 +17,15 @@
 
 vtkStandardNewMacro(vtkReferenceCount);
 
-vtkReferenceCount::vtkReferenceCount() = default;
+vtkReferenceCount::vtkReferenceCount()
+{
+}
 
-vtkReferenceCount::~vtkReferenceCount() = default;
+vtkReferenceCount::~vtkReferenceCount()
+{
+}
 
 void vtkReferenceCount::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 }

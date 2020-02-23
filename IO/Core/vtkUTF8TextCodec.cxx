@@ -23,7 +23,7 @@ PURPOSE.  See the above copyright notice for more information.
 #include "vtkObjectFactory.h"
 #include "vtkTextCodecFactory.h"
 
-#include <vtk_utf8.h>
+#include <utf8.h>
 
 vtkStandardNewMacro(vtkUTF8TextCodec);
 
@@ -39,25 +39,29 @@ bool vtkUTF8TextCodec::CanHandle(const char* testStr)
   }
 }
 
+
 namespace
 {
-// iterator to use in testing validity - throws all input away.
-class testIterator : public vtkTextCodec::OutputIterator
-{
-public:
-  testIterator& operator++(int) override { return *this; }
-  testIterator& operator*() override { return *this; }
-  testIterator& operator=(const vtkUnicodeString::value_type) override { return *this; }
+  // iterator to use in testing validity - throws all input away.
+  class testIterator : public vtkTextCodec::OutputIterator
+  {
+  public:
+    testIterator& operator++(int) VTK_OVERRIDE {return *this;}
+    testIterator& operator*() VTK_OVERRIDE {return *this;}
+    testIterator& operator=(const vtkUnicodeString::value_type) VTK_OVERRIDE
+      {return *this;}
 
-  testIterator() = default;
-  ~testIterator() override = default;
+    testIterator() {}
+    ~testIterator() VTK_OVERRIDE {}
 
-private:
-  testIterator(const testIterator&) = delete;
-  testIterator& operator=(const testIterator&) = delete;
-};
+  private:
+    testIterator(const testIterator&) VTK_DELETE_FUNCTION;
+    const testIterator& operator=(const testIterator&) VTK_DELETE_FUNCTION;
+  };
+
 
 } // end anonymous namespace
+
 
 bool vtkUTF8TextCodec::IsValid(istream& InputStream)
 {
@@ -70,7 +74,7 @@ bool vtkUTF8TextCodec::IsValid(istream& InputStream)
     testIterator junk;
     this->ToUnicode(InputStream, junk);
   }
-  catch (...)
+  catch(...)
   {
     returnBool = false;
   }
@@ -82,7 +86,9 @@ bool vtkUTF8TextCodec::IsValid(istream& InputStream)
   return returnBool;
 }
 
-void vtkUTF8TextCodec::ToUnicode(istream& InputStream, vtkTextCodec::OutputIterator& Output)
+
+void vtkUTF8TextCodec::ToUnicode(istream& InputStream,
+                                 vtkTextCodec::OutputIterator& Output)
 {
   try
   {
@@ -105,6 +111,7 @@ void vtkUTF8TextCodec::ToUnicode(istream& InputStream, vtkTextCodec::OutputItera
   }
 }
 
+
 vtkUnicodeString::value_type vtkUTF8TextCodec::NextUnicode(istream& InputStream)
 {
   istream::char_type c[5];
@@ -117,7 +124,7 @@ vtkUnicodeString::value_type vtkUTF8TextCodec::NextUnicode(istream& InputStream)
     throw(std::string("End of Input"));
   }
 
-  getSize = utf8::internal::sequence_length(c);
+  getSize = vtk_utf8::internal::sequence_length(c);
 
   if (0 == getSize)
     throw(std::string("Not enough space"));
@@ -131,17 +138,21 @@ vtkUnicodeString::value_type vtkUTF8TextCodec::NextUnicode(istream& InputStream)
 
   istream::char_type* c1 = c;
 
-  const vtkTypeUInt32 code_point = utf8::next(c1, &c[getSize]);
+  const vtkTypeUInt32 code_point = vtk_utf8::next(c1, &c[getSize]);
 
   return code_point;
 }
 
-vtkUTF8TextCodec::vtkUTF8TextCodec()
-  : vtkTextCodec()
+
+vtkUTF8TextCodec::vtkUTF8TextCodec() : vtkTextCodec()
 {
 }
 
-vtkUTF8TextCodec::~vtkUTF8TextCodec() = default;
+
+vtkUTF8TextCodec::~vtkUTF8TextCodec()
+{
+}
+
 
 void vtkUTF8TextCodec::PrintSelf(ostream& os, vtkIndent indent)
 {

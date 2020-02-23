@@ -26,7 +26,7 @@
  * input point set and uses that tree for selection.  The output is a
  * vtkSelection containing the ids found in the kd-tree using the specified
  * bounds.
- */
+*/
 
 #ifndef vtkKdTreeSelector_h
 #define vtkKdTreeSelector_h
@@ -41,7 +41,7 @@ class VTKFILTERSSELECTION_EXPORT vtkKdTreeSelector : public vtkSelectionAlgorith
 public:
   static vtkKdTreeSelector* New();
   vtkTypeMacro(vtkKdTreeSelector, vtkSelectionAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -67,7 +67,7 @@ public:
   /**
    * The field name to use when generating the selection.
    * If set, creates a VALUES selection.
-   * If not set (or is set to nullptr), creates a INDICES selection.
+   * If not set (or is set to NULL), creates a INDICES selection.
    * By default this is not set.
    */
   vtkSetStringMacro(SelectionFieldName);
@@ -110,11 +110,11 @@ public:
   vtkGetMacro(SingleSelectionThreshold, double);
   //@}
 
-  vtkMTimeType GetMTime() override;
+  vtkMTimeType GetMTime();
 
 protected:
   vtkKdTreeSelector();
-  ~vtkKdTreeSelector() override;
+  ~vtkKdTreeSelector();
 
   vtkKdTree* KdTree;
   double SelectionBounds[6];
@@ -124,13 +124,17 @@ protected:
   double SingleSelectionThreshold;
   int SelectionAttribute;
 
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  virtual int FillInputPortInformation(
+    int port, vtkInformation* info);
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(
+    vtkInformation*,
+    vtkInformationVector**,
+    vtkInformationVector*);
 
 private:
-  vtkKdTreeSelector(const vtkKdTreeSelector&) = delete;
-  void operator=(const vtkKdTreeSelector&) = delete;
+  vtkKdTreeSelector(const vtkKdTreeSelector&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkKdTreeSelector&) VTK_DELETE_FUNCTION;
 };
 
 #endif

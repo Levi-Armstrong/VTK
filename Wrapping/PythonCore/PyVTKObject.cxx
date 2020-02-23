@@ -30,20 +30,21 @@
 
 #include "PyVTKObject.h"
 #include "PyVTKMethodDescriptor.h"
-#include "vtkDataArray.h"
-#include "vtkObjectBase.h"
-#include "vtkPythonCommand.h"
 #include "vtkPythonUtil.h"
+#include "vtkObjectBase.h"
+#include "vtkDataArray.h"
+#include "vtkPythonCommand.h"
 
-#include <cstddef>
+#include <stddef.h>
 #include <sstream>
 
 // This will be set to the python type struct for vtkObjectBase
-static PyTypeObject* PyVTKObject_Type = nullptr;
+static PyTypeObject *PyVTKObject_Type = 0;
 
 //--------------------------------------------------------------------
 PyVTKClass::PyVTKClass(
-  PyTypeObject* typeobj, PyMethodDef* methods, const char* classname, vtknewfunc constructor)
+  PyTypeObject *typeobj, PyMethodDef *methods,
+  const char *classname, vtknewfunc constructor)
 {
   this->py_type = typeobj;
   this->py_methods = methods;
@@ -56,47 +57,58 @@ PyVTKClass::PyVTKClass(
 
 //--------------------------------------------------------------------
 // Add a class, add methods and members to its type object.  A return
-// value of nullptr signifies that the class was already added.
-PyTypeObject* PyVTKClass_Add(
-  PyTypeObject* pytype, PyMethodDef* methods, const char* classname, vtknewfunc constructor)
+// value of NULL signifies that the class was already added.
+PyVTKClass *PyVTKClass_Add(
+  PyTypeObject *pytype, PyMethodDef *methods,
+  const char *classname, const char *docstring[],
+  vtknewfunc constructor)
 {
-  // Check whether the type is already in the map (use classname as key),
-  // and return it if so.  If not, then add it to the map.
-  pytype = vtkPythonUtil::AddClassToMap(pytype, methods, classname, constructor);
+  // Add this type to the vtk class map
+  PyVTKClass *info =
+    vtkPythonUtil::AddClassToMap(
+      pytype, methods, classname, constructor);
+
+  if (info == 0)
+  {
+    // The class was already in the map, so do nothing
+    return info;
+  }
 
   // Cache the type object for vtkObjectBase for quick access
-  if (PyVTKObject_Type == nullptr && strcmp(classname, "vtkObjectBase") == 0)
+  if (PyVTKObject_Type == 0 && strcmp(classname, "vtkObjectBase") == 0)
   {
     PyVTKObject_Type = pytype;
   }
 
-  // If type object already has a dict, we're done
-  if (pytype->tp_dict)
+  // Create the dict
+  if (pytype->tp_dict == 0)
   {
-    return pytype;
+    pytype->tp_dict = PyDict_New();
   }
 
-  // Create the dict
-  pytype->tp_dict = PyDict_New();
+  // Add the docstring to the type
+  PyObject *doc = vtkPythonUtil::BuildDocString(docstring);
+  PyDict_SetItemString(pytype->tp_dict, "__doc__", doc);
+  Py_DECREF(doc);
 
   // Add special attribute __vtkname__
-  PyObject* s = PyString_FromString(classname);
+  PyObject *s = PyString_FromString(classname);
   PyDict_SetItemString(pytype->tp_dict, "__vtkname__", s);
   Py_DECREF(s);
 
   // Add all of the methods
-  for (PyMethodDef* meth = methods; meth && meth->ml_name; meth++)
+  for (PyMethodDef *meth = methods; meth && meth->ml_name; meth++)
   {
-    PyObject* func = PyVTKMethodDescriptor_New(pytype, meth);
+    PyObject *func = PyVTKMethodDescriptor_New(pytype, meth);
     PyDict_SetItemString(pytype->tp_dict, meth->ml_name, func);
     Py_DECREF(func);
   }
 
-  return pytype;
+  return info;
 }
 
 //--------------------------------------------------------------------
-int PyVTKObject_Check(PyObject* op)
+int PyVTKObject_Check(PyObject *op)
 {
   return PyObject_TypeCheck(op, PyVTKObject_Type);
 }
@@ -105,52 +117,49 @@ int PyVTKObject_Check(PyObject* op)
 // Object protocol
 
 //--------------------------------------------------------------------
-PyObject* PyVTKObject_String(PyObject* op)
+PyObject *PyVTKObject_String(PyObject *op)
 {
   std::ostringstream vtkmsg_with_warning_C4701;
-  ((PyVTKObject*)op)->vtk_ptr->Print(vtkmsg_with_warning_C4701);
+  ((PyVTKObject *)op)->vtk_ptr->Print(vtkmsg_with_warning_C4701);
   vtkmsg_with_warning_C4701.put('\0');
-  PyObject* res = PyString_FromString(vtkmsg_with_warning_C4701.str().c_str());
+  PyObject *res = PyString_FromString(vtkmsg_with_warning_C4701.str().c_str());
   return res;
 }
 
 //--------------------------------------------------------------------
-PyObject* PyVTKObject_Repr(PyObject* op)
+PyObject *PyVTKObject_Repr(PyObject *op)
 {
   char buf[255];
-  snprintf(buf, sizeof(buf), "(%.200s)%p", Py_TYPE(op)->tp_name, static_cast<void*>(op));
+  sprintf(buf, "(%.200s)%p", Py_TYPE(op)->tp_name, static_cast<void*>(op));
 
   return PyString_FromString(buf);
 }
 
 //--------------------------------------------------------------------
-int PyVTKObject_Traverse(PyObject* o, visitproc visit, void* arg)
+int PyVTKObject_Traverse(PyObject *o, visitproc visit, void *arg)
 {
-  PyVTKObject* self = (PyVTKObject*)o;
+  PyVTKObject *self = (PyVTKObject *)o;
   int err = 0;
 
-  if (self->vtk_observers != nullptr)
+  if (self->vtk_observers != 0)
   {
-    unsigned long* olist = self->vtk_observers;
+    unsigned long *olist = self->vtk_observers;
     while (err == 0 && *olist != 0)
     {
-      vtkObject* op = static_cast<vtkObject*>(self->vtk_ptr);
-      vtkCommand* c = op->GetCommand(*olist);
-      if (c == nullptr)
+      vtkObject *op = static_cast<vtkObject *>(self->vtk_ptr);
+      vtkCommand *c = op->GetCommand(*olist);
+      if (c == 0)
       {
         // observer is gone, remove from list
-        unsigned long* tmp = olist;
-        do
-        {
-          tmp++;
-        } while (*tmp != 0);
+        unsigned long *tmp = olist;
+        do { tmp++; } while (*tmp != 0);
         *olist = *--tmp;
         *tmp = 0;
       }
       else
       {
         // visit the observer
-        vtkPythonCommand* cbc = static_cast<vtkPythonCommand*>(c);
+        vtkPythonCommand *cbc = static_cast<vtkPythonCommand *>(c);
         err = visit(cbc->obj, arg);
         olist++;
       }
@@ -161,43 +170,45 @@ int PyVTKObject_Traverse(PyObject* o, visitproc visit, void* arg)
 }
 
 //--------------------------------------------------------------------
-PyObject* PyVTKObject_New(PyTypeObject* tp, PyObject* args, PyObject* kwds)
+PyObject *PyVTKObject_New(PyTypeObject *tp, PyObject *args, PyObject *kwds)
 {
-  // If type was subclassed within python, then skip arg checks and
+  // If type was sublassed within python, then skip arg checks and
   // simply create a new object.
   if ((tp->tp_flags & Py_TPFLAGS_HEAPTYPE) == 0)
   {
-    if (kwds != nullptr && PyDict_Size(kwds))
+    if (kwds != NULL && PyDict_Size(kwds))
     {
-      PyErr_SetString(PyExc_TypeError, "this function takes no keyword arguments");
-      return nullptr;
+      PyErr_SetString(PyExc_TypeError,
+                      "this function takes no keyword arguments");
+      return NULL;
     }
 
-    PyObject* o = nullptr;
+    PyObject *o = 0;
     if (!PyArg_UnpackTuple(args, tp->tp_name, 0, 1, &o))
     {
-      return nullptr;
+      return NULL;
     }
 
     if (o)
     {
       // used to create a VTK object from a SWIG pointer
-      return vtkPythonUtil::GetObjectFromObject(o, vtkPythonUtil::StripModule(tp->tp_name));
+      return vtkPythonUtil::GetObjectFromObject(
+        o, vtkPythonUtil::StripModule(tp->tp_name));
     }
   }
 
-  // if PyVTKObject_FromPointer gets nullptr, it creates a new object.
-  return PyVTKObject_FromPointer(tp, nullptr, nullptr);
+  // if PyVTKObject_FromPointer gets NULL, it creates a new object.
+  return PyVTKObject_FromPointer(tp, NULL, NULL);
 }
 
 //--------------------------------------------------------------------
-void PyVTKObject_Delete(PyObject* op)
+void PyVTKObject_Delete(PyObject *op)
 {
-  PyVTKObject* self = (PyVTKObject*)op;
+  PyVTKObject *self = (PyVTKObject *)op;
 
   PyObject_GC_UnTrack(op);
 
-  if (self->vtk_weakreflist != nullptr)
+  if (self->vtk_weakreflist != NULL)
   {
     PyObject_ClearWeakRefs(op);
   }
@@ -207,8 +218,8 @@ void PyVTKObject_Delete(PyObject* op)
   vtkPythonUtil::RemoveObjectFromMap(op);
 
   Py_DECREF(self->vtk_dict);
-  delete[] self->vtk_observers;
-  delete[] self->vtk_buffer;
+  delete [] self->vtk_observers;
+  delete [] self->vtk_buffer;
 
   PyObject_GC_Del(op);
 }
@@ -216,47 +227,40 @@ void PyVTKObject_Delete(PyObject* op)
 //--------------------------------------------------------------------
 // This defines any special attributes of wrapped VTK objects.
 
-static PyObject* PyVTKObject_GetDict(PyObject* op, void*)
+static PyObject *PyVTKObject_GetDict(PyObject *op, void *)
 {
-  PyVTKObject* self = (PyVTKObject*)op;
+  PyVTKObject *self = (PyVTKObject *)op;
   Py_INCREF(self->vtk_dict);
   return self->vtk_dict;
 }
 
-static PyObject* PyVTKObject_GetThis(PyObject* op, void*)
+static PyObject *PyVTKObject_GetThis(PyObject *op, void *)
 {
-  PyVTKObject* self = (PyVTKObject*)op;
-  const char* classname = self->vtk_ptr->GetClassName();
-  const char* cp = classname;
+  PyVTKObject *self = (PyVTKObject *)op;
+  const char *classname = self->vtk_ptr->GetClassName();
+  const char *cp = classname;
   char buf[1024];
   // check to see if classname is a valid python identifier
   if (isalpha(*cp) || *cp == '_')
   {
-    do
-    {
-      cp++;
-    } while (isalnum(*cp) || *cp == '_');
+    do { cp++; } while (isalnum(*cp) || *cp == '_');
   }
   // otherwise, use the pythonic form of the class name
   if (*cp != '\0')
   {
     classname = vtkPythonUtil::StripModule(Py_TYPE(op)->tp_name);
   }
-  snprintf(buf, sizeof(buf), "p_%.500s", classname);
-  return PyString_FromString(vtkPythonUtil::ManglePointer(self->vtk_ptr, buf));
+  sprintf(buf, "p_%.500s", classname);
+  return PyString_FromString(
+    vtkPythonUtil::ManglePointer(self->vtk_ptr, buf));
 }
 
 PyGetSetDef PyVTKObject_GetSet[] = {
-#if PY_VERSION_HEX >= 0x03070000
-  { "__dict__", PyVTKObject_GetDict, nullptr, "Dictionary of attributes set by user.", nullptr },
-  { "__this__", PyVTKObject_GetThis, nullptr, "Pointer to the C++ object.", nullptr },
-#else
-  { const_cast<char*>("__dict__"), PyVTKObject_GetDict, nullptr,
-    const_cast<char*>("Dictionary of attributes set by user."), nullptr },
-  { const_cast<char*>("__this__"), PyVTKObject_GetThis, nullptr,
-    const_cast<char*>("Pointer to the C++ object."), nullptr },
-#endif
-  { nullptr, nullptr, nullptr, nullptr, nullptr }
+  { (char *)"__dict__", PyVTKObject_GetDict, 0,
+    (char *)"Dictionary of attributes set by user.", 0 },
+  { (char *)"__this__", PyVTKObject_GetThis, 0,
+    (char *)"Pointer to the C++ object.", 0 },
+  { 0, 0, 0, 0, 0 }
 };
 
 //--------------------------------------------------------------------
@@ -266,15 +270,18 @@ PyGetSetDef PyVTKObject_GetSet[] = {
 
 #ifndef VTK_PY3K
 //--------------------------------------------------------------------
-static Py_ssize_t PyVTKObject_AsBuffer_GetSegCount(PyObject* op, Py_ssize_t* lenp)
+static Py_ssize_t
+PyVTKObject_AsBuffer_GetSegCount(PyObject *op, Py_ssize_t *lenp)
 {
-  PyVTKObject* self = (PyVTKObject*)op;
-  vtkDataArray* da = vtkDataArray::SafeDownCast(self->vtk_ptr);
+  PyVTKObject *self = (PyVTKObject*)op;
+  vtkDataArray *da = vtkDataArray::SafeDownCast(self->vtk_ptr);
   if (da)
   {
     if (lenp)
     {
-      *lenp = da->GetNumberOfTuples() * da->GetNumberOfComponents() * da->GetDataTypeSize();
+      *lenp = da->GetNumberOfTuples()*
+        da->GetNumberOfComponents()*
+        da->GetDataTypeSize();
     }
 
     return 1;
@@ -288,27 +295,34 @@ static Py_ssize_t PyVTKObject_AsBuffer_GetSegCount(PyObject* op, Py_ssize_t* len
 }
 
 //--------------------------------------------------------------------
-static Py_ssize_t PyVTKObject_AsBuffer_GetReadBuf(PyObject* op, Py_ssize_t segment, void** ptrptr)
+static Py_ssize_t
+PyVTKObject_AsBuffer_GetReadBuf(
+  PyObject *op, Py_ssize_t segment, void **ptrptr)
 {
   if (segment != 0)
   {
-    PyErr_SetString(PyExc_ValueError, "accessing non-existing array segment");
+    PyErr_SetString(PyExc_ValueError,
+                    "accessing non-existing array segment");
     return -1;
   }
 
-  PyVTKObject* self = (PyVTKObject*)op;
-  vtkDataArray* da = vtkDataArray::SafeDownCast(self->vtk_ptr);
+  PyVTKObject *self = (PyVTKObject*)op;
+  vtkDataArray *da = vtkDataArray::SafeDownCast(self->vtk_ptr);
   if (da)
   {
     *ptrptr = da->GetVoidPointer(0);
-    return da->GetNumberOfTuples() * da->GetNumberOfComponents() * da->GetDataTypeSize();
+    return da->GetNumberOfTuples()*
+      da->GetNumberOfComponents()*
+      da->GetDataTypeSize();
   }
 
   return -1;
 }
 
 //--------------------------------------------------------------------
-static Py_ssize_t PyVTKObject_AsBuffer_GetWriteBuf(PyObject* op, Py_ssize_t segment, void** ptrptr)
+static Py_ssize_t
+PyVTKObject_AsBuffer_GetWriteBuf(
+  PyObject *op, Py_ssize_t segment, void **ptrptr)
 {
   return PyVTKObject_AsBuffer_GetReadBuf(op, segment, ptrptr);
 }
@@ -319,67 +333,31 @@ static Py_ssize_t PyVTKObject_AsBuffer_GetWriteBuf(PyObject* op, Py_ssize_t segm
 
 //--------------------------------------------------------------------
 // Convert a VTK type to a python type char (struct module)
-static const char* pythonTypeFormat(int t)
+static const char *pythonTypeFormat(int t)
 {
-  const char* b = nullptr;
+  const char *b = 0;
 
   switch (t)
   {
-    case VTK_CHAR:
-      b = "c";
-      break;
-    case VTK_SIGNED_CHAR:
-      b = "b";
-      break;
-    case VTK_UNSIGNED_CHAR:
-      b = "B";
-      break;
-    case VTK_SHORT:
-      b = "h";
-      break;
-    case VTK_UNSIGNED_SHORT:
-      b = "H";
-      break;
-    case VTK_INT:
-      b = "i";
-      break;
-    case VTK_UNSIGNED_INT:
-      b = "I";
-      break;
-    case VTK_LONG:
-      b = "l";
-      break;
-    case VTK_UNSIGNED_LONG:
-      b = "L";
-      break;
-    case VTK_LONG_LONG:
-      b = "q";
-      break;
-    case VTK_UNSIGNED_LONG_LONG:
-      b = "Q";
-      break;
-#if !defined(VTK_LEGACY_REMOVE)
-    case VTK___INT64:
-      b = "q";
-      break;
-    case VTK_UNSIGNED___INT64:
-      b = "Q";
-      break;
-#endif
-    case VTK_FLOAT:
-      b = "f";
-      break;
-    case VTK_DOUBLE:
-      b = "d";
-      break;
+    case VTK_CHAR: b = "c"; break;
+    case VTK_SIGNED_CHAR: b = "b"; break;
+    case VTK_UNSIGNED_CHAR: b = "B"; break;
+    case VTK_SHORT: b = "h"; break;
+    case VTK_UNSIGNED_SHORT: b = "H"; break;
+    case VTK_INT: b = "i"; break;
+    case VTK_UNSIGNED_INT: b = "I"; break;
+    case VTK_LONG: b = "l"; break;
+    case VTK_UNSIGNED_LONG: b = "L"; break;
+    case VTK_LONG_LONG: b = "q"; break;
+    case VTK_UNSIGNED_LONG_LONG: b = "Q"; break;
+    case VTK___INT64: b = "q"; break;
+    case VTK_UNSIGNED___INT64: b = "Q"; break;
+    case VTK_FLOAT: b = "f"; break;
+    case VTK_DOUBLE: b = "d"; break;
 #ifndef VTK_USE_64BIT_IDS
-    case VTK_ID_TYPE:
-      b = "i";
-      break;
+    case VTK_ID_TYPE: b = "i"; break;
 #else
-    case VTK_ID_TYPE:
-      b = "q";
-      break;
+    case VTK_ID_TYPE: b = "q"; break;
 #endif
   }
 
@@ -387,22 +365,23 @@ static const char* pythonTypeFormat(int t)
 }
 
 //--------------------------------------------------------------------
-static int PyVTKObject_AsBuffer_GetBuffer(PyObject* obj, Py_buffer* view, int flags)
+static int
+PyVTKObject_AsBuffer_GetBuffer(PyObject *obj, Py_buffer *view, int flags)
 {
-  PyVTKObject* self = (PyVTKObject*)obj;
-  vtkDataArray* da = vtkDataArray::SafeDownCast(self->vtk_ptr);
+  PyVTKObject *self = (PyVTKObject*)obj;
+  vtkDataArray *da = vtkDataArray::SafeDownCast(self->vtk_ptr);
   if (da)
   {
-    void* ptr = da->GetVoidPointer(0);
+    void *ptr = da->GetVoidPointer(0);
     Py_ssize_t ntuples = da->GetNumberOfTuples();
     int ncomp = da->GetNumberOfComponents();
     int dsize = da->GetDataTypeSize();
-    const char* format = pythonTypeFormat(da->GetDataType());
-    Py_ssize_t size = ntuples * ncomp * dsize;
+    const char *format = pythonTypeFormat(da->GetDataType());
+    Py_ssize_t size = ntuples*ncomp*dsize;
 
     if (da->GetDataType() == VTK_BIT)
     {
-      size = (ntuples * ncomp + 7) / 8;
+      size = (ntuples*ncomp + 7)/8;
     }
 
     // start by building a basic "unsigned char" buffer
@@ -411,12 +390,12 @@ static int PyVTKObject_AsBuffer_GetBuffer(PyObject* obj, Py_buffer* view, int fl
       return -1;
     }
     // check if a dimensioned array was requested
-    if (format != nullptr && (flags & PyBUF_ND) != 0)
+    if (format != 0 && (flags & PyBUF_ND) != 0)
     {
       // first, build a simple 1D array
       view->itemsize = dsize;
       view->ndim = (ncomp > 1 ? 2 : 1);
-      view->format = const_cast<char*>(format);
+      view->format = (char *)format;
 
 #if PY_VERSION_HEX >= 0x02070000 && PY_VERSION_HEX < 0x03030000
       // use "smalltable" for 1D arrays, like memoryobject.c
@@ -427,12 +406,12 @@ static int PyVTKObject_AsBuffer_GetBuffer(PyObject* obj, Py_buffer* view, int fl
       {
         if (self->vtk_buffer && self->vtk_buffer[0] != view->ndim)
         {
-          delete[] self->vtk_buffer;
-          self->vtk_buffer = nullptr;
+          delete [] self->vtk_buffer;
+          self->vtk_buffer = 0;
         }
-        if (self->vtk_buffer == nullptr)
+        if (self->vtk_buffer == 0)
         {
-          self->vtk_buffer = new Py_ssize_t[2 * view->ndim + 1];
+          self->vtk_buffer = new Py_ssize_t[2*view->ndim + 1];
           self->vtk_buffer[0] = view->ndim;
         }
         view->shape = &self->vtk_buffer[1];
@@ -442,7 +421,7 @@ static int PyVTKObject_AsBuffer_GetBuffer(PyObject* obj, Py_buffer* view, int fl
       if (view->ndim == 1)
       {
         // simple one-dimensional array
-        view->shape[0] = ntuples * ncomp;
+        view->shape[0] = ntuples*ncomp;
         view->strides[0] = view->itemsize;
       }
       else
@@ -462,18 +441,21 @@ static int PyVTKObject_AsBuffer_GetBuffer(PyObject* obj, Py_buffer* view, int fl
           view->shape[0] = ncomp;
           view->shape[1] = ntuples;
         }
-        PyBuffer_FillContiguousStrides(view->ndim, view->shape, view->strides, dsize, order);
+        PyBuffer_FillContiguousStrides(
+          view->ndim, view->shape, view->strides, dsize, order);
       }
     }
     return 0;
   }
 
-  PyErr_Format(PyExc_ValueError, "Cannot get a buffer from %s.", Py_TYPE(obj)->tp_name);
+  PyErr_Format(PyExc_ValueError,
+               "Cannot get a buffer from %s.", Py_TYPE(obj)->tp_name);
   return -1;
 }
 
 //--------------------------------------------------------------------
-static void PyVTKObject_AsBuffer_ReleaseBuffer(PyObject* obj, Py_buffer* view)
+static void
+PyVTKObject_AsBuffer_ReleaseBuffer(PyObject *obj, Py_buffer *view)
 {
   // nothing to do, the caller will decref the obj
   (void)obj;
@@ -485,24 +467,25 @@ static void PyVTKObject_AsBuffer_ReleaseBuffer(PyObject* obj, Py_buffer* view)
 //--------------------------------------------------------------------
 PyBufferProcs PyVTKObject_AsBuffer = {
 #ifndef VTK_PY3K
-  PyVTKObject_AsBuffer_GetReadBuf,  // bf_getreadbuffer
-  PyVTKObject_AsBuffer_GetWriteBuf, // bf_getwritebuffer
-  PyVTKObject_AsBuffer_GetSegCount, // bf_getsegcount
-  nullptr,                          // bf_getcharbuffer
+  PyVTKObject_AsBuffer_GetReadBuf,       // bf_getreadbuffer
+  PyVTKObject_AsBuffer_GetWriteBuf,      // bf_getwritebuffer
+  PyVTKObject_AsBuffer_GetSegCount,      // bf_getsegcount
+  0,                                     // bf_getcharbuffer
 #endif
 #if PY_VERSION_HEX >= 0x02060000
-  PyVTKObject_AsBuffer_GetBuffer,    // bf_getbuffer
-  PyVTKObject_AsBuffer_ReleaseBuffer // bf_releasebuffer
+  PyVTKObject_AsBuffer_GetBuffer,        // bf_getbuffer
+  PyVTKObject_AsBuffer_ReleaseBuffer     // bf_releasebuffer
 #endif
 };
 
 //--------------------------------------------------------------------
-PyObject* PyVTKObject_FromPointer(PyTypeObject* pytype, PyObject* pydict, vtkObjectBase* ptr)
+PyObject *PyVTKObject_FromPointer(
+  PyTypeObject *pytype, PyObject *pydict, vtkObjectBase *ptr)
 {
   // This will be set if we create a new C++ object
   bool created = false;
   std::string classname = vtkPythonUtil::StripModule(pytype->tp_name);
-  PyVTKClass* cls = nullptr;
+  PyVTKClass *cls = 0;
 
   if (ptr)
   {
@@ -511,34 +494,36 @@ PyObject* PyVTKObject_FromPointer(PyTypeObject* pytype, PyObject* pydict, vtkObj
     cls = vtkPythonUtil::FindClass(classname.c_str());
   }
 
-  if (cls == nullptr)
+  if (cls == 0)
   {
     // Use the vtkname of the supplied class type
-    PyObject* s = PyObject_GetAttrString((PyObject*)pytype, "__vtkname__");
+    PyObject *s = PyObject_GetAttrString((PyObject *)pytype, "__vtkname__");
     if (s)
     {
 #ifdef VTK_PY3K
-      PyObject* tmp = PyUnicode_AsUTF8String(s);
+      PyObject *tmp = PyUnicode_AsUTF8String(s);
       if (tmp)
       {
         Py_DECREF(s);
         s = tmp;
       }
 #endif
-      const char* vtkname_classname = PyBytes_AsString(s);
-      if (vtkname_classname == nullptr)
+      const char *vtkname_classname = PyBytes_AsString(s);
+      if (vtkname_classname == 0)
       {
         Py_DECREF(s);
-        return nullptr;
+        return NULL;
       }
       classname = vtkname_classname;
       Py_DECREF(s);
     }
     cls = vtkPythonUtil::FindClass(classname.c_str());
-    if (cls == nullptr)
+    if (cls == 0)
     {
-      PyErr_Format(PyExc_ValueError, "internal error, unknown VTK class %.200s", classname.c_str());
-      return nullptr;
+      PyErr_Format(PyExc_ValueError,
+                   "internal error, unknown VTK class %.200s",
+                   classname.c_str());
+      return NULL;
     }
   }
 
@@ -554,27 +539,17 @@ PyObject* PyVTKObject_FromPointer(PyTypeObject* pytype, PyObject* pydict, vtkObj
         // implementation (i.e. cannot provide a concrete class instance.)
         // NotImplementedError indicates a pure virtual method call.
         PyErr_SetString(
-          PyExc_NotImplementedError, "no concrete implementation exists for this class");
-        return nullptr;
+          PyExc_NotImplementedError,
+          "no concrete implementation exists for this class");
+        return 0;
       }
-
-      // Check if the VTK object already has a Python object
-      // (e.g. vtk_new() might return a singleton instance)
-      PyObject* obj = vtkPythonUtil::FindObject(ptr);
-      if (obj)
-      {
-        ptr->Delete();
-        return obj;
-      }
-
-      // flag to indicate that the VTK object is a new instance
       created = true;
 
       // Check the type of the newly-created object
-      const char* newclassname = ptr->GetClassName();
+      const char *newclassname = ptr->GetClassName();
       if (std::string(newclassname) != classname)
       {
-        PyVTKClass* newclass = vtkPythonUtil::FindClass(newclassname);
+        PyVTKClass *newclass = vtkPythonUtil::FindClass(newclassname);
         if (newclass)
         {
           classname = newclassname;
@@ -584,8 +559,10 @@ PyObject* PyVTKObject_FromPointer(PyTypeObject* pytype, PyObject* pydict, vtkObj
     }
     else
     {
-      PyErr_SetString(PyExc_TypeError, "this is an abstract class and cannot be instantiated");
-      return nullptr;
+      PyErr_SetString(
+        PyExc_TypeError,
+        "this is an abstract class and cannot be instantiated");
+      return 0;
     }
   }
 
@@ -610,21 +587,21 @@ PyObject* PyVTKObject_FromPointer(PyTypeObject* pytype, PyObject* pydict, vtkObj
     pydict = PyDict_New();
   }
 
-  PyVTKObject* self = PyObject_GC_New(PyVTKObject, pytype);
+  PyVTKObject *self = PyObject_GC_New(PyVTKObject, pytype);
 
   self->vtk_ptr = ptr;
   self->vtk_flags = 0;
   self->vtk_class = cls;
   self->vtk_dict = pydict;
-  self->vtk_buffer = nullptr;
-  self->vtk_observers = nullptr;
-  self->vtk_weakreflist = nullptr;
+  self->vtk_buffer = 0;
+  self->vtk_observers = 0;
+  self->vtk_weakreflist = NULL;
 
-  PyObject_GC_Track((PyObject*)self);
+  PyObject_GC_Track((PyObject *)self);
 
   // A python object owning a VTK object reference is getting
   // created.  Add the python object's VTK object reference.
-  vtkPythonUtil::AddObjectToMap((PyObject*)self, ptr);
+  vtkPythonUtil::AddObjectToMap((PyObject *)self, ptr);
 
   // The hash now owns a reference so we can free ours.
   if (created)
@@ -632,61 +609,58 @@ PyObject* PyVTKObject_FromPointer(PyTypeObject* pytype, PyObject* pydict, vtkObj
     ptr->Delete();
   }
 
-  return (PyObject*)self;
+  return (PyObject *)self;
 }
 
-vtkObjectBase* PyVTKObject_GetObject(PyObject* obj)
+vtkObjectBase *PyVTKObject_GetObject(PyObject *obj)
 {
-  return ((PyVTKObject*)obj)->vtk_ptr;
+  return ((PyVTKObject *)obj)->vtk_ptr;
 }
 
-void PyVTKObject_AddObserver(PyObject* obj, unsigned long id)
+void PyVTKObject_AddObserver(PyObject *obj, unsigned long id)
 {
-  unsigned long* olist = ((PyVTKObject*)obj)->vtk_observers;
+  unsigned long *olist = ((PyVTKObject *)obj)->vtk_observers;
   unsigned long n = 0;
-  if (olist == nullptr)
+  if (olist == 0)
   {
     olist = new unsigned long[8];
-    ((PyVTKObject*)obj)->vtk_observers = olist;
+    ((PyVTKObject *)obj)->vtk_observers = olist;
   }
   else
   {
     // count the number of items
-    while (olist[n] != 0)
-    {
-      n++;
-    }
+    while (olist[n] != 0) { n++; }
     // check if n+1 is a power of two (base allocation is 8)
-    unsigned long m = n + 1;
+    unsigned long m = n+1;
     if (m >= 8 && (n & m) == 0)
     {
-      unsigned long* tmp = olist;
-      olist = new unsigned long[2 * m];
+      unsigned long *tmp = olist;
+      olist = new unsigned long[2*m];
       for (unsigned long i = 0; i < n; i++)
       {
         olist[i] = tmp[i];
       }
-      delete[] tmp;
-      ((PyVTKObject*)obj)->vtk_observers = olist;
+      delete [] tmp;
+      ((PyVTKObject *)obj)->vtk_observers = olist;
     }
   }
   olist[n++] = id;
   olist[n] = 0;
 }
 
-unsigned int PyVTKObject_GetFlags(PyObject* obj)
+unsigned int PyVTKObject_GetFlags(PyObject *obj)
 {
-  return ((PyVTKObject*)obj)->vtk_flags;
+  return ((PyVTKObject *)obj)->vtk_flags;
 }
 
-void PyVTKObject_SetFlag(PyObject* obj, unsigned int flag, int val)
+void PyVTKObject_SetFlag(PyObject *obj, unsigned int flag, int val)
 {
   if (val)
   {
-    ((PyVTKObject*)obj)->vtk_flags |= flag;
+    ((PyVTKObject *)obj)->vtk_flags |= flag;
   }
   else
   {
-    ((PyVTKObject*)obj)->vtk_flags &= ~flag;
+    ((PyVTKObject *)obj)->vtk_flags &= ~flag;
   }
 }

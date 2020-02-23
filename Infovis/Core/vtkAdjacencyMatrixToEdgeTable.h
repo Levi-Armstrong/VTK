@@ -28,7 +28,7 @@
  *
  * @par Thanks:
  * Developed by Timothy M. Shead (tshead@sandia.gov) at Sandia National Laboratories.
- */
+*/
 
 #ifndef vtkAdjacencyMatrixToEdgeTable_h
 #define vtkAdjacencyMatrixToEdgeTable_h
@@ -41,7 +41,7 @@ class VTKINFOVISCORE_EXPORT vtkAdjacencyMatrixToEdgeTable : public vtkTableAlgor
 public:
   static vtkAdjacencyMatrixToEdgeTable* New();
   vtkTypeMacro(vtkAdjacencyMatrixToEdgeTable, vtkTableAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -82,11 +82,14 @@ public:
 
 protected:
   vtkAdjacencyMatrixToEdgeTable();
-  ~vtkAdjacencyMatrixToEdgeTable() override;
+  ~vtkAdjacencyMatrixToEdgeTable();
 
-  int FillInputPortInformation(int, vtkInformation*) override;
+  int FillInputPortInformation(int, vtkInformation*);
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(
+    vtkInformation*,
+    vtkInformationVector**,
+    vtkInformationVector*);
 
   vtkIdType SourceDimension;
   char* ValueArrayName;
@@ -94,8 +97,9 @@ protected:
   double MinimumThreshold;
 
 private:
-  vtkAdjacencyMatrixToEdgeTable(const vtkAdjacencyMatrixToEdgeTable&) = delete;
-  void operator=(const vtkAdjacencyMatrixToEdgeTable&) = delete;
+  vtkAdjacencyMatrixToEdgeTable(const vtkAdjacencyMatrixToEdgeTable&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkAdjacencyMatrixToEdgeTable&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

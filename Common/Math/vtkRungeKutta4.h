@@ -24,7 +24,7 @@
  *
  * @sa
  * vtkInitialValueProblemSolver vtkRungeKutta45 vtkRungeKutta2 vtkFunctionSet
- */
+*/
 
 #ifndef vtkRungeKutta4_h
 #define vtkRungeKutta4_h
@@ -35,15 +35,15 @@
 class VTKCOMMONMATH_EXPORT vtkRungeKutta4 : public vtkInitialValueProblemSolver
 {
 public:
-  vtkTypeMacro(vtkRungeKutta4, vtkInitialValueProblemSolver);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkRungeKutta4,vtkInitialValueProblemSolver);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Construct a vtkRungeKutta4 with no initial FunctionSet.
    */
-  static vtkRungeKutta4* New();
+  static vtkRungeKutta4 *New();
 
-  using Superclass::ComputeNextStep;
+
   //@{
   /**
    * Given initial values, xprev , initial time, t and a requested time
@@ -58,46 +58,58 @@ public:
    * NotInitialized = 2,
    * UnexpectedValue = 3
    */
-  int ComputeNextStep(double* xprev, double* xnext, double t, double& delT, double maxError,
-    double& error, void* userData) override
+  int ComputeNextStep(double* xprev, double* xnext,
+                      double t, double& delT,
+                      double maxError, double& error) VTK_OVERRIDE
   {
-    double minStep = delT;
-    double maxStep = delT;
-    double delTActual;
-    return this->ComputeNextStep(
-      xprev, nullptr, xnext, t, delT, delTActual, minStep, maxStep, maxError, error, userData);
+      double minStep = delT;
+      double maxStep = delT;
+      double delTActual;
+      return this->ComputeNextStep(xprev, 0, xnext, t, delT, delTActual,
+                                   minStep, maxStep, maxError, error);
   }
-  int ComputeNextStep(double* xprev, double* dxprev, double* xnext, double t, double& delT,
-    double maxError, double& error, void* userData) override
+  int ComputeNextStep(double* xprev, double* dxprev, double* xnext,
+                      double t, double& delT,
+                      double maxError, double& error) VTK_OVERRIDE
   {
-    double minStep = delT;
-    double maxStep = delT;
-    double delTActual;
-    return this->ComputeNextStep(
-      xprev, dxprev, xnext, t, delT, delTActual, minStep, maxStep, maxError, error, userData);
+      double minStep = delT;
+      double maxStep = delT;
+      double delTActual;
+      return this->ComputeNextStep(xprev, dxprev, xnext, t, delT, delTActual,
+                                   minStep, maxStep, maxError, error);
   }
-  int ComputeNextStep(double* xprev, double* xnext, double t, double& delT, double& delTActual,
-    double minStep, double maxStep, double maxError, double& error, void* userData) override
+  int ComputeNextStep(double* xprev, double* xnext,
+                      double t, double& delT, double& delTActual,
+                      double minStep, double maxStep,
+                      double maxError, double& error) VTK_OVERRIDE
   {
-    return this->ComputeNextStep(
-      xprev, nullptr, xnext, t, delT, delTActual, minStep, maxStep, maxError, error, userData);
+      return this->ComputeNextStep(xprev, 0, xnext, t, delT, delTActual,
+                                   minStep, maxStep, maxError, error);
   }
-  int ComputeNextStep(double* xprev, double* dxprev, double* xnext, double t, double& delT,
-    double& delTActual, double minStep, double maxStep, double maxError, double& error,
-    void* userData) override;
+  int ComputeNextStep(double* xprev, double* dxprev, double* xnext,
+                      double t, double& delT, double& delTActual,
+                      double minStep, double maxStep,
+                      double maxError, double& error) VTK_OVERRIDE;
   //@}
 
 protected:
   vtkRungeKutta4();
-  ~vtkRungeKutta4() override;
+  ~vtkRungeKutta4() VTK_OVERRIDE;
 
-  void Initialize() override;
+  void Initialize() VTK_OVERRIDE;
 
   double* NextDerivs[3];
-
 private:
-  vtkRungeKutta4(const vtkRungeKutta4&) = delete;
-  void operator=(const vtkRungeKutta4&) = delete;
+  vtkRungeKutta4(const vtkRungeKutta4&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkRungeKutta4&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+
+
+
+
+
+
+

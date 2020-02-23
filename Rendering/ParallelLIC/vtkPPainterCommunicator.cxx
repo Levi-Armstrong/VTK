@@ -15,9 +15,9 @@
 #include "vtkPPainterCommunicator.h"
 
 #include "vtkMPI.h"
-#include "vtkMPICommunicator.h"
-#include "vtkMPIController.h"
 #include "vtkMultiProcessController.h"
+#include "vtkMPIController.h"
+#include "vtkMPICommunicator.h"
 
 #include <vector>
 
@@ -28,16 +28,16 @@ class vtkPPainterCommunicatorInternals
 {
 public:
   vtkPPainterCommunicatorInternals()
-    : Ownership(false)
-    , Communicator(MPI_COMM_WORLD)
-  {
-  }
+      :
+  Ownership(false),
+  Communicator(MPI_COMM_WORLD)
+  {}
 
   ~vtkPPainterCommunicatorInternals();
 
   // Description:
   // Set the communicator, by default ownership is not taken.
-  void SetCommunicator(MPI_Comm comm, bool ownership = false);
+  void SetCommunicator(MPI_Comm comm, bool ownership=false);
 
   // Description:
   // Duplicate the communicator, ownership of the new
@@ -55,19 +55,23 @@ vtkPPainterCommunicatorInternals::~vtkPPainterCommunicatorInternals()
 }
 
 //-----------------------------------------------------------------------------
-void vtkPPainterCommunicatorInternals::SetCommunicator(MPI_Comm comm, bool ownership)
+void vtkPPainterCommunicatorInternals::SetCommunicator(
+      MPI_Comm comm,
+      bool ownership)
 {
-  // avoid unnecessary operations
+  // avoid uneccessary operations
   if (this->Communicator == comm)
   {
     return;
   }
   // do nothing without mpi
-  if (vtkPPainterCommunicator::MPIInitialized() && !vtkPPainterCommunicator::MPIFinalized())
+  if ( vtkPPainterCommunicator::MPIInitialized()
+    && !vtkPPainterCommunicator::MPIFinalized() )
   {
     // release the old communicator if it's ours
-    if (this->Ownership && (this->Communicator != MPI_COMM_NULL) &&
-      (this->Communicator != MPI_COMM_WORLD))
+    if ( this->Ownership
+      && (this->Communicator != MPI_COMM_NULL)
+      && (this->Communicator != MPI_COMM_WORLD) )
     {
       MPI_Comm_free(&this->Communicator);
     }
@@ -80,13 +84,14 @@ void vtkPPainterCommunicatorInternals::SetCommunicator(MPI_Comm comm, bool owner
 //-----------------------------------------------------------------------------
 void vtkPPainterCommunicatorInternals::DuplicateCommunicator(MPI_Comm comm)
 {
-  // avoid unnecessary operations
+  // avoid uneccessary operations
   if (this->Communicator == comm)
   {
     return;
   }
   // handle no mpi gracefully
-  if (!vtkPPainterCommunicator::MPIInitialized() || vtkPPainterCommunicator::MPIFinalized())
+  if ( !vtkPPainterCommunicator::MPIInitialized()
+    || vtkPPainterCommunicator::MPIFinalized() )
   {
     this->Ownership = false;
     this->Communicator = comm;
@@ -102,6 +107,7 @@ void vtkPPainterCommunicatorInternals::DuplicateCommunicator(MPI_Comm comm)
   }
 }
 
+
 //-----------------------------------------------------------------------------
 vtkPPainterCommunicator::vtkPPainterCommunicator()
 {
@@ -115,20 +121,26 @@ vtkPPainterCommunicator::~vtkPPainterCommunicator()
 }
 
 //-----------------------------------------------------------------------------
-void vtkPPainterCommunicator::Copy(const vtkPainterCommunicator* other, bool ownership)
+void vtkPPainterCommunicator::Copy(
+      const vtkPainterCommunicator *other,
+      bool ownership)
 {
-  const vtkPPainterCommunicator* pOther = dynamic_cast<const vtkPPainterCommunicator*>(other);
+  const vtkPPainterCommunicator *pOther
+    = dynamic_cast<const vtkPPainterCommunicator*>(other);
 
   if (pOther && (pOther != this))
   {
-    this->Internals->SetCommunicator(pOther->Internals->Communicator, ownership);
+    this->Internals->SetCommunicator(
+          pOther->Internals->Communicator,
+          ownership);
   }
 }
 
 //-----------------------------------------------------------------------------
-void vtkPPainterCommunicator::Duplicate(const vtkPainterCommunicator* comm)
+void vtkPPainterCommunicator::Duplicate(const vtkPainterCommunicator *comm)
 {
-  const vtkPPainterCommunicator* pcomm = dynamic_cast<const vtkPPainterCommunicator*>(comm);
+  const vtkPPainterCommunicator *pcomm
+     = dynamic_cast<const vtkPPainterCommunicator*>(comm);
 
   if (pcomm)
   {
@@ -137,19 +149,19 @@ void vtkPPainterCommunicator::Duplicate(const vtkPainterCommunicator* comm)
 }
 
 //-----------------------------------------------------------------------------
-void vtkPPainterCommunicator::SetCommunicator(vtkMPICommunicatorOpaqueComm* comm)
+void vtkPPainterCommunicator::SetCommunicator(vtkMPICommunicatorOpaqueComm *comm)
 {
   this->Internals->SetCommunicator(*comm->GetHandle());
 }
 
 //-----------------------------------------------------------------------------
-void vtkPPainterCommunicator::GetCommunicator(vtkMPICommunicatorOpaqueComm* comm)
+void vtkPPainterCommunicator::GetCommunicator(vtkMPICommunicatorOpaqueComm *comm)
 {
   *comm = &this->Internals->Communicator;
 }
 
 //-----------------------------------------------------------------------------
-void* vtkPPainterCommunicator::GetCommunicator()
+void *vtkPPainterCommunicator::GetCommunicator()
 {
   return &this->Internals->Communicator;
 }
@@ -203,20 +215,20 @@ int vtkPPainterCommunicator::GetWorldSize()
 }
 
 // ----------------------------------------------------------------------------
-vtkMPICommunicatorOpaqueComm* vtkPPainterCommunicator::GetGlobalCommunicator()
+vtkMPICommunicatorOpaqueComm *vtkPPainterCommunicator::GetGlobalCommunicator()
 {
-  static vtkMPICommunicatorOpaqueComm* globalComm = nullptr;
+  static vtkMPICommunicatorOpaqueComm *globalComm = NULL;
   if (!globalComm)
   {
     if (vtkPPainterCommunicator::MPIInitialized())
     {
-      vtkMultiProcessController* controller = vtkMultiProcessController::GetGlobalController();
+      vtkMultiProcessController *controller = vtkMultiProcessController::GetGlobalController();
 
-      vtkMPIController* mpiController = vtkMPIController::SafeDownCast(controller);
-      vtkMPICommunicator* mpiCommunicator;
+      vtkMPIController *mpiController;
+      vtkMPICommunicator *mpiCommunicator;
 
-      if (mpiController &&
-        (mpiCommunicator = vtkMPICommunicator::SafeDownCast(controller->GetCommunicator())))
+      if ( (mpiController = vtkMPIController::SafeDownCast(controller))
+        && (mpiCommunicator = vtkMPICommunicator::SafeDownCast(controller->GetCommunicator())) )
       {
         globalComm = new vtkMPICommunicatorOpaqueComm(*mpiCommunicator->GetMPIComm());
       }
@@ -252,13 +264,16 @@ bool vtkPPainterCommunicator::GetIsNull()
 }
 
 //-----------------------------------------------------------------------------
-void vtkPPainterCommunicator::SubsetCommunicator(vtkMPICommunicatorOpaqueComm* comm, int include)
+void vtkPPainterCommunicator::SubsetCommunicator(
+      vtkMPICommunicatorOpaqueComm *comm,
+      int include)
 {
-#if defined(vtkPPainterCommunicatorDEBUG)
-  cerr << "=====vtkPPainterCommunicator::SubsetCommunicator" << endl
-       << "creating communicator " << (include ? "with" : "WITHOUT") << this->GetWorldRank()
-       << endl;
-#endif
+  #if defined(vtkPPainterCommunicatorDEBUG)
+  cerr
+    << "=====vtkPPainterCommunicator::SubsetCommunicator" << endl
+    << "creating communicator " << (include?"with":"WITHOUT")
+    << this->GetWorldRank() << endl;
+  #endif
 
   if (this->MPIInitialized() && !this->MPIFinalized())
   {
@@ -269,12 +284,19 @@ void vtkPPainterCommunicator::SubsetCommunicator(vtkMPICommunicatorOpaqueComm* c
     int worldSize = 0;
     MPI_Comm_size(defaultComm, &worldSize);
 
-    vector<int> included(worldSize, 0);
-    MPI_Allgather(&include, 1, MPI_INT, &included[0], 1, MPI_INT, defaultComm);
+    vector<int> included(worldSize,0);
+    MPI_Allgather(
+          &include,
+          1,
+          MPI_INT,
+          &included[0],
+          1,
+          MPI_INT,
+          defaultComm);
 
     vector<int> activeRanks;
     activeRanks.reserve(worldSize);
-    for (int i = 0; i < worldSize; ++i)
+    for (int i=0; i<worldSize; ++i)
     {
       if (included[i] != 0)
       {
@@ -283,14 +305,15 @@ void vtkPPainterCommunicator::SubsetCommunicator(vtkMPICommunicatorOpaqueComm* c
     }
 
     int nActive = (int)activeRanks.size();
-    if (nActive == 0)
+    if (nActive==0)
     {
       // no active ranks
       // no rendering will occur so no communicator
       // is needed
       this->Internals->SetCommunicator(MPI_COMM_NULL);
     }
-    else if (nActive == worldSize)
+    else
+    if (nActive==worldSize)
     {
       // all ranks are active
       // use the default communicator.
@@ -304,7 +327,11 @@ void vtkPPainterCommunicator::SubsetCommunicator(vtkMPICommunicatorOpaqueComm* c
       MPI_Comm_group(defaultComm, &wholeGroup);
 
       MPI_Group activeGroup;
-      MPI_Group_incl(wholeGroup, nActive, &activeRanks[0], &activeGroup);
+      MPI_Group_incl(
+            wholeGroup,
+            nActive,
+            &activeRanks[0],
+            &activeGroup);
 
       MPI_Comm subsetComm;
       MPI_Comm_create(defaultComm, activeGroup, &subsetComm);

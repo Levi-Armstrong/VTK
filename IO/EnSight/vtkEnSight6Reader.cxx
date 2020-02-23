@@ -17,9 +17,9 @@
 #include "vtkCellData.h"
 #include "vtkCharArray.h"
 #include "vtkFloatArray.h"
+#include "vtkMultiBlockDataSet.h"
 #include "vtkIdList.h"
 #include "vtkIdTypeArray.h"
-#include "vtkMultiBlockDataSet.h"
 #include "vtkObjectFactory.h"
 #include "vtkPointData.h"
 #include "vtkPolyData.h"
@@ -27,7 +27,7 @@
 #include "vtkStructuredGrid.h"
 #include "vtkStructuredPoints.h"
 #include "vtkUnstructuredGrid.h"
-#include "vtksys/FStream.hxx"
+
 
 #include <cassert>
 #include <cctype>
@@ -40,7 +40,7 @@ vtkEnSight6Reader::vtkEnSight6Reader()
 {
   this->NumberOfUnstructuredPoints = 0;
   this->UnstructuredPoints = vtkPoints::New();
-  this->UnstructuredNodeIds = nullptr;
+  this->UnstructuredNodeIds = NULL;
 }
 
 //----------------------------------------------------------------------------
@@ -49,30 +49,31 @@ vtkEnSight6Reader::~vtkEnSight6Reader()
   if (this->UnstructuredNodeIds)
   {
     this->UnstructuredNodeIds->Delete();
-    this->UnstructuredNodeIds = nullptr;
+    this->UnstructuredNodeIds = NULL;
   }
   this->UnstructuredPoints->Delete();
-  this->UnstructuredPoints = nullptr;
+  this->UnstructuredPoints = NULL;
 }
 
 //----------------------------------------------------------------------------
-static void vtkEnSight6ReaderRead1(
-  const char* line, const char*, int* pointId, float* point1, float* point2, float* point3)
+static void vtkEnSight6ReaderRead1(const char *line, const char *,
+                                   int *pointId, float *point1,
+                                   float *point2, float *point3)
 {
 #ifdef __CYGWIN__
   // most cygwins are busted in sscanf, this is a work around
   int numEntries = 0;
-  char* dup = strdup(line);
+  char *dup = strdup(line);
   dup[8] = '\0';
-  numEntries += sscanf(dup, "%8d", pointId);
+  numEntries += sscanf(dup,"%8d",pointId);
   dup[8] = line[8];
   dup[20] = '\0';
-  numEntries += sscanf(dup + 8, "%12e", point1);
+  numEntries += sscanf(dup+8,"%12e",point1);
   dup[20] = line[20];
   dup[32] = '\0';
-  numEntries += sscanf(dup + 20, "%12e", point2);
+  numEntries += sscanf(dup+20,"%12e",point2);
   dup[32] = line[32];
-  numEntries += sscanf(dup + 32, "%12e", point3);
+  numEntries += sscanf(dup+32,"%12e",point3);
   free(dup);
 #else
 #ifndef NDEBUG
@@ -80,23 +81,23 @@ static void vtkEnSight6ReaderRead1(
 #endif
     sscanf(line, " %8d %12e %12e %12e", pointId, point1, point2, point3);
 #endif
-  assert("post: all_items_match" && numEntries == 4);
+  assert("post: all_items_match" && numEntries==4);
 }
 
-static void vtkEnSight6ReaderRead2(
-  const char* line, const char*, float* point1, float* point2, float* point3)
+static void vtkEnSight6ReaderRead2(const char *line, const char *,
+                                   float *point1, float *point2, float *point3)
 {
 #ifdef __CYGWIN__
   // most cygwins are busted in sscanf, this is a work around
   int numEntries = 0;
-  char* dup = strdup(line);
+  char *dup = strdup(line);
   dup[12] = '\0';
-  numEntries += sscanf(dup, "%12e", point1);
+  numEntries += sscanf(dup,"%12e",point1);
   dup[12] = line[12];
   dup[24] = '\0';
-  numEntries += sscanf(dup + 12, "%12e", point2);
+  numEntries += sscanf(dup+12,"%12e",point2);
   dup[24] = line[24];
-  numEntries += sscanf(dup + 24, "%12e", point3);
+  numEntries += sscanf(dup+24,"%12e",point3);
   free(dup);
 #else
 
@@ -105,65 +106,67 @@ static void vtkEnSight6ReaderRead2(
 #endif
     sscanf(line, " %12e %12e %12e", point1, point2, point3);
 #endif
-  assert("post: all_items_match" && numEntries == 3);
+  assert("post: all_items_match" && numEntries==3);
 }
 
-static void vtkEnSight6ReaderRead3(const char* line, const char*, float* point1, float* point2,
-  float* point3, float* point4, float* point5, float* point6)
+static void vtkEnSight6ReaderRead3(const char *line, const char *,
+                                   float *point1, float *point2, float *point3,
+                                   float *point4, float *point5, float *point6)
 {
 #ifdef __CYGWIN__
   // most cygwins are busted in sscanf, this is a work around
   int numEntries = 0;
-  char* dup = strdup(line);
+  char *dup = strdup(line);
   dup[12] = '\0';
-  numEntries += sscanf(dup, "%12e", point1);
+  numEntries += sscanf(dup,"%12e",point1);
   dup[12] = line[12];
   dup[24] = '\0';
-  numEntries += sscanf(dup + 12, "%12e", point2);
+  numEntries += sscanf(dup+12,"%12e",point2);
   dup[24] = line[24];
   dup[36] = '\0';
-  numEntries += sscanf(dup + 24, "%12e", point3);
+  numEntries += sscanf(dup+24,"%12e",point3);
   dup[36] = line[36];
   dup[48] = '\0';
-  numEntries += sscanf(dup + 36, "%12e", point4);
+  numEntries += sscanf(dup+36,"%12e",point4);
   dup[48] = line[48];
   dup[60] = '\0';
-  numEntries += sscanf(dup + 48, "%12e", point5);
+  numEntries += sscanf(dup+48,"%12e",point5);
   dup[60] = line[60];
-  numEntries += sscanf(dup + 60, "%12e", point6);
+  numEntries += sscanf(dup+60,"%12e",point6);
   free(dup);
 #else
 #ifndef NDEBUG
   int numEntries =
 #endif
-    sscanf(line, " %12e %12e %12e %12e %12e %12e", point1, point2, point3, point4, point5, point6);
+    sscanf(line, " %12e %12e %12e %12e %12e %12e",
+           point1, point2, point3, point4, point5, point6);
 #endif
-  assert("post: all_items_match" && numEntries == 6);
+  assert("post: all_items_match" && numEntries==6);
 }
 
-static void vtkEnSight6ReaderRead4(const char* line, float* point1)
+static void vtkEnSight6ReaderRead4(const char *line, float *point1)
 {
 #ifdef __CYGWIN__
   // most cygwins are busted in sscanf, this is a work around
   int numEntries = 0;
-  char* dup = strdup(line);
+  char *dup = strdup(line);
   dup[12] = '\0';
-  numEntries += sscanf(dup, "%12e", point1);
+  numEntries += sscanf(dup,"%12e",point1);
   free(dup);
 #else
 
 #ifndef NDEBUG
   int numEntries =
 #endif
-    sscanf(line, "%12e", point1);
+  sscanf(line,"%12e",point1);
 
 #endif
-  assert("post: all_items_match" && numEntries == 1);
+  assert("post: all_items_match" && numEntries==1);
 }
 
 //----------------------------------------------------------------------------
-int vtkEnSight6Reader::ReadGeometryFile(
-  const char* fileName, int timeStep, vtkMultiBlockDataSet* output)
+int vtkEnSight6Reader::ReadGeometryFile(const char* fileName, int timeStep,
+                                        vtkMultiBlockDataSet *output)
 {
   char line[256], subLine[256];
   int partId;
@@ -184,7 +187,7 @@ int vtkEnSight6Reader::ReadGeometryFile(
   if (this->FilePath)
   {
     sfilename = this->FilePath;
-    if (sfilename.at(sfilename.length() - 1) != '/')
+    if (sfilename.at(sfilename.length()-1) != '/')
     {
       sfilename += "/";
     }
@@ -196,12 +199,12 @@ int vtkEnSight6Reader::ReadGeometryFile(
     sfilename = fileName;
   }
 
-  this->IS = new vtksys::ifstream(sfilename.c_str(), ios::in);
+  this->IS = new ifstream(sfilename.c_str(), ios::in);
   if (this->IS->fail())
   {
     vtkErrorMacro("Unable to open file: " << sfilename.c_str());
     delete this->IS;
-    this->IS = nullptr;
+    this->IS = NULL;
     return 0;
   }
 
@@ -212,7 +215,7 @@ int vtkEnSight6Reader::ReadGeometryFile(
     if (strcmp(subLine, "Binary") == 0)
     {
       vtkErrorMacro("This is a binary data set. Try "
-        << "vtkEnSight6BinaryReader.");
+                    << "vtkEnSight6BinaryReader.");
       return 0;
     }
   }
@@ -266,7 +269,7 @@ int vtkEnSight6Reader::ReadGeometryFile(
   this->ReadNextDataLine(line);
   this->NumberOfUnstructuredPoints = atoi(line);
   this->UnstructuredPoints->Allocate(this->NumberOfUnstructuredPoints);
-  int* tmpIds = new int[this->NumberOfUnstructuredPoints];
+  int *tmpIds = new int[this->NumberOfUnstructuredPoints];
 
   int maxId = 0;
 
@@ -276,8 +279,9 @@ int vtkEnSight6Reader::ReadGeometryFile(
     if (pointIdsListed)
     {
       // point ids listed
-      vtkEnSight6ReaderRead1(
-        line, " %8d %12e %12e %12e", &pointId, &point[0], &point[1], &point[2]);
+      vtkEnSight6ReaderRead1(line, " %8d %12e %12e %12e",
+                             &pointId, &point[0],
+                             &point[1], &point[2]);
       if (this->UnstructuredNodeIds)
       {
         tmpIds[j] = pointId;
@@ -290,7 +294,8 @@ int vtkEnSight6Reader::ReadGeometryFile(
     }
     else
     {
-      vtkEnSight6ReaderRead2(line, "%12e%12e%12e", &point[0], &point[1], &point[2]);
+      vtkEnSight6ReaderRead2(line, "%12e%12e%12e",
+                             &point[0], &point[1], &point[2]);
       this->UnstructuredPoints->InsertNextPoint(point);
     }
   }
@@ -303,10 +308,10 @@ int vtkEnSight6Reader::ReadGeometryFile(
 
     for (j = 0; j < this->NumberOfUnstructuredPoints; j++)
     {
-      this->UnstructuredNodeIds->InsertValue(tmpIds[j] - 1, j);
+      this->UnstructuredNodeIds->InsertValue(tmpIds[j]-1, j);
     }
   }
-  delete[] tmpIds;
+  delete [] tmpIds;
 
   lineRead = this->ReadNextDataLine(line); // "part"
 
@@ -317,7 +322,7 @@ int vtkEnSight6Reader::ReadGeometryFile(
     int realId = this->InsertNewPartId(partId);
 
     this->ReadLine(line); // part description line
-    char* name = strdup(line);
+    char *name = strdup(line);
     this->ReadNextDataLine(line);
     this->RemoveLeadingBlanks(line);
 
@@ -333,22 +338,23 @@ int vtkEnSight6Reader::ReadGeometryFile(
   }
 
   delete this->IS;
-  this->IS = nullptr;
+  this->IS = NULL;
   if (this->UnstructuredNodeIds)
   {
-    this->UnstructuredNodeIds->Delete();
-    this->UnstructuredNodeIds = nullptr;
+      this->UnstructuredNodeIds->Delete();
+      this->UnstructuredNodeIds = NULL;
   }
 
   return 1;
 }
 
 //----------------------------------------------------------------------------
-int vtkEnSight6Reader::ReadMeasuredGeometryFile(
-  const char* fileName, int timeStep, vtkMultiBlockDataSet* output)
+int vtkEnSight6Reader::ReadMeasuredGeometryFile(const char* fileName,
+                                                int timeStep,
+                                                vtkMultiBlockDataSet *output)
 {
   char line[256], subLine[256];
-  vtkPoints* newPoints;
+  vtkPoints *newPoints;
   int i;
   vtkIdType id;
   int tempId;
@@ -366,7 +372,7 @@ int vtkEnSight6Reader::ReadMeasuredGeometryFile(
   if (this->FilePath)
   {
     sfilename = this->FilePath;
-    if (sfilename.at(sfilename.length() - 1) != '/')
+    if (sfilename.at(sfilename.length()-1) != '/')
     {
       sfilename += "/";
     }
@@ -378,14 +384,15 @@ int vtkEnSight6Reader::ReadMeasuredGeometryFile(
     sfilename = fileName;
   }
 
-  this->IS = new vtksys::ifstream(sfilename.c_str(), ios::in);
+  this->IS = new ifstream(sfilename.c_str(), ios::in);
   if (this->IS->fail())
   {
     vtkErrorMacro("Unable to open file: " << sfilename.c_str());
     delete this->IS;
-    this->IS = nullptr;
+    this->IS = NULL;
     return 0;
   }
+
 
   this->ReadLine(line);
 
@@ -394,7 +401,7 @@ int vtkEnSight6Reader::ReadMeasuredGeometryFile(
     if (strcmp(subLine, "Binary") == 0)
     {
       vtkErrorMacro("This is a binary data set. Try "
-        << "vtkEnSight6BinaryReader.");
+                    << "vtkEnSight6BinaryReader.");
       return 0;
     }
   }
@@ -427,8 +434,8 @@ int vtkEnSight6Reader::ReadMeasuredGeometryFile(
 
   this->NumberOfNewOutputs++;
 
-  if (this->GetDataSetFromBlock(output, this->NumberOfGeometryParts) == nullptr ||
-    !this->GetDataSetFromBlock(output, this->NumberOfGeometryParts)->IsA("vtkPolyData"))
+  if (this->GetDataSetFromBlock(output, this->NumberOfGeometryParts) == NULL ||
+      !this->GetDataSetFromBlock(output, this->NumberOfGeometryParts)->IsA("vtkPolyData"))
   {
     vtkDebugMacro("creating new measured geometry output");
     vtkPolyData* pd = vtkPolyData::New();
@@ -436,9 +443,9 @@ int vtkEnSight6Reader::ReadMeasuredGeometryFile(
     pd->Delete();
   }
 
-  vtkPolyData* pd =
-    vtkPolyData::SafeDownCast(this->GetDataSetFromBlock(output, this->NumberOfGeometryParts));
-  pd->AllocateEstimate(this->NumberOfMeasuredPoints, 1);
+  vtkPolyData *pd = vtkPolyData::SafeDownCast(
+    this->GetDataSetFromBlock(output, this->NumberOfGeometryParts) );
+  pd->Allocate(this->NumberOfMeasuredPoints);
 
   newPoints = vtkPoints::New();
   newPoints->Allocate(this->NumberOfMeasuredPoints);
@@ -446,14 +453,14 @@ int vtkEnSight6Reader::ReadMeasuredGeometryFile(
   for (i = 0; i < this->NumberOfMeasuredPoints; i++)
   {
     this->ReadLine(line);
-    vtkEnSight6ReaderRead1(
-      line, " %8d %12e %12e %12e", &tempId, &coords[0], &coords[1], &coords[2]);
+    vtkEnSight6ReaderRead1(line, " %8d %12e %12e %12e", &tempId, &coords[0],
+                           &coords[1], &coords[2]);
     id = this->ParticleCoordinatesByIndex ? i : tempId;
     newPoints->InsertNextPoint(coords);
     pd->InsertNextCell(VTK_VERTEX, 1, &id);
   }
 
-  pd->SetPoints(newPoints);
+  pd->SetPoints( newPoints );
 
   newPoints->Delete();
 
@@ -461,30 +468,31 @@ int vtkEnSight6Reader::ReadMeasuredGeometryFile(
 }
 
 //----------------------------------------------------------------------------
-int vtkEnSight6Reader::ReadScalarsPerNode(const char* fileName, const char* description,
-  int timeStep, vtkMultiBlockDataSet* compositeOutput, int measured, int numberOfComponents,
-  int component)
+int vtkEnSight6Reader::ReadScalarsPerNode(
+  const char* fileName, const char* description, int timeStep,
+  vtkMultiBlockDataSet *compositeOutput, int measured,
+  int numberOfComponents, int component)
 {
   char line[256];
   char tempLine[256];
   int partId, numPts, i, j;
-  vtkFloatArray* scalars;
+  vtkFloatArray *scalars;
   int numLines, moreScalars;
   float scalarsRead[6];
-  vtkDataSet* output;
+  vtkDataSet *output;
 
   // Initialize
   //
   if (!fileName)
   {
-    vtkErrorMacro("nullptr ScalarPerNode variable file name");
+    vtkErrorMacro("NULL ScalarPerNode variable file name");
     return 0;
   }
   std::string sfilename;
   if (this->FilePath)
   {
     sfilename = this->FilePath;
-    if (sfilename.at(sfilename.length() - 1) != '/')
+    if (sfilename.at(sfilename.length()-1) != '/')
     {
       sfilename += "/";
     }
@@ -496,12 +504,12 @@ int vtkEnSight6Reader::ReadScalarsPerNode(const char* fileName, const char* desc
     sfilename = fileName;
   }
 
-  this->IS = new vtksys::ifstream(sfilename.c_str(), ios::in);
+  this->IS = new ifstream(sfilename.c_str(), ios::in);
   if (this->IS->fail())
   {
     vtkErrorMacro("Unable to open file: " << sfilename.c_str());
     delete this->IS;
-    this->IS = nullptr;
+    this->IS = NULL;
     return 0;
   }
 
@@ -542,8 +550,8 @@ int vtkEnSight6Reader::ReadScalarsPerNode(const char* fileName, const char* desc
     else
     {
       numPts = static_cast<vtkDataSet*>(
-        this->GetDataSetFromBlock(compositeOutput, this->NumberOfGeometryParts))
-                 ->GetNumberOfPoints();
+        this->GetDataSetFromBlock(compositeOutput, this->NumberOfGeometryParts))->
+        GetNumberOfPoints();
     }
     numLines = numPts / 6;
     moreScalars = numPts % 6;
@@ -561,24 +569,27 @@ int vtkEnSight6Reader::ReadScalarsPerNode(const char* fileName, const char* desc
       // because it is the same for all of them.
       partId = this->UnstructuredPartIds->GetId(0);
       scalars = static_cast<vtkFloatArray*>(
-        this->GetDataSetFromBlock(compositeOutput, partId)->GetPointData()->GetArray(description));
+        this->GetDataSetFromBlock(compositeOutput, partId)->
+        GetPointData()->GetArray(description));
     }
     for (i = 0; i < numLines; i++)
     {
-      vtkEnSight6ReaderRead3(line, " %12e %12e %12e %12e %12e %12e", &scalarsRead[0],
-        &scalarsRead[1], &scalarsRead[2], &scalarsRead[3], &scalarsRead[4], &scalarsRead[5]);
+      vtkEnSight6ReaderRead3(line, " %12e %12e %12e %12e %12e %12e",
+                             &scalarsRead[0], &scalarsRead[1],
+                             &scalarsRead[2], &scalarsRead[3],
+                             &scalarsRead[4], &scalarsRead[5]);
 
       for (j = 0; j < 6; j++)
       {
-        scalars->InsertComponent(i * 6 + j, component, scalarsRead[j]);
+        scalars->InsertComponent(i*6 + j, component, scalarsRead[j]);
       }
       this->ReadNextDataLine(line);
     }
     strcpy(tempLine, "");
     for (j = 0; j < moreScalars; j++)
     {
-      vtkEnSight6ReaderRead4(line + j * 12, &scalarsRead[j]);
-      scalars->InsertComponent(i * 6 + j, component, scalarsRead[j]);
+      vtkEnSight6ReaderRead4(line+j*12,&scalarsRead[j]);
+      scalars->InsertComponent(i*6 + j, component, scalarsRead[j]);
     }
     if (moreScalars != 0)
     {
@@ -589,7 +600,8 @@ int vtkEnSight6Reader::ReadScalarsPerNode(const char* fileName, const char* desc
       for (i = 0; i < this->UnstructuredPartIds->GetNumberOfIds(); i++)
       {
         partId = this->UnstructuredPartIds->GetId(i);
-        output = static_cast<vtkDataSet*>(this->GetDataSetFromBlock(compositeOutput, partId));
+        output = static_cast<vtkDataSet*>(
+          this->GetDataSetFromBlock(compositeOutput, partId));
         if (component == 0)
         {
           scalars->SetName(description);
@@ -616,7 +628,7 @@ int vtkEnSight6Reader::ReadScalarsPerNode(const char* fileName, const char* desc
         output->GetPointData()->SetScalars(scalars);
       }
     }
-    if (allocatedScalars)
+    if(allocatedScalars)
     {
       scalars->Delete();
     }
@@ -628,10 +640,11 @@ int vtkEnSight6Reader::ReadScalarsPerNode(const char* fileName, const char* desc
   {
     int allocatedScalars = 0;
     sscanf(line, " part %d", &partId);
-    partId--; // EnSight starts #ing at 1.
+    partId--;  // EnSight starts #ing at 1.
     int realId = this->InsertNewPartId(partId);
 
-    output = static_cast<vtkDataSet*>(this->GetDataSetFromBlock(compositeOutput, realId));
+    output = static_cast<vtkDataSet*>(
+      this->GetDataSetFromBlock(compositeOutput, realId));
     this->ReadNextDataLine(line); // block
     numPts = output->GetNumberOfPoints();
     numLines = numPts / 6;
@@ -646,24 +659,27 @@ int vtkEnSight6Reader::ReadScalarsPerNode(const char* fileName, const char* desc
     }
     else
     {
-      scalars = (vtkFloatArray*)(output->GetPointData()->GetArray(description));
+      scalars = (vtkFloatArray*)(output->GetPointData()->
+                                 GetArray(description));
     }
     for (i = 0; i < numLines; i++)
     {
       this->ReadNextDataLine(line);
-      vtkEnSight6ReaderRead3(line, " %12e %12e %12e %12e %12e %12e", &scalarsRead[0],
-        &scalarsRead[1], &scalarsRead[2], &scalarsRead[3], &scalarsRead[4], &scalarsRead[5]);
+      vtkEnSight6ReaderRead3(line, " %12e %12e %12e %12e %12e %12e",
+                             &scalarsRead[0], &scalarsRead[1],
+                             &scalarsRead[2], &scalarsRead[3],
+                             &scalarsRead[4], &scalarsRead[5]);
       for (j = 0; j < 6; j++)
       {
-        scalars->InsertComponent(i * 6 + j, component, scalarsRead[j]);
+        scalars->InsertComponent(i*6 + j, component, scalarsRead[j]);
       }
     }
     this->ReadNextDataLine(line);
     strcpy(tempLine, "");
     for (j = 0; j < moreScalars; j++)
     {
-      vtkEnSight6ReaderRead4(line + j * 12, &scalarsRead[j]);
-      scalars->InsertComponent(i * 6 + j, component, scalarsRead[j]);
+      vtkEnSight6ReaderRead4(line+j*12,&scalarsRead[j]);
+      scalars->InsertComponent(i*6 + j, component, scalarsRead[j]);
     }
     if (component == 0)
     {
@@ -679,7 +695,7 @@ int vtkEnSight6Reader::ReadScalarsPerNode(const char* fileName, const char* desc
       output->GetPointData()->AddArray(scalars);
     }
     this->ReadNextDataLine(line);
-    if (allocatedScalars)
+    if(allocatedScalars)
     {
       scalars->Delete();
     }
@@ -687,34 +703,35 @@ int vtkEnSight6Reader::ReadScalarsPerNode(const char* fileName, const char* desc
   }
 
   delete this->IS;
-  this->IS = nullptr;
+  this->IS = NULL;
   return 1;
 }
 
 //----------------------------------------------------------------------------
-int vtkEnSight6Reader::ReadVectorsPerNode(const char* fileName, const char* description,
-  int timeStep, vtkMultiBlockDataSet* compositeOutput, int measured)
+int vtkEnSight6Reader::ReadVectorsPerNode(
+  const char* fileName, const char* description, int timeStep,
+  vtkMultiBlockDataSet *compositeOutput, int measured)
 {
   char line[256];
   char tempLine[256];
   int partId, numPts, i, j, k;
-  vtkFloatArray* vectors;
+  vtkFloatArray *vectors;
   int numLines, moreVectors;
   float vector1[3], vector2[3], values[6];
-  vtkDataSet* output;
+  vtkDataSet *output;
 
   // Initialize
   //
   if (!fileName)
   {
-    vtkErrorMacro("nullptr VectorPerNode variable file name");
+    vtkErrorMacro("NULL VectorPerNode variable file name");
     return 0;
   }
   std::string sfilename;
   if (this->FilePath)
   {
     sfilename = this->FilePath;
-    if (sfilename.at(sfilename.length() - 1) != '/')
+    if (sfilename.at(sfilename.length()-1) != '/')
     {
       sfilename += "/";
     }
@@ -726,12 +743,12 @@ int vtkEnSight6Reader::ReadVectorsPerNode(const char* fileName, const char* desc
     sfilename = fileName;
   }
 
-  this->IS = new vtksys::ifstream(sfilename.c_str(), ios::in);
+  this->IS = new ifstream(sfilename.c_str(), ios::in);
   if (this->IS->fail())
   {
     vtkErrorMacro("Unable to open file: " << sfilename.c_str());
     delete this->IS;
-    this->IS = nullptr;
+    this->IS = NULL;
     return 0;
   }
 
@@ -771,30 +788,32 @@ int vtkEnSight6Reader::ReadVectorsPerNode(const char* fileName, const char* desc
     else
     {
       numPts = static_cast<vtkDataSet*>(
-        this->GetDataSetFromBlock(compositeOutput, this->NumberOfGeometryParts))
-                 ->GetNumberOfPoints();
+        this->GetDataSetFromBlock(compositeOutput, this->NumberOfGeometryParts))->
+        GetNumberOfPoints();
     }
     numLines = numPts / 2;
     moreVectors = ((numPts * 3) % 6) / 3;
     vectors = vtkFloatArray::New();
     vectors->SetNumberOfTuples(numPts);
     vectors->SetNumberOfComponents(3);
-    vectors->Allocate(numPts * 3);
+    vectors->Allocate(numPts*3);
     for (i = 0; i < numLines; i++)
     {
-      vtkEnSight6ReaderRead3(line, " %12e %12e %12e %12e %12e %12e", &vector1[0], &vector1[1],
-        &vector1[2], &vector2[0], &vector2[1], &vector2[2]);
-      vectors->InsertTuple(i * 2, vector1);
-      vectors->InsertTuple(i * 2 + 1, vector2);
+      vtkEnSight6ReaderRead3(line, " %12e %12e %12e %12e %12e %12e",
+                             &vector1[0], &vector1[1],
+                             &vector1[2], &vector2[0],
+                             &vector2[1], &vector2[2]);
+      vectors->InsertTuple(i*2, vector1);
+      vectors->InsertTuple(i*2 + 1, vector2);
       this->ReadNextDataLine(line);
     }
     strcpy(tempLine, "");
     for (j = 0; j < moreVectors; j++)
     {
-      vtkEnSight6ReaderRead4(line + j * 36, &vector1[0]);
-      vtkEnSight6ReaderRead4(line + j * 36 + 12, &vector1[1]);
-      vtkEnSight6ReaderRead4(line + j * 36 + 24, &vector1[2]);
-      vectors->InsertTuple(i * 2 + j, vector1);
+      vtkEnSight6ReaderRead4(line+j*36,&vector1[0]);
+      vtkEnSight6ReaderRead4(line+j*36+12,&vector1[1]);
+      vtkEnSight6ReaderRead4(line+j*36+24,&vector1[2]);
+      vectors->InsertTuple(i*2 + j, vector1);
     }
     if (moreVectors != 0)
     {
@@ -806,7 +825,8 @@ int vtkEnSight6Reader::ReadVectorsPerNode(const char* fileName, const char* desc
       {
         partId = this->UnstructuredPartIds->GetId(i);
         vectors->SetName(description);
-        output = static_cast<vtkDataSet*>(this->GetDataSetFromBlock(compositeOutput, partId));
+        output = static_cast<vtkDataSet*>(
+          this->GetDataSetFromBlock(compositeOutput, partId));
         output->GetPointData()->AddArray(vectors);
         if (!output->GetPointData()->GetVectors())
         {
@@ -836,25 +856,27 @@ int vtkEnSight6Reader::ReadVectorsPerNode(const char* fileName, const char* desc
     partId--;
     int realId = this->InsertNewPartId(partId);
 
-    output = static_cast<vtkDataSet*>(this->GetDataSetFromBlock(compositeOutput, realId));
+    output = static_cast<vtkDataSet*>(
+      this->GetDataSetFromBlock(compositeOutput, realId));
     numPts = output->GetNumberOfPoints();
     numLines = numPts / 6;
     moreVectors = numPts % 6;
     vectors = vtkFloatArray::New();
     vectors->SetNumberOfTuples(numPts);
     vectors->SetNumberOfComponents(3);
-    vectors->Allocate(numPts * 3);
+    vectors->Allocate(numPts*3);
 
     for (k = 0; k < 3; k++)
     {
       for (i = 0; i < numLines; i++)
       {
         this->ReadNextDataLine(line);
-        vtkEnSight6ReaderRead3(line, " %12e %12e %12e %12e %12e %12e", &values[0], &values[1],
-          &values[2], &values[3], &values[4], &values[5]);
+        vtkEnSight6ReaderRead3(line, " %12e %12e %12e %12e %12e %12e",
+                               &values[0], &values[1], &values[2], &values[3],
+                               &values[4], &values[5]);
         for (j = 0; j < 6; j++)
         {
-          vectors->InsertComponent(i * 6 + j, k, values[j]);
+          vectors->InsertComponent(i*6 + j, k, values[j]);
         }
       }
 
@@ -864,8 +886,8 @@ int vtkEnSight6Reader::ReadVectorsPerNode(const char* fileName, const char* desc
         strcpy(tempLine, "");
         for (j = 0; j < moreVectors; j++)
         {
-          vtkEnSight6ReaderRead4(line + j * 12, &values[j]);
-          vectors->InsertComponent(i * 6 + j, k, values[j]);
+          vtkEnSight6ReaderRead4(line+j*12,&values[j]);
+          vectors->InsertComponent(i*6 + j, k, values[j]);
         }
       }
     }
@@ -882,35 +904,36 @@ int vtkEnSight6Reader::ReadVectorsPerNode(const char* fileName, const char* desc
   }
 
   delete this->IS;
-  this->IS = nullptr;
+  this->IS = NULL;
   return 1;
 }
 
 //----------------------------------------------------------------------------
-int vtkEnSight6Reader::ReadTensorsPerNode(const char* fileName, const char* description,
-  int timeStep, vtkMultiBlockDataSet* compositeOutput)
+int vtkEnSight6Reader::ReadTensorsPerNode(
+  const char* fileName, const char* description, int timeStep,
+  vtkMultiBlockDataSet *compositeOutput)
 {
   char line[256];
   char tempLine[256];
   int partId, numPts, i, j, k;
-  vtkFloatArray* tensors;
+  vtkFloatArray *tensors;
   int numLines, moreTensors;
   float tensor[6], values[6];
   int lineRead;
-  vtkDataSet* output;
+  vtkDataSet *output;
 
   // Initialize
   //
   if (!fileName)
   {
-    vtkErrorMacro("nullptr TensorSymmPerNode variable file name");
+    vtkErrorMacro("NULL TensorSymmPerNode variable file name");
     return 0;
   }
   std::string sfilename;
   if (this->FilePath)
   {
     sfilename = this->FilePath;
-    if (sfilename.at(sfilename.length() - 1) != '/')
+    if (sfilename.at(sfilename.length()-1) != '/')
     {
       sfilename += "/";
     }
@@ -922,12 +945,12 @@ int vtkEnSight6Reader::ReadTensorsPerNode(const char* fileName, const char* desc
     sfilename = fileName;
   }
 
-  this->IS = new vtksys::ifstream(sfilename.c_str(), ios::in);
+  this->IS = new ifstream(sfilename.c_str(), ios::in);
   if (this->IS->fail())
   {
     vtkErrorMacro("Unable to open file: " << sfilename.c_str());
     delete this->IS;
-    this->IS = nullptr;
+    this->IS = NULL;
     return 0;
   }
 
@@ -965,11 +988,12 @@ int vtkEnSight6Reader::ReadTensorsPerNode(const char* fileName, const char* desc
     tensors = vtkFloatArray::New();
     tensors->SetNumberOfTuples(numPts);
     tensors->SetNumberOfComponents(6);
-    tensors->Allocate(numPts * 6);
+    tensors->Allocate(numPts*6);
     for (i = 0; i < numLines; i++)
     {
-      vtkEnSight6ReaderRead3(line, " %12e %12e %12e %12e %12e %12e", &tensor[0], &tensor[1],
-        &tensor[2], &tensor[3], &tensor[5], &tensor[4]);
+      vtkEnSight6ReaderRead3(line, " %12e %12e %12e %12e %12e %12e",
+                             &tensor[0], &tensor[1],
+                             &tensor[2], &tensor[3], &tensor[5], &tensor[4]);
       tensors->InsertTuple(i, tensor);
       lineRead = this->ReadNextDataLine(line);
     }
@@ -978,7 +1002,8 @@ int vtkEnSight6Reader::ReadTensorsPerNode(const char* fileName, const char* desc
     {
       partId = this->UnstructuredPartIds->GetId(i);
       tensors->SetName(description);
-      this->GetDataSetFromBlock(compositeOutput, partId)->GetPointData()->AddArray(tensors);
+      this->GetDataSetFromBlock(compositeOutput, partId)->
+        GetPointData()->AddArray(tensors);
     }
     tensors->Delete();
   }
@@ -998,18 +1023,19 @@ int vtkEnSight6Reader::ReadTensorsPerNode(const char* fileName, const char* desc
     tensors = vtkFloatArray::New();
     tensors->SetNumberOfTuples(numPts);
     tensors->SetNumberOfComponents(6);
-    tensors->Allocate(numPts * 6);
+    tensors->Allocate(numPts*6);
 
     for (k = 0; k < 6; k++)
     {
       for (i = 0; i < numLines; i++)
       {
         this->ReadNextDataLine(line);
-        vtkEnSight6ReaderRead3(line, " %12e %12e %12e %12e %12e %12e", &values[0], &values[1],
-          &values[2], &values[3], &values[5], &values[4]);
+        vtkEnSight6ReaderRead3(line, " %12e %12e %12e %12e %12e %12e",
+                               &values[0], &values[1],
+                               &values[2], &values[3], &values[5], &values[4]);
         for (j = 0; j < 6; j++)
         {
-          tensors->InsertComponent(i * 6 + j, k, values[j]);
+          tensors->InsertComponent(i*6 + j, k, values[j]);
         }
       }
 
@@ -1019,8 +1045,8 @@ int vtkEnSight6Reader::ReadTensorsPerNode(const char* fileName, const char* desc
         strcpy(tempLine, "");
         for (j = 0; j < moreTensors; j++)
         {
-          vtkEnSight6ReaderRead4(line + j * 12, &values[j]);
-          tensors->InsertComponent(i * 6 + j, k, values[j]);
+          vtkEnSight6ReaderRead4(line+j*12,&values[j]);
+          tensors->InsertComponent(i*6 + j, k, values[j]);
         }
       }
     }
@@ -1032,34 +1058,36 @@ int vtkEnSight6Reader::ReadTensorsPerNode(const char* fileName, const char* desc
   }
 
   delete this->IS;
-  this->IS = nullptr;
+  this->IS = NULL;
   return 1;
 }
 
 //----------------------------------------------------------------------------
-int vtkEnSight6Reader::ReadScalarsPerElement(const char* fileName, const char* description,
-  int timeStep, vtkMultiBlockDataSet* compositeOutput, int numberOfComponents, int component)
+int vtkEnSight6Reader::ReadScalarsPerElement(
+  const char* fileName, const char* description, int timeStep,
+  vtkMultiBlockDataSet *compositeOutput, int numberOfComponents,
+  int component)
 {
   char line[256];
   int partId, numCells, numCellsPerElement, i, j, idx;
-  vtkFloatArray* scalars;
+  vtkFloatArray *scalars;
   int lineRead, elementType;
   float scalarsRead[6];
   int numLines, moreScalars;
-  vtkDataSet* output;
+  vtkDataSet *output;
 
   // Initialize
   //
   if (!fileName)
   {
-    vtkErrorMacro("nullptr ScalarPerElement variable file name");
+    vtkErrorMacro("NULL ScalarPerElement variable file name");
     return 0;
   }
   std::string sfilename;
   if (this->FilePath)
   {
     sfilename = this->FilePath;
-    if (sfilename.at(sfilename.length() - 1) != '/')
+    if (sfilename.at(sfilename.length()-1) != '/')
     {
       sfilename += "/";
     }
@@ -1071,12 +1099,12 @@ int vtkEnSight6Reader::ReadScalarsPerElement(const char* fileName, const char* d
     sfilename = fileName;
   }
 
-  this->IS = new vtksys::ifstream(sfilename.c_str(), ios::in);
+  this->IS = new ifstream(sfilename.c_str(), ios::in);
   if (this->IS->fail())
   {
     vtkErrorMacro("Unable to open file: " << sfilename.c_str());
     delete this->IS;
-    this->IS = nullptr;
+    this->IS = NULL;
     return 0;
   }
 
@@ -1098,7 +1126,7 @@ int vtkEnSight6Reader::ReadScalarsPerElement(const char* fileName, const char* d
     }
   }
 
-  this->ReadLine(line);                    // skip the description line
+  this->ReadLine(line); // skip the description line
   lineRead = this->ReadNextDataLine(line); // "part"
 
   while (lineRead && strncmp(line, "part", 4) == 0)
@@ -1130,11 +1158,13 @@ int vtkEnSight6Reader::ReadScalarsPerElement(const char* fileName, const char* d
       for (i = 0; i < numLines; i++)
       {
         this->ReadNextDataLine(line);
-        vtkEnSight6ReaderRead3(line, " %12e %12e %12e %12e %12e %12e", &scalarsRead[0],
-          &scalarsRead[1], &scalarsRead[2], &scalarsRead[3], &scalarsRead[4], &scalarsRead[5]);
+        vtkEnSight6ReaderRead3(line, " %12e %12e %12e %12e %12e %12e",
+                               &scalarsRead[0], &scalarsRead[1],
+                               &scalarsRead[2], &scalarsRead[3],
+                               &scalarsRead[4], &scalarsRead[5]);
         for (j = 0; j < 6; j++)
         {
-          scalars->InsertComponent(i * 6 + j, component, scalarsRead[j]);
+          scalars->InsertComponent(i*6 + j, component, scalarsRead[j]);
         }
       }
       lineRead = this->ReadNextDataLine(line);
@@ -1143,21 +1173,22 @@ int vtkEnSight6Reader::ReadScalarsPerElement(const char* fileName, const char* d
       {
         for (j = 0; j < moreScalars; j++)
         {
-          vtkEnSight6ReaderRead4(line + j * 12, &scalarsRead[j]);
-          scalars->InsertComponent(i * 6 + j, component, scalarsRead[j]);
+          vtkEnSight6ReaderRead4(line+j*12,&scalarsRead[j]);
+          scalars->InsertComponent(i*6 + j, component, scalarsRead[j]);
         }
       }
     }
     else
     {
-      while (lineRead && strncmp(line, "part", 4) != 0 && strncmp(line, "END TIME STEP", 13) != 0)
+      while (lineRead && strncmp(line, "part", 4) != 0 &&
+                         strncmp(line, "END TIME STEP", 13) != 0 )
       {
         elementType = this->GetElementType(line);
         if (elementType < 0)
         {
           vtkErrorMacro("invalid element type");
           delete this->IS;
-          this->IS = nullptr;
+          this->IS = NULL;
           return 0;
         }
         idx = this->UnstructuredPartIds->IsId(partId);
@@ -1167,12 +1198,15 @@ int vtkEnSight6Reader::ReadScalarsPerElement(const char* fileName, const char* d
         for (i = 0; i < numLines; i++)
         {
           this->ReadNextDataLine(line);
-          vtkEnSight6ReaderRead3(line, " %12e %12e %12e %12e %12e %12e", &scalarsRead[0],
-            &scalarsRead[1], &scalarsRead[2], &scalarsRead[3], &scalarsRead[4], &scalarsRead[5]);
+          vtkEnSight6ReaderRead3(line, " %12e %12e %12e %12e %12e %12e",
+                                 &scalarsRead[0], &scalarsRead[1],
+                                 &scalarsRead[2], &scalarsRead[3],
+                                 &scalarsRead[4], &scalarsRead[5]);
           for (j = 0; j < 6; j++)
           {
-            scalars->InsertComponent(
-              this->GetCellIds(idx, elementType)->GetId(i * 6 + j), component, scalarsRead[j]);
+            scalars->InsertComponent(this->GetCellIds(idx, elementType)->
+                                     GetId(i*6 + j), component,
+                                     scalarsRead[j]);
           }
         }
         if (moreScalars)
@@ -1180,14 +1214,15 @@ int vtkEnSight6Reader::ReadScalarsPerElement(const char* fileName, const char* d
           this->ReadNextDataLine(line);
           for (j = 0; j < moreScalars; j++)
           {
-            vtkEnSight6ReaderRead4(line + j * 12, &scalarsRead[j]);
-            scalars->InsertComponent(
-              this->GetCellIds(idx, elementType)->GetId(i * 6 + j), component, scalarsRead[j]);
+            vtkEnSight6ReaderRead4(line+j*12,&scalarsRead[j]);
+            scalars->InsertComponent(this->GetCellIds(idx, elementType)->
+                                     GetId(i*6 + j), component,
+                                     scalarsRead[j]);
           }
         }
         lineRead = this->ReadNextDataLine(line);
       } // end while
-    }   // end else
+    } // end else
     if (component == 0)
     {
       scalars->SetName(description);
@@ -1205,34 +1240,35 @@ int vtkEnSight6Reader::ReadScalarsPerElement(const char* fileName, const char* d
   }
 
   delete this->IS;
-  this->IS = nullptr;
+  this->IS = NULL;
   return 1;
 }
 
 //----------------------------------------------------------------------------
-int vtkEnSight6Reader::ReadVectorsPerElement(const char* fileName, const char* description,
-  int timeStep, vtkMultiBlockDataSet* compositeOutput)
+int vtkEnSight6Reader::ReadVectorsPerElement(
+  const char* fileName, const char* description, int timeStep,
+  vtkMultiBlockDataSet *compositeOutput)
 {
   char line[256];
   int partId, numCells, numCellsPerElement, i, j, k, idx;
-  vtkFloatArray* vectors;
+  vtkFloatArray *vectors;
   int lineRead, elementType;
   float values[6], vector1[3], vector2[3];
   int numLines, moreVectors;
-  vtkDataSet* output;
+  vtkDataSet *output;
 
   // Initialize
   //
   if (!fileName)
   {
-    vtkErrorMacro("nullptr VectorPerElement variable file name");
+    vtkErrorMacro("NULL VectorPerElement variable file name");
     return 0;
   }
   std::string sfilename;
   if (this->FilePath)
   {
     sfilename = this->FilePath;
-    if (sfilename.at(sfilename.length() - 1) != '/')
+    if (sfilename.at(sfilename.length()-1) != '/')
     {
       sfilename += "/";
     }
@@ -1244,12 +1280,12 @@ int vtkEnSight6Reader::ReadVectorsPerElement(const char* fileName, const char* d
     sfilename = fileName;
   }
 
-  this->IS = new vtksys::ifstream(sfilename.c_str(), ios::in);
+  this->IS = new ifstream(sfilename.c_str(), ios::in);
   if (this->IS->fail())
   {
     vtkErrorMacro("Unable to open file: " << sfilename.c_str());
     delete this->IS;
-    this->IS = nullptr;
+    this->IS = NULL;
     return 0;
   }
 
@@ -1271,7 +1307,7 @@ int vtkEnSight6Reader::ReadVectorsPerElement(const char* fileName, const char* d
     }
   }
 
-  this->ReadLine(line);                    // skip the description line
+  this->ReadLine(line); // skip the description line
   lineRead = this->ReadNextDataLine(line); // "part"
 
   while (lineRead && strncmp(line, "part", 4) == 0)
@@ -1285,7 +1321,7 @@ int vtkEnSight6Reader::ReadVectorsPerElement(const char* fileName, const char* d
     this->ReadNextDataLine(line); // element type or "block"
     vectors->SetNumberOfTuples(numCells);
     vectors->SetNumberOfComponents(3);
-    vectors->Allocate(numCells * 3);
+    vectors->Allocate(numCells*3);
 
     // need to find out from CellIds how many cells we have of this element
     // type (and what their ids are) -- IF THIS IS NOT A BLOCK SECTION
@@ -1299,11 +1335,12 @@ int vtkEnSight6Reader::ReadVectorsPerElement(const char* fileName, const char* d
         for (i = 0; i < numLines; i++)
         {
           this->ReadNextDataLine(line);
-          vtkEnSight6ReaderRead3(line, " %12e %12e %12e %12e %12e %12e", &values[0], &values[1],
-            &values[2], &values[3], &values[4], &values[5]);
+          vtkEnSight6ReaderRead3(line, " %12e %12e %12e %12e %12e %12e",
+                                 &values[0], &values[1], &values[2],
+                                 &values[3], &values[4], &values[5]);
           for (j = 0; j < 6; j++)
           {
-            vectors->InsertComponent(i * 6 + j, k, values[j]);
+            vectors->InsertComponent(i*6 + j, k, values[j]);
           }
         }
         if (moreVectors)
@@ -1311,8 +1348,8 @@ int vtkEnSight6Reader::ReadVectorsPerElement(const char* fileName, const char* d
           this->ReadNextDataLine(line);
           for (j = 0; j < moreVectors; j++)
           {
-            vtkEnSight6ReaderRead4(line + j * 12, &values[j]);
-            vectors->InsertComponent(i * 6 + j, k, values[j]);
+            vtkEnSight6ReaderRead4(line+j*12,&values[j]);
+            vectors->InsertComponent(i*6 + j, k, values[j]);
           }
         }
       }
@@ -1320,44 +1357,48 @@ int vtkEnSight6Reader::ReadVectorsPerElement(const char* fileName, const char* d
     }
     else
     {
-      while (lineRead && strncmp(line, "part", 4) != 0 && strncmp(line, "END TIME STEP", 13) != 0)
+      while (lineRead && strncmp(line, "part", 4) != 0 && strncmp(line, "END TIME STEP", 13) != 0 )
       {
         elementType = this->GetElementType(line);
         if (elementType < 0)
         {
           vtkErrorMacro("invalid element type");
           delete this->IS;
-          this->IS = nullptr;
+          this->IS = NULL;
           return 0;
         }
         idx = this->UnstructuredPartIds->IsId(partId);
         numCellsPerElement = this->GetCellIds(idx, elementType)->GetNumberOfIds();
         numLines = numCellsPerElement / 2;
-        moreVectors = ((numCellsPerElement * 3) % 6) / 3;
+        moreVectors = ((numCellsPerElement*3) % 6) / 3;
 
         for (i = 0; i < numLines; i++)
         {
           this->ReadNextDataLine(line);
-          vtkEnSight6ReaderRead3(line, " %12e %12e %12e %12e %12e %12e", &vector1[0], &vector1[1],
-            &vector1[2], &vector2[0], &vector2[1], &vector2[2]);
+          vtkEnSight6ReaderRead3(line, " %12e %12e %12e %12e %12e %12e",
+                                 &vector1[0], &vector1[1], &vector1[2],
+                                 &vector2[0], &vector2[1], &vector2[2]);
 
-          vectors->InsertTuple(this->GetCellIds(idx, elementType)->GetId(2 * i), vector1);
-          vectors->InsertTuple(this->GetCellIds(idx, elementType)->GetId(2 * i + 1), vector2);
+          vectors->InsertTuple(this->GetCellIds(idx, elementType)->GetId(2*i),
+                               vector1);
+          vectors->InsertTuple(this->GetCellIds(idx, elementType)->GetId(2*i + 1),
+                               vector2);
         }
         if (moreVectors)
         {
           this->ReadNextDataLine(line);
           for (j = 0; j < moreVectors; j++)
           {
-            vtkEnSight6ReaderRead4(line + j * 36, &vector1[0]);
-            vtkEnSight6ReaderRead4(line + j * 36 + 12, &vector1[1]);
-            vtkEnSight6ReaderRead4(line + j * 36 + 24, &vector1[2]);
-            vectors->InsertTuple(this->GetCellIds(idx, elementType)->GetId(2 * i + j), vector1);
+            vtkEnSight6ReaderRead4(line+j*36,&vector1[0]);
+            vtkEnSight6ReaderRead4(line+j*36+12,&vector1[1]);
+            vtkEnSight6ReaderRead4(line+j*36+24,&vector1[2]);
+            vectors->InsertTuple(this->GetCellIds(idx, elementType)->
+                                 GetId(2*i + j), vector1);
           }
         }
         lineRead = this->ReadNextDataLine(line);
       } // end while
-    }   // end else
+    } // end else
     vectors->SetName(description);
     output->GetCellData()->AddArray(vectors);
     if (!output->GetCellData()->GetVectors())
@@ -1368,34 +1409,35 @@ int vtkEnSight6Reader::ReadVectorsPerElement(const char* fileName, const char* d
   }
 
   delete this->IS;
-  this->IS = nullptr;
+  this->IS = NULL;
   return 1;
 }
 
 //----------------------------------------------------------------------------
-int vtkEnSight6Reader::ReadTensorsPerElement(const char* fileName, const char* description,
-  int timeStep, vtkMultiBlockDataSet* compositeOutput)
+int vtkEnSight6Reader::ReadTensorsPerElement(
+  const char* fileName, const char* description, int timeStep,
+  vtkMultiBlockDataSet *compositeOutput)
 {
   char line[256];
   int partId, numCells, numCellsPerElement, i, j, k, idx;
-  vtkFloatArray* tensors;
+  vtkFloatArray *tensors;
   int lineRead, elementType;
   float values[6], tensor[6];
   int numLines, moreTensors;
-  vtkDataSet* output;
+  vtkDataSet *output;
 
   // Initialize
   //
   if (!fileName)
   {
-    vtkErrorMacro("nullptr TensorPerElement variable file name");
+    vtkErrorMacro("NULL TensorPerElement variable file name");
     return 0;
   }
   std::string sfilename;
   if (this->FilePath)
   {
     sfilename = this->FilePath;
-    if (sfilename.at(sfilename.length() - 1) != '/')
+    if (sfilename.at(sfilename.length()-1) != '/')
     {
       sfilename += "/";
     }
@@ -1407,12 +1449,12 @@ int vtkEnSight6Reader::ReadTensorsPerElement(const char* fileName, const char* d
     sfilename = fileName;
   }
 
-  this->IS = new vtksys::ifstream(sfilename.c_str(), ios::in);
+  this->IS = new ifstream(sfilename.c_str(), ios::in);
   if (this->IS->fail())
   {
     vtkErrorMacro("Unable to open file: " << sfilename.c_str());
     delete this->IS;
-    this->IS = nullptr;
+    this->IS = NULL;
     return 0;
   }
 
@@ -1434,7 +1476,7 @@ int vtkEnSight6Reader::ReadTensorsPerElement(const char* fileName, const char* d
     }
   }
 
-  this->ReadLine(line);                    // skip the description line
+  this->ReadLine(line); // skip the description line
   lineRead = this->ReadNextDataLine(line); // "part"
 
   while (lineRead && strncmp(line, "part", 4) == 0)
@@ -1448,7 +1490,7 @@ int vtkEnSight6Reader::ReadTensorsPerElement(const char* fileName, const char* d
     this->ReadNextDataLine(line); // element type or "block"
     tensors->SetNumberOfTuples(numCells);
     tensors->SetNumberOfComponents(6);
-    tensors->Allocate(numCells * 6);
+    tensors->Allocate(numCells*6);
 
     // need to find out from CellIds how many cells we have of this element
     // type (and what their ids are) -- IF THIS IS NOT A BLOCK SECTION
@@ -1462,11 +1504,12 @@ int vtkEnSight6Reader::ReadTensorsPerElement(const char* fileName, const char* d
         for (i = 0; i < numLines; i++)
         {
           this->ReadNextDataLine(line);
-          vtkEnSight6ReaderRead3(line, " %12e %12e %12e %12e %12e %12e", &values[0], &values[1],
-            &values[2], &values[3], &values[5], &values[4]);
+          vtkEnSight6ReaderRead3(line, " %12e %12e %12e %12e %12e %12e",
+                                 &values[0], &values[1], &values[2],
+                                 &values[3], &values[5], &values[4]);
           for (j = 0; j < 6; j++)
           {
-            tensors->InsertComponent(i * 6 + j, k, values[j]);
+            tensors->InsertComponent(i*6 + j, k, values[j]);
           }
         }
         if (moreTensors)
@@ -1474,8 +1517,8 @@ int vtkEnSight6Reader::ReadTensorsPerElement(const char* fileName, const char* d
           this->ReadNextDataLine(line);
           for (j = 0; j < moreTensors; j++)
           {
-            vtkEnSight6ReaderRead4(line + j * 12, &values[j]);
-            tensors->InsertComponent(i * 6 + j, k, values[j]);
+            vtkEnSight6ReaderRead4(line+j*12,&values[j]);
+            tensors->InsertComponent(i*6 + j, k, values[j]);
           }
         }
       }
@@ -1483,14 +1526,15 @@ int vtkEnSight6Reader::ReadTensorsPerElement(const char* fileName, const char* d
     }
     else
     {
-      while (lineRead && strncmp(line, "part", 4) != 0 && strncmp(line, "END TIME STEP", 13) != 0)
+      while (lineRead && strncmp(line, "part", 4) != 0  &&
+             strncmp(line, "END TIME STEP", 13) != 0 )
       {
         elementType = this->GetElementType(line);
         if (elementType < 0)
         {
           vtkErrorMacro("invalid element type");
           delete this->IS;
-          this->IS = nullptr;
+          this->IS = NULL;
           return 0;
         }
         idx = this->UnstructuredPartIds->IsId(partId);
@@ -1500,39 +1544,42 @@ int vtkEnSight6Reader::ReadTensorsPerElement(const char* fileName, const char* d
         for (i = 0; i < numLines; i++)
         {
           this->ReadNextDataLine(line);
-          vtkEnSight6ReaderRead3(line, " %12e %12e %12e %12e %12e %12e", &tensor[0], &tensor[1],
-            &tensor[2], &tensor[3], &tensor[5], &tensor[4]);
-          tensors->InsertTuple(this->GetCellIds(idx, elementType)->GetId(i), tensor);
+          vtkEnSight6ReaderRead3(line, " %12e %12e %12e %12e %12e %12e",
+                                 &tensor[0], &tensor[1], &tensor[2],
+                                 &tensor[3], &tensor[5], &tensor[4]);
+          tensors->InsertTuple(this->GetCellIds(idx, elementType)->GetId(i),
+                               tensor);
         }
         lineRead = this->ReadNextDataLine(line);
       } // end while
-    }   // end else
+    } // end else
     tensors->SetName(description);
     output->GetCellData()->AddArray(tensors);
     tensors->Delete();
   }
 
   delete this->IS;
-  this->IS = nullptr;
+  this->IS = NULL;
   return 1;
 }
 
 //----------------------------------------------------------------------------
 int vtkEnSight6Reader::CreateUnstructuredGridOutput(
-  int partId, char line[256], const char* name, vtkMultiBlockDataSet* compositeOutput)
+  int partId, char line[256], const char* name,
+  vtkMultiBlockDataSet *compositeOutput)
 {
   int lineRead = 1;
   char subLine[256];
   int i, j;
-  vtkIdType* nodeIds;
-  int* intIds;
+  vtkIdType *nodeIds;
+  int *intIds;
   int numElements;
   int idx, cellId, cellType, testId;
 
   this->NumberOfNewOutputs++;
 
-  if (this->GetDataSetFromBlock(compositeOutput, partId) == nullptr ||
-    !this->GetDataSetFromBlock(compositeOutput, partId)->IsA("vtkUnstructuredGrid"))
+  if (this->GetDataSetFromBlock(compositeOutput, partId) == NULL ||
+      !this->GetDataSetFromBlock(compositeOutput, partId)->IsA("vtkUnstructuredGrid"))
   {
     vtkDebugMacro("creating new unstructured output");
     vtkUnstructuredGrid* ugrid = vtkUnstructuredGrid::New();
@@ -1542,8 +1589,8 @@ int vtkEnSight6Reader::CreateUnstructuredGridOutput(
     this->UnstructuredPartIds->InsertNextId(partId);
   }
 
-  vtkUnstructuredGrid* output =
-    vtkUnstructuredGrid::SafeDownCast(this->GetDataSetFromBlock(compositeOutput, partId));
+  vtkUnstructuredGrid* output = vtkUnstructuredGrid::SafeDownCast(
+    this->GetDataSetFromBlock(compositeOutput, partId));
 
   this->SetBlockName(compositeOutput, partId, name);
 
@@ -1557,7 +1604,7 @@ int vtkEnSight6Reader::CreateUnstructuredGridOutput(
   output->Allocate(1000);
 
   int tmpId;
-  while (lineRead && sscanf(line, " part %d", &tmpId) != 1)
+  while(lineRead && sscanf(line, " part %d", &tmpId) != 1)
   {
     this->RemoveLeadingBlanks(line);
     if (strncmp(line, "point", 5) == 0)
@@ -1578,7 +1625,8 @@ int vtkEnSight6Reader::CreateUnstructuredGridOutput(
           // EnSight ids start at 1
           if (this->UnstructuredNodeIds)
           {
-            nodeIds[0] = this->UnstructuredNodeIds->GetValue(atoi(subLine) - 1);
+            nodeIds[0] =
+              this->UnstructuredNodeIds->GetValue(atoi(subLine) - 1);
           }
           else
           {
@@ -1600,7 +1648,7 @@ int vtkEnSight6Reader::CreateUnstructuredGridOutput(
         this->GetCellIds(idx, vtkEnSightReader::POINT)->InsertNextId(cellId);
         lineRead = this->ReadNextDataLine(line);
       }
-      delete[] nodeIds;
+      delete [] nodeIds;
     }
     else if (strncmp(line, "bar2", 4) == 0)
     {
@@ -1637,8 +1685,8 @@ int vtkEnSight6Reader::CreateUnstructuredGridOutput(
         this->GetCellIds(idx, vtkEnSightReader::BAR2)->InsertNextId(cellId);
         lineRead = this->ReadNextDataLine(line);
       }
-      delete[] nodeIds;
-      delete[] intIds;
+      delete [] nodeIds;
+      delete [] intIds;
     }
     else if (strncmp(line, "bar3", 4) == 0)
     {
@@ -1675,10 +1723,11 @@ int vtkEnSight6Reader::CreateUnstructuredGridOutput(
         this->GetCellIds(idx, vtkEnSightReader::BAR3)->InsertNextId(cellId);
         lineRead = this->ReadNextDataLine(line);
       }
-      delete[] nodeIds;
-      delete[] intIds;
+      delete [] nodeIds;
+      delete [] intIds;
     }
-    else if (strncmp(line, "tria3", 5) == 0 || strncmp(line, "tria6", 5) == 0)
+    else if (strncmp(line, "tria3", 5) == 0 ||
+             strncmp(line, "tria6", 5) == 0)
     {
       if (strncmp(line, "tria6", 5) == 0)
       {
@@ -1700,11 +1749,12 @@ int vtkEnSight6Reader::CreateUnstructuredGridOutput(
 
       for (i = 0; i < numElements; i++)
       {
-        if (!(sscanf(line, " %*d %d %d %d", &intIds[0], &intIds[1], &intIds[2]) == 3 &&
+        if (!(sscanf(line, " %*d %d %d %d", &intIds[0], &intIds[1],
+                     &intIds[2]) == 3 &&
               cellType == vtkEnSightReader::TRIA3) &&
-          !(sscanf(line, " %*d %d %d %d %*d %*d %d", &intIds[0], &intIds[1], &intIds[2], &testId) ==
-              4 &&
-            cellType == vtkEnSightReader::TRIA6))
+            !(sscanf(line, " %*d %d %d %d %*d %*d %d", &intIds[0], &intIds[1],
+                     &intIds[2], &testId) == 4 &&
+              cellType == vtkEnSightReader::TRIA6))
         {
           sscanf(line, " %d %d %d", &intIds[0], &intIds[1], &intIds[2]);
         }
@@ -1727,10 +1777,11 @@ int vtkEnSight6Reader::CreateUnstructuredGridOutput(
         this->GetCellIds(idx, cellType)->InsertNextId(cellId);
         lineRead = this->ReadNextDataLine(line);
       }
-      delete[] nodeIds;
-      delete[] intIds;
+      delete [] nodeIds;
+      delete [] intIds;
     }
-    else if (strncmp(line, "quad4", 5) == 0 || strncmp(line, "quad8", 5) == 0)
+    else if (strncmp(line, "quad4", 5) == 0 ||
+             strncmp(line, "quad8", 5) == 0)
     {
       if (strncmp(line, "quad8", 5) == 0)
       {
@@ -1752,14 +1803,15 @@ int vtkEnSight6Reader::CreateUnstructuredGridOutput(
 
       for (i = 0; i < numElements; i++)
       {
-        if (!(sscanf(line, " %*d %d %d %d %d", &intIds[0], &intIds[1], &intIds[2], &intIds[3]) ==
-                4 &&
+        if (!(sscanf(line, " %*d %d %d %d %d", &intIds[0], &intIds[1],
+                     &intIds[2], &intIds[3]) == 4 &&
               cellType == vtkEnSightReader::QUAD4) &&
-          !(sscanf(line, " %*d %d %d %d %d %*d %*d %*d %d", &intIds[0], &intIds[1], &intIds[2],
-              &intIds[3], &testId) == 5 &&
-            cellType == vtkEnSightReader::QUAD8))
+            !(sscanf(line, " %*d %d %d %d %d %*d %*d %*d %d", &intIds[0],
+                     &intIds[1], &intIds[2], &intIds[3], &testId) == 5 &&
+              cellType == vtkEnSightReader::QUAD8))
         {
-          sscanf(line, " %d %d %d %d", &intIds[0], &intIds[1], &intIds[2], &intIds[3]);
+          sscanf(line, " %d %d %d %d", &intIds[0], &intIds[1], &intIds[2],
+                 &intIds[3]);
         }
         for (j = 0; j < 4; j++)
         {
@@ -1780,10 +1832,11 @@ int vtkEnSight6Reader::CreateUnstructuredGridOutput(
         this->GetCellIds(idx, cellType)->InsertNextId(cellId);
         lineRead = this->ReadNextDataLine(line);
       }
-      delete[] nodeIds;
-      delete[] intIds;
+      delete [] nodeIds;
+      delete [] intIds;
     }
-    else if (strncmp(line, "tetra4", 6) == 0 || strncmp(line, "tetra10", 7) == 0)
+    else if (strncmp(line, "tetra4", 6) == 0 ||
+             strncmp(line, "tetra10", 7) == 0)
     {
       if (strncmp(line, "tetra10", 7) == 0)
       {
@@ -1805,14 +1858,16 @@ int vtkEnSight6Reader::CreateUnstructuredGridOutput(
 
       for (i = 0; i < numElements; i++)
       {
-        if (!(sscanf(line, " %*d %d %d %d %d", &intIds[0], &intIds[1], &intIds[2], &intIds[3]) ==
-                4 &&
+        if (!(sscanf(line, " %*d %d %d %d %d", &intIds[0], &intIds[1],
+                     &intIds[2], &intIds[3]) == 4 &&
               cellType == vtkEnSightReader::TETRA4) &&
-          !(sscanf(line, " %*d %d %d %d %d %*d %*d %*d %*d %*d %d", &intIds[0], &intIds[1],
-              &intIds[2], &intIds[3], &testId) == 5 &&
-            cellType == vtkEnSightReader::TETRA10))
+            !(sscanf(line, " %*d %d %d %d %d %*d %*d %*d %*d %*d %d",
+                     &intIds[0], &intIds[1], &intIds[2], &intIds[3],
+                     &testId) == 5 &&
+              cellType == vtkEnSightReader::TETRA10))
         {
-          sscanf(line, " %d %d %d %d", &intIds[0], &intIds[1], &intIds[2], &intIds[3]);
+          sscanf(line, " %d %d %d %d", &intIds[0], &intIds[1], &intIds[2],
+                 &intIds[3]);
         }
         for (j = 0; j < 4; j++)
         {
@@ -1833,10 +1888,11 @@ int vtkEnSight6Reader::CreateUnstructuredGridOutput(
         this->GetCellIds(idx, cellType)->InsertNextId(cellId);
         lineRead = this->ReadNextDataLine(line);
       }
-      delete[] nodeIds;
-      delete[] intIds;
+      delete [] nodeIds;
+      delete [] intIds;
     }
-    else if (strncmp(line, "pyramid5", 8) == 0 || strncmp(line, "pyramid13", 9) == 0)
+    else if (strncmp(line, "pyramid5", 8) == 0 ||
+             strncmp(line, "pyramid13", 9) == 0)
     {
       if (strncmp(line, "pyramid13", 9) == 0)
       {
@@ -1858,15 +1914,16 @@ int vtkEnSight6Reader::CreateUnstructuredGridOutput(
 
       for (i = 0; i < numElements; i++)
       {
-        if (!(sscanf(line, " %*d %d %d %d %d %d", &intIds[0], &intIds[1], &intIds[2], &intIds[3],
-                &intIds[4]) == 5 &&
+        if (!(sscanf(line, " %*d %d %d %d %d %d", &intIds[0], &intIds[1],
+                     &intIds[2], &intIds[3], &intIds[4]) == 5 &&
               cellType == vtkEnSightReader::PYRAMID5) &&
-          !(sscanf(line, " %*d %d %d %d %d %d %*d %*d %*d %*d %*d %*d %*d %d", &intIds[0],
-              &intIds[1], &intIds[2], &intIds[3], &intIds[4], &testId) == 6 &&
-            cellType == vtkEnSightReader::PYRAMID13))
+            !(sscanf(line, " %*d %d %d %d %d %d %*d %*d %*d %*d %*d %*d %*d %d",
+                     &intIds[0], &intIds[1], &intIds[2], &intIds[3],
+                     &intIds[4], &testId) == 6 &&
+              cellType == vtkEnSightReader::PYRAMID13))
         {
-          sscanf(
-            line, " %d %d %d %d %d", &intIds[0], &intIds[1], &intIds[2], &intIds[3], &intIds[4]);
+          sscanf(line, " %d %d %d %d %d", &intIds[0], &intIds[1], &intIds[2],
+                 &intIds[3], &intIds[4]);
         }
         for (j = 0; j < 5; j++)
         {
@@ -1887,10 +1944,11 @@ int vtkEnSight6Reader::CreateUnstructuredGridOutput(
         this->GetCellIds(idx, cellType)->InsertNextId(cellId);
         lineRead = this->ReadNextDataLine(line);
       }
-      delete[] nodeIds;
-      delete[] intIds;
+      delete [] nodeIds;
+      delete [] intIds;
     }
-    else if (strncmp(line, "hexa8", 5) == 0 || strncmp(line, "hexa20", 6) == 0)
+    else if (strncmp(line, "hexa8", 5) == 0 ||
+             strncmp(line, "hexa20", 6) == 0)
     {
       if (strncmp(line, "hexa20", 6) == 0)
       {
@@ -1912,17 +1970,19 @@ int vtkEnSight6Reader::CreateUnstructuredGridOutput(
 
       for (i = 0; i < numElements; i++)
       {
-        if (!(sscanf(line, " %*d %d %d %d %d %d %d %d %d", &intIds[0], &intIds[1], &intIds[2],
-                &intIds[3], &intIds[4], &intIds[5], &intIds[6], &intIds[7]) == 8 &&
+        if (!(sscanf(line, " %*d %d %d %d %d %d %d %d %d", &intIds[0],
+                     &intIds[1], &intIds[2], &intIds[3], &intIds[4],
+                     &intIds[5], &intIds[6], &intIds[7]) == 8 &&
               cellType == vtkEnSightReader::HEXA8) &&
-          !(sscanf(line,
-              " %*d %d %d %d %d %d %d %d %d %*d %*d %*d %*d %*d %*d %*d %*d %*d %*d %*d %d",
-              &intIds[0], &intIds[1], &intIds[2], &intIds[3], &intIds[4], &intIds[5], &intIds[6],
-              &intIds[7], &testId) == 9 &&
-            cellType == vtkEnSightReader::HEXA20))
+            !(sscanf(line, " %*d %d %d %d %d %d %d %d %d %*d %*d %*d %*d %*d %*d %*d %*d %*d %*d %*d %d",
+                     &intIds[0], &intIds[1], &intIds[2], &intIds[3],
+                     &intIds[4], &intIds[5], &intIds[6], &intIds[7],
+                     &testId) == 9 &&
+              cellType == vtkEnSightReader::HEXA20))
         {
-          sscanf(line, " %d %d %d %d %d %d %d %d", &intIds[0], &intIds[1], &intIds[2], &intIds[3],
-            &intIds[4], &intIds[5], &intIds[6], &intIds[7]);
+          sscanf(line, " %d %d %d %d %d %d %d %d", &intIds[0], &intIds[1],
+                 &intIds[2], &intIds[3], &intIds[4], &intIds[5],
+                 &intIds[6], &intIds[7]);
         }
         for (j = 0; j < 8; j++)
         {
@@ -1943,10 +2003,11 @@ int vtkEnSight6Reader::CreateUnstructuredGridOutput(
         this->GetCellIds(idx, cellType)->InsertNextId(cellId);
         lineRead = this->ReadNextDataLine(line);
       }
-      delete[] nodeIds;
-      delete[] intIds;
+      delete [] nodeIds;
+      delete [] intIds;
     }
-    else if (strncmp(line, "penta6", 6) == 0 || strncmp(line, "penta15", 7) == 0)
+    else if (strncmp(line, "penta6", 6) == 0 ||
+             strncmp(line, "penta15", 7) == 0)
     {
       if (strncmp(line, "penta15", 7) == 0)
       {
@@ -1966,18 +2027,20 @@ int vtkEnSight6Reader::CreateUnstructuredGridOutput(
       numElements = atoi(line);
       lineRead = this->ReadNextDataLine(line);
 
-      const unsigned char penta6Map[6] = { 0, 2, 1, 3, 5, 4 };
+      const unsigned char penta6Map[6] = {0, 2, 1, 3, 5, 4};
       for (i = 0; i < numElements; i++)
       {
-        if (!(sscanf(line, " %*d %d %d %d %d %d %d", &intIds[0], &intIds[1], &intIds[2], &intIds[3],
-                &intIds[4], &intIds[5]) == 6 &&
+        if (!(sscanf(line, " %*d %d %d %d %d %d %d", &intIds[0],
+                     &intIds[1], &intIds[2], &intIds[3], &intIds[4],
+                     &intIds[5]) == 6 &&
               cellType == vtkEnSightReader::PENTA6) &&
-          !(sscanf(line, " %*d %d %d %d %d %d %d %*d %*d %*d %*d %*d %*d %*d %*d %d", &intIds[0],
-              &intIds[1], &intIds[2], &intIds[3], &intIds[4], &intIds[5], &testId) == 7 &&
-            cellType == vtkEnSightReader::PENTA15))
+            !(sscanf(line, " %*d %d %d %d %d %d %d %*d %*d %*d %*d %*d %*d %*d %*d %d",
+                     &intIds[0], &intIds[1], &intIds[2], &intIds[3],
+                     &intIds[4], &intIds[5], &testId) == 7 &&
+              cellType == vtkEnSightReader::PENTA15))
         {
-          sscanf(line, " %d %d %d %d %d %d", &intIds[0], &intIds[1], &intIds[2], &intIds[3],
-            &intIds[4], &intIds[5]);
+          sscanf(line, " %d %d %d %d %d %d", &intIds[0], &intIds[1],
+                 &intIds[2], &intIds[3], &intIds[4], &intIds[5]);
         }
         for (j = 0; j < 6; j++)
         {
@@ -1998,8 +2061,8 @@ int vtkEnSight6Reader::CreateUnstructuredGridOutput(
         this->GetCellIds(idx, cellType)->InsertNextId(cellId);
         lineRead = this->ReadNextDataLine(line);
       }
-      delete[] nodeIds;
-      delete[] intIds;
+      delete [] nodeIds;
+      delete [] intIds;
     }
     else if (strncmp(line, "END TIME STEP", 13) == 0)
     {
@@ -2014,7 +2077,8 @@ int vtkEnSight6Reader::CreateUnstructuredGridOutput(
 
 //----------------------------------------------------------------------------
 int vtkEnSight6Reader::CreateStructuredGridOutput(
-  int partId, char line[256], const char* name, vtkMultiBlockDataSet* compositeOutput)
+  int partId, char line[256], const char* name,
+  vtkMultiBlockDataSet *compositeOutput)
 {
   char subLine[256];
   char formatLine[256], tempLine[256];
@@ -2022,7 +2086,7 @@ int vtkEnSight6Reader::CreateStructuredGridOutput(
   int iblanked = 0;
   int dimensions[3];
   int i, j;
-  vtkPoints* points = vtkPoints::New();
+  vtkPoints *points = vtkPoints::New();
   double point[3];
   int numPts, numLines, moreCoords, moreBlanking;
   float coords[6];
@@ -2030,8 +2094,8 @@ int vtkEnSight6Reader::CreateStructuredGridOutput(
 
   this->NumberOfNewOutputs++;
 
-  if (this->GetDataSetFromBlock(compositeOutput, partId) == nullptr ||
-    !this->GetDataSetFromBlock(compositeOutput, partId)->IsA("vtkStructuredGrid"))
+  if (this->GetDataSetFromBlock(compositeOutput, partId) == NULL ||
+      !this->GetDataSetFromBlock(compositeOutput, partId)->IsA("vtkStructuredGrid"))
   {
     vtkDebugMacro("creating new structured grid output");
     vtkStructuredGrid* sgrid = vtkStructuredGrid::New();
@@ -2039,8 +2103,8 @@ int vtkEnSight6Reader::CreateStructuredGridOutput(
     sgrid->Delete();
   }
 
-  vtkStructuredGrid* output =
-    vtkStructuredGrid::SafeDownCast(this->GetDataSetFromBlock(compositeOutput, partId));
+  vtkStructuredGrid* output = vtkStructuredGrid::SafeDownCast(
+    this->GetDataSetFromBlock(compositeOutput, partId));
   this->SetBlockName(compositeOutput, partId, name);
 
   if (sscanf(line, " %*s %s", subLine) == 1)
@@ -2063,8 +2127,9 @@ int vtkEnSight6Reader::CreateStructuredGridOutput(
   for (i = 0; i < numLines; i++)
   {
     this->ReadNextDataLine(line);
-    vtkEnSight6ReaderRead3(line, " %12e %12e %12e %12e %12e %12e", &coords[0], &coords[1],
-      &coords[2], &coords[3], &coords[4], &coords[5]);
+    vtkEnSight6ReaderRead3(line, " %12e %12e %12e %12e %12e %12e",
+                           &coords[0], &coords[1], &coords[2], &coords[3],
+                           &coords[4], &coords[5]);
     for (j = 0; j < 6; j++)
     {
       points->InsertNextPoint(coords[j], 0.0, 0.0);
@@ -2075,19 +2140,21 @@ int vtkEnSight6Reader::CreateStructuredGridOutput(
     this->ReadNextDataLine(line);
     for (j = 0; j < moreCoords; j++)
     {
-      vtkEnSight6ReaderRead4(line + j * 12, &coords[j]);
+      vtkEnSight6ReaderRead4(line+j*12,&coords[j]);
       points->InsertNextPoint(coords[j], 0.0, 0.0);
     }
   }
   for (i = 0; i < numLines; i++)
   {
     this->ReadNextDataLine(line);
-    vtkEnSight6ReaderRead3(line, " %12e %12e %12e %12e %12e %12e", &coords[0], &coords[1],
-      &coords[2], &coords[3], &coords[4], &coords[5]);
+    vtkEnSight6ReaderRead3(line, " %12e %12e %12e %12e %12e %12e",
+                           &coords[0], &coords[1], &coords[2], &coords[3],
+                           &coords[4], &coords[5]);
     for (j = 0; j < 6; j++)
     {
-      points->GetPoint(i * 6 + j, point);
-      points->SetPoint(i * 6 + j, point[0], static_cast<double>(coords[j]), point[2]);
+      points->GetPoint(i*6+j, point);
+      points->SetPoint(i*6+j, point[0],
+                       static_cast<double>(coords[j]), point[2]);
     }
   }
   if (moreCoords != 0)
@@ -2095,20 +2162,23 @@ int vtkEnSight6Reader::CreateStructuredGridOutput(
     this->ReadNextDataLine(line);
     for (j = 0; j < moreCoords; j++)
     {
-      vtkEnSight6ReaderRead4(line + j * 12, &coords[j]);
-      points->GetPoint(i * 6 + j, point);
-      points->SetPoint(i * 6 + j, point[0], static_cast<double>(coords[j]), point[2]);
+      vtkEnSight6ReaderRead4(line+j*12,&coords[j]);
+      points->GetPoint(i*6+j, point);
+      points->SetPoint(i*6+j, point[0],
+                       static_cast<double>(coords[j]), point[2]);
     }
   }
   for (i = 0; i < numLines; i++)
   {
     this->ReadNextDataLine(line);
-    vtkEnSight6ReaderRead3(line, " %12e %12e %12e %12e %12e %12e", &coords[0], &coords[1],
-      &coords[2], &coords[3], &coords[4], &coords[5]);
+    vtkEnSight6ReaderRead3(line, " %12e %12e %12e %12e %12e %12e",
+                           &coords[0], &coords[1], &coords[2], &coords[3],
+                           &coords[4], &coords[5]);
     for (j = 0; j < 6; j++)
     {
-      points->GetPoint(i * 6 + j, point);
-      points->SetPoint(i * 6 + j, point[0], point[1], static_cast<double>(coords[j]));
+      points->GetPoint(i*6+j, point);
+      points->SetPoint(i*6+j, point[0], point[1],
+                       static_cast<double>(coords[j]));
     }
   }
   if (moreCoords != 0)
@@ -2116,9 +2186,10 @@ int vtkEnSight6Reader::CreateStructuredGridOutput(
     this->ReadNextDataLine(line);
     for (j = 0; j < moreCoords; j++)
     {
-      vtkEnSight6ReaderRead4(line + j * 12, &coords[j]);
-      points->GetPoint(i * 6 + j, point);
-      points->SetPoint(i * 6 + j, point[0], point[1], static_cast<double>(coords[j]));
+      vtkEnSight6ReaderRead4(line+j*12,&coords[j]);
+      points->GetPoint(i*6+j, point);
+      points->SetPoint(i*6+j, point[0], point[1],
+                       static_cast<double>(coords[j]));
     }
   }
 
@@ -2130,13 +2201,14 @@ int vtkEnSight6Reader::CreateStructuredGridOutput(
     for (i = 0; i < numLines; i++)
     {
       this->ReadNextDataLine(line);
-      sscanf(line, " %d %d %d %d %d %d %d %d %d %d", &iblanks[0], &iblanks[1], &iblanks[2],
-        &iblanks[3], &iblanks[4], &iblanks[5], &iblanks[6], &iblanks[7], &iblanks[8], &iblanks[9]);
+      sscanf(line, " %d %d %d %d %d %d %d %d %d %d", &iblanks[0], &iblanks[1],
+             &iblanks[2], &iblanks[3], &iblanks[4], &iblanks[5], &iblanks[6],
+             &iblanks[7], &iblanks[8], &iblanks[9]);
       for (j = 0; j < 10; j++)
       {
         if (!iblanks[j])
         {
-          output->BlankPoint(i * numLines + j);
+          output->BlankPoint(i*numLines+j);
         }
       }
     }
@@ -2151,7 +2223,7 @@ int vtkEnSight6Reader::CreateStructuredGridOutput(
         sscanf(line, formatLine, &iblanks[j]);
         if (!iblanks[j])
         {
-          output->BlankPoint(i * numLines + j);
+          output->BlankPoint(i*numLines+j);
         }
         strcat(tempLine, " %*d");
         strcpy(formatLine, tempLine);
@@ -2168,5 +2240,5 @@ int vtkEnSight6Reader::CreateStructuredGridOutput(
 //----------------------------------------------------------------------------
 void vtkEnSight6Reader::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 }

@@ -28,13 +28,17 @@
 vtkStandardNewMacro(vtkIdTypeArray);
 
 //----------------------------------------------------------------------------
-vtkIdTypeArray::vtkIdTypeArray() = default;
+vtkIdTypeArray::vtkIdTypeArray()
+{
+}
 
 //----------------------------------------------------------------------------
-vtkIdTypeArray::~vtkIdTypeArray() = default;
+vtkIdTypeArray::~vtkIdTypeArray()
+{
+}
 
 //----------------------------------------------------------------------------
 void vtkIdTypeArray::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->RealSuperclass::PrintSelf(os, indent);
+  this->RealSuperclass::PrintSelf(os,indent);
 }

@@ -94,14 +94,14 @@ public:
  MetaContour(const MetaContour *_Contour);
  MetaContour(unsigned int dim);
 
- ~MetaContour(void) override;
+ ~MetaContour(void);
 
-  void PrintInfo(void) const override;
-  void CopyInfo(const MetaObject * _object) override;
+  void PrintInfo(void) const;
+  void CopyInfo(const MetaObject * _object);
 
   //    NPoints(...)
   //       Required Field
-  //       Number of points which compose the tube
+  //       Number of points wich compose the tube
   int   NControlPoints(void) const;
 
   //    ControlPointDim(...)
@@ -127,7 +127,7 @@ public:
   void DisplayOrientation(int display);
   int  DisplayOrientation() const;
 
-  void  Clear(void) override;
+  void  Clear(void);
 
   ControlPointListType & GetControlPoints(void)
     {return m_ControlPointsList;}
@@ -142,11 +142,11 @@ public:
 protected:
 
   bool  m_ElementByteOrderMSB;
-  void  M_Destroy(void) override;
-  void  M_SetupReadFields(void) override;
-  void  M_SetupWriteFields(void) override;
-  bool  M_Read(void) override;
-  bool  M_Write(void) override;
+  void  M_Destroy(void);
+  void  M_SetupReadFields(void);
+  void  M_SetupWriteFields(void);
+  bool  M_Read(void);
+  bool  M_Write(void);
 
   int m_NControlPoints;
   int m_NInterpolatedPoints;

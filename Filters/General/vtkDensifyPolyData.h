@@ -28,7 +28,7 @@
  *
  * The number of subdivisions can be controlled by the parameter
  * NumberOfSubdivisions.
- */
+*/
 
 #ifndef vtkDensifyPolyData_h
 #define vtkDensifyPolyData_h
@@ -39,31 +39,35 @@
 class VTKFILTERSGENERAL_EXPORT vtkDensifyPolyData : public vtkPolyDataAlgorithm
 {
 public:
-  vtkTypeMacro(vtkDensifyPolyData, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
-  static vtkDensifyPolyData* New();
+  vtkTypeMacro(vtkDensifyPolyData,vtkPolyDataAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  static vtkDensifyPolyData *New();
 
   //@{
   /**
    * Number of recursive subdivisions. Initial value is 1.
    */
-  vtkSetMacro(NumberOfSubdivisions, unsigned int);
-  vtkGetMacro(NumberOfSubdivisions, unsigned int);
+  vtkSetMacro( NumberOfSubdivisions, unsigned int );
+  vtkGetMacro( NumberOfSubdivisions, unsigned int );
   //@}
 
 protected:
   vtkDensifyPolyData();
-  ~vtkDensifyPolyData() override;
+  ~vtkDensifyPolyData() VTK_OVERRIDE;
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *,
+                  vtkInformationVector **,
+                  vtkInformationVector *) VTK_OVERRIDE;
 
   unsigned int NumberOfSubdivisions;
 
 private:
-  int FillInputPortInformation(int, vtkInformation*) override;
+  int FillInputPortInformation(int, vtkInformation*) VTK_OVERRIDE;
 
-  vtkDensifyPolyData(const vtkDensifyPolyData&) = delete;
-  void operator=(const vtkDensifyPolyData&) = delete;
+  vtkDensifyPolyData(const vtkDensifyPolyData&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkDensifyPolyData&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+

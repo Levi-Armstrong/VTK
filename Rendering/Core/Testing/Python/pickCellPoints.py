@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import sys
 import vtk
+from vtk.test import Testing
 
 # Quad
 pts = vtk.vtkPoints()

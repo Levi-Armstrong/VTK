@@ -143,14 +143,14 @@ class METAIO_EXPORT MeshData : public MeshDataBase
 public:
 
   MeshData() {m_Id=-1;}
-  ~MeshData() override {}
+  ~MeshData() {}
 
-  MET_ValueEnumType GetMetaType() override
+  virtual MET_ValueEnumType GetMetaType()
     {
     return MET_GetPixelType(typeid(TElementType));
     }
 
-  void Write( METAIO_STREAM::ofstream* stream) override
+  virtual void Write( METAIO_STREAM::ofstream* stream)
     {
     //char* id = new char[sizeof(int)];
     // The file is written as LSB by default
@@ -167,7 +167,7 @@ public:
     stream->write((char *)&data,sizeof(data));
     }
 
-  unsigned int GetSize(void) override
+  virtual unsigned int GetSize(void)
     {
     unsigned int size = sizeof(int);
     size += sizeof(m_Data);
@@ -207,35 +207,35 @@ class METAIO_EXPORT MetaMesh : public MetaObject
 
     MetaMesh(unsigned int dim);
 
-    ~MetaMesh(void) override;
+    ~MetaMesh(void);
 
-    void PrintInfo(void) const override;
+    void PrintInfo(void) const;
 
-    void CopyInfo(const MetaObject * _object) override;
+    void CopyInfo(const MetaObject * _object);
 
     //    NPoints(...)
     //       Required Field
-    //       Number of points which compose the mesh
+    //       Number of points wich compose the mesh
     int   NPoints(void) const;
 
     //    NCells(...)
     //       Required Field
-    //       Number of cells which compose the mesh
+    //       Number of cells wich compose the mesh
     int   NCells(void) const;
 
     //    NCellLinks(...)
     //       Required Field
-    //       Number of cellLinks which compose the mesh
+    //       Number of cellLinks wich compose the mesh
     int   NCellLinks(void) const;
 
     //    NCellTypes(...)
     //       Required Field
-    //       Number of cells which compose the mesh
+    //       Number of celles wich compose the mesh
     void  NCellTypes(int ncelltypes);
     int   NCellTypes(void) const;
 
     /** Clear the metaMesh */
-    void  Clear(void) override;
+    void  Clear(void);
 
     PointListType & GetPoints(void) {return m_PointList;}
     const PointListType & GetPoints(void) const  {return m_PointList;}
@@ -267,15 +267,15 @@ class METAIO_EXPORT MetaMesh : public MetaObject
 
     bool  m_ElementByteOrderMSB;
 
-    void  M_Destroy(void) override;
+    void  M_Destroy(void);
 
-    void  M_SetupReadFields(void) override;
+    void  M_SetupReadFields(void);
 
-    void  M_SetupWriteFields(void) override;
+    void  M_SetupWriteFields(void);
 
-    bool  M_Read(void) override;
+    bool  M_Read(void);
 
-    bool  M_Write(void) override;
+    bool  M_Write(void);
 
     int m_NPoints;
     int m_NCells;

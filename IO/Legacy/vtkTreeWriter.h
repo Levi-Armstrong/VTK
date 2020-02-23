@@ -20,22 +20,22 @@
  * vtkTree data files in vtk format. See text for format details.
  * @warning
  * Binary files written on one system may not be readable on other systems.
- */
+*/
 
 #ifndef vtkTreeWriter_h
 #define vtkTreeWriter_h
 
-#include "vtkDataWriter.h"
 #include "vtkIOLegacyModule.h" // For export macro
+#include "vtkDataWriter.h"
 
 class vtkTree;
 
 class VTKIOLEGACY_EXPORT vtkTreeWriter : public vtkDataWriter
 {
 public:
-  static vtkTreeWriter* New();
-  vtkTypeMacro(vtkTreeWriter, vtkDataWriter);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkTreeWriter *New();
+  vtkTypeMacro(vtkTreeWriter,vtkDataWriter);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -47,15 +47,15 @@ public:
 
 protected:
   vtkTreeWriter() {}
-  ~vtkTreeWriter() override {}
+  ~vtkTreeWriter() {}
 
-  void WriteData() override;
+  void WriteData();
 
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  virtual int FillInputPortInformation(int port, vtkInformation *info);
 
 private:
-  vtkTreeWriter(const vtkTreeWriter&) = delete;
-  void operator=(const vtkTreeWriter&) = delete;
+  vtkTreeWriter(const vtkTreeWriter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTreeWriter&) VTK_DELETE_FUNCTION;
 
   void WriteEdges(ostream& Stream, vtkTree* Tree);
 };

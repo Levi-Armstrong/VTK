@@ -34,13 +34,13 @@
  * One application of this filter is to help address the dirty data problem.
  * For example, using vtkMapArrayValues you could associate the vertex values
  * "Foo, John", "Foo, John.", and "John Foo" with a single entity.
- */
+*/
 
 #ifndef vtkMapArrayValues_h
 #define vtkMapArrayValues_h
 
-#include "vtkPassInputTypeAlgorithm.h"
 #include "vtkRenderingCoreModule.h" // For export macro
+#include "vtkPassInputTypeAlgorithm.h"
 
 class vtkMapType;
 class vtkVariant;
@@ -48,10 +48,10 @@ class vtkVariant;
 class VTKRENDERINGCORE_EXPORT vtkMapArrayValues : public vtkPassInputTypeAlgorithm
 {
 public:
-  vtkTypeMacro(vtkMapArrayValues, vtkPassInputTypeAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkMapArrayValues,vtkPassInputTypeAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
-  static vtkMapArrayValues* New();
+  static vtkMapArrayValues *New();
 
   //@{
   /**
@@ -69,9 +69,9 @@ public:
    * before the mapping occurs. If turned off, FillValue is used to initialize
    * any unmapped array indices. Default is off.
    */
-  vtkSetMacro(PassArray, vtkTypeBool);
-  vtkGetMacro(PassArray, vtkTypeBool);
-  vtkBooleanMacro(PassArray, vtkTypeBool);
+  vtkSetMacro(PassArray, int);
+  vtkGetMacro(PassArray, int);
+  vtkBooleanMacro(PassArray, int);
   //@}
 
   //@{
@@ -109,17 +109,17 @@ public:
   vtkSetMacro(OutputArrayType, int);
   //@}
 
-  //@{
-  /**
-   * Add to the internal STL map. "from" should be a value in the input array and
-   * "to" should be the new value it gets assigned in the output array.
-   */
+//@{
+/**
+ * Add to the internal STL map. "from" should be a value in the input array and
+ * "to" should be the new value it gets assigned in the output array.
+ */
   void AddToMap(vtkVariant from, vtkVariant to);
   void AddToMap(int from, int to);
-  void AddToMap(int from, const char* to);
-  void AddToMap(const char* from, int to);
-  void AddToMap(const char* from, const char* to);
-  //@}
+  void AddToMap(int from, char *to);
+  void AddToMap(char *from, int to);
+  void AddToMap(char *from, char *to);
+//@}
 
   /**
    * Clear the internal map.
@@ -134,35 +134,36 @@ public:
   // Always keep NUM_ATTRIBUTE_LOCS as the last entry
   enum FieldType
   {
-    POINT_DATA = 0,
-    CELL_DATA = 1,
-    VERTEX_DATA = 2,
-    EDGE_DATA = 3,
-    ROW_DATA = 4,
+    POINT_DATA=0,
+    CELL_DATA=1,
+    VERTEX_DATA=2,
+    EDGE_DATA=3,
+    ROW_DATA=4,
     NUM_ATTRIBUTE_LOCS
   };
 
 protected:
-  vtkMapArrayValues();
-  ~vtkMapArrayValues() override;
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int FillInputPortInformation(int, vtkInformation*) override;
+  vtkMapArrayValues();
+  virtual ~vtkMapArrayValues();
+
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
+  int FillInputPortInformation(int, vtkInformation *);
 
   char* InputArrayName;
   char* OutputArrayName;
   int OutputArrayType;
   int FieldType;
   int MapType;
-  vtkTypeBool PassArray;
+  int PassArray;
   double FillValue;
 
   // PIMPL idiom to hide map implementation.
-  vtkMapType* Map;
+  vtkMapType *Map;
 
 private:
-  vtkMapArrayValues(const vtkMapArrayValues&) = delete;
-  void operator=(const vtkMapArrayValues&) = delete;
+  vtkMapArrayValues(const vtkMapArrayValues&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkMapArrayValues&) VTK_DELETE_FUNCTION;
 };
 
 #endif

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import vtk
+from vtk.test import Testing
 from vtk.util.misc import vtkGetDataRoot
 VTK_DATA_ROOT = vtkGetDataRoot()
 
@@ -49,9 +50,9 @@ psize = vtk.vtkPipelineSize()
 if (psize.GetEstimatedSize(extract2, 0, 0) > 100):
     print ("ERROR: Pipeline Size increased")
     pass
-if (psize.GetNumberOfSubPieces(10, mapper2, mapper2.GetPiece(), mapper2.GetNumberOfPieces()) != 1):
+if (psize.GetNumberOfSubPieces(10, mapper2) != 1):
     print ("ERROR: Number of sub pieces changed",
-           psize.GetNumberOfSubPieces(10, mapper2, mapper2.GetPiece(), mapper2.GetNumberOfPieces()))
+           psize.GetNumberOfSubPieces(10, mapper2))
     pass
 
 actor2 = vtk.vtkActor()

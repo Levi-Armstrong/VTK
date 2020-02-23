@@ -28,14 +28,13 @@
  *
  * @sa
  * vtkProp3D
- */
+*/
 
 #ifndef vtkTextActor3D_h
 #define vtkTextActor3D_h
 
-#include "vtkProp3D.h"
 #include "vtkRenderingCoreModule.h" // For export macro
-#include <string>                   // for ivar
+#include "vtkProp3D.h"
 
 class vtkImageActor;
 class vtkImageData;
@@ -44,9 +43,9 @@ class vtkTextProperty;
 class VTKRENDERINGCORE_EXPORT vtkTextActor3D : public vtkProp3D
 {
 public:
-  static vtkTextActor3D* New();
-  vtkTypeMacro(vtkTextActor3D, vtkProp3D);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkTextActor3D *New();
+  vtkTypeMacro(vtkTextActor3D,vtkProp3D);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -60,8 +59,8 @@ public:
   /**
    * Set/Get the text property.
    */
-  virtual void SetTextProperty(vtkTextProperty* p);
-  vtkGetObjectMacro(TextProperty, vtkTextProperty);
+  virtual void SetTextProperty(vtkTextProperty *p);
+  vtkGetObjectMacro(TextProperty,vtkTextProperty);
   //@}
 
   /**
@@ -76,13 +75,13 @@ public:
    * Shallow copy of this text actor. Overloads the virtual
    * vtkProp method.
    */
-  void ShallowCopy(vtkProp* prop) override;
+  void ShallowCopy(vtkProp *prop);
 
   /**
    * Get the bounds for this Prop3D as (Xmin,Xmax,Ymin,Ymax,Zmin,Zmax).
    */
-  double* GetBounds() VTK_SIZEHINT(6) override;
-  void GetBounds(double bounds[6]) { this->vtkProp3D::GetBounds(bounds); }
+  virtual double *GetBounds();
+  void GetBounds(double bounds[6]) {this->vtkProp3D::GetBounds( bounds );}
 
   /**
    * Get the vtkTextRenderer-derived bounding box for the given vtkTextProperty
@@ -98,21 +97,7 @@ public:
    * The parameter window could be used to determine which graphic
    * resources to release.
    */
-  void ReleaseGraphicsResources(vtkWindow*) override;
-
-  /**
-   * Force the actor to render during the opaque or translucent pass.
-   * @{
-   */
-  virtual void SetForceOpaque(bool opaque);
-  virtual bool GetForceOpaque();
-  virtual void ForceOpaqueOn();
-  virtual void ForceOpaqueOff();
-  virtual void SetForceTranslucent(bool trans);
-  virtual bool GetForceTranslucent();
-  virtual void ForceTranslucentOn();
-  virtual void ForceTranslucentOff();
-  /**@}*/
+  virtual void ReleaseGraphicsResources(vtkWindow *);
 
   //@{
   /**
@@ -120,34 +105,34 @@ public:
    * DO NOT USE THIS METHOD OUTSIDE OF THE RENDERING PROCESS.
    * Draw the text actor to the screen.
    */
-  int RenderOpaqueGeometry(vtkViewport* viewport) override;
-  int RenderTranslucentPolygonalGeometry(vtkViewport* viewport) override;
-  int RenderOverlay(vtkViewport* viewport) override;
+  int RenderOpaqueGeometry(vtkViewport* viewport);
+  virtual int RenderTranslucentPolygonalGeometry(vtkViewport* viewport);
+  int RenderOverlay(vtkViewport* viewport);
   //@}
 
   /**
    * Does this prop have some translucent polygonal geometry?
    */
-  vtkTypeBool HasTranslucentPolygonalGeometry() override;
+  virtual int HasTranslucentPolygonalGeometry();
 
 protected:
-  vtkTextActor3D();
-  ~vtkTextActor3D() override;
+   vtkTextActor3D();
+  ~vtkTextActor3D();
 
-  char* Input;
+  char            *Input;
 
-  vtkImageActor* ImageActor;
-  vtkImageData* ImageData;
-  vtkTextProperty* TextProperty;
+  vtkImageActor   *ImageActor;
+  vtkImageData    *ImageData;
+  vtkTextProperty *TextProperty;
 
-  vtkTimeStamp BuildTime;
-  std::string LastInputString;
+  vtkTimeStamp    BuildTime;
 
   virtual int UpdateImageActor();
 
 private:
-  vtkTextActor3D(const vtkTextActor3D&) = delete;
-  void operator=(const vtkTextActor3D&) = delete;
+  vtkTextActor3D(const vtkTextActor3D&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTextActor3D&) VTK_DELETE_FUNCTION;
 };
+
 
 #endif

@@ -36,23 +36,23 @@
  * @par Thanks:
  * Thanks to Thomas Otahal from Sandia National Laboratories for providing this
  * implementation.
- */
+*/
 
 #ifndef vtkKCoreDecomposition_h
 #define vtkKCoreDecomposition_h
 
-#include "vtkGraphAlgorithm.h"
 #include "vtkInfovisCoreModule.h" // For export macro
+#include "vtkGraphAlgorithm.h"
 
 class vtkIntArray;
 
 class VTKINFOVISCORE_EXPORT vtkKCoreDecomposition : public vtkGraphAlgorithm
 {
 public:
-  static vtkKCoreDecomposition* New();
+  static vtkKCoreDecomposition *New();
 
   vtkTypeMacro(vtkKCoreDecomposition, vtkGraphAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -99,11 +99,12 @@ public:
 
 protected:
   vtkKCoreDecomposition();
-  ~vtkKCoreDecomposition() override;
+  ~vtkKCoreDecomposition();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 
 private:
+
   char* OutputArrayName;
 
   bool UseInDegreeNeighbors;
@@ -111,10 +112,11 @@ private:
   bool CheckInputGraph;
 
   // K-core partitioning implementation
-  void Cores(vtkGraph* g, vtkIntArray* KCoreNumbers);
+  void Cores(vtkGraph* g,
+             vtkIntArray* KCoreNumbers);
 
-  vtkKCoreDecomposition(const vtkKCoreDecomposition&) = delete;
-  void operator=(const vtkKCoreDecomposition&) = delete;
+  vtkKCoreDecomposition(const vtkKCoreDecomposition&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkKCoreDecomposition&) VTK_DELETE_FUNCTION;
 };
 
 #endif

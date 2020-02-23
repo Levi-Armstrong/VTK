@@ -1,9 +1,9 @@
-set(classes
-  vtkDistributedPointCloudFilter
-  vtkPExtractGrid
-  vtkPExtractRectilinearGrid
-  vtkPExtractVOI
-  vtkStructuredImplicitConnectivity)
+set(Module_SRCS
+  vtkDistributedDataFilter.cxx
+  vtkPExtractGrid.cxx
+  vtkPExtractRectilinearGrid.cxx
+  vtkPExtractVOI.cxx
+  vtkStructuredImplicitConnectivity.cxx
+  )
 
-vtk_module_add_module(VTK::FiltersParallelMPI
-  CLASSES ${classes})
+vtk_module_library(vtkFiltersParallelMPI ${Module_SRCS})

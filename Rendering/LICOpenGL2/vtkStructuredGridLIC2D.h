@@ -16,7 +16,7 @@
  * @class   vtkStructuredGridLIC2D
  *
  * GPU implementation of a Line Integral Convolution, a technique for
- * imaging vector fields.
+ * imaging  vector fields.
  *
  * The input on port 0 is an 2D vtkStructuredGrid. It needs
  * a vector field on point data.
@@ -25,8 +25,8 @@
  * texture are supported, giving a power-of-two image may result in faster
  * execution on the GPU.
  *
- * Please refer to Forssell, L. K., "Visualizing flow over curvilinear grid
- * surfaces using line integral convolution", Visualization 94 Conference
+ * Please refer to Forssell, L. K., “Visualizing flow over curvilinear grid
+ * surfaces using line integral convolution”, Visualization 94 Conference
  * Proceedings, pages 240-247, IEEE Computer Society, 1994 for details of the
  * algorithm.
  *
@@ -37,7 +37,7 @@
  * GL_ARB_draw_buffers
  * GL_EXT_framebuffer_object
  * GL_ARB_pixel_buffer_object
- */
+*/
 
 #ifndef vtkStructuredGridLIC2D_h
 #define vtkStructuredGridLIC2D_h
@@ -50,12 +50,13 @@ class vtkImageNoiseSource;
 class vtkOpenGLHelper;
 class vtkRenderWindow;
 
-class VTKRENDERINGLICOPENGL2_EXPORT vtkStructuredGridLIC2D : public vtkStructuredGridAlgorithm
+class VTKRENDERINGLICOPENGL2_EXPORT vtkStructuredGridLIC2D
+  : public vtkStructuredGridAlgorithm
 {
 public:
   static vtkStructuredGridLIC2D* New();
   vtkTypeMacro(vtkStructuredGridLIC2D, vtkStructuredGridAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -65,8 +66,8 @@ public:
    * SetContext() may raise an error is the OpenGL context does not support the
    * required OpenGL extensions. Return 0 upon failure and 1 upon success.
    */
-  int SetContext(vtkRenderWindow* context);
-  vtkRenderWindow* GetContext();
+  int SetContext( vtkRenderWindow * context );
+  vtkRenderWindow * GetContext();
   //@}
 
   //@{
@@ -75,8 +76,8 @@ public:
    * class invariant: Steps>0.
    * In term of visual quality, the greater the better.
    */
-  vtkSetMacro(Steps, int);
-  vtkGetMacro(Steps, int);
+  vtkSetMacro(Steps,int);
+  vtkGetMacro(Steps,int);
   //@}
 
   //@{
@@ -92,13 +93,13 @@ public:
    * but GPU only supports float. This value will be converted to
    * float in the execution of the algorithm.
    */
-  vtkSetMacro(StepSize, double);
-  vtkGetMacro(StepSize, double);
+  vtkSetMacro(StepSize,double);
+  vtkGetMacro(StepSize,double);
   //@}
 
   //@{
   /**
-   * The magnification factor. Default is 1
+   * The the magnification factor. Default is 1
    */
   vtkSetClampMacro(Magnification, int, 1, VTK_INT_MAX);
   vtkGetMacro(Magnification, int);
@@ -107,16 +108,16 @@ public:
   /**
    * Check if FBO is started properly.
    */
-  int GetFBOSuccess() { return this->FBOSuccess; }
+  int   GetFBOSuccess() { return this->FBOSuccess; }
 
   /**
    * Check if LIC runs properly.
    */
-  int GetLICSuccess() { return this->LICSuccess; }
+  int   GetLICSuccess() { return this->LICSuccess; }
 
 protected:
   vtkStructuredGridLIC2D();
-  ~vtkStructuredGridLIC2D() override;
+  ~vtkStructuredGridLIC2D();
 
   /**
    * Fill the input port information objects for this algorithm.  This
@@ -124,7 +125,8 @@ protected:
    * port so subclasses can specify what they can handle.
    * Redefined from the superclass.
    */
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  virtual int FillInputPortInformation(int port,
+                                       vtkInformation *info);
 
   /**
    * Fill the output port information objects for this algorithm.
@@ -132,45 +134,51 @@ protected:
    * each port so subclasses can specify what they can handle.
    * Redefined from the superclass.
    */
-  int FillOutputPortInformation(int port, vtkInformation* info) override;
+  virtual int FillOutputPortInformation(int port,
+                                        vtkInformation *info);
 
-  int RequestInformation(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  virtual int RequestInformation(vtkInformation *request,
+         vtkInformationVector **inputVector,
+         vtkInformationVector *outputVector);
 
-  int RequestUpdateExtent(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  int RequestUpdateExtent (vtkInformation *request,
+                           vtkInformationVector **inputVector,
+                           vtkInformationVector *outputVector);
 
   /**
    * Stolen from vtkImageAlgorithm. Should be in vtkStructuredGridAlgorithm.
    */
-  void AllocateOutputData(vtkDataObject* output, vtkInformation* outInfo);
+  void AllocateOutputData(vtkDataObject *output,
+                          vtkInformation *outInfo);
 
   /**
    * Stolen from vtkImageData. Should be in vtkStructuredGrid.
    */
-  void AllocateScalars(vtkStructuredGrid* sg, vtkInformation* outInfo);
+  void AllocateScalars(vtkStructuredGrid *sg, vtkInformation *outInfo);
 
   /**
    * This is called by the superclass.
    * This is the method you should override.
    */
-  int RequestData(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  virtual int RequestData(vtkInformation *request,
+                          vtkInformationVector **inputVector,
+                          vtkInformationVector *outputVector);
 
-  int Steps;
+  int    Steps;
   double StepSize;
-  int Magnification;
+  int    Magnification;
   vtkWeakPointer<vtkRenderWindow> Context;
 
   vtkImageNoiseSource* NoiseSource;
-  bool OwnWindow;
-  int FBOSuccess;
-  int LICSuccess;
-  vtkOpenGLHelper* LICProgram;
+  bool   OwnWindow;
+  int    FBOSuccess;
+  int    LICSuccess;
+  vtkOpenGLHelper *LICProgram;
 
 private:
-  vtkStructuredGridLIC2D(const vtkStructuredGridLIC2D&) = delete;
-  void operator=(const vtkStructuredGridLIC2D&) = delete;
+  vtkStructuredGridLIC2D(const vtkStructuredGridLIC2D&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkStructuredGridLIC2D&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif

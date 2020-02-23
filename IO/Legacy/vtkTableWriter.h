@@ -20,21 +20,21 @@
  * vtkTable data files in vtk format. See text for format details.
  * @warning
  * Binary files written on one system may not be readable on other systems.
- */
+*/
 
 #ifndef vtkTableWriter_h
 #define vtkTableWriter_h
 
-#include "vtkDataWriter.h"
 #include "vtkIOLegacyModule.h" // For export macro
+#include "vtkDataWriter.h"
 class vtkTable;
 
 class VTKIOLEGACY_EXPORT vtkTableWriter : public vtkDataWriter
 {
 public:
-  static vtkTableWriter* New();
-  vtkTypeMacro(vtkTableWriter, vtkDataWriter);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkTableWriter *New();
+  vtkTypeMacro(vtkTableWriter,vtkDataWriter);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -46,15 +46,15 @@ public:
 
 protected:
   vtkTableWriter() {}
-  ~vtkTableWriter() override {}
+  ~vtkTableWriter() {}
 
-  void WriteData() override;
+  void WriteData();
 
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  virtual int FillInputPortInformation(int port, vtkInformation *info);
 
 private:
-  vtkTableWriter(const vtkTableWriter&) = delete;
-  void operator=(const vtkTableWriter&) = delete;
+  vtkTableWriter(const vtkTableWriter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTableWriter&) VTK_DELETE_FUNCTION;
 };
 
 #endif

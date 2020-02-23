@@ -5,6 +5,7 @@ if(VTK_USE_GLSL_SHADERS)
 endif()
 
 vtk_add_test_python(
+  CamBlur.py
   ImageActor.py
   ImageActorStressed.py
   NoLightGeneration.py
@@ -14,7 +15,7 @@ vtk_add_test_python(
   TestCameraInterpolator.py
   TestMapperLUT.py,NO_VALID
   TestOnePoint.py
-  TestParallelCoordinates.py
+  # TestParallelCoordinates.py) # disabled in TCL too
   TestRotate.py
   TestTransformInterpolator.py
   TransformConcatenation.py
@@ -25,10 +26,7 @@ vtk_add_test_python(
   cameraWarpedCone.py
   cowHair.py
   cowHair2.py
-  distanceToCamera.py
   pickCells.py
-  compositePolyDataMapperBounds.py,NO_RT
-  pickImageData.py,NO_RT
   propAssembly.py
   rendererSource.py
   rotations.py
@@ -43,12 +41,25 @@ vtk_add_test_python(
   TestTransformCoordinateSystems.py
   TestWindowToImageTransparency.py
   TexturedSphere.py
+  TestScalarMaterialMode.py
   cells.py,NO_RT
-#  TestScalarMaterialMode.py
-  pickCompositeData.py,NO_RT
-  pickCompositeData2.py,NO_RT
   ${glsl_tests}
   )
+
+if(NOT VTK_RENDERING_BACKEND STREQUAL "OpenGL2")
+vtk_add_test_python(
+  # pass triangle cell scalars into a strip as field data
+  # have the renderer render the triangle strip using the
+  # original triangle cell data (now stored in field data)
+  # for the opengl2 backend we are not supporting this
+  # as strips are not recommended and this is an odd case
+  # of trying to get higher performance from strips but yet
+  # still trying to make them render as individual triangles
+  # for opengl2 just skip the stripper and the result will
+  # be what you want
+  TestTriangleStripCellColor.py
+)
+endif()
 
 vtk_add_test_python(
   TestOutOfRangeDiscretizableColorTransferFunction.py --useBelowRangeColor --useAboveRangeColor
@@ -58,15 +69,8 @@ vtk_add_test_python(
   TestOutOfRangeColorTransferFunction.py --useBelowRangeColor --useAboveRangeColor
 )
 
-vtk_add_test_python(
-  TestSetTableOutOfRangeLookupTable.py --useBelowRangeColor --useAboveRangeColor
-)
-
 # Tests that do not use a baseline image
 vtk_add_test_python(
   NO_DATA NO_VALID NO_OUTPUT
   pickCellPoints.py
-  TestGetRangeColorTransferFunction.py
-  TestGetRangeDiscretizableColorTransferFunction.py
-  TestGetRangeLookupTable.py
 )

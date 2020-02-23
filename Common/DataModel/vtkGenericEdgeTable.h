@@ -25,7 +25,7 @@
  * is used during the tessellation process to hold information about the
  * error metric on each edge. This avoids recomputing the error metric each
  * time the same edge is visited.
- */
+*/
 
 #ifndef vtkGenericEdgeTable_h
 #define vtkGenericEdgeTable_h
@@ -42,25 +42,26 @@ public:
   /**
    * Instantiate an empty edge table.
    */
-  static vtkGenericEdgeTable* New();
+  static vtkGenericEdgeTable *New();
 
   //@{
   /**
    * Standard VTK type and print macros.
    */
-  vtkTypeMacro(vtkGenericEdgeTable, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkGenericEdgeTable,vtkObject);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
   //@}
 
   /**
    * Split the edge with the indicated point id.
    */
-  void InsertEdge(vtkIdType e1, vtkIdType e2, vtkIdType cellId, int ref, vtkIdType& ptId);
+  void InsertEdge(vtkIdType e1, vtkIdType e2, vtkIdType cellId,
+                  int ref, vtkIdType &ptId );
 
   /**
    * Insert an edge but do not split it.
    */
-  void InsertEdge(vtkIdType e1, vtkIdType e2, vtkIdType cellId, int ref = 1);
+  void InsertEdge(vtkIdType e1, vtkIdType e2, vtkIdType cellId, int ref = 1 );
 
   /**
    * Method to remove an edge from the table. The method returns the
@@ -73,12 +74,13 @@ public:
    * It returns whether the edge was split (1) or not (0),
    * and the point id exists.
    */
-  int CheckEdge(vtkIdType e1, vtkIdType e2, vtkIdType& ptId);
+  int CheckEdge(vtkIdType e1, vtkIdType e2, vtkIdType &ptId);
 
   /**
    * Method that increments the referencecount and returns it.
    */
-  int IncrementEdgeReferenceCount(vtkIdType e1, vtkIdType e2, vtkIdType cellId);
+  int IncrementEdgeReferenceCount(vtkIdType e1, vtkIdType e2,
+                                  vtkIdType cellId);
 
   /**
    * Return the edge reference count.
@@ -112,7 +114,7 @@ public:
    * Check for the existence of a point and return its coordinate value.
    * \pre scalar_size: sizeof(scalar)==this->GetNumberOfComponents()
    */
-  int CheckPoint(vtkIdType ptId, double point[3], double* scalar);
+  int CheckPoint(vtkIdType ptId, double point[3], double *scalar);
 
   //@{
   /**
@@ -120,7 +122,7 @@ public:
    */
   void InsertPoint(vtkIdType ptId, double point[3]);
   // \pre: sizeof(s)==GetNumberOfComponents()
-  void InsertPointAndScalar(vtkIdType ptId, double pt[3], double* s);
+  void InsertPointAndScalar(vtkIdType ptId, double pt[3], double *s);
   //@}
 
   /**
@@ -131,7 +133,7 @@ public:
   /**
    * Increment the reference count for the indicated point.
    */
-  void IncrementPointReferenceCount(vtkIdType ptId);
+  void IncrementPointReferenceCount(vtkIdType ptId );
 
   //@{
   /**
@@ -143,126 +145,129 @@ public:
   void LoadFactor();
   //@}
 
-  class PointEntry
+class PointEntry
+{
+public:
+  vtkIdType PointId;
+  double Coord[3];
+  double *Scalar;  // point data: all point-centered attributes at this point
+  int numberOfComponents;
+
+  int Reference;  //signed char
+
+  /**
+   * Constructor with a scalar field of `size' doubles.
+   * \pre positive_number_of_components: size>0
+   */
+  PointEntry(int size);
+
+  ~PointEntry()
   {
-  public:
-    vtkIdType PointId;
-    double Coord[3];
-    double* Scalar; // point data: all point-centered attributes at this point
-    int numberOfComponents;
+      delete[] this->Scalar;
+  }
 
-    int Reference; // signed char
+  PointEntry(const PointEntry &other)
+  {
+    this->PointId  = other.PointId;
 
-    /**
-     * Constructor with a scalar field of `size' doubles.
-     * \pre positive_number_of_components: size>0
-     */
-    PointEntry(int size);
+    memcpy(this->Coord,other.Coord,sizeof(double)*3);
 
-    ~PointEntry() { delete[] this->Scalar; }
+    int c = other.numberOfComponents;
+    this->numberOfComponents = c;
+    this->Scalar = new double[c];
+    memcpy(this->Scalar, other.Scalar, sizeof(double)*c);
+    this->Reference = other.Reference;
+  }
 
-    PointEntry(const PointEntry& other)
+  PointEntry& operator=(const PointEntry &other)
+  {
+    if(this != &other)
     {
-      this->PointId = other.PointId;
+      this->PointId  = other.PointId;
 
-      memcpy(this->Coord, other.Coord, sizeof(double) * 3);
+      memcpy(this->Coord, other.Coord, sizeof(double)*3);
 
       int c = other.numberOfComponents;
-      this->numberOfComponents = c;
-      this->Scalar = new double[c];
-      memcpy(this->Scalar, other.Scalar, sizeof(double) * c);
+
+      if(this->numberOfComponents!=c)
+      {
+        delete[] this->Scalar;
+        this->Scalar = new double[c];
+        this->numberOfComponents = c;
+      }
+      memcpy(this->Scalar, other.Scalar, sizeof(double)*c);
       this->Reference = other.Reference;
     }
+    return *this;
+  }
+};
 
-    PointEntry& operator=(const PointEntry& other)
-    {
-      if (this != &other)
-      {
-        this->PointId = other.PointId;
+class EdgeEntry
+{
+public:
+  vtkIdType E1;
+  vtkIdType E2;
 
-        memcpy(this->Coord, other.Coord, sizeof(double) * 3);
+  int Reference;  //signed char
+  int ToSplit;  //signed char
+  vtkIdType PtId;
+  vtkIdType CellId; //CellId the edge refer to at a step in tesselation
 
-        int c = other.numberOfComponents;
-
-        if (this->numberOfComponents != c)
-        {
-          delete[] this->Scalar;
-          this->Scalar = new double[c];
-          this->numberOfComponents = c;
-        }
-        memcpy(this->Scalar, other.Scalar, sizeof(double) * c);
-        this->Reference = other.Reference;
-      }
-      return *this;
-    }
-  };
-
-  class EdgeEntry
+  EdgeEntry()
   {
-  public:
-    vtkIdType E1;
-    vtkIdType E2;
+    this->Reference = 0;
+    this->CellId = -1;
+  }
+  ~EdgeEntry() {}
 
-    int Reference; // signed char
-    int ToSplit;   // signed char
-    vtkIdType PtId;
-    vtkIdType CellId; // CellId the edge refer to at a step in tessellation
+  EdgeEntry(const EdgeEntry& copy)
+  {
+    this->E1 = copy.E1;
+    this->E2 = copy.E2;
 
-    EdgeEntry()
+    this->Reference = copy.Reference;
+    this->ToSplit = copy.ToSplit;
+    this->PtId = copy.PtId;
+    this->CellId = copy.CellId;
+  }
+
+  EdgeEntry& operator=(const EdgeEntry& entry)
+  {
+    if(this == &entry)
     {
-      this->Reference = 0;
-      this->CellId = -1;
-    }
-    ~EdgeEntry() {}
-
-    EdgeEntry(const EdgeEntry& copy)
-    {
-      this->E1 = copy.E1;
-      this->E2 = copy.E2;
-
-      this->Reference = copy.Reference;
-      this->ToSplit = copy.ToSplit;
-      this->PtId = copy.PtId;
-      this->CellId = copy.CellId;
-    }
-
-    EdgeEntry& operator=(const EdgeEntry& entry)
-    {
-      if (this == &entry)
-      {
-        return *this;
-      }
-      this->E1 = entry.E1;
-      this->E2 = entry.E2;
-      this->Reference = entry.Reference;
-      this->ToSplit = entry.ToSplit;
-      this->PtId = entry.PtId;
-      this->CellId = entry.CellId;
       return *this;
     }
-  };
+    this->E1 = entry.E1;
+    this->E2 = entry.E2;
+    this->Reference = entry.Reference;
+    this->ToSplit = entry.ToSplit;
+    this->PtId = entry.PtId;
+    this->CellId = entry.CellId;
+    return *this;
+  }
+};
 
 protected:
   vtkGenericEdgeTable();
-  ~vtkGenericEdgeTable() override;
+  ~vtkGenericEdgeTable() VTK_OVERRIDE;
 
   /**
    * Split the edge with the indicated point id.
    */
-  void InsertEdge(
-    vtkIdType e1, vtkIdType e2, vtkIdType cellId, int ref, int toSplit, vtkIdType& ptId);
+  void InsertEdge(vtkIdType e1, vtkIdType e2, vtkIdType cellId,
+                  int ref, int toSplit, vtkIdType &ptId );
 
-  // Hash table that contiain entry based on edges:
-  vtkEdgeTableEdge* EdgeTable;
+  //Hash table that contiain entry based on edges:
+  vtkEdgeTableEdge   *EdgeTable;
 
-  // At end of process we should be able to retrieve points coord based on pointid
-  vtkEdgeTablePoints* HashPoints;
+  //At end of process we should be able to retrieve points coord based on pointid
+  vtkEdgeTablePoints *HashPoints;
 
   // Main hash functions
-  // For edge table:
+  //For edge table:
   vtkIdType HashFunction(vtkIdType e1, vtkIdType e2);
 
-  // For point table:
+  //For point table:
   vtkIdType HashFunction(vtkIdType ptId);
 
   // Keep track of the last point id we inserted, increment it each time:
@@ -271,8 +276,10 @@ protected:
   vtkIdType NumberOfComponents;
 
 private:
-  vtkGenericEdgeTable(const vtkGenericEdgeTable&) = delete;
-  void operator=(const vtkGenericEdgeTable&) = delete;
+  vtkGenericEdgeTable(const vtkGenericEdgeTable&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkGenericEdgeTable&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif
+

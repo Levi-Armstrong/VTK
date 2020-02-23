@@ -18,9 +18,9 @@
 //----------------------------------------------------------------
 vtkCallbackCommand::vtkCallbackCommand()
 {
-  this->ClientData = nullptr;
-  this->Callback = nullptr;
-  this->ClientDataDeleteCallback = nullptr;
+  this->ClientData = NULL;
+  this->Callback = NULL;
+  this->ClientDataDeleteCallback = NULL;
   this->AbortFlagOnExecute = 0;
 }
 
@@ -34,7 +34,8 @@ vtkCallbackCommand::~vtkCallbackCommand()
 }
 
 //----------------------------------------------------------------
-void vtkCallbackCommand::Execute(vtkObject* caller, unsigned long event, void* callData)
+void vtkCallbackCommand::Execute(vtkObject *caller, unsigned long event,
+                                 void *callData)
 {
   if (this->Callback)
   {
@@ -45,3 +46,4 @@ void vtkCallbackCommand::Execute(vtkObject* caller, unsigned long event, void* c
     }
   }
 }
+

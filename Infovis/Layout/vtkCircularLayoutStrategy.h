@@ -23,34 +23,35 @@
  *
  *
  * Assigns points to the vertices around a circle with unit radius.
- */
+*/
 
 #ifndef vtkCircularLayoutStrategy_h
 #define vtkCircularLayoutStrategy_h
 
-#include "vtkGraphLayoutStrategy.h"
 #include "vtkInfovisLayoutModule.h" // For export macro
+#include "vtkGraphLayoutStrategy.h"
 
 class VTKINFOVISLAYOUT_EXPORT vtkCircularLayoutStrategy : public vtkGraphLayoutStrategy
 {
 public:
-  static vtkCircularLayoutStrategy* New();
+  static vtkCircularLayoutStrategy *New();
 
   vtkTypeMacro(vtkCircularLayoutStrategy, vtkGraphLayoutStrategy);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Perform the layout.
    */
-  void Layout() override;
+  void Layout();
 
 protected:
   vtkCircularLayoutStrategy();
-  ~vtkCircularLayoutStrategy() override;
+  ~vtkCircularLayoutStrategy();
 
 private:
-  vtkCircularLayoutStrategy(const vtkCircularLayoutStrategy&) = delete;
-  void operator=(const vtkCircularLayoutStrategy&) = delete;
+  vtkCircularLayoutStrategy(const vtkCircularLayoutStrategy&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkCircularLayoutStrategy&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

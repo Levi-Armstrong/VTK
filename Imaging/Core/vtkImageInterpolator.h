@@ -23,20 +23,21 @@
  * Neurosciences, Foothills Medical Centre, Calgary, for providing this class.
  * @sa
  * vtkImageReslice
- */
+*/
 
 #ifndef vtkImageInterpolator_h
 #define vtkImageInterpolator_h
 
-#include "vtkAbstractImageInterpolator.h"
 #include "vtkImagingCoreModule.h" // For export macro
+#include "vtkAbstractImageInterpolator.h"
 
-class VTKIMAGINGCORE_EXPORT vtkImageInterpolator : public vtkAbstractImageInterpolator
+class VTKIMAGINGCORE_EXPORT vtkImageInterpolator :
+  public vtkAbstractImageInterpolator
 {
 public:
-  static vtkImageInterpolator* New();
+  static vtkImageInterpolator *New();
   vtkTypeMacro(vtkImageInterpolator, vtkAbstractImageInterpolator);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   //@{
   /**
@@ -44,26 +45,29 @@ public:
    * will provide additional interpolation modes, so this is a virtual method.
    */
   virtual void SetInterpolationMode(int mode);
-  void SetInterpolationModeToNearest() { this->SetInterpolationMode(VTK_NEAREST_INTERPOLATION); }
-  void SetInterpolationModeToLinear() { this->SetInterpolationMode(VTK_LINEAR_INTERPOLATION); }
-  void SetInterpolationModeToCubic() { this->SetInterpolationMode(VTK_CUBIC_INTERPOLATION); }
+  void SetInterpolationModeToNearest() {
+    this->SetInterpolationMode(VTK_NEAREST_INTERPOLATION); }
+  void SetInterpolationModeToLinear() {
+    this->SetInterpolationMode(VTK_LINEAR_INTERPOLATION); }
+  void SetInterpolationModeToCubic() {
+    this->SetInterpolationMode(VTK_CUBIC_INTERPOLATION); }
   int GetInterpolationMode() { return this->InterpolationMode; }
-  virtual const char* GetInterpolationModeAsString();
+  virtual const char *GetInterpolationModeAsString();
   //@}
 
   /**
    * Get the support size for use in computing update extents.  If the data
    * will be sampled on a regular grid, then pass a matrix describing the
    * structured coordinate transformation between the output and the input.
-   * Otherwise, pass nullptr as the matrix to retrieve the full kernel size.
+   * Otherwise, pass NULL as the matrix to retrieve the full kernel size.
    */
-  void ComputeSupportSize(const double matrix[16], int support[3]) override;
+  virtual void ComputeSupportSize(const double matrix[16], int support[3]) VTK_OVERRIDE;
 
   /**
    * Returns true if the interpolator supports weight precomputation.
    * This will always return true for this interpolator.
    */
-  bool IsSeparable() override;
+  virtual bool IsSeparable() VTK_OVERRIDE;
 
   //@{
   /**
@@ -75,56 +79,62 @@ public:
    * must have only one non-zero value.  A new extent is provided that can
    * be used for out-of-bounds checks. THIS METHOD IS THREAD SAFE.
    */
-  void PrecomputeWeightsForExtent(const double matrix[16], const int extent[6], int newExtent[6],
-    vtkInterpolationWeights*& weights) override;
-  void PrecomputeWeightsForExtent(const float matrix[16], const int extent[6], int newExtent[6],
-    vtkInterpolationWeights*& weights) override;
+  virtual void PrecomputeWeightsForExtent(
+    const double matrix[16], const int extent[6], int newExtent[6],
+    vtkInterpolationWeights *&weights) VTK_OVERRIDE;
+  virtual void PrecomputeWeightsForExtent(
+    const float matrix[16], const int extent[6], int newExtent[6],
+    vtkInterpolationWeights *&weights) VTK_OVERRIDE;
   //@}
 
   /**
    * Free the precomputed weights.  THIS METHOD IS THREAD SAFE.
    */
-  void FreePrecomputedWeights(vtkInterpolationWeights*& weights) override;
+  virtual void FreePrecomputedWeights(vtkInterpolationWeights *&weights) VTK_OVERRIDE;
 
 protected:
   vtkImageInterpolator();
-  ~vtkImageInterpolator() override;
+  ~vtkImageInterpolator();
 
   /**
    * Update the interpolator.
    */
-  void InternalUpdate() override;
+  virtual void InternalUpdate() VTK_OVERRIDE;
 
   /**
    * Copy all members.
    */
-  void InternalDeepCopy(vtkAbstractImageInterpolator* obj) override;
+  virtual void InternalDeepCopy(vtkAbstractImageInterpolator *obj) VTK_OVERRIDE;
 
   //@{
   /**
    * Get the interpolation functions.
    */
-  void GetInterpolationFunc(
-    void (**doublefunc)(vtkInterpolationInfo*, const double[3], double*)) override;
-  void GetInterpolationFunc(
-    void (**floatfunc)(vtkInterpolationInfo*, const float[3], float*)) override;
+  virtual void GetInterpolationFunc(
+    void (**doublefunc)(
+      vtkInterpolationInfo *, const double [3], double *)) VTK_OVERRIDE;
+  virtual void GetInterpolationFunc(
+    void (**floatfunc)(
+      vtkInterpolationInfo *, const float [3], float *)) VTK_OVERRIDE;
   //@}
 
   //@{
   /**
    * Get the row interpolation functions.
    */
-  void GetRowInterpolationFunc(
-    void (**doublefunc)(vtkInterpolationWeights*, int, int, int, double*, int)) override;
-  void GetRowInterpolationFunc(
-    void (**floatfunc)(vtkInterpolationWeights*, int, int, int, float*, int)) override;
+  virtual void GetRowInterpolationFunc(
+    void (**doublefunc)(
+      vtkInterpolationWeights *, int, int, int, double *, int)) VTK_OVERRIDE;
+  virtual void GetRowInterpolationFunc(
+    void (**floatfunc)(
+      vtkInterpolationWeights *, int, int, int, float *, int)) VTK_OVERRIDE;
   //@}
 
   int InterpolationMode;
 
 private:
-  vtkImageInterpolator(const vtkImageInterpolator&) = delete;
-  void operator=(const vtkImageInterpolator&) = delete;
+  vtkImageInterpolator(const vtkImageInterpolator&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkImageInterpolator&) VTK_DELETE_FUNCTION;
 };
 
 #endif

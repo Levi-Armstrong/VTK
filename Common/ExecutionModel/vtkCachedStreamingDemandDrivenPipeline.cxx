@@ -27,18 +27,21 @@
 
 vtkStandardNewMacro(vtkCachedStreamingDemandDrivenPipeline);
 
+
 //----------------------------------------------------------------------------
-vtkCachedStreamingDemandDrivenPipeline ::vtkCachedStreamingDemandDrivenPipeline()
+vtkCachedStreamingDemandDrivenPipeline
+::vtkCachedStreamingDemandDrivenPipeline()
 {
   this->CacheSize = 0;
-  this->Data = nullptr;
-  this->Times = nullptr;
+  this->Data = NULL;
+  this->Times = NULL;
 
   this->SetCacheSize(10);
 }
 
 //----------------------------------------------------------------------------
-vtkCachedStreamingDemandDrivenPipeline ::~vtkCachedStreamingDemandDrivenPipeline()
+vtkCachedStreamingDemandDrivenPipeline
+::~vtkCachedStreamingDemandDrivenPipeline()
 {
   this->SetCacheSize(0);
 }
@@ -61,13 +64,13 @@ void vtkCachedStreamingDemandDrivenPipeline::SetCacheSize(int size)
     if (this->Data[idx])
     {
       this->Data[idx]->Delete();
-      this->Data[idx] = nullptr;
+      this->Data[idx] = NULL;
     }
   }
-  delete[] this->Data;
-  this->Data = nullptr;
-  delete[] this->Times;
-  this->Times = nullptr;
+  delete [] this->Data;
+  this->Data = NULL;
+  delete [] this->Times;
+  this->Times = NULL;
 
   this->CacheSize = size;
   if (size == 0)
@@ -75,43 +78,48 @@ void vtkCachedStreamingDemandDrivenPipeline::SetCacheSize(int size)
     return;
   }
 
-  this->Data = new vtkDataObject*[size];
-  this->Times = new vtkMTimeType[size];
+  this->Data = new vtkDataObject* [size];
+  this->Times = new vtkMTimeType [size];
 
   for (idx = 0; idx < size; ++idx)
   {
-    this->Data[idx] = nullptr;
+    this->Data[idx] = NULL;
     this->Times[idx] = 0;
   }
 }
 
 //----------------------------------------------------------------------------
-void vtkCachedStreamingDemandDrivenPipeline ::PrintSelf(ostream& os, vtkIndent indent)
+void vtkCachedStreamingDemandDrivenPipeline
+::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
   os << indent << "CacheSize: " << this->CacheSize << "\n";
 }
 
 //----------------------------------------------------------------------------
-int vtkCachedStreamingDemandDrivenPipeline ::NeedToExecuteData(
-  int outputPort, vtkInformationVector** inInfoVec, vtkInformationVector* outInfoVec)
+int vtkCachedStreamingDemandDrivenPipeline
+::NeedToExecuteData(int outputPort,
+                    vtkInformationVector** inInfoVec,
+                    vtkInformationVector* outInfoVec)
 {
   // If no port is specified, check all ports.  This behavior is
   // implemented by the superclass.
-  if (outputPort < 0)
+  if(outputPort < 0)
   {
-    return this->Superclass::NeedToExecuteData(outputPort, inInfoVec, outInfoVec);
+    return this->Superclass::NeedToExecuteData(outputPort,
+                                               inInfoVec, outInfoVec);
   }
 
   // Does the superclass want to execute? We must skip our direct superclass
   // because it looks at update extents but does not know about the cache
-  if (this->vtkDemandDrivenPipeline::NeedToExecuteData(outputPort, inInfoVec, outInfoVec))
+  if(this->vtkDemandDrivenPipeline::NeedToExecuteData(outputPort,
+                                                      inInfoVec, outInfoVec))
   {
     return 1;
   }
 
   // Has the algorithm asked to be executed again?
-  if (this->ContinueExecuting)
+  if(this->ContinueExecuting)
   {
     return 1;
   }
@@ -124,7 +132,7 @@ int vtkCachedStreamingDemandDrivenPipeline ::NeedToExecuteData(
     if (this->Data[i] && this->Times[i] < pmt)
     {
       this->Data[i]->Delete();
-      this->Data[i] = nullptr;
+      this->Data[i] = NULL;
       this->Times[i] = 0;
     }
   }
@@ -136,7 +144,7 @@ int vtkCachedStreamingDemandDrivenPipeline ::NeedToExecuteData(
   vtkInformation* outInfo = outInfoVec->GetInformationObject(outputPort);
   vtkDataObject* dataObject = outInfo->Get(vtkDataObject::DATA_OBJECT());
   vtkInformation* dataInfo = dataObject->GetInformation();
-  if (dataInfo->Get(vtkDataObject::DATA_EXTENT_TYPE()) == VTK_PIECES_EXTENT)
+  if(dataInfo->Get(vtkDataObject::DATA_EXTENT_TYPE()) == VTK_PIECES_EXTENT)
   {
     int updatePiece = outInfo->Get(UPDATE_PIECE_NUMBER());
     int updateNumberOfPieces = outInfo->Get(UPDATE_NUMBER_OF_PIECES());
@@ -152,11 +160,14 @@ int vtkCachedStreamingDemandDrivenPipeline ::NeedToExecuteData(
         // Check the unstructured extent.  If we do not have the requested
         // piece, we need to execute.
         int dataPiece = dataInfo->Get(vtkDataObject::DATA_PIECE_NUMBER());
-        int dataNumberOfPieces = dataInfo->Get(vtkDataObject::DATA_NUMBER_OF_PIECES());
-        int dataGhostLevel = dataInfo->Get(vtkDataObject::DATA_NUMBER_OF_GHOST_LEVELS());
-        if (dataInfo->Get(vtkDataObject::DATA_EXTENT_TYPE()) == VTK_PIECES_EXTENT &&
-          dataPiece == updatePiece && dataNumberOfPieces == updateNumberOfPieces &&
-          dataGhostLevel == updateGhostLevel)
+        int dataNumberOfPieces =
+          dataInfo->Get(vtkDataObject::DATA_NUMBER_OF_PIECES());
+        int dataGhostLevel =
+          dataInfo->Get(vtkDataObject::DATA_NUMBER_OF_GHOST_LEVELS());
+        if (dataInfo->Get(vtkDataObject::DATA_EXTENT_TYPE()) ==
+            VTK_PIECES_EXTENT && dataPiece == updatePiece &&
+            dataNumberOfPieces == updateNumberOfPieces &&
+            dataGhostLevel == updateGhostLevel)
         {
           // we have a matching data we must copy it to our output, but for
           // now we don't support polydata
@@ -180,17 +191,22 @@ int vtkCachedStreamingDemandDrivenPipeline ::NeedToExecuteData(
       {
         dataInfo = this->Data[i]->GetInformation();
         dataInfo->Get(vtkDataObject::DATA_EXTENT(), dataExtent);
-        if (dataInfo->Get(vtkDataObject::DATA_EXTENT_TYPE()) == VTK_3D_EXTENT &&
-          !(updateExtent[0] < dataExtent[0] || updateExtent[1] > dataExtent[1] ||
-            updateExtent[2] < dataExtent[2] || updateExtent[3] > dataExtent[3] ||
-            updateExtent[4] < dataExtent[4] || updateExtent[5] > dataExtent[5]) &&
-          (updateExtent[0] <= updateExtent[1] && updateExtent[2] <= updateExtent[3] &&
+        if(dataInfo->Get(vtkDataObject::DATA_EXTENT_TYPE()) ==
+           VTK_3D_EXTENT &&
+           !(updateExtent[0] < dataExtent[0] ||
+             updateExtent[1] > dataExtent[1] ||
+             updateExtent[2] < dataExtent[2] ||
+             updateExtent[3] > dataExtent[3] ||
+             updateExtent[4] < dataExtent[4] ||
+             updateExtent[5] > dataExtent[5]) &&
+           (updateExtent[0] <= updateExtent[1] &&
+            updateExtent[2] <= updateExtent[3] &&
             updateExtent[4] <= updateExtent[5]))
         {
           // we have a match
           // Pass this data to output.
-          vtkImageData* id = vtkImageData::SafeDownCast(dataObject);
-          vtkImageData* id2 = vtkImageData::SafeDownCast(this->Data[i]);
+          vtkImageData *id = vtkImageData::SafeDownCast(dataObject);
+          vtkImageData *id2 = vtkImageData::SafeDownCast(this->Data[i]);
           if (id && id2)
           {
             id->SetExtent(dataExtent);
@@ -208,19 +224,21 @@ int vtkCachedStreamingDemandDrivenPipeline ::NeedToExecuteData(
   return 1;
 }
 
+
 //----------------------------------------------------------------------------
-int vtkCachedStreamingDemandDrivenPipeline ::ExecuteData(
-  vtkInformation* request, vtkInformationVector** inInfoVec, vtkInformationVector* outInfoVec)
+int vtkCachedStreamingDemandDrivenPipeline
+::ExecuteData(vtkInformation* request,
+              vtkInformationVector** inInfoVec,
+              vtkInformationVector* outInfoVec)
 {
   // only works for one in one out algorithms
   if (request->Get(FROM_OUTPUT_PORT()) != 0)
   {
-    vtkErrorMacro("vtkCachedStreamingDemandDrivenPipeline can only be used for algorithms with one "
-                  "output and one input");
+    vtkErrorMacro("vtkCachedStreamingDemandDrivenPipeline can only be used for algorithms with one output and one input");
     return 0;
   }
 
-  // first do the usual thing
+  // first do the ususal thing
   int result = this->Superclass::ExecuteData(request, inInfoVec, outInfoVec);
 
   // then save the newly generated data
@@ -231,7 +249,7 @@ int vtkCachedStreamingDemandDrivenPipeline ::ExecuteData(
   // Find a spot to put the data.
   for (int i = 0; i < this->CacheSize; ++i)
   {
-    if (this->Data[i] == nullptr)
+    if (this->Data[i] == NULL)
     {
       bestIdx = i;
       break;
@@ -245,27 +263,29 @@ int vtkCachedStreamingDemandDrivenPipeline ::ExecuteData(
 
   vtkInformation* outInfo = outInfoVec->GetInformationObject(0);
   vtkDataObject* dataObject = outInfo->Get(vtkDataObject::DATA_OBJECT());
-  if (this->Data[bestIdx] == nullptr)
+  if (this->Data[bestIdx] == NULL)
   {
     this->Data[bestIdx] = dataObject->NewInstance();
   }
   this->Data[bestIdx]->ReleaseData();
 
-  vtkImageData* id = vtkImageData::SafeDownCast(dataObject);
+  vtkImageData *id = vtkImageData::SafeDownCast(dataObject);
   if (id)
   {
     vtkInformation* inInfo = inInfoVec[0]->GetInformationObject(0);
-    vtkImageData* input = vtkImageData::SafeDownCast(inInfo->Get(vtkDataObject::DATA_OBJECT()));
+    vtkImageData *input =
+      vtkImageData::SafeDownCast(inInfo->Get(vtkDataObject::DATA_OBJECT()));
     id->SetExtent(input->GetExtent());
     id->GetPointData()->PassData(input->GetPointData());
     id->DataHasBeenGenerated();
   }
 
-  vtkImageData* id2 = vtkImageData::SafeDownCast(this->Data[bestIdx]);
+  vtkImageData *id2 = vtkImageData::SafeDownCast(this->Data[bestIdx]);
   if (id && id2)
   {
     id2->SetExtent(id->GetExtent());
-    id2->GetPointData()->SetScalars(id->GetPointData()->GetScalars());
+    id2->GetPointData()->SetScalars(
+      id->GetPointData()->GetScalars());
   }
 
   this->Times[bestIdx] = dataObject->GetUpdateTime();

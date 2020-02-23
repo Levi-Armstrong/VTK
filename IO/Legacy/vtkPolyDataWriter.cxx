@@ -19,27 +19,28 @@
 #include "vtkPolyData.h"
 
 #if !defined(_WIN32) || defined(__CYGWIN__)
-#include <unistd.h> /* unlink */
+# include <unistd.h> /* unlink */
 #else
-#include <io.h> /* unlink */
+# include <io.h> /* unlink */
 #endif
 
 vtkStandardNewMacro(vtkPolyDataWriter);
 
 void vtkPolyDataWriter::WriteData()
 {
-  ostream* fp;
-  vtkPolyData* input = this->GetInput();
+  ostream *fp;
+  vtkPolyData *input = this->GetInput();
 
-  vtkDebugMacro(<< "Writing vtk polygonal data...");
+  vtkDebugMacro(<<"Writing vtk polygonal data...");
 
-  if (!(fp = this->OpenVTKFile()) || !this->WriteHeader(fp))
+  if ( !(fp=this->OpenVTKFile()) || !this->WriteHeader(fp) )
   {
     if (fp)
     {
-      if (this->FileName)
+      if(this->FileName)
       {
-        vtkErrorMacro("Ran out of disk space; deleting file: " << this->FileName);
+        vtkErrorMacro("Ran out of disk space; deleting file: "
+                      << this->FileName);
         this->CloseVTKFile(fp);
         unlink(this->FileName);
       }
@@ -70,28 +71,28 @@ void vtkPolyDataWriter::WriteData()
 
   if (!errorOccured && input->GetVerts())
   {
-    if (!this->WriteCells(fp, input->GetVerts(), "VERTICES"))
+    if (!this->WriteCells(fp, input->GetVerts(),"VERTICES"))
     {
       errorOccured = 1;
     }
   }
   if (!errorOccured && input->GetLines())
   {
-    if (!this->WriteCells(fp, input->GetLines(), "LINES"))
+    if (!this->WriteCells(fp, input->GetLines(),"LINES"))
     {
       errorOccured = 1;
     }
   }
   if (!errorOccured && input->GetPolys())
   {
-    if (!this->WriteCells(fp, input->GetPolys(), "POLYGONS"))
+    if (!this->WriteCells(fp, input->GetPolys(),"POLYGONS"))
     {
       errorOccured = 1;
     }
   }
   if (!errorOccured && input->GetStrips())
   {
-    if (!this->WriteCells(fp, input->GetStrips(), "TRIANGLE_STRIPS"))
+    if (!this->WriteCells(fp, input->GetStrips(),"TRIANGLE_STRIPS"))
     {
       errorOccured = 1;
     }
@@ -106,9 +107,9 @@ void vtkPolyDataWriter::WriteData()
     errorOccured = 1;
   }
 
-  if (errorOccured)
+  if(errorOccured)
   {
-    if (this->FileName)
+    if(this->FileName)
     {
       vtkErrorMacro("Ran out of disk space; deleting file: " << this->FileName);
       this->CloseVTKFile(fp);
@@ -124,7 +125,7 @@ void vtkPolyDataWriter::WriteData()
   this->CloseVTKFile(fp);
 }
 
-int vtkPolyDataWriter::FillInputPortInformation(int, vtkInformation* info)
+int vtkPolyDataWriter::FillInputPortInformation(int, vtkInformation *info)
 {
   info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkPolyData");
   return 1;
@@ -142,5 +143,5 @@ vtkPolyData* vtkPolyDataWriter::GetInput(int port)
 
 void vtkPolyDataWriter::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 }

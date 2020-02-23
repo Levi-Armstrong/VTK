@@ -18,51 +18,55 @@
  *
  * vtkMultiNewickTreeReader is a source object that reads Newick tree format
  * files.
- * The output of this reader is a single vtkMultiPieceDataSet that contains multiple vtkTree
- * objects. The superclass of this class, vtkDataReader, provides many methods for controlling the
- * reading of the data file, see vtkDataReader for more information.
+ * The output of this reader is a single vtkMultiPieceDataSet that contains multiple vtkTree objects.
+ * The superclass of this class, vtkDataReader, provides many methods for
+ * controlling the reading of the data file, see vtkDataReader for more
+ * information.
  * @sa
  * vtkTree vtkDataReader
- */
+*/
 
 #ifndef vtkMultiNewickTreeReader_h
 #define vtkMultiNewickTreeReader_h
 
-#include "vtkDataReader.h"
 #include "vtkIOInfovisModule.h" // For export macro
+#include "vtkDataReader.h"
 
 class vtkMultiPieceDataSet;
 class vtkNewickTreeReader;
 class VTKIOINFOVIS_EXPORT vtkMultiNewickTreeReader : public vtkDataReader
 {
 public:
-  static vtkMultiNewickTreeReader* New();
-  vtkTypeMacro(vtkMultiNewickTreeReader, vtkDataReader);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkMultiNewickTreeReader *New();
+  vtkTypeMacro(vtkMultiNewickTreeReader,vtkDataReader);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
    * Get the output of this reader.
    */
-  vtkMultiPieceDataSet* GetOutput();
-  vtkMultiPieceDataSet* GetOutput(int idx);
-  void SetOutput(vtkMultiPieceDataSet* output);
+  vtkMultiPieceDataSet *GetOutput();
+  vtkMultiPieceDataSet *GetOutput(int idx);
+  void SetOutput(vtkMultiPieceDataSet *output);
   //@}
-
-  /**
-   * Actual reading happens here
-   */
-  int ReadMeshSimple(const std::string& fname, vtkDataObject* output) override;
 
 protected:
   vtkMultiNewickTreeReader();
-  ~vtkMultiNewickTreeReader() override;
+  ~vtkMultiNewickTreeReader();
 
-  int FillOutputPortInformation(int, vtkInformation*) override;
+  virtual int RequestData(vtkInformation *, vtkInformationVector **,
+                          vtkInformationVector *);
 
+  // Since the Outputs[0] has the same UpdateExtent format
+  // as the generic DataObject we can copy the UpdateExtent
+  // as a default behavior.
+  virtual int RequestUpdateExtent(vtkInformation *, vtkInformationVector **,
+                                  vtkInformationVector *);
+
+  virtual int FillOutputPortInformation(int, vtkInformation*);
 private:
-  vtkMultiNewickTreeReader(const vtkMultiNewickTreeReader&) = delete;
-  void operator=(const vtkMultiNewickTreeReader&) = delete;
+  vtkMultiNewickTreeReader(const vtkMultiNewickTreeReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkMultiNewickTreeReader&) VTK_DELETE_FUNCTION;
 };
 
 #endif

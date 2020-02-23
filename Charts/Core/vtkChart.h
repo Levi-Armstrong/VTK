@@ -19,7 +19,7 @@
  *
  *
  * This defines the interface for a chart.
- */
+*/
 
 #ifndef vtkChart_h
 #define vtkChart_h
@@ -27,8 +27,8 @@
 #include "vtkChartsCoreModule.h" // For export macro
 #include "vtkContextItem.h"
 #include "vtkRect.h"         // For vtkRectf
-#include "vtkSmartPointer.h" // For SP ivars
 #include "vtkStdString.h"    // For vtkStdString ivars
+#include "vtkSmartPointer.h" // For SP ivars
 
 class vtkTransform2D;
 class vtkContextScene;
@@ -45,21 +45,19 @@ class VTKCHARTSCORE_EXPORT vtkChart : public vtkContextItem
 {
 public:
   vtkTypeMacro(vtkChart, vtkContextItem);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  virtual void PrintSelf(ostream &os, vtkIndent indent);
 
   /**
    * Enum of the available chart types
    */
-  enum
-  {
+  enum {
     LINE,
     POINTS,
     BAR,
     STACKED,
     BAG,
     FUNCTIONALBAG,
-    AREA
-  };
+    AREA};
 
   /**
    * Enum of valid chart action types.
@@ -70,33 +68,29 @@ public:
    * SELECT_RECTANGLE - selects points within a rectangle
    * SELECT_POLYGON - selects points within a polygon
    * SELECT - alias for SELECT_RECTANGLE
-   * CLICKANDDRAG - move one point selected by a click
    * NOTIFY - Post vtkCommand::InteractionEvent on selection of a point
    */
-  enum
-  {
+  enum {
     PAN = 0,
     ZOOM,
     ZOOM_AXIS,
     SELECT,
     SELECT_RECTANGLE = SELECT,
     SELECT_POLYGON,
-    CLICK_AND_DRAG,
     NOTIFY
   };
 
   /**
    * Enum of event type that are triggered by the charts
    */
-  enum EventIds
-  {
+  enum EventIds {
     UpdateRange = 1002
   };
 
   /**
    * Paint event for the chart, called whenever the chart needs to be drawn
    */
-  bool Paint(vtkContext2D* painter) override = 0;
+  virtual bool Paint(vtkContext2D *painter) = 0;
 
   /**
    * Add a plot to the chart, defaults to using the name of the y column
@@ -143,12 +137,6 @@ public:
   virtual vtkAxis* GetAxis(int axisIndex);
 
   /**
-   * Set the axis specified by axisIndex. 0 is x, 1 is y. This should probably
-   * be improved either using a string or enum to select the axis.
-   */
-  virtual void SetAxis(int axisIndex, vtkAxis*);
-
-  /**
    * Get the number of axes in the current chart.
    */
   virtual vtkIdType GetNumberOfAxes();
@@ -166,8 +154,7 @@ public:
    * selection remains specific to the plot object. SELECTION_COLUMNS selects
    * the plots that use as input the selected columns of a table.
    */
-  enum
-  {
+  enum {
     SELECTION_ROWS,
     SELECTION_PLOTS,
     SELECTION_COLUMNS
@@ -189,7 +176,7 @@ public:
   /**
    * Set the vtkAnnotationLink for the chart.
    */
-  virtual void SetAnnotationLink(vtkAnnotationLink* link);
+  virtual void SetAnnotationLink(vtkAnnotationLink *link);
 
   //@{
   /**
@@ -231,16 +218,16 @@ public:
   //@}
 
   /**
-   * Get the legend for the chart, if available. Can return null if there is no
+   * Get the legend for the chart, if available. Can return NULL if there is no
    * legend.
    */
-  virtual vtkChartLegend* GetLegend();
+  virtual vtkChartLegend * GetLegend();
 
   //@{
   /**
    * Get/set the title text of the chart.
    */
-  virtual void SetTitle(const vtkStdString& title);
+  virtual void SetTitle(const vtkStdString &title);
   virtual vtkStdString GetTitle();
   //@}
 
@@ -271,7 +258,7 @@ public:
    * width and height of the chart. The borders will be laid out within the
    * specified rectangle.
    */
-  void SetSize(const vtkRectf& rect);
+  void SetSize(const vtkRectf &rect);
 
   /**
    * Get the current size of the chart.
@@ -281,8 +268,7 @@ public:
   /**
    * Enum of the available layout strategies for the charts.
    */
-  enum
-  {
+  enum {
     FILL_SCENE,  // Attempt to fill the entire scene.
     FILL_RECT,   // Attempt to supply the supplied vtkRectf in Size.
     AXES_TO_RECT // Put the corners of the axes on the vtkRectf in Size.
@@ -305,9 +291,13 @@ public:
    */
   virtual void SetAutoSize(bool isAutoSized)
   {
-    this->LayoutStrategy = isAutoSized ? vtkChart::FILL_SCENE : vtkChart::FILL_RECT;
+    this->LayoutStrategy = isAutoSized ? vtkChart::FILL_SCENE :
+                                         vtkChart::FILL_RECT;
   }
-  virtual bool GetAutoSize() { return this->LayoutStrategy == vtkChart::FILL_SCENE ? true : false; }
+  virtual bool GetAutoSize()
+  {
+    return this->LayoutStrategy == vtkChart::FILL_SCENE ? true : false;
+  }
   //@}
 
   //@{
@@ -359,7 +349,7 @@ public:
   /**
    * Set/Get the brush to use for the background color.
    */
-  void SetBackgroundBrush(vtkBrush* brush);
+  void SetBackgroundBrush(vtkBrush *brush);
   vtkBrush* GetBackgroundBrush();
   //@}
 
@@ -375,7 +365,7 @@ public:
 
 protected:
   vtkChart();
-  ~vtkChart() override;
+  ~vtkChart();
 
   /**
    * Given the x and y vtkAxis, and a transform, calculate the transform that
@@ -383,24 +373,26 @@ protected:
    * that the axes have the correct start and end positions, and that they are
    * perpendicular.
    */
-  bool CalculatePlotTransform(vtkAxis* x, vtkAxis* y, vtkTransform2D* transform);
+  bool CalculatePlotTransform(vtkAxis *x, vtkAxis *y,
+                              vtkTransform2D *transform);
 
   /**
    * Calculate the unshifted, and unscaled plot transform for the x and y axis.
    */
-  bool CalculateUnscaledPlotTransform(vtkAxis* x, vtkAxis* y, vtkTransform2D* transform);
+  bool CalculateUnscaledPlotTransform(vtkAxis *x, vtkAxis *y,
+                                      vtkTransform2D *transform);
 
   /**
    * Attach axis range listener so we can forward those events at the chart level
    */
   void AttachAxisRangeListener(vtkAxis*);
 
-  void AxisRangeForwarderCallback(vtkObject*, unsigned long, void*);
+  void AxisRangeForwarderCallback(vtkObject*,unsigned long, void*);
 
   /**
    * Our annotation link, used for sharing selections etc.
    */
-  vtkAnnotationLink* AnnotationLink;
+  vtkAnnotationLink *AnnotationLink;
 
   /**
    * The width and the height of the chart.
@@ -457,16 +449,12 @@ protected:
   {
   public:
     MouseActions();
-    enum
-    {
-      MaxAction = 6
-    };
+    enum { MaxAction = 5 };
     short& Pan() { return Data[0]; }
     short& Zoom() { return Data[1]; }
     short& ZoomAxis() { return Data[2]; }
     short& Select() { return Data[3]; }
     short& SelectPolygon() { return Data[4]; }
-    short& ClickAndDrag() { return Data[5]; }
     short& operator[](int index) { return Data[index]; }
     short Data[MaxAction];
   };
@@ -485,8 +473,8 @@ protected:
   MouseClickActions ActionsClick;
 
 private:
-  vtkChart(const vtkChart&) = delete;
-  void operator=(const vtkChart&) = delete;
+  vtkChart(const vtkChart &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkChart &) VTK_DELETE_FUNCTION;
 };
 
-#endif // vtkChart_h
+#endif //vtkChart_h

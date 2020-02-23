@@ -33,7 +33,7 @@
  *
  * @sa
  * vtkSQLDatabase vtkRowQuery
- */
+*/
 
 #ifndef vtkRowQueryToTable_h
 #define vtkRowQueryToTable_h
@@ -48,7 +48,7 @@ class VTKIOSQL_EXPORT vtkRowQueryToTable : public vtkTableAlgorithm
 public:
   static vtkRowQueryToTable* New();
   vtkTypeMacro(vtkRowQueryToTable, vtkTableAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -61,19 +61,23 @@ public:
   /**
    * Update the modified time based on the query.
    */
-  vtkMTimeType GetMTime() override;
+  vtkMTimeType GetMTime();
 
 protected:
   vtkRowQueryToTable();
-  ~vtkRowQueryToTable() override;
+  ~vtkRowQueryToTable();
 
   vtkRowQuery* Query;
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(
+    vtkInformation*,
+    vtkInformationVector**,
+    vtkInformationVector*);
 
 private:
-  vtkRowQueryToTable(const vtkRowQueryToTable&) = delete;
-  void operator=(const vtkRowQueryToTable&) = delete;
+  vtkRowQueryToTable(const vtkRowQueryToTable&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkRowQueryToTable&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

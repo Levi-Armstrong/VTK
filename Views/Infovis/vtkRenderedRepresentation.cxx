@@ -24,8 +24,8 @@
 #include "vtkInformation.h"
 #include "vtkObjectFactory.h"
 #include "vtkProp.h"
-#include "vtkRenderView.h"
 #include "vtkRenderer.h"
+#include "vtkRenderView.h"
 #include "vtkSelection.h"
 #include "vtkSelectionNode.h"
 #include "vtkSmartPointer.h"
@@ -42,6 +42,7 @@ public:
   std::vector<vtkSmartPointer<vtkProp> > PropsToAdd;
   std::vector<vtkSmartPointer<vtkProp> > PropsToRemove;
 };
+
 
 vtkRenderedRepresentation::vtkRenderedRepresentation()
 {
@@ -81,8 +82,7 @@ void vtkRenderedRepresentation::PrepareForRendering(vtkRenderView* view)
   this->Implementation->PropsToRemove.clear();
 }
 
-vtkUnicodeString vtkRenderedRepresentation::GetHoverText(
-  vtkView* view, vtkProp* prop, vtkIdType cell)
+vtkUnicodeString vtkRenderedRepresentation::GetHoverText(vtkView* view, vtkProp* prop, vtkIdType cell)
 {
   vtkSmartPointer<vtkSelection> cellSelect = vtkSmartPointer<vtkSelection>::New();
   vtkSmartPointer<vtkSelectionNode> cellNode = vtkSmartPointer<vtkSelectionNode>::New();
@@ -95,7 +95,7 @@ vtkUnicodeString vtkRenderedRepresentation::GetHoverText(
   cellSelect->AddNode(cellNode);
   vtkSelection* converted = this->ConvertSelection(view, cellSelect);
   vtkUnicodeString text = this->GetHoverTextInternal(converted);
-  if (converted != cellSelect)
+  if (converted != cellSelect.GetPointer())
   {
     converted->Delete();
   }

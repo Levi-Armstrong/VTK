@@ -22,7 +22,7 @@
  *
  * This filter has code to collect a graph from across processes onto vertex 0.
  * Collection can be turned on or off using the "PassThrough" flag.
- */
+*/
 
 #ifndef vtkCollectGraph_h
 #define vtkCollectGraph_h
@@ -36,13 +36,13 @@ class vtkSocketController;
 class VTKFILTERSPARALLEL_EXPORT vtkCollectGraph : public vtkGraphAlgorithm
 {
 public:
-  static vtkCollectGraph* New();
+  static vtkCollectGraph *New();
   vtkTypeMacro(vtkCollectGraph, vtkGraphAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
-   * By default this filter uses the global controller,
+   * By defualt this filter uses the global controller,
    * but this method can be used to set another instead.
    */
   virtual void SetController(vtkMultiProcessController*);
@@ -63,13 +63,12 @@ public:
   /**
    * To collect or just copy input to output. Off (collect) by default.
    */
-  vtkSetMacro(PassThrough, vtkTypeBool);
-  vtkGetMacro(PassThrough, vtkTypeBool);
-  vtkBooleanMacro(PassThrough, vtkTypeBool);
+  vtkSetMacro(PassThrough, int);
+  vtkGetMacro(PassThrough, int);
+  vtkBooleanMacro(PassThrough, int);
   //@}
 
-  enum
-  {
+  enum {
     DIRECTED_OUTPUT,
     UNDIRECTED_OUTPUT,
     USE_INPUT_TYPE
@@ -90,22 +89,22 @@ public:
 
 protected:
   vtkCollectGraph();
-  ~vtkCollectGraph() override;
+  ~vtkCollectGraph();
 
-  vtkTypeBool PassThrough;
+  int PassThrough;
   int OutputType;
 
   // Data generation method
-  int RequestUpdateExtent(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int RequestDataObject(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int RequestUpdateExtent(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
+  virtual int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
+  virtual int RequestDataObject(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 
-  vtkMultiProcessController* Controller;
-  vtkSocketController* SocketController;
+  vtkMultiProcessController *Controller;
+  vtkSocketController *SocketController;
 
 private:
-  vtkCollectGraph(const vtkCollectGraph&) = delete;
-  void operator=(const vtkCollectGraph&) = delete;
+  vtkCollectGraph(const vtkCollectGraph&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkCollectGraph&) VTK_DELETE_FUNCTION;
 };
 
 #endif

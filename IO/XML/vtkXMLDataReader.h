@@ -22,7 +22,7 @@
  *
  * @sa
  * vtkXMLPDataReader
- */
+*/
 
 #ifndef vtkXMLDataReader_h
 #define vtkXMLDataReader_h
@@ -30,39 +30,45 @@
 #include "vtkIOXMLModule.h" // For export macro
 #include "vtkXMLReader.h"
 
-#include <memory> // for std::unique_ptr
-
 class VTKIOXML_EXPORT vtkXMLDataReader : public vtkXMLReader
 {
 public:
-  vtkTypeMacro(vtkXMLDataReader, vtkXMLReader);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  enum FieldType
+  {
+    POINT_DATA,
+    CELL_DATA,
+    OTHER
+  };
+
+
+  vtkTypeMacro(vtkXMLDataReader,vtkXMLReader);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Get the number of points in the output.
    */
-  virtual vtkIdType GetNumberOfPoints() = 0;
+  virtual vtkIdType GetNumberOfPoints()=0;
 
   /**
    * Get the number of cells in the output.
    */
-  virtual vtkIdType GetNumberOfCells() = 0;
+  virtual vtkIdType GetNumberOfCells()=0;
 
   // For the specified port, copy the information this reader sets up in
   // SetupOutputInformation to outInfo
-  void CopyOutputInformation(vtkInformation* outInfo, int port) override;
+  virtual void CopyOutputInformation(vtkInformation *outInfo, int port);
 
 protected:
   vtkXMLDataReader();
-  ~vtkXMLDataReader() override;
+  ~vtkXMLDataReader();
 
   // Add functionality to methods from superclass.
-  void CreateXMLParser() override;
-  void DestroyXMLParser() override;
-  void SetupOutputInformation(vtkInformation* outInfo) override;
+  virtual void CreateXMLParser();
+  virtual void DestroyXMLParser();
+  virtual void SetupOutputInformation(vtkInformation *outInfo);
 
-  int ReadPrimaryElement(vtkXMLDataElement* ePrimary) override;
-  void SetupOutputData() override;
+  int ReadPrimaryElement(vtkXMLDataElement* ePrimary);
+  void SetupOutputData();
 
   // Setup the reader for a given number of pieces.
   virtual void SetupPieces(int numPieces);
@@ -76,14 +82,27 @@ protected:
   int ReadPieceData(int piece);
   virtual int ReadPieceData();
 
-  void ReadXMLData() override;
+  virtual void ReadXMLData();
 
   // Read a data array whose tuples coorrespond to points or cells.
-  virtual int ReadArrayForPoints(vtkXMLDataElement* da, vtkAbstractArray* outArray);
-  virtual int ReadArrayForCells(vtkXMLDataElement* da, vtkAbstractArray* outArray);
+  virtual int ReadArrayForPoints(vtkXMLDataElement* da,
+                                 vtkAbstractArray* outArray);
+  virtual int ReadArrayForCells(vtkXMLDataElement* da,
+                                vtkAbstractArray* outArray);
+
+  // Read an Array values starting at the given index and up to numValues.
+  // This method assumes that the array is of correct size to
+  // accommodate all numValues values. arrayIndex is the value index at which the read
+  // values will be put in the array.
+  int ReadArrayValues(
+    vtkXMLDataElement* da, vtkIdType arrayIndex, vtkAbstractArray* array,
+    vtkIdType startIndex, vtkIdType numValues, FieldType type = OTHER);
+
+
 
   // Callback registered with the DataProgressObserver.
-  static void DataProgressCallbackFunction(vtkObject*, unsigned long, void*, void*);
+  static void DataProgressCallbackFunction(vtkObject*, unsigned long, void*,
+                                           void*);
   // Progress callback from XMLParser.
   virtual void DataProgressCallback();
 
@@ -102,29 +121,32 @@ protected:
   int NumberOfPointArrays;
   int NumberOfCellArrays;
 
+  // Flag for whether DataProgressCallback should actually update
+  // progress.
+  int InReadData;
+
   // The observer to report progress from reading data from XMLParser.
   vtkCallbackCommand* DataProgressObserver;
 
-private:
-  class MapStringToInt;
-  class MapStringToInt64;
-
   // Specify the last time step read, useful to know if we need to rearead data
   // //PointData
-  std::unique_ptr<MapStringToInt> PointDataTimeStep;
-  std::unique_ptr<MapStringToInt64> PointDataOffset;
-  int PointDataNeedToReadTimeStep(vtkXMLDataElement* eNested);
+  int *PointDataTimeStep;
+  vtkTypeInt64 *PointDataOffset;
+  int PointDataNeedToReadTimeStep(vtkXMLDataElement *eNested);
 
-  // CellData
-  std::unique_ptr<MapStringToInt> CellDataTimeStep;
-  std::unique_ptr<MapStringToInt64> CellDataOffset;
-  int CellDataNeedToReadTimeStep(vtkXMLDataElement* eNested);
+  //CellData
+  int *CellDataTimeStep;
+  vtkTypeInt64 *CellDataOffset;
+  int CellDataNeedToReadTimeStep(vtkXMLDataElement *eNested);
 
-  vtkXMLDataReader(const vtkXMLDataReader&) = delete;
-  void operator=(const vtkXMLDataReader&) = delete;
+private:
+  vtkXMLDataReader(const vtkXMLDataReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkXMLDataReader&) VTK_DELETE_FUNCTION;
 
   void ConvertGhostLevelsToGhostType(
-    FieldType type, vtkAbstractArray* data, vtkIdType startIndex, vtkIdType numValues) override;
+    FieldType type, vtkAbstractArray* data, vtkIdType startIndex,
+    vtkIdType numValues);
+
 };
 
 #endif

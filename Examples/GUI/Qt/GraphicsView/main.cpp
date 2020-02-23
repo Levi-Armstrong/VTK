@@ -1,8 +1,8 @@
 
-#include "GraphicsView.hpp"
 #include <QApplication>
+#include "GraphicsView.hpp"
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
   QApplication app(argc, argv);
 

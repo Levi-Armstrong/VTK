@@ -29,13 +29,13 @@
  * This interactor style allows only 2D panning and zooming,
  * rubber band selection and provides a balloon containing the name of the
  * vertex hovered over.
- */
+*/
 
 #ifndef vtkInteractorStyleAreaSelectHover_h
 #define vtkInteractorStyleAreaSelectHover_h
 
-#include "vtkInteractorStyleRubberBand2D.h"
 #include "vtkViewsInfovisModule.h" // For export macro
+#include "vtkInteractorStyleRubberBand2D.h"
 
 class vtkAreaLayout;
 class vtkBalloonRepresentation;
@@ -45,13 +45,12 @@ class vtkTree;
 class vtkWorldPointPicker;
 class vtkPolyData;
 
-class VTKVIEWSINFOVIS_EXPORT vtkInteractorStyleAreaSelectHover
-  : public vtkInteractorStyleRubberBand2D
+class VTKVIEWSINFOVIS_EXPORT vtkInteractorStyleAreaSelectHover : public vtkInteractorStyleRubberBand2D
 {
 public:
   static vtkInteractorStyleAreaSelectHover* New();
-  vtkTypeMacro(vtkInteractorStyleAreaSelectHover, vtkInteractorStyleRubberBand2D);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkInteractorStyleAreaSelectHover,vtkInteractorStyleRubberBand2D);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -84,12 +83,12 @@ public:
    * Overridden from vtkInteractorStyleImage to provide the desired
    * interaction behavior.
    */
-  void OnMouseMove() override;
+  void OnMouseMove();
 
   /**
    * Set the interactor that this interactor style works with.
    */
-  void SetInteractor(vtkRenderWindowInteractor* rwi) override;
+  virtual void SetInteractor(vtkRenderWindowInteractor *rwi);
 
   /**
    * Set the color used to highlight the hovered vertex.
@@ -111,21 +110,21 @@ public:
 
 protected:
   vtkInteractorStyleAreaSelectHover();
-  ~vtkInteractorStyleAreaSelectHover() override;
+  ~vtkInteractorStyleAreaSelectHover();
 
 private:
-  vtkInteractorStyleAreaSelectHover(const vtkInteractorStyleAreaSelectHover&) = delete;
-  void operator=(const vtkInteractorStyleAreaSelectHover&) = delete;
+  vtkInteractorStyleAreaSelectHover(const vtkInteractorStyleAreaSelectHover&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkInteractorStyleAreaSelectHover&) VTK_DELETE_FUNCTION;
 
   // These methods are used internally
-  void GetBoundingAreaForItem(vtkIdType id, float* sinfo);
+  void GetBoundingAreaForItem(vtkIdType id, float *sinfo);
 
   vtkWorldPointPicker* Picker;
   vtkBalloonRepresentation* Balloon;
-  vtkPolyData* HighlightData;
-  vtkActor* HighlightActor;
+  vtkPolyData *HighlightData;
+  vtkActor *HighlightActor;
   vtkAreaLayout* Layout;
-  char* LabelField;
+  char *LabelField;
   bool UseRectangularCoordinates;
 };
 

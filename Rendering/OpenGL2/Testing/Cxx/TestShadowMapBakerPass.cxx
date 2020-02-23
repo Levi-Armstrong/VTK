@@ -38,8 +38,9 @@
 #include "vtkTextureObject.h"
 #include "vtkTimerLog.h"
 
+
 //----------------------------------------------------------------------------
-int TestShadowMapBakerPass(int argc, char* argv[])
+int TestShadowMapBakerPass(int argc, char *argv[])
 {
   vtkNew<vtkActor> actor;
   vtkNew<vtkRenderer> renderer;
@@ -47,23 +48,22 @@ int TestShadowMapBakerPass(int argc, char* argv[])
   renderer->SetBackground(0.3, 0.4, 0.6);
   vtkNew<vtkRenderWindow> renderWindow;
   renderWindow->SetSize(600, 600);
-  renderWindow->AddRenderer(renderer);
-  renderer->AddActor(actor);
-  vtkNew<vtkRenderWindowInteractor> iren;
-  iren->SetRenderWindow(renderWindow);
+  renderWindow->AddRenderer(renderer.Get());
+  renderer->AddActor(actor.Get());
+  vtkNew<vtkRenderWindowInteractor>  iren;
+  iren->SetRenderWindow(renderWindow.Get());
   vtkNew<vtkLightKit> lightKit;
-  lightKit->AddLightsToRenderer(renderer);
+  lightKit->AddLightsToRenderer(renderer.Get());
 
-  const char* fileName = vtkTestUtilities::ExpandDataFileName(argc, argv, "Data/dragon.ply");
+  const char* fileName =
+    vtkTestUtilities::ExpandDataFileName(argc, argv, "Data/dragon.ply");
   vtkNew<vtkPLYReader> reader;
   reader->SetFileName(fileName);
   reader->Update();
 
-  delete[] fileName;
-
   mapper->SetInputConnection(reader->GetOutputPort());
-  // mapper->SetInputConnection(norms->GetOutputPort());
-  actor->SetMapper(mapper);
+  //mapper->SetInputConnection(norms->GetOutputPort());
+  actor->SetMapper(mapper.Get());
   actor->GetProperty()->SetAmbientColor(0.2, 0.2, 1.0);
   actor->GetProperty()->SetDiffuseColor(1.0, 0.65, 0.7);
   actor->GetProperty()->SetSpecularColor(1.0, 1.0, 1.0);
@@ -72,15 +72,16 @@ int TestShadowMapBakerPass(int argc, char* argv[])
   actor->GetProperty()->SetAmbient(0.5);
   actor->GetProperty()->SetSpecularPower(20.0);
   actor->GetProperty()->SetOpacity(1.0);
-  // actor->GetProperty()->SetRepresentationToWireframe();
+  //actor->GetProperty()->SetRepresentationToWireframe();
 
   renderWindow->SetMultiSamples(0);
 
   vtkNew<vtkShadowMapBakerPass> bakerPass;
 
   // tell the renderer to use our render pass pipeline
-  vtkOpenGLRenderer* glrenderer = vtkOpenGLRenderer::SafeDownCast(renderer);
-  glrenderer->SetPass(bakerPass);
+  vtkOpenGLRenderer *glrenderer =
+      vtkOpenGLRenderer::SafeDownCast(renderer.GetPointer());
+  glrenderer->SetPass(bakerPass.Get());
 
   vtkNew<vtkTimerLog> timer;
   timer->StartTimer();
@@ -90,7 +91,7 @@ int TestShadowMapBakerPass(int argc, char* argv[])
   cerr << "baking time: " << firstRender << endl;
 
   // get a shadow map
-  vtkTextureObject* to = (*bakerPass->GetShadowMaps())[2];
+  vtkTextureObject *to = (*bakerPass->GetShadowMaps())[2];
   // by default the textures have depth comparison on
   // but for simple display we need to turn it off
   to->SetDepthTextureCompare(false);
@@ -100,25 +101,28 @@ int TestShadowMapBakerPass(int argc, char* argv[])
   vtkNew<vtkPolyDataMapper> mapper2;
   vtkNew<vtkOpenGLTexture> texture;
   texture->SetTextureObject(to);
-  actor2->SetTexture(texture);
-  actor2->SetMapper(mapper2);
+  actor2->SetTexture(texture.Get());
+  actor2->SetMapper(mapper2.Get());
 
   vtkNew<vtkPlaneSource> plane;
   mapper2->SetInputConnection(plane->GetOutputPort());
-  renderer->RemoveActor(actor);
-  renderer->AddActor(actor2);
-  glrenderer->SetPass(nullptr);
+  renderer->RemoveActor(actor.Get());
+  renderer->AddActor(actor2.Get());
+  glrenderer->SetPass(NULL);
 
+  renderer->GetActiveCamera()->SetPosition(0,0,1);
+  renderer->GetActiveCamera()->SetFocalPoint(0,0,0);
+  renderer->GetActiveCamera()->SetViewUp(0,1,0);
   renderer->ResetCamera();
   renderer->GetActiveCamera()->Zoom(2.0);
   renderWindow->Render();
 
-  int retVal = vtkRegressionTestImage(renderWindow);
-  if (retVal == vtkRegressionTester::DO_INTERACTOR)
+  int retVal = vtkRegressionTestImage( renderWindow.Get() );
+  if ( retVal == vtkRegressionTester::DO_INTERACTOR)
   {
     iren->Start();
   }
 
-  bakerPass->ReleaseGraphicsResources(renderWindow);
-  return !retVal;
+  bakerPass->ReleaseGraphicsResources(renderWindow.Get());
+  return EXIT_SUCCESS;
 }

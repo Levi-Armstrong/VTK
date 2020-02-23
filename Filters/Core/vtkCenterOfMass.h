@@ -23,7 +23,7 @@
  *
  * You must ensure Update() has been called before GetCenter will produce a valid
  * value.
- */
+*/
 
 #ifndef vtkCenterOfMass_h
 #define vtkCenterOfMass_h
@@ -37,16 +37,16 @@ class vtkDataArray;
 class VTKFILTERSCORE_EXPORT vtkCenterOfMass : public vtkPointSetAlgorithm
 {
 public:
-  static vtkCenterOfMass* New();
-  vtkTypeMacro(vtkCenterOfMass, vtkPointSetAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkCenterOfMass *New();
+  vtkTypeMacro(vtkCenterOfMass,vtkPointSetAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   //@{
   /**
    * Get the output of the center of mass computation.
    */
-  vtkSetVector3Macro(Center, double);
-  vtkGetVector3Macro(Center, double);
+  vtkSetVector3Macro(Center,double);
+  vtkGetVector3Macro(Center,double);
   //@}
 
   //@{
@@ -60,23 +60,26 @@ public:
   /**
    * This function is called by RequestData. It exists so that
    * other classes may use this computation without constructing
-   * a vtkCenterOfMass object.  The scalars can be set to nullptr
+   * a vtkCenterOfMass object.  The scalars can be set to NULL
    * if all points are to be weighted equally.  If scalars are
    * used, it is the caller's responsibility to ensure that the
    * number of scalars matches the number of points, and that
    * the sum of the scalars is a positive value.
    */
-  static void ComputeCenterOfMass(vtkPoints* input, vtkDataArray* scalars, double center[3]);
+  static void ComputeCenterOfMass(
+    vtkPoints* input, vtkDataArray *scalars, double center[3]);
 
 protected:
   vtkCenterOfMass();
 
-  int RequestData(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  int RequestData(vtkInformation* request,
+                  vtkInformationVector** inputVector,
+                  vtkInformationVector* outputVector ) VTK_OVERRIDE;
 
 private:
-  vtkCenterOfMass(const vtkCenterOfMass&) = delete;
-  void operator=(const vtkCenterOfMass&) = delete;
+
+  vtkCenterOfMass(const vtkCenterOfMass&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkCenterOfMass&) VTK_DELETE_FUNCTION;
 
   bool UseScalarsAsWeights;
   double Center[3];

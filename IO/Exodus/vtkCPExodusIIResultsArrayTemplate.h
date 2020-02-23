@@ -22,7 +22,7 @@
  * Map native Exodus II results arrays into the vtkDataArray interface. Use
  * the vtkCPExodusIIInSituReader to read an Exodus II file's data into this
  * structure.
- */
+*/
 
 #ifndef vtkCPExodusIIResultsArrayTemplate_h
 #define vtkCPExodusIIResultsArrayTemplate_h
@@ -32,14 +32,14 @@
 #include "vtkObjectFactory.h" // for vtkStandardNewMacro
 
 template <class Scalar>
-class vtkCPExodusIIResultsArrayTemplate : public vtkMappedDataArray<Scalar>
+class vtkCPExodusIIResultsArrayTemplate: public vtkMappedDataArray<Scalar>
 {
 public:
-  vtkAbstractTemplateTypeMacro(
-    vtkCPExodusIIResultsArrayTemplate<Scalar>, vtkMappedDataArray<Scalar>)
-    vtkMappedDataArrayNewInstanceMacro(
-      vtkCPExodusIIResultsArrayTemplate<Scalar>) static vtkCPExodusIIResultsArrayTemplate* New();
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkAbstractTemplateTypeMacro(vtkCPExodusIIResultsArrayTemplate<Scalar>,
+                               vtkMappedDataArray<Scalar>)
+  vtkMappedDataArrayNewInstanceMacro(vtkCPExodusIIResultsArrayTemplate<Scalar>)
+  static vtkCPExodusIIResultsArrayTemplate *New();
+  virtual void PrintSelf(ostream &os, vtkIndent indent);
 
   typedef typename Superclass::ValueType ValueType;
 
@@ -55,84 +55,85 @@ public:
   //@}
 
   // Reimplemented virtuals -- see superclasses for descriptions:
-  void Initialize() override;
-  void GetTuples(vtkIdList* ptIds, vtkAbstractArray* output) override;
-  void GetTuples(vtkIdType p1, vtkIdType p2, vtkAbstractArray* output) override;
-  void Squeeze() override;
-  VTK_NEWINSTANCE vtkArrayIterator* NewIterator() override;
-  vtkIdType LookupValue(vtkVariant value) override;
-  void LookupValue(vtkVariant value, vtkIdList* ids) override;
-  vtkVariant GetVariantValue(vtkIdType idx) override;
-  void ClearLookup() override;
-  double* GetTuple(vtkIdType i) override;
-  void GetTuple(vtkIdType i, double* tuple) override;
-  vtkIdType LookupTypedValue(Scalar value) override;
-  void LookupTypedValue(Scalar value, vtkIdList* ids) override;
-  ValueType GetValue(vtkIdType idx) const override;
-  ValueType& GetValueReference(vtkIdType idx) override;
-  void GetTypedTuple(vtkIdType idx, Scalar* t) const override;
+  void Initialize();
+  void GetTuples(vtkIdList *ptIds, vtkAbstractArray *output);
+  void GetTuples(vtkIdType p1, vtkIdType p2, vtkAbstractArray *output);
+  void Squeeze();
+  VTK_NEWINSTANCE vtkArrayIterator *NewIterator();
+  vtkIdType LookupValue(vtkVariant value);
+  void LookupValue(vtkVariant value, vtkIdList *ids);
+  vtkVariant GetVariantValue(vtkIdType idx);
+  void ClearLookup();
+  double* GetTuple(vtkIdType i);
+  void GetTuple(vtkIdType i, double *tuple);
+  vtkIdType LookupTypedValue(Scalar value);
+  void LookupTypedValue(Scalar value, vtkIdList *ids);
+  ValueType GetValue(vtkIdType idx) const;
+  ValueType& GetValueReference(vtkIdType idx);
+  void GetTypedTuple(vtkIdType idx, Scalar *t) const;
 
   //@{
   /**
    * This container is read only -- this method does nothing but print a
    * warning.
    */
-  vtkTypeBool Allocate(vtkIdType sz, vtkIdType ext) override;
-  vtkTypeBool Resize(vtkIdType numTuples) override;
-  void SetNumberOfTuples(vtkIdType number) override;
-  void SetTuple(vtkIdType i, vtkIdType j, vtkAbstractArray* source) override;
-  void SetTuple(vtkIdType i, const float* source) override;
-  void SetTuple(vtkIdType i, const double* source) override;
-  void InsertTuple(vtkIdType i, vtkIdType j, vtkAbstractArray* source) override;
-  void InsertTuple(vtkIdType i, const float* source) override;
-  void InsertTuple(vtkIdType i, const double* source) override;
-  void InsertTuples(vtkIdList* dstIds, vtkIdList* srcIds, vtkAbstractArray* source) override;
-  void InsertTuples(
-    vtkIdType dstStart, vtkIdType n, vtkIdType srcStart, vtkAbstractArray* source) override;
-  vtkIdType InsertNextTuple(vtkIdType j, vtkAbstractArray* source) override;
-  vtkIdType InsertNextTuple(const float* source) override;
-  vtkIdType InsertNextTuple(const double* source) override;
-  void DeepCopy(vtkAbstractArray* aa) override;
-  void DeepCopy(vtkDataArray* da) override;
-  void InterpolateTuple(
-    vtkIdType i, vtkIdList* ptIndices, vtkAbstractArray* source, double* weights) override;
-  void InterpolateTuple(vtkIdType i, vtkIdType id1, vtkAbstractArray* source1, vtkIdType id2,
-    vtkAbstractArray* source2, double t) override;
-  void SetVariantValue(vtkIdType idx, vtkVariant value) override;
-  void InsertVariantValue(vtkIdType idx, vtkVariant value) override;
-  void RemoveTuple(vtkIdType id) override;
-  void RemoveFirstTuple() override;
-  void RemoveLastTuple() override;
-  void SetTypedTuple(vtkIdType i, const Scalar* t) override;
-  void InsertTypedTuple(vtkIdType i, const Scalar* t) override;
-  vtkIdType InsertNextTypedTuple(const Scalar* t) override;
-  void SetValue(vtkIdType idx, Scalar value) override;
-  vtkIdType InsertNextValue(Scalar v) override;
-  void InsertValue(vtkIdType idx, Scalar v) override;
+  int Allocate(vtkIdType sz, vtkIdType ext);
+  int Resize(vtkIdType numTuples);
+  void SetNumberOfTuples(vtkIdType number);
+  void SetTuple(vtkIdType i, vtkIdType j, vtkAbstractArray *source);
+  void SetTuple(vtkIdType i, const float *source);
+  void SetTuple(vtkIdType i, const double *source);
+  void InsertTuple(vtkIdType i, vtkIdType j, vtkAbstractArray *source);
+  void InsertTuple(vtkIdType i, const float *source);
+  void InsertTuple(vtkIdType i, const double *source);
+  void InsertTuples(vtkIdList *dstIds, vtkIdList *srcIds,
+                    vtkAbstractArray *source);
+  void InsertTuples(vtkIdType dstStart, vtkIdType n, vtkIdType srcStart,
+                    vtkAbstractArray* source);
+  vtkIdType InsertNextTuple(vtkIdType j, vtkAbstractArray *source);
+  vtkIdType InsertNextTuple(const float *source);
+  vtkIdType InsertNextTuple(const double *source);
+  void DeepCopy(vtkAbstractArray *aa);
+  void DeepCopy(vtkDataArray *da);
+  void InterpolateTuple(vtkIdType i, vtkIdList *ptIndices,
+                        vtkAbstractArray* source,  double* weights);
+  void InterpolateTuple(vtkIdType i, vtkIdType id1, vtkAbstractArray *source1,
+                        vtkIdType id2, vtkAbstractArray *source2, double t);
+  void SetVariantValue(vtkIdType idx, vtkVariant value);
+  void InsertVariantValue(vtkIdType idx, vtkVariant value);
+  void RemoveTuple(vtkIdType id);
+  void RemoveFirstTuple();
+  void RemoveLastTuple();
+  void SetTypedTuple(vtkIdType i, const Scalar *t);
+  void InsertTypedTuple(vtkIdType i, const Scalar *t);
+  vtkIdType InsertNextTypedTuple(const Scalar *t);
+  void SetValue(vtkIdType idx, Scalar value);
+  vtkIdType InsertNextValue(Scalar v);
+  void InsertValue(vtkIdType idx, Scalar v);
   //@}
 
 protected:
   vtkCPExodusIIResultsArrayTemplate();
-  ~vtkCPExodusIIResultsArrayTemplate() override;
+  ~vtkCPExodusIIResultsArrayTemplate();
 
-  std::vector<Scalar*> Arrays;
+  std::vector<Scalar *> Arrays;
 
 private:
-  vtkCPExodusIIResultsArrayTemplate(const vtkCPExodusIIResultsArrayTemplate&) = delete;
-  void operator=(const vtkCPExodusIIResultsArrayTemplate&) = delete;
+  vtkCPExodusIIResultsArrayTemplate(const vtkCPExodusIIResultsArrayTemplate &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkCPExodusIIResultsArrayTemplate &) VTK_DELETE_FUNCTION;
 
-  vtkIdType Lookup(const Scalar& val, vtkIdType startIndex);
-  double* TempDoubleArray;
+  vtkIdType Lookup(const Scalar &val, vtkIdType startIndex);
+  double *TempDoubleArray;
   //@{
   /**
    * By default Save is false.
    */
   bool Save;
-  //@}
 };
+  //@}
 
 #include "vtkCPExodusIIResultsArrayTemplate.txx"
 
-#endif // vtkCPExodusIIResultsArrayTemplate_h
+#endif //vtkCPExodusIIResultsArrayTemplate_h
 
 // VTK-HeaderTest-Exclude: vtkCPExodusIIResultsArrayTemplate.h

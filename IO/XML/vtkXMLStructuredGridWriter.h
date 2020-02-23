@@ -24,7 +24,7 @@
  *
  * @sa
  * vtkXMLPStructuredGridWriter
- */
+*/
 
 #ifndef vtkXMLStructuredGridWriter_h
 #define vtkXMLStructuredGridWriter_h
@@ -38,8 +38,8 @@ class VTKIOXML_EXPORT vtkXMLStructuredGridWriter : public vtkXMLStructuredDataWr
 {
 public:
   static vtkXMLStructuredGridWriter* New();
-  vtkTypeMacro(vtkXMLStructuredGridWriter, vtkXMLStructuredDataWriter);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkXMLStructuredGridWriter,vtkXMLStructuredDataWriter);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Get/Set the writer's input.
@@ -49,32 +49,32 @@ public:
   /**
    * Get the default file extension for files written by this writer.
    */
-  const char* GetDefaultFileExtension() override;
+  const char* GetDefaultFileExtension();
 
 protected:
   vtkXMLStructuredGridWriter();
-  ~vtkXMLStructuredGridWriter() override;
+  ~vtkXMLStructuredGridWriter();
 
   // see algorithm for more info
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  virtual int FillInputPortInformation(int port, vtkInformation* info);
 
-  void WriteAppendedPiece(int index, vtkIndent indent) override;
-  void WriteAppendedPieceData(int index) override;
-  void WriteInlinePiece(vtkIndent indent) override;
-  void GetInputExtent(int* extent) override;
-  const char* GetDataSetName() override;
+  void WriteAppendedPiece(int index, vtkIndent indent);
+  void WriteAppendedPieceData(int index);
+  void WriteInlinePiece(vtkIndent indent);
+  void GetInputExtent(int* extent);
+  const char* GetDataSetName();
   void CalculateSuperclassFraction(float* fractions);
 
   // The position of the appended data offset attribute for the points
   // array.
-  OffsetsManagerGroup* PointsOM; // one per piece
+  OffsetsManagerGroup *PointsOM;  //one per piece
 
-  void AllocatePositionArrays() override;
-  void DeletePositionArrays() override;
+  virtual void AllocatePositionArrays();
+  virtual void DeletePositionArrays();
 
 private:
-  vtkXMLStructuredGridWriter(const vtkXMLStructuredGridWriter&) = delete;
-  void operator=(const vtkXMLStructuredGridWriter&) = delete;
+  vtkXMLStructuredGridWriter(const vtkXMLStructuredGridWriter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkXMLStructuredGridWriter&) VTK_DELETE_FUNCTION;
 };
 
 #endif

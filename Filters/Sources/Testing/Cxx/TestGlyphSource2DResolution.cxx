@@ -27,9 +27,9 @@
 #include "vtkPolyData.h"
 #include "vtkPolyDataMapper2D.h"
 #include "vtkRegressionTestImage.h"
+#include "vtkRenderer.h"
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
-#include "vtkRenderer.h"
 #include "vtkTestUtilities.h"
 
 int TestGlyphSource2DResolution(int argc, char* argv[])
@@ -43,9 +43,9 @@ int TestGlyphSource2DResolution(int argc, char* argv[])
   vtkNew<vtkFloatArray> vectors;
   vectors->SetNumberOfComponents(3);
 
-  pd->SetPoints(pts);
-  pd->GetPointData()->SetScalars(scalars);
-  pd->GetPointData()->SetVectors(vectors);
+  pd->SetPoints(pts.GetPointer());
+  pd->GetPointData()->SetScalars(scalars.GetPointer());
+  pd->GetPointData()->SetVectors(vectors.GetPointer());
 
   vtkNew<vtkMinimalStandardRandomSequence> randomSequence;
   randomSequence->SetSeed(1);
@@ -55,17 +55,21 @@ int TestGlyphSource2DResolution(int argc, char* argv[])
   for (int i = 0; i < 100; ++i)
   {
     randomSequence->Next();
-    double x = randomSequence->GetValue() * size;
+    double x = randomSequence->GetValue()*size;
     randomSequence->Next();
-    double y = randomSequence->GetValue() * size;
-    pts->InsertNextPoint(x, y, 0.0);
+    double y = randomSequence->GetValue()*size;
+    pts->InsertNextPoint(x,
+                         y,
+                         0.0);
     randomSequence->Next();
-    scalars->InsertNextValue(5.0 * randomSequence->GetValue());
+    scalars->InsertNextValue(5.0*randomSequence->GetValue());
     randomSequence->Next();
-    double ihat = randomSequence->GetValue() * 2 - 1;
+    double ihat = randomSequence->GetValue()*2-1;
     randomSequence->Next();
-    double jhat = randomSequence->GetValue() * 2 - 1;
-    vectors->InsertNextTuple3(ihat, jhat, 0.0);
+    double jhat = randomSequence->GetValue()*2-1;
+    vectors->InsertNextTuple3(ihat,
+                              jhat,
+                              0.0);
   }
 
   vtkNew<vtkGlyphSource2D> gs;
@@ -103,14 +107,14 @@ int TestGlyphSource2DResolution(int argc, char* argv[])
   gs4->CrossOff();
 
   vtkNew<vtkGlyph2D> glypher;
-  glypher->SetInputData(pd);
+  glypher->SetInputData(pd.GetPointer());
   glypher->SetSourceConnection(0, gs->GetOutputPort());
   glypher->SetSourceConnection(1, gs1->GetOutputPort());
   glypher->SetSourceConnection(2, gs2->GetOutputPort());
   glypher->SetSourceConnection(3, gs3->GetOutputPort());
   glypher->SetSourceConnection(4, gs4->GetOutputPort());
   glypher->SetIndexModeToScalar();
-  glypher->SetRange(0, 5);
+  glypher->SetRange(0,5);
   glypher->SetScaleModeToScaleByVector();
 
   vtkNew<vtkPolyDataMapper2D> mapper;
@@ -118,26 +122,26 @@ int TestGlyphSource2DResolution(int argc, char* argv[])
   mapper->SetScalarRange(0, 5);
 
   vtkNew<vtkActor2D> glyphActor;
-  glyphActor->SetMapper(mapper);
+  glyphActor->SetMapper(mapper.GetPointer());
 
   // Create the RenderWindow, Renderer
   vtkNew<vtkRenderWindow> renWin;
   renWin->SetMultiSamples(0);
   vtkNew<vtkRenderWindowInteractor> iren;
-  iren->SetRenderWindow(renWin);
+  iren->SetRenderWindow(renWin.GetPointer());
 
   vtkNew<vtkRenderer> ren;
-  ren->AddActor2D(glyphActor);
+  ren->AddActor2D(glyphActor.GetPointer());
   ren->SetBackground(0.3, 0.3, 0.3);
   ren->ResetCamera();
 
-  renWin->SetSize(size + 1, size - 1); // NPOT size
-  renWin->AddRenderer(ren);
+  renWin->SetSize(size+1, size-1); //NPOT size
+  renWin->AddRenderer(ren.GetPointer());
   renWin->Render();
 
   iren->Initialize();
 
-  int retVal = vtkRegressionTestImage(renWin);
+  int retVal = vtkRegressionTestImage(renWin.GetPointer());
   if (retVal == vtkRegressionTester::DO_INTERACTOR)
   {
     iren->Start();

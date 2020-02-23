@@ -24,14 +24,14 @@
 
 #include "vtkUnstructuredGridHomogeneousRayIntegrator.h"
 
-#include "vtkAbstractVolumeMapper.h"
-#include "vtkColorTransferFunction.h"
-#include "vtkDoubleArray.h"
 #include "vtkObjectFactory.h"
-#include "vtkPiecewiseFunction.h"
-#include "vtkUnstructuredGrid.h"
-#include "vtkVolume.h"
 #include "vtkVolumeProperty.h"
+#include "vtkVolume.h"
+#include "vtkAbstractVolumeMapper.h"
+#include "vtkUnstructuredGrid.h"
+#include "vtkDoubleArray.h"
+#include "vtkColorTransferFunction.h"
+#include "vtkPiecewiseFunction.h"
 
 #include <cmath>
 
@@ -43,13 +43,13 @@ vtkStandardNewMacro(vtkUnstructuredGridHomogeneousRayIntegrator);
 
 vtkUnstructuredGridHomogeneousRayIntegrator::vtkUnstructuredGridHomogeneousRayIntegrator()
 {
-  this->Property = nullptr;
+  this->Property = NULL;
 
   this->NumComponents = 0;
-  this->ColorTable = nullptr;
-  this->AttenuationTable = nullptr;
-  this->TableShift = nullptr;
-  this->TableScale = nullptr;
+  this->ColorTable = NULL;
+  this->AttenuationTable = NULL;
+  this->TableShift = NULL;
+  this->TableScale = NULL;
 
   this->UseAverageColor = 0;
   this->TransferFunctionTableSize = 1024;
@@ -68,17 +68,18 @@ vtkUnstructuredGridHomogeneousRayIntegrator::~vtkUnstructuredGridHomogeneousRayI
   delete[] this->TableScale;
 }
 
-void vtkUnstructuredGridHomogeneousRayIntegrator::PrintSelf(ostream& os, vtkIndent indent)
+void vtkUnstructuredGridHomogeneousRayIntegrator::PrintSelf(ostream &os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 
   os << indent << "UseAverageColor: " << this->UseAverageColor << endl;
-  os << indent << "TransferFunctionTableSize: " << this->TransferFunctionTableSize << endl;
+  os << indent << "TransferFunctionTableSize: "
+     << this->TransferFunctionTableSize << endl;
 }
 
 //-----------------------------------------------------------------------------
 
-void vtkUnstructuredGridHomogeneousRayIntegrator::GetTransferFunctionTables(vtkDataArray* scalars)
+void vtkUnstructuredGridHomogeneousRayIntegrator::GetTransferFunctionTables(vtkDataArray *scalars)
 {
   for (int i = 0; i < this->NumComponents; i++)
   {
@@ -105,35 +106,40 @@ void vtkUnstructuredGridHomogeneousRayIntegrator::GetTransferFunctionTables(vtkD
     {
       range[1] = range[0] + 1;
     }
-    this->TableScale[c] = this->TransferFunctionTableSize / (range[1] - range[0]);
-    this->TableShift[c] = -range[0] * this->TransferFunctionTableSize / (range[1] - range[0]);
+    this->TableScale[c] = this->TransferFunctionTableSize/(range[1]-range[0]);
+    this->TableShift[c]
+      = -range[0]*this->TransferFunctionTableSize/(range[1]-range[0]);
 
-    this->ColorTable[c] = new float[3 * this->TransferFunctionTableSize];
+    this->ColorTable[c] = new float[3*this->TransferFunctionTableSize];
     if (this->Property->GetColorChannels(c) == 1)
     {
       // Get gray values.  Store temporarily in allocated RGB array.
-      this->Property->GetGrayTransferFunction(c)->GetTable(
-        range[0], range[1], this->TransferFunctionTableSize, this->ColorTable[c]);
+      this->Property->GetGrayTransferFunction(c)
+        ->GetTable(range[0], range[1], this->TransferFunctionTableSize,
+                   this->ColorTable[c]);
       // Convert gray into RGB.  Copy backward so that we can use the same
       // array.
-      for (int i = this->TransferFunctionTableSize - 1; i >= 0; i--)
+      for (int i = this->TransferFunctionTableSize-1; i >= 0; i--)
       {
-        this->ColorTable[c][3 * i + 0] = this->ColorTable[c][3 * i + 1] =
-          this->ColorTable[c][3 * i + 2] = this->ColorTable[c][i];
+        this->ColorTable[c][3*i + 0]
+          = this->ColorTable[c][3*i + 1]
+          = this->ColorTable[c][3*i + 2] = this->ColorTable[c][i];
       }
     }
     else
     {
-      this->Property->GetRGBTransferFunction(c)->GetTable(
-        range[0], range[1], this->TransferFunctionTableSize, this->ColorTable[c]);
+      this->Property->GetRGBTransferFunction(c)
+        ->GetTable(range[0], range[1], this->TransferFunctionTableSize,
+                   this->ColorTable[c]);
     }
 
     this->AttenuationTable[c] = new float[this->TransferFunctionTableSize];
-    this->Property->GetScalarOpacity(c)->GetTable(
-      range[0], range[1], this->TransferFunctionTableSize, this->AttenuationTable[c]);
+    this->Property->GetScalarOpacity(c)
+      ->GetTable(range[0], range[1], this->TransferFunctionTableSize,
+                 this->AttenuationTable[c]);
 
     // Adjust attenuation by scalar unit length.  This will make the unit
-    // length the same as the model.
+    // lenth the same as the model.
     float unitlength = this->Property->GetScalarOpacityUnitDistance(c);
     for (int i = 0; i < this->TransferFunctionTableSize; i++)
     {
@@ -146,13 +152,14 @@ void vtkUnstructuredGridHomogeneousRayIntegrator::GetTransferFunctionTables(vtkD
 
 //-----------------------------------------------------------------------------
 
-void vtkUnstructuredGridHomogeneousRayIntegrator::Initialize(
-  vtkVolume* volume, vtkDataArray* scalars)
+void vtkUnstructuredGridHomogeneousRayIntegrator::Initialize(vtkVolume *volume,
+                                                   vtkDataArray *scalars)
 {
-  vtkVolumeProperty* property = volume->GetProperty();
+  vtkVolumeProperty *property = volume->GetProperty();
 
-  if ((property == this->Property) && (this->TablesBuilt > property->GetMTime()) &&
-    (this->TablesBuilt > this->MTime))
+  if (   (property == this->Property)
+      && (this->TablesBuilt > property->GetMTime())
+      && (this->TablesBuilt > this->MTime) )
   {
     // Nothing changed from the last time Initialize was run.
     return;
@@ -169,8 +176,11 @@ void vtkUnstructuredGridHomogeneousRayIntegrator::Initialize(
 
 //-----------------------------------------------------------------------------
 
-void vtkUnstructuredGridHomogeneousRayIntegrator::Integrate(vtkDoubleArray* intersectionLengths,
-  vtkDataArray* nearIntersections, vtkDataArray* vtkNotUsed(farIntersections), float color[4])
+void vtkUnstructuredGridHomogeneousRayIntegrator::Integrate(
+                                     vtkDoubleArray *intersectionLengths,
+                                     vtkDataArray *nearIntersections,
+                                     vtkDataArray *vtkNotUsed(farIntersections),
+                                     float color[4])
 {
   vtkIdType numIntersections = intersectionLengths->GetNumberOfTuples();
 
@@ -181,23 +191,24 @@ void vtkUnstructuredGridHomogeneousRayIntegrator::Integrate(vtkDoubleArray* inte
       // Optimize for what I think is one of the most common uses.
       for (vtkIdType i = 0; i < numIntersections; i++)
       {
-        int table_index =
-          (int)(this->TableScale[0] * nearIntersections->GetComponent(i, 0) + this->TableShift[0]);
+        int table_index
+          = (int)(  this->TableScale[0]*nearIntersections->GetComponent(i, 0)
+                  + this->TableShift[0] );
         if (table_index < 0)
         {
           table_index = 0;
         }
         if (table_index >= this->TransferFunctionTableSize)
         {
-          table_index = this->TransferFunctionTableSize - 1;
+          table_index = this->TransferFunctionTableSize-1;
         }
-        float* c = this->ColorTable[0] + 3 * table_index;
+        float *c = this->ColorTable[0] + 3*table_index;
         float tau = this->AttenuationTable[0][table_index];
-        float alpha = 1 - (float)exp(-intersectionLengths->GetComponent(i, 0) * tau);
-        color[0] += c[0] * alpha * (1 - color[3]);
-        color[1] += c[1] * alpha * (1 - color[3]);
-        color[2] += c[2] * alpha * (1 - color[3]);
-        color[3] += alpha * (1 - color[3]);
+        float alpha = 1-(float)exp(-intersectionLengths->GetComponent(i,0)*tau);
+        color[0] += c[0]*alpha*(1-color[3]);
+        color[1] += c[1]*alpha*(1-color[3]);
+        color[2] += c[2]*alpha*(1-color[3]);
+        color[3] += alpha*(1-color[3]);
       }
     }
     else
@@ -206,36 +217,36 @@ void vtkUnstructuredGridHomogeneousRayIntegrator::Integrate(vtkDoubleArray* inte
       for (vtkIdType i = 0; i < numIntersections; i++)
       {
         float newcolor[4];
-        int table_index =
-          (int)(this->TableScale[0] * nearIntersections->GetComponent(i, 0) + this->TableShift[0]);
+        int table_index
+          = (int)(  this->TableScale[0]*nearIntersections->GetComponent(i, 0)
+                  + this->TableShift[0] );
         if (table_index < 0)
         {
           table_index = 0;
         }
         if (table_index >= this->TransferFunctionTableSize)
         {
-          table_index = this->TransferFunctionTableSize - 1;
+          table_index = this->TransferFunctionTableSize-1;
         }
-        float* c = this->ColorTable[0] + 3 * table_index;
+        float *c = this->ColorTable[0] + 3*table_index;
         float tau = this->AttenuationTable[0][table_index];
-        newcolor[0] = c[0];
-        newcolor[1] = c[1];
-        newcolor[2] = c[2];
-        newcolor[3] = tau;
+        newcolor[0] = c[0];  newcolor[1] = c[1];
+        newcolor[2] = c[2];  newcolor[3] = tau;
         for (int component = 1; component < this->NumComponents; component++)
         {
-          table_index =
-            (int)(this->TableScale[component] * nearIntersections->GetComponent(i, component) +
-              this->TableShift[component]);
+          table_index
+            = (int)(  this->TableScale[component]
+                      *nearIntersections->GetComponent(i, component)
+                    + this->TableShift[component] );
           if (table_index < 0)
           {
             table_index = 0;
           }
           if (table_index >= this->TransferFunctionTableSize)
           {
-            table_index = this->TransferFunctionTableSize - 1;
+            table_index = this->TransferFunctionTableSize-1;
           }
-          c = this->ColorTable[component] + 3 * table_index;
+          c = this->ColorTable[component] + 3*table_index;
           tau = this->AttenuationTable[component][table_index];
           // Here we handle the mixing of material properties.  This never
           // seems to be defined very clearly.  I handle this by assuming
@@ -249,20 +260,21 @@ void vtkUnstructuredGridHomogeneousRayIntegrator::Integrate(vtkDoubleArray* inte
           // always be scaled between 0 and 1.
           if (tau + newcolor[3] > 1.0e-8f)
           {
-            newcolor[0] *= newcolor[3] / (tau + newcolor[3]);
-            newcolor[1] *= newcolor[3] / (tau + newcolor[3]);
-            newcolor[2] *= newcolor[3] / (tau + newcolor[3]);
-            newcolor[0] += c[0] * tau / (tau + newcolor[3]);
-            newcolor[1] += c[1] * tau / (tau + newcolor[3]);
-            newcolor[2] += c[2] * tau / (tau + newcolor[3]);
+            newcolor[0] *= newcolor[3]/(tau + newcolor[3]);
+            newcolor[1] *= newcolor[3]/(tau + newcolor[3]);
+            newcolor[2] *= newcolor[3]/(tau + newcolor[3]);
+            newcolor[0] += c[0]*tau/(tau + newcolor[3]);
+            newcolor[1] += c[1]*tau/(tau + newcolor[3]);
+            newcolor[2] += c[2]*tau/(tau + newcolor[3]);
             newcolor[3] += tau;
           }
         }
-        float alpha = 1 - (float)exp(-intersectionLengths->GetComponent(i, 0) * newcolor[3]);
-        color[0] += newcolor[0] * alpha * (1 - color[3]);
-        color[1] += newcolor[1] * alpha * (1 - color[3]);
-        color[2] += newcolor[2] * alpha * (1 - color[3]);
-        color[3] += alpha * (1 - color[3]);
+        float alpha = 1 - (float)exp(-intersectionLengths->GetComponent(i,0)
+                                     *newcolor[3]);
+        color[0] += newcolor[0]*alpha*(1-color[3]);
+        color[1] += newcolor[1]*alpha*(1-color[3]);
+        color[2] += newcolor[2]*alpha*(1-color[3]);
+        color[3] += alpha*(1-color[3]);
       }
     }
   }
@@ -278,15 +290,16 @@ void vtkUnstructuredGridHomogeneousRayIntegrator::Integrate(vtkDoubleArray* inte
       }
       else
       {
-        double* lt = nearIntersections->GetTuple(i);
+        double *lt = nearIntersections->GetTuple(i);
         c[0] = c[1] = c[2] = lt[0];
         c[3] = lt[1];
       }
-      float alpha = 1 - (float)exp(-intersectionLengths->GetComponent(i, 0) * c[3]);
-      color[0] += (float)c[0] * alpha * (1 - color[3]);
-      color[1] += (float)c[1] * alpha * (1 - color[3]);
-      color[2] += (float)c[2] * alpha * (1 - color[3]);
-      color[3] += alpha * (1 - color[3]);
+      float alpha = 1-(float)exp(-intersectionLengths->GetComponent(i,0)*c[3]);
+      color[0] += (float)c[0]*alpha*(1-color[3]);
+      color[1] += (float)c[1]*alpha*(1-color[3]);
+      color[2] += (float)c[2]*alpha*(1-color[3]);
+      color[3] += alpha*(1-color[3]);
     }
   }
 }
+

@@ -40,7 +40,8 @@ vtkTreeMapView::vtkTreeMapView()
   this->SliceAndDiceLayout = vtkSmartPointer<vtkSliceAndDiceLayoutStrategy>::New();
 
   this->SetLayoutStrategyToSquarify();
-  vtkSmartPointer<vtkTreeMapToPolyData> poly = vtkSmartPointer<vtkTreeMapToPolyData>::New();
+  vtkSmartPointer<vtkTreeMapToPolyData> poly =
+    vtkSmartPointer<vtkTreeMapToPolyData>::New();
   this->SetAreaToPolyData(poly);
   this->SetUseRectangularCoordinates(true);
   vtkSmartPointer<vtkLabeledTreeMapDataMapper> mapper =
@@ -49,7 +50,9 @@ vtkTreeMapView::vtkTreeMapView()
 }
 
 //----------------------------------------------------------------------------
-vtkTreeMapView::~vtkTreeMapView() = default;
+vtkTreeMapView::~vtkTreeMapView()
+{
+}
 
 //----------------------------------------------------------------------------
 void vtkTreeMapView::SetLayoutStrategyToBox()
@@ -129,5 +132,6 @@ void vtkTreeMapView::GetFontSizeRange(int range[3])
 //----------------------------------------------------------------------------
 void vtkTreeMapView::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 }
+

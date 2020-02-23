@@ -34,7 +34,7 @@ int TestCountFaces(int, char*[])
   {
     points->InsertNextPoint(0., 0., 0.);
   }
-  data->SetPoints(points);
+  data->SetPoints(points.Get());
 
   // Insert the following cell types and verify the number of faces computed
   // by the filter:
@@ -50,48 +50,51 @@ int TestCountFaces(int, char*[])
   // VTK_HEXAGONAL_PRISM = 8
 
   cell->InsertNextId(cell->GetNumberOfIds());
-  data->InsertNextCell(VTK_VERTEX, cell);
+  data->InsertNextCell(VTK_VERTEX, cell.Get());
 
   cell->InsertNextId(cell->GetNumberOfIds());
-  data->InsertNextCell(VTK_LINE, cell);
+  data->InsertNextCell(VTK_LINE, cell.Get());
 
   cell->InsertNextId(cell->GetNumberOfIds());
-  data->InsertNextCell(VTK_TRIANGLE, cell);
+  data->InsertNextCell(VTK_TRIANGLE, cell.Get());
 
   cell->InsertNextId(cell->GetNumberOfIds());
-  data->InsertNextCell(VTK_TETRA, cell);
+  data->InsertNextCell(VTK_TETRA, cell.Get());
 
   cell->InsertNextId(cell->GetNumberOfIds());
-  data->InsertNextCell(VTK_PYRAMID, cell);
+  data->InsertNextCell(VTK_PYRAMID, cell.Get());
 
   cell->InsertNextId(cell->GetNumberOfIds());
-  data->InsertNextCell(VTK_WEDGE, cell);
-
-  cell->InsertNextId(cell->GetNumberOfIds());
-  cell->InsertNextId(cell->GetNumberOfIds());
-  data->InsertNextCell(VTK_VOXEL, cell);
-  data->InsertNextCell(VTK_HEXAHEDRON, cell);
+  data->InsertNextCell(VTK_WEDGE, cell.Get());
 
   cell->InsertNextId(cell->GetNumberOfIds());
   cell->InsertNextId(cell->GetNumberOfIds());
-  data->InsertNextCell(VTK_PENTAGONAL_PRISM, cell);
+  data->InsertNextCell(VTK_VOXEL, cell.Get());
+  data->InsertNextCell(VTK_HEXAHEDRON, cell.Get());
 
   cell->InsertNextId(cell->GetNumberOfIds());
   cell->InsertNextId(cell->GetNumberOfIds());
-  data->InsertNextCell(VTK_HEXAGONAL_PRISM, cell);
+  data->InsertNextCell(VTK_PENTAGONAL_PRISM, cell.Get());
 
-  filter->SetInputData(data);
+  cell->InsertNextId(cell->GetNumberOfIds());
+  cell->InsertNextId(cell->GetNumberOfIds());
+  data->InsertNextCell(VTK_HEXAGONAL_PRISM, cell.Get());
+
+  filter->SetInputData(data.Get());
   filter->Update();
 
-  vtkUnstructuredGrid* output = vtkUnstructuredGrid::SafeDownCast(filter->GetOutput());
+  vtkUnstructuredGrid *output =
+      vtkUnstructuredGrid::SafeDownCast(filter->GetOutput());
   if (!output)
   {
     std::cerr << "No output data!\n";
     return EXIT_FAILURE;
   }
 
-  vtkIdTypeArray* faces =
-    vtkIdTypeArray::SafeDownCast(output->GetCellData()->GetArray(filter->GetOutputArrayName()));
+  vtkIdTypeArray *faces =
+      vtkIdTypeArray::SafeDownCast(
+        output->GetCellData()->GetArray(
+          filter->GetOutputArrayName()));
   if (!faces)
   {
     std::cerr << "No output array!\n";
@@ -100,27 +103,27 @@ int TestCountFaces(int, char*[])
 
   if (faces->GetNumberOfComponents() != 1)
   {
-    std::cerr << "Invalid number of components in output array: " << faces->GetNumberOfComponents()
-              << "\n";
+    std::cerr << "Invalid number of components in output array: "
+              << faces->GetNumberOfComponents() << "\n";
     return EXIT_FAILURE;
   }
 
   if (faces->GetNumberOfTuples() != 10)
   {
-    std::cerr << "Invalid number of components in output array: " << faces->GetNumberOfTuples()
-              << "\n";
+    std::cerr << "Invalid number of components in output array: "
+              << faces->GetNumberOfTuples() << "\n";
     return EXIT_FAILURE;
   }
 
-#define TEST_FACES(idx, expected)                                                                  \
-  {                                                                                                \
-    vtkIdType numFaces = faces->GetTypedComponent(idx, 0);                                         \
-    if (numFaces != (expected))                                                                    \
-    {                                                                                              \
-      std::cerr << "Expected cell @idx=" << (idx) << " to have " << (expected)                     \
-                << " faces, but found " << numFaces << "\n";                                       \
-      return EXIT_FAILURE;                                                                         \
-    }                                                                                              \
+#define TEST_FACES(idx, expected) \
+  { \
+  vtkIdType numFaces = faces->GetTypedComponent(idx, 0); \
+  if (numFaces != expected) \
+  { \
+    std::cerr << "Expected cell @idx=" << idx << " to have " << expected \
+              << " faces, but found " << numFaces << "\n"; \
+    return EXIT_FAILURE; \
+  } \
   }
 
   int idx = 0;

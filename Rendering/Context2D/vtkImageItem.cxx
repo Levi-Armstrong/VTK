@@ -29,17 +29,17 @@ vtkCxxSetObjectMacro(vtkImageItem, Image, vtkImageData);
 vtkImageItem::vtkImageItem()
 {
   this->Position[0] = this->Position[1] = 0;
-  this->Image = nullptr;
+  this->Image = NULL;
 }
 
 //-----------------------------------------------------------------------------
 vtkImageItem::~vtkImageItem()
 {
-  this->SetImage(nullptr);
+  this->SetImage(NULL);
 }
 
 //-----------------------------------------------------------------------------
-bool vtkImageItem::Paint(vtkContext2D* painter)
+bool vtkImageItem::Paint(vtkContext2D *painter)
 {
   if (this->Image)
   {
@@ -50,7 +50,7 @@ bool vtkImageItem::Paint(vtkContext2D* painter)
 }
 
 //-----------------------------------------------------------------------------
-void vtkImageItem::PrintSelf(ostream& os, vtkIndent indent)
+void vtkImageItem::PrintSelf(ostream &os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 }

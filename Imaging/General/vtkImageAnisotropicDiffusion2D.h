@@ -17,7 +17,7 @@
  * @brief   edge preserving smoothing.
  *
  *
- * vtkImageAnisotropicDiffusion2D diffuses a 2d image iteratively.
+ * vtkImageAnisotropicDiffusion2D  diffuses a 2d image iteratively.
  * The neighborhood of the diffusion is determined by the instance
  * flags. If "Edges" is on the 4 edge connected voxels
  * are included, and if "Corners" is on, the 4 corner connected voxels
@@ -35,24 +35,25 @@
  *
  * @sa
  * vtkImageAnisotropicDiffusion3D
- */
+*/
 
 #ifndef vtkImageAnisotropicDiffusion2D_h
 #define vtkImageAnisotropicDiffusion2D_h
 
-#include "vtkImageSpatialAlgorithm.h"
+
 #include "vtkImagingGeneralModule.h" // For export macro
+#include "vtkImageSpatialAlgorithm.h"
 class VTKIMAGINGGENERAL_EXPORT vtkImageAnisotropicDiffusion2D : public vtkImageSpatialAlgorithm
 {
 public:
-  static vtkImageAnisotropicDiffusion2D* New();
-  vtkTypeMacro(vtkImageAnisotropicDiffusion2D, vtkImageSpatialAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkImageAnisotropicDiffusion2D *New();
+  vtkTypeMacro(vtkImageAnisotropicDiffusion2D,vtkImageSpatialAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
-   * This method sets the number of iterations which also affects the
-   * input neighborhood needed to compute one output pixel.  Each iteration
-   * requires an extra pixel layer on the neighborhood.  This is only relevant
+   * This method sets the number of interations which also affects the
+   * input neighborhood needed to compute one output pixel.  Each iterations
+   * requires an extra pixel layer on the neighborhood.  This is only relavent
    * when you are trying to stream or are requesting a sub extent of the "wholeExtent".
    */
   void SetNumberOfIterations(int num);
@@ -61,7 +62,7 @@ public:
   /**
    * Get the number of iterations.
    */
-  vtkGetMacro(NumberOfIterations, int);
+  vtkGetMacro(NumberOfIterations,int);
   //@}
 
   //@{
@@ -72,67 +73,71 @@ public:
    * If the GradientMagnitudeThreshold is set, then gradient magnitude is used
    * for comparison instead of pixel differences.
    */
-  vtkSetMacro(DiffusionThreshold, double);
-  vtkGetMacro(DiffusionThreshold, double);
+  vtkSetMacro(DiffusionThreshold,double);
+  vtkGetMacro(DiffusionThreshold,double);
   //@}
 
   //@{
   /**
-   * The diffusion factor specifies how much neighboring pixels effect each other.
+   * The diffusion factor specifies  how much neighboring pixels effect each other.
    * No diffusion occurs with a factor of 0, and a diffusion factor of 1 causes
    * the pixel to become the average of all its neighbors.
    */
-  vtkSetMacro(DiffusionFactor, double);
-  vtkGetMacro(DiffusionFactor, double);
+  vtkSetMacro(DiffusionFactor,double);
+  vtkGetMacro(DiffusionFactor,double);
   //@}
 
   //@{
   /**
    * Choose neighbors to diffuse (6 faces, 12 edges, 8 corners).
    */
-  vtkSetMacro(Faces, vtkTypeBool);
-  vtkGetMacro(Faces, vtkTypeBool);
-  vtkBooleanMacro(Faces, vtkTypeBool);
-  vtkSetMacro(Edges, vtkTypeBool);
-  vtkGetMacro(Edges, vtkTypeBool);
-  vtkBooleanMacro(Edges, vtkTypeBool);
-  vtkSetMacro(Corners, vtkTypeBool);
-  vtkGetMacro(Corners, vtkTypeBool);
-  vtkBooleanMacro(Corners, vtkTypeBool);
+  vtkSetMacro(Faces,int);
+  vtkGetMacro(Faces,int);
+  vtkBooleanMacro(Faces,int);
+  vtkSetMacro(Edges,int);
+  vtkGetMacro(Edges,int);
+  vtkBooleanMacro(Edges,int);
+  vtkSetMacro(Corners,int);
+  vtkGetMacro(Corners,int);
+  vtkBooleanMacro(Corners,int);
   //@}
 
   //@{
   /**
    * Switch between gradient magnitude threshold and pixel gradient threshold.
    */
-  vtkSetMacro(GradientMagnitudeThreshold, vtkTypeBool);
-  vtkGetMacro(GradientMagnitudeThreshold, vtkTypeBool);
-  vtkBooleanMacro(GradientMagnitudeThreshold, vtkTypeBool);
+  vtkSetMacro(GradientMagnitudeThreshold,int);
+  vtkGetMacro(GradientMagnitudeThreshold,int);
+  vtkBooleanMacro(GradientMagnitudeThreshold,int);
   //@}
 
 protected:
   vtkImageAnisotropicDiffusion2D();
-  ~vtkImageAnisotropicDiffusion2D() override {}
+  ~vtkImageAnisotropicDiffusion2D() {}
 
   int NumberOfIterations;
   double DiffusionThreshold;
   double DiffusionFactor;
   // to determine which neighbors to diffuse
-  vtkTypeBool Faces;
-  vtkTypeBool Edges;
-  vtkTypeBool Corners;
+  int Faces;
+  int Edges;
+  int Corners;
   // What threshold to use
-  vtkTypeBool GradientMagnitudeThreshold;
+  int GradientMagnitudeThreshold;
 
-  void ThreadedRequestData(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector, vtkImageData*** inData, vtkImageData** outData,
-    int extent[6], int id) override;
-  void Iterate(
-    vtkImageData* in, vtkImageData* out, double ar0, double ar1, int* coreExtent, int count);
-
+  void ThreadedRequestData(vtkInformation *request,
+                           vtkInformationVector **inputVector,
+                           vtkInformationVector *outputVector,
+                           vtkImageData ***inData, vtkImageData **outData,
+                           int extent[6], int id);
+  void Iterate(vtkImageData *in, vtkImageData *out,
+               double ar0, double ar1, int *coreExtent, int count);
 private:
-  vtkImageAnisotropicDiffusion2D(const vtkImageAnisotropicDiffusion2D&) = delete;
-  void operator=(const vtkImageAnisotropicDiffusion2D&) = delete;
+  vtkImageAnisotropicDiffusion2D(const vtkImageAnisotropicDiffusion2D&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkImageAnisotropicDiffusion2D&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+
+

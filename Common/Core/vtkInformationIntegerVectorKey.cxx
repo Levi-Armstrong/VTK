@@ -19,17 +19,20 @@
 #include <algorithm>
 #include <vector>
 
+
 //----------------------------------------------------------------------------
-vtkInformationIntegerVectorKey ::vtkInformationIntegerVectorKey(
-  const char* name, const char* location, int length)
-  : vtkInformationKey(name, location)
-  , RequiredLength(length)
+vtkInformationIntegerVectorKey
+::vtkInformationIntegerVectorKey(const char* name, const char* location,
+                                 int length):
+  vtkInformationKey(name, location), RequiredLength(length)
 {
   vtkCommonInformationKeyManager::Register(this);
 }
 
 //----------------------------------------------------------------------------
-vtkInformationIntegerVectorKey::~vtkInformationIntegerVectorKey() = default;
+vtkInformationIntegerVectorKey::~vtkInformationIntegerVectorKey()
+{
+}
 
 //----------------------------------------------------------------------------
 void vtkInformationIntegerVectorKey::PrintSelf(ostream& os, vtkIndent indent)
@@ -38,7 +41,7 @@ void vtkInformationIntegerVectorKey::PrintSelf(ostream& os, vtkIndent indent)
 }
 
 //----------------------------------------------------------------------------
-class vtkInformationIntegerVectorValue : public vtkObjectBase
+class vtkInformationIntegerVectorValue: public vtkObjectBase
 {
 public:
   vtkBaseTypeMacro(vtkInformationIntegerVectorValue, vtkObjectBase);
@@ -49,8 +52,9 @@ public:
 void vtkInformationIntegerVectorKey::Append(vtkInformation* info, int value)
 {
   vtkInformationIntegerVectorValue* v =
-    static_cast<vtkInformationIntegerVectorValue*>(this->GetAsObjectBase(info));
-  if (v)
+    static_cast<vtkInformationIntegerVectorValue *>
+    (this->GetAsObjectBase(info));
+  if(v)
   {
     v->Value.push_back(value);
   }
@@ -68,27 +72,31 @@ void vtkInformationIntegerVectorKey::Set(vtkInformation* info)
 }
 
 //----------------------------------------------------------------------------
-void vtkInformationIntegerVectorKey::Set(vtkInformation* info, const int* value, int length)
+void vtkInformationIntegerVectorKey::Set(vtkInformation* info,
+                                         const int* value,
+                                         int length)
 {
-  if (value)
+  if(value)
   {
-    if (this->RequiredLength >= 0 && length != this->RequiredLength)
+    if(this->RequiredLength >= 0 && length != this->RequiredLength)
     {
-      vtkErrorWithObjectMacro(info,
-        "Cannot store integer vector of length "
-          << length << " with key " << this->Location << "::" << this->Name
-          << " which requires a vector of length " << this->RequiredLength
-          << ".  Removing the key instead.");
-      this->SetAsObjectBase(info, nullptr);
+      vtkErrorWithObjectMacro(
+        info,
+        "Cannot store integer vector of length " << length
+        << " with key " << this->Location << "::" << this->Name
+        << " which requires a vector of length "
+        << this->RequiredLength << ".  Removing the key instead.");
+      this->SetAsObjectBase(info, 0);
       return;
     }
 
     vtkInformationIntegerVectorValue* oldv =
-      static_cast<vtkInformationIntegerVectorValue*>(this->GetAsObjectBase(info));
-    if (oldv && static_cast<int>(oldv->Value.size()) == length)
+      static_cast<vtkInformationIntegerVectorValue *>
+      (this->GetAsObjectBase(info));
+    if(oldv && static_cast<int>(oldv->Value.size()) == length)
     {
       // Replace the existing value.
-      std::copy(value, value + length, oldv->Value.begin());
+      std::copy(value, value+length, oldv->Value.begin());
       // Since this sets a value without call SetAsObjectBase(),
       // the info has to be modified here (instead of
       // vtkInformation::SetAsObjectBase()
@@ -97,16 +105,17 @@ void vtkInformationIntegerVectorKey::Set(vtkInformation* info, const int* value,
     else
     {
       // Allocate a new value.
-      vtkInformationIntegerVectorValue* v = new vtkInformationIntegerVectorValue;
+      vtkInformationIntegerVectorValue* v =
+        new vtkInformationIntegerVectorValue;
       v->InitializeObjectBase();
-      v->Value.insert(v->Value.begin(), value, value + length);
+      v->Value.insert(v->Value.begin(), value, value+length);
       this->SetAsObjectBase(info, v);
       v->Delete();
     }
   }
   else
   {
-    this->SetAsObjectBase(info, nullptr);
+    this->SetAsObjectBase(info, 0);
   }
 }
 
@@ -114,8 +123,9 @@ void vtkInformationIntegerVectorKey::Set(vtkInformation* info, const int* value,
 int* vtkInformationIntegerVectorKey::Get(vtkInformation* info)
 {
   vtkInformationIntegerVectorValue* v =
-    static_cast<vtkInformationIntegerVectorValue*>(this->GetAsObjectBase(info));
-  return (v && !v->Value.empty()) ? (&v->Value[0]) : nullptr;
+    static_cast<vtkInformationIntegerVectorValue *>
+    (this->GetAsObjectBase(info));
+  return (v && !v->Value.empty())?(&v->Value[0]):0;
 }
 
 //----------------------------------------------------------------------------
@@ -124,7 +134,8 @@ int vtkInformationIntegerVectorKey::Get(vtkInformation* info, int idx)
   if (idx >= this->Length(info))
   {
     vtkErrorWithObjectMacro(info,
-      "Information does not contain " << idx << " elements. Cannot return information value.");
+                            "Information does not contain " << idx
+                            << " elements. Cannot return information value.");
     return 0;
   }
   int* values = this->Get(info);
@@ -132,13 +143,16 @@ int vtkInformationIntegerVectorKey::Get(vtkInformation* info, int idx)
 }
 
 //----------------------------------------------------------------------------
-void vtkInformationIntegerVectorKey::Get(vtkInformation* info, int* value)
+void vtkInformationIntegerVectorKey::Get(vtkInformation* info,
+                                     int* value)
 {
   vtkInformationIntegerVectorValue* v =
-    static_cast<vtkInformationIntegerVectorValue*>(this->GetAsObjectBase(info));
-  if (v && value)
+    static_cast<vtkInformationIntegerVectorValue *>
+    (this->GetAsObjectBase(info));
+  if(v && value)
   {
-    for (std::vector<int>::size_type i = 0; i < v->Value.size(); ++i)
+    for(std::vector<int>::size_type i = 0;
+        i < v->Value.size(); ++i)
     {
       value[i] = v->Value[i];
     }
@@ -149,12 +163,14 @@ void vtkInformationIntegerVectorKey::Get(vtkInformation* info, int* value)
 int vtkInformationIntegerVectorKey::Length(vtkInformation* info)
 {
   vtkInformationIntegerVectorValue* v =
-    static_cast<vtkInformationIntegerVectorValue*>(this->GetAsObjectBase(info));
-  return v ? static_cast<int>(v->Value.size()) : 0;
+    static_cast<vtkInformationIntegerVectorValue *>
+    (this->GetAsObjectBase(info));
+  return v?static_cast<int>(v->Value.size()):0;
 }
 
 //----------------------------------------------------------------------------
-void vtkInformationIntegerVectorKey::ShallowCopy(vtkInformation* from, vtkInformation* to)
+void vtkInformationIntegerVectorKey::ShallowCopy(vtkInformation* from,
+                                          vtkInformation* to)
 {
   this->Set(to, this->Get(from), this->Length(from));
 }
@@ -163,12 +179,12 @@ void vtkInformationIntegerVectorKey::ShallowCopy(vtkInformation* from, vtkInform
 void vtkInformationIntegerVectorKey::Print(ostream& os, vtkInformation* info)
 {
   // Print the value.
-  if (this->Has(info))
+  if(this->Has(info))
   {
     int* value = this->Get(info);
     int length = this->Length(info);
     const char* sep = "";
-    for (int i = 0; i < length; ++i)
+    for(int i=0; i < length; ++i)
     {
       os << sep << value[i];
       sep = " ";
@@ -180,6 +196,7 @@ void vtkInformationIntegerVectorKey::Print(ostream& os, vtkInformation* info)
 int* vtkInformationIntegerVectorKey::GetWatchAddress(vtkInformation* info)
 {
   vtkInformationIntegerVectorValue* v =
-    static_cast<vtkInformationIntegerVectorValue*>(this->GetAsObjectBase(info));
-  return (v && !v->Value.empty()) ? (&v->Value[0]) : nullptr;
+    static_cast<vtkInformationIntegerVectorValue*>
+    (this->GetAsObjectBase(info));
+  return (v && !v->Value.empty())?(&v->Value[0]):0;
 }

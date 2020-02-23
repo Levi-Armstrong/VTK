@@ -33,13 +33,14 @@
  * @par Thanks:
  * Thanks to Brian Wylie and Ken Moreland from Sandia National Laboratories
  * for help developing this class.
- */
+*/
 
 #ifndef vtkTreeMapLayoutStrategy_h
 #define vtkTreeMapLayoutStrategy_h
 
-#include "vtkAreaLayoutStrategy.h"
+
 #include "vtkInfovisLayoutModule.h" // For export macro
+#include "vtkAreaLayoutStrategy.h"
 
 class vtkTree;
 class vtkDataArray;
@@ -48,21 +49,22 @@ class VTKINFOVISLAYOUT_EXPORT vtkTreeMapLayoutStrategy : public vtkAreaLayoutStr
 {
 public:
   vtkTypeMacro(vtkTreeMapLayoutStrategy, vtkAreaLayoutStrategy);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Find the vertex at a certain location, or -1 if none found.
    */
-  vtkIdType FindVertex(vtkTree* tree, vtkDataArray* areaArray, float pnt[2]) override;
+  virtual vtkIdType FindVertex(
+      vtkTree* tree, vtkDataArray* areaArray, float pnt[2]);
 
 protected:
   vtkTreeMapLayoutStrategy();
-  ~vtkTreeMapLayoutStrategy() override;
-  void AddBorder(float* boxInfo);
-
+  ~vtkTreeMapLayoutStrategy();
+  void AddBorder( float *boxInfo);
 private:
-  vtkTreeMapLayoutStrategy(const vtkTreeMapLayoutStrategy&) = delete;
-  void operator=(const vtkTreeMapLayoutStrategy&) = delete;
+  vtkTreeMapLayoutStrategy(const vtkTreeMapLayoutStrategy&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTreeMapLayoutStrategy&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

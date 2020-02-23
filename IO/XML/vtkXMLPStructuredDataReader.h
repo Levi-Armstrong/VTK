@@ -22,7 +22,7 @@
  * @sa
  * vtkXMLPImageDataReader vtkXMLPStructuredGridReader
  * vtkXMLPRectilinearGridReader
- */
+*/
 
 #ifndef vtkXMLPStructuredDataReader_h
 #define vtkXMLPStructuredDataReader_h
@@ -36,38 +36,38 @@ class vtkXMLStructuredDataReader;
 class VTKIOXML_EXPORT vtkXMLPStructuredDataReader : public vtkXMLPDataReader
 {
 public:
-  vtkTypeMacro(vtkXMLPStructuredDataReader, vtkXMLPDataReader);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkXMLPStructuredDataReader,vtkXMLPDataReader);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   // For the specified port, copy the information this reader sets up in
   // SetupOutputInformation to outInfo
-  void CopyOutputInformation(vtkInformation* outInfo, int port) override;
-
+  virtual void CopyOutputInformation(vtkInformation *outInfo, int port);
 protected:
   vtkXMLPStructuredDataReader();
-  ~vtkXMLPStructuredDataReader() override;
+  ~vtkXMLPStructuredDataReader();
 
-  vtkIdType GetNumberOfPoints() override;
-  vtkIdType GetNumberOfCells() override;
-  void CopyArrayForPoints(vtkDataArray* inArray, vtkDataArray* outArray) override;
-  void CopyArrayForCells(vtkDataArray* inArray, vtkDataArray* outArray) override;
+  vtkIdType GetNumberOfPoints();
+  vtkIdType GetNumberOfCells();
+  void CopyArrayForPoints(vtkDataArray* inArray, vtkDataArray* outArray);
+  void CopyArrayForCells(vtkDataArray* inArray, vtkDataArray* outArray);
 
-  virtual void SetOutputExtent(int* extent) = 0;
-  virtual void GetPieceInputExtent(int index, int* extent) = 0;
+  virtual void SetOutputExtent(int* extent)=0;
+  virtual void GetPieceInputExtent(int index, int* extent)=0;
 
   // Pipeline execute data driver.  Called by vtkXMLReader.
-  void ReadXMLData() override;
-  int ReadPrimaryElement(vtkXMLDataElement* ePrimary) override;
+  void ReadXMLData();
+  int ReadPrimaryElement(vtkXMLDataElement* ePrimary);
 
-  void SetupOutputData() override;
+  void SetupOutputData();
 
-  void SetupPieces(int numPieces) override;
-  void DestroyPieces() override;
-  int ReadPiece(vtkXMLDataElement* ePiece) override;
-  int ReadPieceData() override;
-  void CopySubExtent(int* inExtent, int* inDimensions, vtkIdType* inIncrements, int* outExtent,
-    int* outDimensions, vtkIdType* outIncrements, int* subExtent, int* subDimensions,
-    vtkDataArray* inArray, vtkDataArray* outArray);
+  void SetupPieces(int numPieces);
+  void DestroyPieces();
+  int ReadPiece(vtkXMLDataElement* ePiece);
+  int ReadPieceData();
+  void CopySubExtent(int* inExtent, int* inDimensions, vtkIdType* inIncrements,
+                     int* outExtent,int* outDimensions,vtkIdType* outIncrements,
+                     int* subExtent, int* subDimensions,
+                     vtkDataArray* inArray, vtkDataArray* outArray);
   int ComputePieceSubExtents();
 
   vtkExtentSplitter* ExtentSplitter;
@@ -92,12 +92,13 @@ protected:
   // Information per-piece.
   int* PieceExtents;
 
-  int RequestInformation(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  virtual int RequestInformation(vtkInformation *request,
+                                 vtkInformationVector **inputVector,
+                                 vtkInformationVector *outputVector);
 
 private:
-  vtkXMLPStructuredDataReader(const vtkXMLPStructuredDataReader&) = delete;
-  void operator=(const vtkXMLPStructuredDataReader&) = delete;
+  vtkXMLPStructuredDataReader(const vtkXMLPStructuredDataReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkXMLPStructuredDataReader&) VTK_DELETE_FUNCTION;
 };
 
 #endif

@@ -26,46 +26,50 @@
  * Binary files written on one system may not be readable on other systems.
  * @sa
  * vtkPolyData vtkDataReader
- */
+*/
 
 #ifndef vtkPolyDataReader_h
 #define vtkPolyDataReader_h
 
-#include "vtkDataReader.h"
 #include "vtkIOLegacyModule.h" // For export macro
+#include "vtkDataReader.h"
 
 class vtkPolyData;
 
 class VTKIOLEGACY_EXPORT vtkPolyDataReader : public vtkDataReader
 {
 public:
-  static vtkPolyDataReader* New();
-  vtkTypeMacro(vtkPolyDataReader, vtkDataReader);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkPolyDataReader *New();
+  vtkTypeMacro(vtkPolyDataReader,vtkDataReader);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
    * Get the output of this reader.
    */
-  vtkPolyData* GetOutput();
-  vtkPolyData* GetOutput(int idx);
-  void SetOutput(vtkPolyData* output);
+  vtkPolyData *GetOutput();
+  vtkPolyData *GetOutput(int idx);
+  void SetOutput(vtkPolyData *output);
   //@}
-
-  /**
-   * Actual reading happens here
-   */
-  int ReadMeshSimple(const std::string& fname, vtkDataObject* output) override;
 
 protected:
   vtkPolyDataReader();
-  ~vtkPolyDataReader() override;
+  ~vtkPolyDataReader();
 
-  int FillOutputPortInformation(int, vtkInformation*) override;
+  int RequestData(vtkInformation *, vtkInformationVector **,
+                  vtkInformationVector *);
+
+  // Update extent of PolyData is specified in pieces.
+  // Since all DataObjects should be able to set UpdateExent as pieces,
+  // just copy output->UpdateExtent  all Inputs.
+  int RequestUpdateExtent(vtkInformation *, vtkInformationVector **,
+                          vtkInformationVector *);
+
+  int FillOutputPortInformation(int, vtkInformation*);
 
 private:
-  vtkPolyDataReader(const vtkPolyDataReader&) = delete;
-  void operator=(const vtkPolyDataReader&) = delete;
+  vtkPolyDataReader(const vtkPolyDataReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPolyDataReader&) VTK_DELETE_FUNCTION;
 };
 
 #endif

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import vtk
+from vtk.test import Testing
 from vtk.util.misc import vtkGetDataRoot
 VTK_DATA_ROOT = vtkGetDataRoot()
 
@@ -33,7 +34,7 @@ blend = vtk.vtkImageBlend()
 blend.SetInputConnection(reader1.GetOutputPort())
 blend.AddInputConnection(translate.GetOutputPort())
 
-# exercise the ReplaceNthInputConnection method
+# excercise the ReplaceNthInputConnection method
 blend.ReplaceNthInputConnection(1, reader1.GetOutputPort())
 blend.ReplaceNthInputConnection(1, translate.GetOutputPort())
 blend.SetOpacity(1, 0.8)

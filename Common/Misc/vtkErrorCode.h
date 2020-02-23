@@ -18,7 +18,7 @@
  *
  * vtkErrorCode is an mechanism for (currently) reader object to
  * return errors during reading file.
- */
+*/
 
 #ifndef vtkErrorCode_h
 #define vtkErrorCode_h
@@ -29,8 +29,8 @@
 class VTKCOMMONMISC_EXPORT vtkErrorCode
 {
 public:
-  static const char* GetStringFromErrorCode(unsigned long event);
-  static unsigned long GetErrorCodeFromString(const char* event);
+  static const char *GetStringFromErrorCode(unsigned long event);
+  static unsigned long GetErrorCodeFromString(const char *event);
   static unsigned long GetLastSystemError();
 
   // all the currently defined error codes
@@ -38,8 +38,7 @@ public:
   // specify their own errors.
   // if this list is adjusted, be sure to adjust vtkErrorCodeErrorStrings
   // in vtkErrorCode.cxx to match.
-  enum ErrorIds
-  {
+  enum ErrorIds {
     NoError = 0,
     FirstVTKErrorCode = 20000,
     FileNotFoundError,
@@ -52,6 +51,7 @@ public:
     UnknownError,
     UserError = 40000
   };
+
 };
 
 #endif /* vtkErrorCode_h */

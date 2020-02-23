@@ -18,7 +18,7 @@
  *
  * vtkInformationDataObjectKey is used to represent keys in
  * vtkInformation for values that are vtkDataObject instances.
- */
+*/
 
 #ifndef vtkInformationDataObjectKey_h
 #define vtkInformationDataObjectKey_h
@@ -33,11 +33,11 @@ class vtkDataObject;
 class VTKCOMMONCORE_EXPORT vtkInformationDataObjectKey : public vtkInformationKey
 {
 public:
-  vtkTypeMacro(vtkInformationDataObjectKey, vtkInformationKey);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkInformationDataObjectKey,vtkInformationKey);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   vtkInformationDataObjectKey(const char* name, const char* location);
-  ~vtkInformationDataObjectKey() override;
+  ~vtkInformationDataObjectKey() VTK_OVERRIDE;
 
   /**
    * This method simply returns a new vtkInformationDataObjectKey, given a
@@ -63,16 +63,16 @@ public:
    * object to another.  If there is no entry in the first information
    * object for this key, the value is removed from the second.
    */
-  void ShallowCopy(vtkInformation* from, vtkInformation* to) override;
+  void ShallowCopy(vtkInformation* from, vtkInformation* to) VTK_OVERRIDE;
 
   /**
    * Report a reference this key has in the given information object.
    */
-  void Report(vtkInformation* info, vtkGarbageCollector* collector) override;
+  void Report(vtkInformation* info, vtkGarbageCollector* collector) VTK_OVERRIDE;
 
 private:
-  vtkInformationDataObjectKey(const vtkInformationDataObjectKey&) = delete;
-  void operator=(const vtkInformationDataObjectKey&) = delete;
+  vtkInformationDataObjectKey(const vtkInformationDataObjectKey&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkInformationDataObjectKey&) VTK_DELETE_FUNCTION;
 };
 
 #endif

@@ -36,27 +36,27 @@
  * and field data in another. Then use this filter in combination with
  * vtkFieldDataToAttributeData to create a dataset ready for
  * processing in the visualization pipeline.
- */
+*/
 
 #ifndef vtkMergeDataObjectFilter_h
 #define vtkMergeDataObjectFilter_h
 
-#include "vtkDataSetAlgorithm.h"
 #include "vtkFiltersCoreModule.h" // For export macro
+#include "vtkDataSetAlgorithm.h"
 
 class VTKFILTERSCORE_EXPORT vtkMergeDataObjectFilter : public vtkDataSetAlgorithm
 {
 public:
-  static vtkMergeDataObjectFilter* New();
-  vtkTypeMacro(vtkMergeDataObjectFilter, vtkDataSetAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkMergeDataObjectFilter *New();
+  vtkTypeMacro(vtkMergeDataObjectFilter,vtkDataSetAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   //@{
   /**
    * Specify the data object to merge with the input dataset.
    */
-  void SetDataObjectInputData(vtkDataObject* object);
-  vtkDataObject* GetDataObject();
+  void SetDataObjectInputData(vtkDataObject *object);
+  vtkDataObject *GetDataObject();
   //@}
 
   //@{
@@ -66,8 +66,8 @@ public:
    * superclass; the point field attribute data; and the cell field attribute
    * data.
    */
-  vtkSetMacro(OutputField, int);
-  vtkGetMacro(OutputField, int);
+  vtkSetMacro(OutputField,int);
+  vtkGetMacro(OutputField,int);
   void SetOutputFieldToDataObjectField();
   void SetOutputFieldToPointDataField();
   void SetOutputFieldToCellDataField();
@@ -75,17 +75,19 @@ public:
 
 protected:
   vtkMergeDataObjectFilter();
-  ~vtkMergeDataObjectFilter() override;
+  ~vtkMergeDataObjectFilter() VTK_OVERRIDE;
 
   // Usual data generation method
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *) VTK_OVERRIDE;
+  int FillInputPortInformation(int port, vtkInformation *info) VTK_OVERRIDE;
 
   int OutputField; // which output field
 
 private:
-  vtkMergeDataObjectFilter(const vtkMergeDataObjectFilter&) = delete;
-  void operator=(const vtkMergeDataObjectFilter&) = delete;
+  vtkMergeDataObjectFilter(const vtkMergeDataObjectFilter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkMergeDataObjectFilter&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+

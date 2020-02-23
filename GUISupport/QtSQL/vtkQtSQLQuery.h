@@ -23,7 +23,7 @@
  *
  *
  * Implements vtkSQLQuery using an underlying QSQLQuery.
- */
+*/
 
 #ifndef vtkQtSQLQuery_h
 #define vtkQtSQLQuery_h
@@ -43,66 +43,68 @@ class VTKGUISUPPORTQTSQL_EXPORT vtkQtSQLQuery : public vtkSQLQuery
 public:
   static vtkQtSQLQuery* New();
   vtkTypeMacro(vtkQtSQLQuery, vtkSQLQuery);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Execute the query.  This must be performed
    * before any field name or data access functions
    * are used.
    */
-  bool Execute() override;
+  virtual bool Execute();
 
   /**
    * The number of fields in the query result.
    */
-  int GetNumberOfFields() override;
+  virtual int GetNumberOfFields();
 
   /**
    * Return the name of the specified query field.
    */
-  const char* GetFieldName(int col) override;
+  virtual const char* GetFieldName(int col);
 
   /**
    * Return the type of the specified query field, as defined in vtkType.h.
    */
-  int GetFieldType(int col) override;
+  virtual int GetFieldType(int col);
 
   /**
    * Advance row, return false if past end.
    */
-  bool NextRow() override;
+  virtual bool NextRow();
 
   /**
    * Return data in current row, field c
    */
-  vtkVariant DataValue(vtkIdType c) override;
+  virtual vtkVariant DataValue(vtkIdType c);
 
   /**
    * Returns true if an error is set, otherwise false.
    */
-  bool HasError() override;
+  virtual bool HasError();
 
   /**
    * Get the last error text from the query
    */
-  const char* GetLastErrorText() override;
+  virtual const char* GetLastErrorText();
 
 protected:
   vtkQtSQLQuery();
-  ~vtkQtSQLQuery() override;
+  ~vtkQtSQLQuery();
 
   vtkQtSQLQueryInternals* Internals;
   friend class vtkQtSQLDatabase;
 
 private:
+
   // Using the convenience function internally
   vtkSetStringMacro(LastErrorText);
 
   char* LastErrorText;
 
-  vtkQtSQLQuery(const vtkQtSQLQuery&) = delete;
-  void operator=(const vtkQtSQLQuery&) = delete;
+  vtkQtSQLQuery(const vtkQtSQLQuery &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkQtSQLQuery &) VTK_DELETE_FUNCTION;
 };
 
 #endif // (QT_EDITION & QT_MODULE_SQL)
 #endif // vtkQtSQLQuery_h
+

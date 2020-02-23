@@ -19,17 +19,21 @@
 
 vtkStandardNewMacro(vtkProgressObserver);
 
-vtkProgressObserver::vtkProgressObserver() = default;
+vtkProgressObserver::vtkProgressObserver()
+{
+}
 
-vtkProgressObserver::~vtkProgressObserver() = default;
+vtkProgressObserver::~vtkProgressObserver()
+{
+}
 
 void vtkProgressObserver::UpdateProgress(double amount)
 {
   this->Progress = amount;
-  this->InvokeEvent(vtkCommand::ProgressEvent, static_cast<void*>(&amount));
+  this->InvokeEvent(vtkCommand::ProgressEvent,static_cast<void *>(&amount));
 }
 
 void vtkProgressObserver::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 }

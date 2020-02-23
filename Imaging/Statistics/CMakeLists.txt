@@ -1,7 +1,7 @@
-set(classes
-  vtkImageAccumulate
-  vtkImageHistogram
-  vtkImageHistogramStatistics)
+set(Module_SRCS
+  vtkImageAccumulate.cxx
+  vtkImageHistogram.cxx
+  vtkImageHistogramStatistics.cxx
+  )
 
-vtk_module_add_module(VTK::ImagingStatistics
-  CLASSES ${classes})
+vtk_module_library(${vtk-module} ${Module_SRCS})

@@ -16,7 +16,7 @@
  * @class   vtkExtractUnstructuredGridPiece
  * @brief   Return specified piece, including specified
  * number of ghost levels.
- */
+*/
 
 #ifndef vtkExtractUnstructuredGridPiece_h
 #define vtkExtractUnstructuredGridPiece_h
@@ -27,46 +27,44 @@
 class vtkIdList;
 class vtkIntArray;
 
-class VTKFILTERSPARALLEL_EXPORT vtkExtractUnstructuredGridPiece
-  : public vtkUnstructuredGridAlgorithm
+class VTKFILTERSPARALLEL_EXPORT vtkExtractUnstructuredGridPiece : public vtkUnstructuredGridAlgorithm
 {
 public:
-  static vtkExtractUnstructuredGridPiece* New();
+  static vtkExtractUnstructuredGridPiece *New();
   vtkTypeMacro(vtkExtractUnstructuredGridPiece, vtkUnstructuredGridAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
    * Turn on/off creating ghost cells (on by default).
    */
-  vtkSetMacro(CreateGhostCells, vtkTypeBool);
-  vtkGetMacro(CreateGhostCells, vtkTypeBool);
-  vtkBooleanMacro(CreateGhostCells, vtkTypeBool);
+  vtkSetMacro(CreateGhostCells, int);
+  vtkGetMacro(CreateGhostCells, int);
+  vtkBooleanMacro(CreateGhostCells, int);
   //@}
 
 protected:
   vtkExtractUnstructuredGridPiece();
-  ~vtkExtractUnstructuredGridPiece() override {}
+  ~vtkExtractUnstructuredGridPiece() {}
 
   // Usual data generation method
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int RequestUpdateExtent(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
+  virtual int RequestUpdateExtent(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
+  virtual int RequestInformation(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 
   // A method for labeling which piece the cells belong to.
-  void ComputeCellTags(vtkIntArray* cellTags, vtkIdList* pointOwnership, int piece, int numPieces,
-    vtkUnstructuredGrid* input);
+  void ComputeCellTags(vtkIntArray *cellTags, vtkIdList *pointOwnership,
+                       int piece, int numPieces, vtkUnstructuredGrid *input);
 
-  void AddGhostLevel(vtkUnstructuredGrid* input, vtkIntArray* cellTags, int ghostLevel);
+  void AddGhostLevel(vtkUnstructuredGrid *input, vtkIntArray *cellTags,int ghostLevel);
 
-  vtkTypeBool CreateGhostCells;
-
+  int CreateGhostCells;
 private:
-  void AddFirstGhostLevel(
-    vtkUnstructuredGrid* input, vtkIntArray* cellTags, int piece, int numPieces);
+  void AddFirstGhostLevel(vtkUnstructuredGrid *input, vtkIntArray *cellTags,
+                         int piece, int numPieces);
 
-  vtkExtractUnstructuredGridPiece(const vtkExtractUnstructuredGridPiece&) = delete;
-  void operator=(const vtkExtractUnstructuredGridPiece&) = delete;
+  vtkExtractUnstructuredGridPiece(const vtkExtractUnstructuredGridPiece&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkExtractUnstructuredGridPiece&) VTK_DELETE_FUNCTION;
 };
 
 #endif

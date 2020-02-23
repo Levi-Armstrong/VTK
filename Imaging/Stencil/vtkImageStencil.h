@@ -18,7 +18,7 @@
  *
  * vtkImageStencil will combine two images together using a stencil.
  * The stencil should be provided in the form of a vtkImageStencilData,
- */
+*/
 
 #ifndef vtkImageStencil_h
 #define vtkImageStencil_h
@@ -31,9 +31,9 @@ class vtkImageStencilData;
 class VTKIMAGINGSTENCIL_EXPORT vtkImageStencil : public vtkThreadedImageAlgorithm
 {
 public:
-  static vtkImageStencil* New();
+  static vtkImageStencil *New();
   vtkTypeMacro(vtkImageStencil, vtkThreadedImageAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -41,8 +41,8 @@ public:
    * from a vtkImplicitFunction or a vtkPolyData. This
    * function does not setup a pipeline connection.
    */
-  virtual void SetStencilData(vtkImageStencilData* stencil);
-  vtkImageStencilData* GetStencil();
+  virtual void SetStencilData(vtkImageStencilData *stencil);
+  vtkImageStencilData *GetStencil();
   //@}
 
   /**
@@ -57,9 +57,9 @@ public:
   /**
    * Reverse the stencil.
    */
-  vtkSetMacro(ReverseStencil, vtkTypeBool);
-  vtkBooleanMacro(ReverseStencil, vtkTypeBool);
-  vtkGetMacro(ReverseStencil, vtkTypeBool);
+  vtkSetMacro(ReverseStencil, int);
+  vtkBooleanMacro(ReverseStencil, int);
+  vtkGetMacro(ReverseStencil, int);
   //@}
 
   //@{
@@ -68,16 +68,18 @@ public:
    * stencil.  If not set, the output voxels will be filled with
    * BackgroundValue instead.
    */
-  virtual void SetBackgroundInputData(vtkImageData* input);
-  vtkImageData* GetBackgroundInput();
+  virtual void SetBackgroundInputData(vtkImageData *input);
+  vtkImageData *GetBackgroundInput();
   //@}
 
   //@{
   /**
    * Set the default output value to use when the second input is not set.
    */
-  void SetBackgroundValue(double val) { this->SetBackgroundColor(val, val, val, val); }
-  double GetBackgroundValue() { return this->BackgroundColor[0]; }
+  void SetBackgroundValue(double val) {
+    this->SetBackgroundColor(val,val,val,val); };
+  double GetBackgroundValue() {
+    return this->BackgroundColor[0]; };
   //@}
 
   //@{
@@ -91,20 +93,22 @@ public:
 
 protected:
   vtkImageStencil();
-  ~vtkImageStencil() override;
+  ~vtkImageStencil();
 
-  void ThreadedRequestData(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector, vtkImageData*** inData, vtkImageData** outData,
-    int extent[6], int id) override;
+  void ThreadedRequestData(vtkInformation *request,
+                           vtkInformationVector **inputVector,
+                           vtkInformationVector *outputVector,
+                           vtkImageData ***inData, vtkImageData **outData,
+                           int extent[6], int id);
 
-  vtkTypeBool ReverseStencil;
+  int ReverseStencil;
   double BackgroundColor[4];
 
-  int FillInputPortInformation(int, vtkInformation*) override;
+  virtual int FillInputPortInformation(int, vtkInformation*);
 
 private:
-  vtkImageStencil(const vtkImageStencil&) = delete;
-  void operator=(const vtkImageStencil&) = delete;
+  vtkImageStencil(const vtkImageStencil&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkImageStencil&) VTK_DELETE_FUNCTION;
 };
 
 #endif

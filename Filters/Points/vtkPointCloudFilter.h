@@ -52,7 +52,7 @@
  *
  * @sa
  * vtkRadiusOutlierRemoval vtkPointGaussianMapper vtkThresholdPoints
- */
+*/
 
 #ifndef vtkPointCloudFilter_h
 #define vtkPointCloudFilter_h
@@ -70,8 +70,8 @@ public:
   /**
    * Standard methods to obtain type information, and print information.
    */
-  vtkTypeMacro(vtkPointCloudFilter, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkPointCloudFilter,vtkPolyDataAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   /**
@@ -86,7 +86,7 @@ public:
 
   /**
    * Return the number of points removed after filter execution. The
-   * information returned is valid only after the filter executes.
+   * information retuned is valid only after the filter executes.
    */
   vtkIdType GetNumberOfPointsRemoved();
 
@@ -98,9 +98,9 @@ public:
    * are listed as well, with similar meaning, except their value is negated
    * and shifted by -1.
    */
-  vtkSetMacro(GenerateOutliers, bool);
-  vtkGetMacro(GenerateOutliers, bool);
-  vtkBooleanMacro(GenerateOutliers, bool);
+  vtkSetMacro(GenerateOutliers,bool);
+  vtkGetMacro(GenerateOutliers,bool);
+  vtkBooleanMacro(GenerateOutliers,bool);
   //@}
 
   //@{
@@ -110,21 +110,21 @@ public:
    * memory but some VTK filters need cells to function properly. By default
    * this is off (false).
    */
-  vtkSetMacro(GenerateVertices, bool);
-  vtkGetMacro(GenerateVertices, bool);
-  vtkBooleanMacro(GenerateVertices, bool);
+  vtkSetMacro(GenerateVertices,bool);
+  vtkGetMacro(GenerateVertices,bool);
+  vtkBooleanMacro(GenerateVertices,bool);
   //@}
 
 protected:
   vtkPointCloudFilter();
-  ~vtkPointCloudFilter() override;
+  ~vtkPointCloudFilter();
 
   // All derived classes must implement this method. Note that a side effect of
   // the class is to populate the PointMap. Zero is returned on error.
-  virtual int FilterPoints(vtkPointSet* input) = 0;
+  virtual int FilterPoints(vtkPointSet *input) = 0;
 
   // Keep track of which points are removed through the point map
-  vtkIdType* PointMap;
+  vtkIdType *PointMap;
   vtkIdType NumberOfPointsRemoved;
 
   // Does a second output need to be created?
@@ -133,14 +133,16 @@ protected:
   // Should output vertex cells be created?
   bool GenerateVertices;
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  virtual int RequestData(vtkInformation *, vtkInformationVector **,
+    vtkInformationVector *);
+  virtual int FillInputPortInformation(int port, vtkInformation *info);
 
-  void GenerateVerticesIfRequested(vtkPolyData* output);
+  void GenerateVerticesIfRequested(vtkPolyData *output);
 
 private:
-  vtkPointCloudFilter(const vtkPointCloudFilter&) = delete;
-  void operator=(const vtkPointCloudFilter&) = delete;
+  vtkPointCloudFilter(const vtkPointCloudFilter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPointCloudFilter&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif

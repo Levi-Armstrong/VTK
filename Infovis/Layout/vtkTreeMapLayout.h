@@ -38,7 +38,7 @@
  * Tree map concept comes from:
  * Shneiderman, B. 1992. Tree visualization with tree-maps: 2-d space-filling approach.
  * ACM Trans. Graph. 11, 1 (Jan. 1992), 92-99.
- */
+*/
 
 #ifndef vtkTreeMapLayout_h
 #define vtkTreeMapLayout_h
@@ -51,10 +51,10 @@ class vtkTreeMapLayoutStrategy;
 class VTKINFOVISLAYOUT_EXPORT vtkTreeMapLayout : public vtkTreeAlgorithm
 {
 public:
-  static vtkTreeMapLayout* New();
+  static vtkTreeMapLayout *New();
 
-  vtkTypeMacro(vtkTreeMapLayout, vtkTreeAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkTreeMapLayout,vtkTreeAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -70,46 +70,45 @@ public:
    * The array to use for the size of each vertex.
    */
   virtual void SetSizeArrayName(const char* name)
-  {
-    this->SetInputArrayToProcess(0, 0, 0, vtkDataObject::FIELD_ASSOCIATION_VERTICES, name);
-  }
+    { this->SetInputArrayToProcess(0, 0, 0, vtkDataObject::FIELD_ASSOCIATION_VERTICES, name); }
 
   //@{
   /**
    * The strategy to use when laying out the tree map.
    */
   vtkGetObjectMacro(LayoutStrategy, vtkTreeMapLayoutStrategy);
-  void SetLayoutStrategy(vtkTreeMapLayoutStrategy* strategy);
+  void SetLayoutStrategy(vtkTreeMapLayoutStrategy * strategy);
   //@}
 
   /**
    * Returns the vertex id that contains pnt (or -1 if no one contains it)
    */
-  vtkIdType FindVertex(float pnt[2], float* binfo = nullptr);
+  vtkIdType FindVertex(float pnt[2], float *binfo=0);
 
   /**
    * Return the min and max 2D points of the
    * vertex's bounding box
    */
-  void GetBoundingBox(vtkIdType id, float* binfo);
+  void GetBoundingBox(vtkIdType id, float *binfo);
 
   /**
    * Get the modification time of the layout algorithm.
    */
-  vtkMTimeType GetMTime() override;
+  virtual vtkMTimeType GetMTime();
 
 protected:
   vtkTreeMapLayout();
-  ~vtkTreeMapLayout() override;
+  ~vtkTreeMapLayout();
 
-  char* RectanglesFieldName;
+  char * RectanglesFieldName;
   vtkTreeMapLayoutStrategy* LayoutStrategy;
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 
 private:
-  vtkTreeMapLayout(const vtkTreeMapLayout&) = delete;
-  void operator=(const vtkTreeMapLayout&) = delete;
+
+  vtkTreeMapLayout(const vtkTreeMapLayout&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTreeMapLayout&) VTK_DELETE_FUNCTION;
 };
 
 #endif

@@ -31,8 +31,9 @@ vtkImagePointIterator::vtkImagePointIterator()
 }
 
 //----------------------------------------------------------------------------
-vtkImagePointIterator::vtkImagePointIterator(vtkImageData* image, const int extent[6],
-  vtkImageStencilData* stencil, vtkAlgorithm* algorithm, int threadId)
+vtkImagePointIterator::vtkImagePointIterator(
+  vtkImageData *image, const int extent[6], vtkImageStencilData *stencil,
+  vtkAlgorithm *algorithm, int threadId)
   : vtkImagePointDataIterator(image, extent, stencil, algorithm, threadId)
 {
   image->GetOrigin(this->Origin);
@@ -41,10 +42,12 @@ vtkImagePointIterator::vtkImagePointIterator(vtkImageData* image, const int exte
 }
 
 //----------------------------------------------------------------------------
-void vtkImagePointIterator::Initialize(vtkImageData* image, const int extent[6],
-  vtkImageStencilData* stencil, vtkAlgorithm* algorithm, int threadId)
+void vtkImagePointIterator::Initialize(
+  vtkImageData *image, const int extent[6], vtkImageStencilData *stencil,
+  vtkAlgorithm *algorithm, int threadId)
 {
-  this->vtkImagePointDataIterator::Initialize(image, extent, stencil, algorithm, threadId);
+  this->vtkImagePointDataIterator::Initialize(
+    image, extent, stencil, algorithm, threadId);
   image->GetOrigin(this->Origin);
   image->GetSpacing(this->Spacing);
   this->UpdatePosition();

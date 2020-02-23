@@ -26,20 +26,20 @@
  * where each vertex in the tree is represented by a bar.
  * Child sectors are below (or above) parent sectors, and may be
  * colored and sized by various parameters.
- */
+*/
 
 #ifndef vtkIcicleView_h
 #define vtkIcicleView_h
 
-#include "vtkTreeAreaView.h"
 #include "vtkViewsInfovisModule.h" // For export macro
+#include "vtkTreeAreaView.h"
 
 class VTKVIEWSINFOVIS_EXPORT vtkIcicleView : public vtkTreeAreaView
 {
 public:
-  static vtkIcicleView* New();
+  static vtkIcicleView *New();
   vtkTypeMacro(vtkIcicleView, vtkTreeAreaView);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -77,11 +77,11 @@ public:
 
 protected:
   vtkIcicleView();
-  ~vtkIcicleView() override;
+  ~vtkIcicleView();
 
 private:
-  vtkIcicleView(const vtkIcicleView&) = delete;
-  void operator=(const vtkIcicleView&) = delete;
+  vtkIcicleView(const vtkIcicleView&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkIcicleView&) VTK_DELETE_FUNCTION;
 };
 
 #endif

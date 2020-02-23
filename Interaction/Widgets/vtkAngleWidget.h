@@ -66,17 +66,18 @@
  *
  * @sa
  * vtkHandleWidget vtkDistanceWidget
- */
+*/
 
 #ifndef vtkAngleWidget_h
 #define vtkAngleWidget_h
 
-#include "vtkAbstractWidget.h"
 #include "vtkInteractionWidgetsModule.h" // For export macro
+#include "vtkAbstractWidget.h"
 
 class vtkAngleRepresentation;
 class vtkHandleWidget;
 class vtkAngleWidgetCallback;
+
 
 class VTKINTERACTIONWIDGETS_EXPORT vtkAngleWidget : public vtkAbstractWidget
 {
@@ -84,14 +85,14 @@ public:
   /**
    * Instantiate this class.
    */
-  static vtkAngleWidget* New();
+  static vtkAngleWidget *New();
 
   //@{
   /**
    * Standard methods for a VTK class.
    */
-  vtkTypeMacro(vtkAngleWidget, vtkAbstractWidget);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkAngleWidget,vtkAbstractWidget);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   /**
@@ -99,42 +100,38 @@ public:
    * must be overridden because it is a composite widget and does more than
    * its superclasses' vtkAbstractWidget::SetEnabled() method.
    */
-  void SetEnabled(int) override;
+  virtual void SetEnabled(int);
 
   /**
    * Specify an instance of vtkWidgetRepresentation used to represent this
    * widget in the scene. Note that the representation is a subclass of vtkProp
    * so it can be added to the renderer independent of the widget.
    */
-  void SetRepresentation(vtkAngleRepresentation* r)
-  {
-    this->Superclass::SetWidgetRepresentation(reinterpret_cast<vtkWidgetRepresentation*>(r));
-  }
+  void SetRepresentation(vtkAngleRepresentation *r)
+    {this->Superclass::SetWidgetRepresentation(reinterpret_cast<vtkWidgetRepresentation*>(r));}
 
   /**
    * Create the default widget representation if one is not set.
    */
-  void CreateDefaultRepresentation() override;
+  void CreateDefaultRepresentation();
 
   /**
    * Return the representation as a vtkAngleRepresentation.
    */
-  vtkAngleRepresentation* GetAngleRepresentation()
-  {
-    return reinterpret_cast<vtkAngleRepresentation*>(this->WidgetRep);
-  }
+  vtkAngleRepresentation *GetAngleRepresentation()
+    {return reinterpret_cast<vtkAngleRepresentation*>(this->WidgetRep);}
 
   /**
    * A flag indicates whether the angle is valid. The angle value only becomes
    * valid after two of the three points are placed.
    */
-  vtkTypeBool IsAngleValid();
+  int IsAngleValid();
 
   /**
    * Methods to change the whether the widget responds to interaction.
    * Overridden to pass the state to component widgets.
    */
-  void SetProcessEvents(vtkTypeBool) override;
+  virtual void SetProcessEvents(int);
 
   /**
    * Enum defining the state of the widget. By default the widget is in Start mode,
@@ -142,12 +139,7 @@ public:
    * transitions to Define state. Once placed, the widget enters the Manipulate state.
    */
 
-  enum
-  {
-    Start = 0,
-    Define,
-    Manipulate
-  };
+  enum {Start=0,Define,Manipulate};
 
   //@{
   /**
@@ -167,11 +159,12 @@ public:
   /**
    * Return the current widget state.
    */
-  virtual int GetWidgetState() { return this->WidgetState; }
+  virtual int GetWidgetState()
+    {return this->WidgetState;}
 
 protected:
   vtkAngleWidget();
-  ~vtkAngleWidget() override;
+  ~vtkAngleWidget();
 
   // The state of the widget
   int WidgetState;
@@ -184,12 +177,12 @@ protected:
   static void EndSelectAction(vtkAbstractWidget*);
 
   // The positioning handle widgets
-  vtkHandleWidget* Point1Widget;
-  vtkHandleWidget* CenterWidget;
-  vtkHandleWidget* Point2Widget;
-  vtkAngleWidgetCallback* AngleWidgetCallback1;
-  vtkAngleWidgetCallback* AngleWidgetCenterCallback;
-  vtkAngleWidgetCallback* AngleWidgetCallback2;
+  vtkHandleWidget *Point1Widget;
+  vtkHandleWidget *CenterWidget;
+  vtkHandleWidget *Point2Widget;
+  vtkAngleWidgetCallback *AngleWidgetCallback1;
+  vtkAngleWidgetCallback *AngleWidgetCenterCallback;
+  vtkAngleWidgetCallback *AngleWidgetCallback2;
 
   // Methods invoked when the handles at the
   // end points of the widget are manipulated
@@ -200,8 +193,8 @@ protected:
   friend class vtkAngleWidgetCallback;
 
 private:
-  vtkAngleWidget(const vtkAngleWidget&) = delete;
-  void operator=(const vtkAngleWidget&) = delete;
+  vtkAngleWidget(const vtkAngleWidget&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkAngleWidget&) VTK_DELETE_FUNCTION;
 };
 
 #endif

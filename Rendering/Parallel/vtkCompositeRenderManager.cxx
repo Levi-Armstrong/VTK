@@ -18,8 +18,8 @@
 #include "vtkFloatArray.h"
 #include "vtkMultiProcessController.h"
 #include "vtkObjectFactory.h"
-#include "vtkRenderWindow.h"
 #include "vtkRenderer.h"
+#include "vtkRenderWindow.h"
 #include "vtkTimerLog.h"
 #include "vtkUnsignedCharArray.h"
 
@@ -31,7 +31,7 @@ vtkCxxSetObjectMacro(vtkCompositeRenderManager, Compositer, vtkCompositer);
 vtkCompositeRenderManager::vtkCompositeRenderManager()
 {
   this->Compositer = vtkCompressCompositer::New();
-  this->Compositer->Register(this);
+  this->Compositer->Register( this );
   this->Compositer->Delete();
 
   this->DepthData = vtkFloatArray::New();
@@ -46,16 +46,18 @@ vtkCompositeRenderManager::vtkCompositeRenderManager()
 //----------------------------------------------------------------------------
 vtkCompositeRenderManager::~vtkCompositeRenderManager()
 {
-  this->SetCompositer(nullptr);
+  this->SetCompositer(NULL);
   this->DepthData->Delete();
   this->TmpPixelData->Delete();
   this->TmpDepthData->Delete();
 }
 
 //----------------------------------------------------------------------------
-void vtkCompositeRenderManager::PrintSelf(ostream& os, vtkIndent indent)
+void vtkCompositeRenderManager::PrintSelf(ostream &os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
+
+  os << indent << "ImageProcessingTime: " << this->ImageProcessingTime << endl;
   os << indent << "Compositer: " << endl;
   this->Compositer->PrintSelf(os, indent.GetNextIndent());
 }
@@ -91,19 +93,23 @@ void vtkCompositeRenderManager::PostRenderProcessing()
     // Read in data.
     this->ReadReducedImage();
     this->Timer->StartTimer();
-    this->RenderWindow->GetZbufferData(
-      0, 0, this->ReducedImageSize[0] - 1, this->ReducedImageSize[1] - 1, this->DepthData);
+    this->RenderWindow->GetZbufferData(0, 0, this->ReducedImageSize[0]-1,
+                                       this->ReducedImageSize[1]-1,
+                                       this->DepthData);
 
     // Set up temporary buffers.
-    this->TmpPixelData->SetNumberOfComponents(this->ReducedImage->GetNumberOfComponents());
-    this->TmpPixelData->SetNumberOfTuples(this->ReducedImage->GetNumberOfTuples());
-    this->TmpDepthData->SetNumberOfComponents(this->DepthData->GetNumberOfComponents());
+    this->TmpPixelData->SetNumberOfComponents
+      (this->ReducedImage->GetNumberOfComponents());
+    this->TmpPixelData->SetNumberOfTuples
+      (this->ReducedImage->GetNumberOfTuples());
+    this->TmpDepthData->SetNumberOfComponents
+      (this->DepthData->GetNumberOfComponents());
     this->TmpDepthData->SetNumberOfTuples(this->DepthData->GetNumberOfTuples());
 
     // Do composite
     this->Compositer->SetController(this->Controller);
-    this->Compositer->CompositeBuffer(
-      this->ReducedImage, this->DepthData, this->TmpPixelData, this->TmpDepthData);
+    this->Compositer->CompositeBuffer(this->ReducedImage, this->DepthData,
+                                      this->TmpPixelData, this->TmpDepthData);
 
     this->Timer->StopTimer();
     this->ImageProcessingTime = this->Timer->GetElapsedTime();
@@ -120,3 +126,5 @@ void vtkCompositeRenderManager::PostRenderProcessing()
 
   vtkTimerLog::MarkEndEvent("Compositing");
 }
+
+

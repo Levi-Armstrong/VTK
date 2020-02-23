@@ -34,13 +34,13 @@
  * "SetPointDataArrayLoadFlag" and "SetCellDataArrayLoadFlag". The
  * reader responds to piece requests by loading only a range of the
  * possible blocks. Unused points are filtered out internally.
- */
+*/
 
 #ifndef vtkPExodusIIReader_h
 #define vtkPExodusIIReader_h
 
-#include "vtkExodusIIReader.h"
 #include "vtkIOParallelExodusModule.h" // For export macro
+#include "vtkExodusIIReader.h"
 
 #include <vector> // Required for vector
 
@@ -51,8 +51,8 @@ class VTKIOPARALLELEXODUS_EXPORT vtkPExodusIIReader : public vtkExodusIIReader
 {
 public:
   static vtkPExodusIIReader* New();
-  vtkTypeMacro(vtkPExodusIIReader, vtkExodusIIReader);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkPExodusIIReader,vtkExodusIIReader);
+  void PrintSelf( ostream& os, vtkIndent indent );
 
   //@{
   /**
@@ -85,9 +85,9 @@ public:
    * Set the range of files that are being loaded. The range for single
    * file should add to 0.
    */
-  void SetFileRange(int, int);
-  void SetFileRange(int* r) { this->SetFileRange(r[0], r[1]); }
-  vtkGetVector2Macro(FileRange, int);
+  void SetFileRange( int, int );
+  void SetFileRange( int* r ) { this->SetFileRange( r[0], r[1] ); }
+  vtkGetVector2Macro(FileRange,int);
   //@}
 
   /**
@@ -96,9 +96,9 @@ public:
    * that is specified.  vtkPExodusIIReader makes it's own copy
    * of your file names.
    */
-  void SetFileNames(int nfiles, const char** names);
+  void SetFileNames( int nfiles, const char** names );
 
-  void SetFileName(const char* name) override;
+  virtual void SetFileName( const char* name );
 
   /**
    * Return pointer to list of file names set in SetFileNames
@@ -114,17 +114,17 @@ public:
   /**
    * Return the number of files to be read.
    */
-  vtkGetMacro(NumberOfFiles, int);
+  vtkGetMacro(NumberOfFiles,int);
   //@}
 
-  vtkIdType GetTotalNumberOfElements() override;
-  vtkIdType GetTotalNumberOfNodes() override;
+  virtual vtkIdType GetTotalNumberOfElements();
+  virtual vtkIdType GetTotalNumberOfNodes();
 
   /**
    * Sends metadata (that read from the input file, not settings modified
    * through this API) from the rank 0 node to all other processes in a job.
    */
-  virtual void Broadcast(vtkMultiProcessController* ctrl);
+  virtual void Broadcast( vtkMultiProcessController* ctrl );
 
   //@{
   /**
@@ -137,23 +137,23 @@ public:
    * a fraction of the cache size after reading the total amount of data cached
    * can be at most twice this size.
    */
-  vtkGetMacro(VariableCacheSize, double);
-  vtkSetMacro(VariableCacheSize, double);
+  vtkGetMacro(VariableCacheSize,double);
+  vtkSetMacro(VariableCacheSize,double);
   //@}
 
 protected:
   vtkPExodusIIReader();
-  ~vtkPExodusIIReader() override;
+  ~vtkPExodusIIReader();
 
   //@{
   /**
    * Try to "guess" the pattern of files.
    */
-  int DeterminePattern(const char* file);
-  static int DetermineFileId(const char* file);
+  int DeterminePattern( const char* file );
+  static int DetermineFileId( const char* file );
   //@}
 
-  // holds the size of the variable cache in GigaBytes
+  //holds the size of the variable cache in GigaBytes
   double VariableCacheSize;
 
   // **KEN** Previous discussions concluded with std classes in header
@@ -170,7 +170,7 @@ protected:
   int FileRange[2];
   int CurrentFileRange[2];
   int NumberOfFiles;
-  char** FileNames;
+  char **FileNames;
   int NumberOfFileNames;
 
   std::vector<vtkExodusIIReader*> ReaderList;
@@ -180,14 +180,14 @@ protected:
   int LastCommonTimeStep;
 
   int Timing;
-  vtkTimerLog* TimerLog;
+  vtkTimerLog *TimerLog;
 
-  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestInformation( vtkInformation*, vtkInformationVector**, vtkInformationVector* );
+  int RequestData( vtkInformation*, vtkInformationVector**, vtkInformationVector* );
 
 private:
-  vtkPExodusIIReader(const vtkPExodusIIReader&) = delete;
-  void operator=(const vtkPExodusIIReader&) = delete;
+  vtkPExodusIIReader( const vtkPExodusIIReader& ) VTK_DELETE_FUNCTION;
+  void operator = ( const vtkPExodusIIReader& ) VTK_DELETE_FUNCTION;
 };
 
 #endif

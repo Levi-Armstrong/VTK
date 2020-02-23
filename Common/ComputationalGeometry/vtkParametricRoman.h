@@ -26,7 +26,7 @@
  * Andrew Maclean andrew.amaclean@gmail.com for creating and contributing the
  * class.
  *
- */
+*/
 
 #ifndef vtkParametricRoman_h
 #define vtkParametricRoman_h
@@ -38,13 +38,13 @@ class VTKCOMMONCOMPUTATIONALGEOMETRY_EXPORT vtkParametricRoman : public vtkParam
 {
 
 public:
-  vtkTypeMacro(vtkParametricRoman, vtkParametricFunction);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkParametricRoman,vtkParametricFunction);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Return the parametric dimension of the class.
    */
-  int GetDimension() override { return 2; }
+  int GetDimension() VTK_OVERRIDE {return 2;}
 
   /**
    * Construct Steiner's Roman Surface with the following parameters:
@@ -52,18 +52,18 @@ public:
    * MinimumV = 0, MaximumV = Pi,
    * JoinU = 1, JoinV = 1,
    * TwistU = 1, TwistV = 0;
-   * ClockwiseOrdering = 0,
+   * ClockwiseOrdering = 1,
    * DerivativesAvailable = 1,
    * Radius = 1
    */
-  static vtkParametricRoman* New();
+  static vtkParametricRoman *New();
 
   //@{
   /**
    * Set/Get the radius. Default is 1.
    */
-  vtkSetMacro(Radius, double);
-  vtkGetMacro(Radius, double);
+  vtkSetMacro(Radius,double);
+  vtkGetMacro(Radius,double);
   //@}
 
   /**
@@ -74,12 +74,12 @@ public:
    * \f$Pt = (x, y, z), Du = (dx/du, dy/du, dz/du), Dv = (dx/dv, dy/dv, dz/dv)\f$ .
    * Then the normal is \f$N = Du X Dv\f$ .
    */
-  void Evaluate(double uvw[3], double Pt[3], double Duvw[9]) override;
+  void Evaluate(double uvw[3], double Pt[3], double Duvw[9]) VTK_OVERRIDE;
 
   /**
    * Calculate a user defined scalar using one or all of uvw, Pt, Duvw.
 
-   * uvw are the parameters with Pt being the Cartesian point,
+   * uvw are the parameters with Pt being the the Cartesian point,
    * Duvw are the derivatives of this point with respect to u, v and w.
    * Pt, Duvw are obtained from Evaluate().
 
@@ -89,18 +89,19 @@ public:
    * If the user does not need to calculate a scalar, then the
    * instantiated function should return zero.
    */
-  double EvaluateScalar(double uvw[3], double Pt[3], double Duvw[9]) override;
+  double EvaluateScalar(double uvw[3], double Pt[3], double Duvw[9]) VTK_OVERRIDE;
+
 
 protected:
   vtkParametricRoman();
-  ~vtkParametricRoman() override;
+  ~vtkParametricRoman() VTK_OVERRIDE;
 
   // Variables
   double Radius;
 
 private:
-  vtkParametricRoman(const vtkParametricRoman&) = delete;
-  void operator=(const vtkParametricRoman&) = delete;
+  vtkParametricRoman(const vtkParametricRoman&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkParametricRoman&) VTK_DELETE_FUNCTION;
 };
 
 #endif

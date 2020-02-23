@@ -26,7 +26,7 @@
  * Andrew Maclean andrew.amaclean@gmail.com for creating and contributing the
  * class.
  *
- */
+*/
 
 #ifndef vtkParametricMobius_h
 #define vtkParametricMobius_h
@@ -37,8 +37,8 @@
 class VTKCOMMONCOMPUTATIONALGEOMETRY_EXPORT vtkParametricMobius : public vtkParametricFunction
 {
 public:
-  vtkTypeMacro(vtkParametricMobius, vtkParametricFunction);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkParametricMobius,vtkParametricFunction);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Construct a Mobius strip with the following parameters:
@@ -46,24 +46,24 @@ public:
    * MinimumV = -1, MaximumV = 1,
    * JoinU = 1, JoinV = 0,
    * TwistU = 0, TwistV = 0,
-   * ClockwiseOrdering = 0,
+   * ClockwiseOrdering = 1,
    * DerivativesAvailable = 1,
    * Radius = 1.
    */
-  static vtkParametricMobius* New();
+  static vtkParametricMobius *New();
 
   //@{
   /**
    * Set/Get the radius of the Mobius strip. Default is 1.
    */
-  vtkSetMacro(Radius, double);
-  vtkGetMacro(Radius, double);
+  vtkSetMacro(Radius,double);
+  vtkGetMacro(Radius,double);
   //@}
 
   /**
    * Return the parametric dimension of the class.
    */
-  int GetDimension() override { return 2; }
+  int GetDimension() VTK_OVERRIDE {return 2;}
 
   /**
    * The Mobius strip.
@@ -73,12 +73,12 @@ public:
    * \f$Pt = (x, y, z), Du = (dx/du, dy/du, dz/du), Dv = (dx/dv, dy/dv, dz/dv)\f$ .
    * Then the normal is \f$N = Du X Dv\f$ .
    */
-  void Evaluate(double uvw[3], double Pt[3], double Duvw[9]) override;
+  void Evaluate(double uvw[3], double Pt[3], double Duvw[9]) VTK_OVERRIDE;
 
   /**
    * Calculate a user defined scalar using one or all of uvw, Pt, Duvw.
 
-   * uvw are the parameters with Pt being the cartesian point,
+   * uvw are the parameters with Pt being the the cartesian point,
    * Duvw are the derivatives of this point with respect to u, v and w.
    * Pt, Du, Dv are obtained from Evaluate().
 
@@ -88,18 +88,18 @@ public:
    * If the user does not need to calculate a scalar, then the
    * instantiated function should return zero.
    */
-  double EvaluateScalar(double uvw[3], double Pt[3], double Duvw[9]) override;
+  double EvaluateScalar(double uvw[3], double Pt[3], double Duvw[9]) VTK_OVERRIDE;
 
 protected:
   vtkParametricMobius();
-  ~vtkParametricMobius() override;
+  ~vtkParametricMobius() VTK_OVERRIDE;
 
   // Variables
   double Radius;
 
 private:
-  vtkParametricMobius(const vtkParametricMobius&) = delete;
-  void operator=(const vtkParametricMobius&) = delete;
+  vtkParametricMobius(const vtkParametricMobius&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkParametricMobius&) VTK_DELETE_FUNCTION;
 };
 
 #endif

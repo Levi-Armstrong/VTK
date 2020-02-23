@@ -16,9 +16,8 @@
 =========================================================================*/
 // this shader implements imposters in OpenGL for Spheres
 
-in vec4 vertexMC;
-in float radiusMC;
-out float radiusVCVSOutput;
+attribute vec4 vertexMC;
+attribute vec2 offsetMC;
 
 // optional normal declaration
 //VTK::Normal::Dec
@@ -35,8 +34,10 @@ out float radiusVCVSOutput;
 // camera and actor matrix values
 //VTK::Camera::Dec
 
-// picking support
-//VTK::Picking::Dec
+varying vec2 offsetVCVSOutput;
+uniform int cameraParallel;
+
+uniform float triangleScale;
 
 void main()
 {
@@ -48,9 +49,29 @@ void main()
 
   //VTK::Clip::Impl
 
-  radiusVCVSOutput = radiusMC;
+  // compute the projected vertex position
+  vec4 vertexVC = MCVCMatrix * vertexMC;
 
-  gl_Position = MCVCMatrix * vertexMC;
+  // the offsets sent down are positioned
+  // at 2.0*radius*triangleScale from the center of the
+  // gaussian.  This has to be consistent
+  // with the offsets we build into the VBO
+  float radius = 0.5*sqrt(dot(offsetMC,offsetMC))/triangleScale;
 
-  //VTK::Picking::Impl
+  // make the triangle face the camera
+  if (cameraParallel == 0)
+    {
+    vec3 dir = normalize(-vertexVC.xyz);
+    vec3 base2 = normalize(cross(dir,vec3(1.0,0.0,0.0)));
+    vec3 base1 = cross(base2,dir);
+    vertexVC.xyz = vertexVC.xyz + offsetMC.x*base1 + offsetMC.y*base2;
+    }
+  else
+    {
+    // add in the offset
+    vertexVC.xy = vertexVC.xy + offsetMC;
+    }
+
+  offsetVCVSOutput = offsetMC/radius;
+  gl_Position = VCDCMatrix * vertexVC;
 }

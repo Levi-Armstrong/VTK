@@ -27,35 +27,43 @@
  * mask is initially negative, the output distances will be negative.
  * Distances maps can have inside (negative regions)
  * and outsides (positive regions).
- */
+*/
 
 #ifndef vtkImageCityBlockDistance_h
 #define vtkImageCityBlockDistance_h
 
-#include "vtkImageDecomposeFilter.h"
+
 #include "vtkImagingGeneralModule.h" // For export macro
+#include "vtkImageDecomposeFilter.h"
 
 class VTKIMAGINGGENERAL_EXPORT vtkImageCityBlockDistance : public vtkImageDecomposeFilter
 {
 public:
-  static vtkImageCityBlockDistance* New();
-  vtkTypeMacro(vtkImageCityBlockDistance, vtkImageDecomposeFilter);
+  static vtkImageCityBlockDistance *New();
+  vtkTypeMacro(vtkImageCityBlockDistance,vtkImageDecomposeFilter);
 
 protected:
   vtkImageCityBlockDistance();
-  ~vtkImageCityBlockDistance() override {}
+  ~vtkImageCityBlockDistance() {}
 
-  int IterativeRequestUpdateExtent(vtkInformation* in, vtkInformation* out) override;
-  int IterativeRequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int IterativeRequestUpdateExtent(vtkInformation* in,
+                                           vtkInformation* out);
+  virtual int IterativeRequestData(vtkInformation*,
+                                    vtkInformationVector**,
+                                    vtkInformationVector*);
 
-  void AllocateOutputScalars(
-    vtkImageData* outData, int* updateExtent, int* wholeExtent, vtkInformation* outInfo);
+  void AllocateOutputScalars(vtkImageData *outData,
+                             int* updateExtent,
+                             int* wholeExtent,
+                             vtkInformation* outInfo);
 
 private:
-  vtkImageCityBlockDistance(const vtkImageCityBlockDistance&) = delete;
-  void operator=(const vtkImageCityBlockDistance&) = delete;
+  vtkImageCityBlockDistance(const vtkImageCityBlockDistance&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkImageCityBlockDistance&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+
 
 // VTK-HeaderTest-Exclude: vtkImageCityBlockDistance.h

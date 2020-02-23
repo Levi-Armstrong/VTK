@@ -23,13 +23,13 @@
  *
  * @sa
  * vtkActor2D vtkCollection
- */
+*/
 
 #ifndef vtkActor2DCollection_h
 #define vtkActor2DCollection_h
 
-#include "vtkPropCollection.h"
 #include "vtkRenderingCoreModule.h" // For export macro
+#include "vtkPropCollection.h"
 
 #include "vtkActor2D.h" // Needed for inline methods
 
@@ -37,14 +37,14 @@ class vtkViewport;
 
 class VTKRENDERINGCORE_EXPORT vtkActor2DCollection : public vtkPropCollection
 {
-public:
+ public:
   /**
-   * Destructor for the vtkActor2DCollection class. This removes all
+   * Desctructor for the vtkActor2DCollection class. This removes all
    * objects from the collection.
    */
-  static vtkActor2DCollection* New();
+  static vtkActor2DCollection *New();
 
-  vtkTypeMacro(vtkActor2DCollection, vtkPropCollection);
+  vtkTypeMacro(vtkActor2DCollection,vtkPropCollection);
 
   /**
    * Sorts the vtkActor2DCollection by layer number.  Smaller layer
@@ -56,15 +56,15 @@ public:
    * Add an actor to the list.  The new actor is inserted in the list
    * according to it's layer number.
    */
-  void AddItem(vtkActor2D* a);
+  void AddItem(vtkActor2D *a);
 
   //@{
   /**
    * Standard Collection methods
    */
-  int IsItemPresent(vtkActor2D* a);
-  vtkActor2D* GetNextActor2D();
-  vtkActor2D* GetLastActor2D();
+  int IsItemPresent(vtkActor2D *a);
+  vtkActor2D *GetNextActor2D();
+  vtkActor2D *GetLastActor2D();
   //@}
 
   //@{
@@ -73,9 +73,10 @@ public:
    * version of VTK.  Please use the GetNextActor2D(), GetLastActor2D()
    * variants where possible.
    */
-  vtkActor2D* GetNextItem();
-  vtkActor2D* GetLastItem();
+ vtkActor2D *GetNextItem();
+ vtkActor2D *GetLastItem();
   //@}
+
 
   /**
    * Sort and then render the collection of 2D actors.
@@ -86,60 +87,62 @@ public:
    * Reentrant safe way to get an object in a collection. Just pass the
    * same cookie back and forth.
    */
-  vtkActor2D* GetNextActor2D(vtkCollectionSimpleIterator& cookie)
-  {
-    return static_cast<vtkActor2D*>(this->GetNextItemAsObject(cookie));
-  }
+  vtkActor2D *GetNextActor2D(vtkCollectionSimpleIterator &cookie) {
+    return static_cast<vtkActor2D *>(this->GetNextItemAsObject(cookie));};
 
 protected:
   vtkActor2DCollection() {}
-  ~vtkActor2DCollection() override;
+  ~vtkActor2DCollection();
 
-  void DeleteElement(vtkCollectionElement*) override;
+  virtual void DeleteElement(vtkCollectionElement *);
 
 private:
   // hide the standard AddItem from the user and the compiler.
-  void AddItem(vtkObject* o) { this->vtkCollection::AddItem(o); }
-  void AddItem(vtkProp* o) { this->vtkPropCollection::AddItem(o); }
-  int IsItemPresent(vtkObject* o) { return this->vtkCollection::IsItemPresent(o); }
+  void AddItem(vtkObject *o) { this->vtkCollection::AddItem(o); };
+  void AddItem(vtkProp *o) { this->vtkPropCollection::AddItem(o); };
+  int IsItemPresent(vtkObject *o) { return this->vtkCollection::IsItemPresent(o); };
 
 private:
-  vtkActor2DCollection(const vtkActor2DCollection&) = delete;
-  void operator=(const vtkActor2DCollection&) = delete;
+  vtkActor2DCollection(const vtkActor2DCollection&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkActor2DCollection&) VTK_DELETE_FUNCTION;
 };
 
-inline int vtkActor2DCollection::IsItemPresent(vtkActor2D* a)
+inline int vtkActor2DCollection::IsItemPresent(vtkActor2D *a)
 {
   return this->vtkCollection::IsItemPresent(a);
 }
 
-inline vtkActor2D* vtkActor2DCollection::GetNextActor2D()
+inline vtkActor2D *vtkActor2DCollection::GetNextActor2D()
 {
-  return static_cast<vtkActor2D*>(this->GetNextItemAsObject());
+  return static_cast<vtkActor2D *>(this->GetNextItemAsObject());
 }
 
-inline vtkActor2D* vtkActor2DCollection::GetLastActor2D()
+inline vtkActor2D *vtkActor2DCollection::GetLastActor2D()
 {
-  if (this->Bottom == nullptr)
+  if ( this->Bottom == NULL )
   {
-    return nullptr;
+    return NULL;
   }
   else
   {
-    return static_cast<vtkActor2D*>(this->Bottom->Item);
+    return static_cast<vtkActor2D *>(this->Bottom->Item);
   }
 }
 
-inline vtkActor2D* vtkActor2DCollection::GetNextItem()
+inline vtkActor2D *vtkActor2DCollection::GetNextItem()
 {
   return this->GetNextActor2D();
 }
 
-inline vtkActor2D* vtkActor2DCollection::GetLastItem()
+inline vtkActor2D *vtkActor2DCollection::GetLastItem()
 {
   return this->GetLastActor2D();
 }
 
 #endif
+
+
+
+
 
 // VTK-HeaderTest-Exclude: vtkActor2DCollection.h

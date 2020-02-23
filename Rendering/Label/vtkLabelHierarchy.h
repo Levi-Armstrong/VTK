@@ -56,18 +56,17 @@
  * is a hard limit while \a TargetLabelCount is a suggested optimum. You will
  * end up with many more than \a TargetLabelCount entries per node and things
  * will be sloooow.
- */
+*/
 
 #ifndef vtkLabelHierarchy_h
 #define vtkLabelHierarchy_h
 
-#include "vtkPointSet.h"
 #include "vtkRenderingLabelModule.h" // For export macro
+#include "vtkPointSet.h"
 
 class vtkAbstractArray;
 class vtkCamera;
 class vtkCoincidentPoints;
-class vtkCoordinate;
 class vtkDataArray;
 class vtkIntArray;
 class vtkLabelHierarchyIterator;
@@ -80,13 +79,13 @@ class VTKRENDERINGLABEL_EXPORT vtkLabelHierarchy : public vtkPointSet
 {
 public:
   static vtkLabelHierarchy* New();
-  vtkTypeMacro(vtkLabelHierarchy, vtkPointSet);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkLabelHierarchy,vtkPointSet);
+  virtual void PrintSelf( ostream& os, vtkIndent indent );
 
   /**
    * Override SetPoints so we can reset the hierarchy when the points change.
    */
-  void SetPoints(vtkPoints*) override;
+  virtual void SetPoints( vtkPoints* );
 
   /**
    * Fill the hierarchy with the input labels.
@@ -98,23 +97,22 @@ public:
    * The number of labels that is ideally present at any octree node.
    * It is best if this is a multiple of \f$2^d\f$.
    */
-  vtkSetMacro(TargetLabelCount, int);
-  vtkGetMacro(TargetLabelCount, int);
+  vtkSetMacro(TargetLabelCount,int);
+  vtkGetMacro(TargetLabelCount,int);
   //@}
 
   //@{
   /**
    * The maximum depth of the octree.
    */
-  vtkSetMacro(MaximumDepth, int);
-  vtkGetMacro(MaximumDepth, int);
+  vtkSetMacro(MaximumDepth,int);
+  vtkGetMacro(MaximumDepth,int);
   //@}
 
   /**
    * Enumeration of iterator types.
    */
-  enum IteratorType
-  {
+  enum IteratorType {
     FULL_SORT,
     QUEUE,
     DEPTH_FIRST,
@@ -126,7 +124,7 @@ public:
    * The default text property assigned to labels in this hierarchy.
    */
   virtual void SetTextProperty(vtkTextProperty* tprop);
-  vtkGetObjectMacro(TextProperty, vtkTextProperty);
+  vtkGetObjectMacro(TextProperty,vtkTextProperty);
   //@}
 
   //@{
@@ -134,7 +132,7 @@ public:
    * Set/get the array specifying the importance (priority) of each label.
    */
   virtual void SetPriorities(vtkDataArray* arr);
-  vtkGetObjectMacro(Priorities, vtkDataArray);
+  vtkGetObjectMacro(Priorities,vtkDataArray);
   //@}
 
   //@{
@@ -142,7 +140,7 @@ public:
    * Set/get the array specifying the text of each label.
    */
   virtual void SetLabels(vtkAbstractArray* arr);
-  vtkGetObjectMacro(Labels, vtkAbstractArray);
+  vtkGetObjectMacro(Labels,vtkAbstractArray);
   //@}
 
   //@{
@@ -150,7 +148,7 @@ public:
    * Set/get the array specifying the orientation of each label.
    */
   virtual void SetOrientations(vtkDataArray* arr);
-  vtkGetObjectMacro(Orientations, vtkDataArray);
+  vtkGetObjectMacro(Orientations,vtkDataArray);
   //@}
 
   //@{
@@ -158,7 +156,7 @@ public:
    * Set/get the array specifying the icon index of each label.
    */
   virtual void SetIconIndices(vtkIntArray* arr);
-  vtkGetObjectMacro(IconIndices, vtkIntArray);
+  vtkGetObjectMacro(IconIndices,vtkIntArray);
   //@}
 
   //@{
@@ -166,7 +164,7 @@ public:
    * Set/get the array specifying the size of each label.
    */
   virtual void SetSizes(vtkDataArray* arr);
-  vtkGetObjectMacro(Sizes, vtkDataArray);
+  vtkGetObjectMacro(Sizes,vtkDataArray);
   //@}
 
   //@{
@@ -174,7 +172,7 @@ public:
    * Set/get the array specifying the maximum width and height in world coordinates of each label.
    */
   virtual void SetBoundedSizes(vtkDataArray* arr);
-  vtkGetObjectMacro(BoundedSizes, vtkDataArray);
+  vtkGetObjectMacro(BoundedSizes,vtkDataArray);
   //@}
 
   /**
@@ -186,11 +184,10 @@ public:
    * @param cam - the current camera.
    * @param frustumPlanes - should be the output of the camera's frustum planes.
    * @param positionsAsNormals - throws out octree nodes on the opposite side of the origin.
-   * @param bucketSize - an array of 2 integers describing the width and height of label placer
-   * buckets.
+   * @param bucketSize - an array of 2 integers describing the width and height of label placer buckets.
    */
-  VTK_NEWINSTANCE vtkLabelHierarchyIterator* NewIterator(int type, vtkRenderer* ren, vtkCamera* cam,
-    double frustumPlanes[24], bool positionsAsNormals, float bucketSize[2]);
+  VTK_NEWINSTANCE vtkLabelHierarchyIterator* NewIterator(
+    int type, vtkRenderer* ren, vtkCamera* cam, double frustumPlanes[24], bool positionsAsNormals, float bucketSize[2] );
 
   /**
    * Given a depth in the hierarchy (\a level) and a point \a pt in world space, compute \a ijk.
@@ -202,7 +199,7 @@ public:
    * @param[in]  pt - input world point coordinates
    * @param[in]  level - input octree level to be considered
    */
-  void GetDiscreteNodeCoordinatesFromWorldPoint(int ijk[3], double pt[3], int level);
+  void GetDiscreteNodeCoordinatesFromWorldPoint( int ijk[3], double pt[3], int level );
 
   /**
    * Given a \a level of the tree and \a ijk coordinates in a lattice,
@@ -210,28 +207,25 @@ public:
    * If the lattice coordinates are outside the tree, this returns
    * false. Otherwise it returns true. This does <b>not</b> guarantee that
    * the path exists in the hierarchy.
-   * @param[out] path - a vector of \a level integers specifying which child to descend at each
-   * level to reach \a ijk
+   * @param[out] path - a vector of \a level integers specifying which child to descend at each level to reach \a ijk
    * @param[in] ijk - discrete coordinates of the octree node at \a level
    * @param[in] level - input octree level to be considered
    */
-  static bool GetPathForNodalCoordinates(int* path, int ijk[3], int level);
+  static bool GetPathForNodalCoordinates( int* path, int ijk[3], int level );
 
   //@{
   /**
    * Inherited members (from vtkDataSet)
    */
-  vtkIdType GetNumberOfCells() override;
-  using vtkDataSet::GetCell;
-  vtkCell* GetCell(vtkIdType) override;
-  void GetCell(vtkIdType, vtkGenericCell*) override;
-  int GetCellType(vtkIdType) override;
-  void GetCellPoints(vtkIdType, vtkIdList*) override;
-  void GetPointCells(vtkIdType, vtkIdList*) override;
-  vtkIdType FindCell(double*, vtkCell*, vtkIdType, double, int&, double*, double*) override;
-  vtkIdType FindCell(
-    double*, vtkCell*, vtkGenericCell*, vtkIdType, double, int&, double*, double*) override;
-  int GetMaxCellSize() override;
+  virtual vtkIdType GetNumberOfCells();
+  virtual vtkCell* GetCell(vtkIdType);
+  virtual void GetCell(vtkIdType, vtkGenericCell*);
+  virtual int GetCellType(vtkIdType);
+  virtual void GetCellPoints(vtkIdType, vtkIdList*);
+  virtual void GetPointCells(vtkIdType, vtkIdList*);
+  virtual vtkIdType FindCell(double*, vtkCell*, vtkIdType, double, int&, double*, double*);
+  virtual vtkIdType FindCell(double*, vtkCell*, vtkGenericCell*, vtkIdType, double, int&, double*, double*);
+  virtual int GetMaxCellSize();
   //@}
 
   class Implementation;
@@ -241,7 +235,7 @@ public:
   /**
    * Provide access to original coordinates of sets of coincident points
    */
-  vtkGetObjectMacro(CenterPts, vtkPoints);
+  vtkGetObjectMacro(CenterPts,vtkPoints);
   //@}
 
   //@{
@@ -250,22 +244,12 @@ public:
    * perturbed by the hierarchy in order to render labels for each
    * without overlap.
    */
-  vtkGetObjectMacro(CoincidentPoints, vtkCoincidentPoints);
-  //@}
-
-  //@{
-  /**
-   * Compute frustum for quickly excluding labels from rendering
-   * that are outside the visible region.
-   * This is a shared utility function.
-   */
-  static void GetAnchorFrustumPlanes(
-    double frustumPlanes[24], vtkRenderer* ren, vtkCoordinate* anchorTransform);
+  vtkGetObjectMacro(CoincidentPoints,vtkCoincidentPoints);
   //@}
 
 protected:
   vtkLabelHierarchy();
-  ~vtkLabelHierarchy() override;
+  virtual ~vtkLabelHierarchy();
 
   int TargetLabelCount;
   int MaximumDepth;
@@ -286,8 +270,8 @@ protected:
   friend class implementation;
 
 private:
-  vtkLabelHierarchy(const vtkLabelHierarchy&) = delete;
-  void operator=(const vtkLabelHierarchy&) = delete;
+  vtkLabelHierarchy( const vtkLabelHierarchy& ) VTK_DELETE_FUNCTION;
+  void operator = ( const vtkLabelHierarchy& ) VTK_DELETE_FUNCTION;
 };
 
 #endif // vtkLabelHierarchy_h

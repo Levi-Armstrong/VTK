@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import vtk
+from vtk.test import Testing
 from vtk.util.misc import vtkGetDataRoot
 VTK_DATA_ROOT = vtkGetDataRoot()
 
@@ -47,7 +48,7 @@ ren1.ResetCamera()
 ren1.GetActiveCamera().Elevation(30)
 ren1.GetActiveCamera().Dolly(1.3)
 ren1.ResetCameraClippingRange()
-renWin.SetSize(300,90)
+renWin.SetSize(301,91)
 cone0Actor.SetPosition(-1.5,0,0)
 cone1Actor.SetPosition(-.5,0,0)
 cone2Actor.SetPosition(.5,0,0)

@@ -20,7 +20,7 @@
  * vtkVoxelGrid is a filter that subsamples a point cloud based on a regular
  * binning of space. Basically the algorithm operates by dividing space into
  * a volume of M x N x O bins, and then for each bin averaging all of the
- * points positions into a single representative point. Several strategies for
+ * points positions into a single representive point. Several strategies for
  * computing the binning can be used: 1) manual configuration of a requiring
  * specifying bin dimensions (the bounds are calculated from the data); 2) by
  * explicit specification of the bin size in world coordinates (x-y-z
@@ -42,7 +42,7 @@
  *
  * @sa
  * vtkStaticPointLocator vtkPointCloudFilter vtkQuadricClustering
- */
+*/
 
 #ifndef vtkVoxelGrid_h
 #define vtkVoxelGrid_h
@@ -53,6 +53,7 @@
 class vtkStaticPointLocator;
 class vtkInterpolationKernel;
 
+
 class VTKFILTERSPOINTS_EXPORT vtkVoxelGrid : public vtkPolyDataAlgorithm
 {
 public:
@@ -61,9 +62,9 @@ public:
    * Standard methods for instantiating, obtaining type information, and
    * printing information.
    */
-  static vtkVoxelGrid* New();
-  vtkTypeMacro(vtkVoxelGrid, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkVoxelGrid *New();
+  vtkTypeMacro(vtkVoxelGrid,vtkPolyDataAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   /**
@@ -71,9 +72,9 @@ public:
    */
   enum Style
   {
-    MANUAL = 0,
-    SPECIFY_LEAF_SIZE = 1,
-    AUTOMATIC = 2
+    MANUAL=0,
+    SPECIFY_LEAF_SIZE=1,
+    AUTOMATIC=2
   };
 
   //@{
@@ -85,22 +86,24 @@ public:
    * guide the bin size and binning volume dimensions. By default, AUTOMATIC
    * configuration style is used.
    */
-  vtkSetMacro(ConfigurationStyle, int);
-  vtkGetMacro(ConfigurationStyle, int);
-  void SetConfigurationStyleToManual() { this->SetConfigurationStyle(MANUAL); }
-  void SetConfigurationStyleToLeafSize() { this->SetConfigurationStyle(SPECIFY_LEAF_SIZE); }
-  void SetConfigurationStyleToAutomatic() { this->SetConfigurationStyle(AUTOMATIC); }
+  vtkSetMacro(ConfigurationStyle,int);
+  vtkGetMacro(ConfigurationStyle,int);
+  void SetConfigurationStyleToManual()
+    { this->SetConfigurationStyle(MANUAL); }
+  void SetConfigurationStyleToLeafSize()
+    { this->SetConfigurationStyle(SPECIFY_LEAF_SIZE); }
+  void SetConfigurationStyleToAutomatic()
+    { this->SetConfigurationStyle(AUTOMATIC); }
   //@}
 
   //@{
   /**
    * Set the number of divisions in x-y-z directions (the binning volume
    * dimensions). This data member is used when the configuration style is
-   * set to MANUAL. Note that these values may be adjusted if <1 or too
-   * large.
+   * set to MANUAL.
    */
-  vtkSetVector3Macro(Divisions, int);
-  vtkGetVectorMacro(Divisions, int, 3);
+  vtkSetVector3Macro(Divisions,int);
+  vtkGetVectorMacro(Divisions,int,3);
   //@}
 
   //@{
@@ -110,8 +113,8 @@ public:
    * use these x-y-z lengths, within the bounding box of the point cloud,
    * to determine the binning dimensions.
    */
-  vtkSetVector3Macro(LeafSize, double);
-  vtkGetVectorMacro(LeafSize, double, 3);
+  vtkSetVector3Macro(LeafSize,double);
+  vtkGetVectorMacro(LeafSize,double,3);
   //@}
 
   //@{
@@ -121,8 +124,8 @@ public:
    * configuration style is set to AUTOMATIC. The class will automatically
    * determine the binning dimensions in the x-y-z directions.
    */
-  vtkSetClampMacro(NumberOfPointsPerBin, int, 1, VTK_INT_MAX);
-  vtkGetMacro(NumberOfPointsPerBin, int);
+  vtkSetClampMacro(NumberOfPointsPerBin,int,1,VTK_INT_MAX);
+  vtkGetMacro(NumberOfPointsPerBin,int);
   //@}
 
   //@{
@@ -131,28 +134,30 @@ public:
    * default a vtkLinearKernel is used (i.e., average values). The
    * interpolation kernel changes the basis of the interpolation.
    */
-  void SetKernel(vtkInterpolationKernel* kernel);
-  vtkGetObjectMacro(Kernel, vtkInterpolationKernel);
+  void SetKernel(vtkInterpolationKernel *kernel);
+  vtkGetObjectMacro(Kernel,vtkInterpolationKernel);
   //@}
 
 protected:
   vtkVoxelGrid();
-  ~vtkVoxelGrid() override;
+  ~vtkVoxelGrid();
 
-  vtkStaticPointLocator* Locator;
+  vtkStaticPointLocator *Locator;
   int ConfigurationStyle;
 
   int Divisions[3];
   double LeafSize[3];
   int NumberOfPointsPerBin;
-  vtkInterpolationKernel* Kernel;
+  vtkInterpolationKernel *Kernel;
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  virtual int RequestData(vtkInformation *, vtkInformationVector **,
+                          vtkInformationVector *);
+  virtual int FillInputPortInformation(int port, vtkInformation *info);
 
 private:
-  vtkVoxelGrid(const vtkVoxelGrid&) = delete;
-  void operator=(const vtkVoxelGrid&) = delete;
+  vtkVoxelGrid(const vtkVoxelGrid&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkVoxelGrid&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif

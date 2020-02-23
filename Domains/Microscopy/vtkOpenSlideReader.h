@@ -23,7 +23,7 @@
  *
  * @sa
  * vtkPTIFWriter
- */
+*/
 
 #ifndef vtkOpenSlideReader_h
 #define vtkOpenSlideReader_h
@@ -31,51 +31,51 @@
 #include "vtkDomainsMicroscopyModule.h" // For export macro
 #include "vtkImageReader2.h"
 
-extern "C"
-{
+extern "C" {
 #include "openslide/openslide.h" // For openslide support
 }
 
 class VTKDOMAINSMICROSCOPY_EXPORT vtkOpenSlideReader : public vtkImageReader2
 {
 public:
-  static vtkOpenSlideReader* New();
-  vtkTypeMacro(vtkOpenSlideReader, vtkImageReader2);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkOpenSlideReader *New();
+  vtkTypeMacro(vtkOpenSlideReader,vtkImageReader2);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Is the given file supported ?
    */
-  int CanReadFile(const char* fname) override;
+  int CanReadFile(const char* fname);
 
   /**
    * Get the file extensions for this format.
    * Returns a string with a space separated list of extensions in
    * the format .extension
    */
-  const char* GetFileExtensions() override
+  virtual const char* GetFileExtensions()
   {
-    return ".ndpi .svs"; // TODO: Get exaustive list of formats
+      return ".ndpi .svs"; // TODO: Get exaustive list of formats
   }
 
   //@{
   /**
    * Return a descriptive name for the file format that might be useful in a GUI.
    */
-  const char* GetDescriptiveName() override { return "Openslide::WholeSlideImage"; }
-
+  virtual const char* GetDescriptiveName()
+  {
+      return "Openslide::WholeSlideImage";
+  }
 protected:
   vtkOpenSlideReader() {}
-  ~vtkOpenSlideReader() override;
+  ~vtkOpenSlideReader();
   //@}
 
-  void ExecuteInformation() override;
-  void ExecuteDataWithInformation(vtkDataObject* out, vtkInformation* outInfo) override;
-
+  virtual void ExecuteInformation();
+  virtual void ExecuteDataWithInformation(vtkDataObject *out, vtkInformation *outInfo);
 private:
-  openslide_t* openslide_handle;
+  openslide_t *openslide_handle;
 
-  vtkOpenSlideReader(const vtkOpenSlideReader&) = delete;
-  void operator=(const vtkOpenSlideReader&) = delete;
+  vtkOpenSlideReader(const vtkOpenSlideReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkOpenSlideReader&) VTK_DELETE_FUNCTION;
 };
 #endif

@@ -31,7 +31,7 @@
  * @par Thanks:
  * Timothy M. Shead (tshead@sandia.gov) at Sandia National Laboratories
  * contributed code to this class.
- */
+*/
 
 #ifndef vtkAnnotation_h
 #define vtkAnnotation_h
@@ -49,7 +49,7 @@ class VTKCOMMONDATAMODEL_EXPORT vtkAnnotation : public vtkDataObject
 {
 public:
   vtkTypeMacro(vtkAnnotation, vtkDataObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
   static vtkAnnotation* New();
 
   //@{
@@ -65,7 +65,7 @@ public:
    * Retrieve a vtkAnnotation stored inside an information object.
    */
   static vtkAnnotation* GetData(vtkInformation* info);
-  static vtkAnnotation* GetData(vtkInformationVector* v, int i = 0);
+  static vtkAnnotation* GetData(vtkInformationVector* v, int i=0);
   //@}
 
   /**
@@ -109,34 +109,36 @@ public:
   /**
    * Initialize the annotation to an empty state.
    */
-  void Initialize() override;
+  void Initialize() VTK_OVERRIDE;
 
   /**
    * Make this annotation have the same properties and have
    * the same selection of another annotation.
    */
-  void ShallowCopy(vtkDataObject* other) override;
+  void ShallowCopy(vtkDataObject* other) VTK_OVERRIDE;
 
   /**
    * Make this annotation have the same properties and have
    * a copy of the selection of another annotation.
    */
-  void DeepCopy(vtkDataObject* other) override;
+  void DeepCopy(vtkDataObject* other) VTK_OVERRIDE;
 
   /**
    * Get the modified time of this object.
    */
-  vtkMTimeType GetMTime() override;
+  vtkMTimeType GetMTime() VTK_OVERRIDE;
 
 protected:
   vtkAnnotation();
-  ~vtkAnnotation() override;
+  ~vtkAnnotation() VTK_OVERRIDE;
 
   vtkSelection* Selection;
 
 private:
-  vtkAnnotation(const vtkAnnotation&) = delete;
-  void operator=(const vtkAnnotation&) = delete;
+  vtkAnnotation(const vtkAnnotation&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkAnnotation&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif
+

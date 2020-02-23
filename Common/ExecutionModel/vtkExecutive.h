@@ -22,7 +22,7 @@
  * control data flow.  Every reader, source, writer, or data
  * processing algorithm in the pipeline is implemented in an instance
  * of vtkAlgorithm.
- */
+*/
 
 #ifndef vtkExecutive_h
 #define vtkExecutive_h
@@ -46,8 +46,8 @@ class vtkInformationVector;
 class VTKCOMMONEXECUTIONMODEL_EXPORT vtkExecutive : public vtkObject
 {
 public:
-  vtkTypeMacro(vtkExecutive, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkExecutive,vtkObject);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Get the algorithm to which this executive has been assigned.
@@ -58,8 +58,9 @@ public:
    * Generalized interface for asking the executive to fulfill
    * pipeline requests.
    */
-  virtual vtkTypeBool ProcessRequest(
-    vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo);
+  virtual int ProcessRequest(vtkInformation* request,
+                             vtkInformationVector** inInfo,
+                             vtkInformationVector* outInfo);
 
   /**
    * A special version of ProcessRequest meant specifically for the
@@ -69,25 +70,29 @@ public:
    * containing the common information, specifically the output port
    * through which the request was made and the resulting modified
    * time.  Note that unlike ProcessRequest the request information
-   * object may be nullptr for this method.  It also does not contain a
-   * request identification key because the request is known from the
+   * object may be NULL for this method.  It also does not contain a
+   * request identifcation key because the request is known from the
    * method name.
    */
-  virtual int ComputePipelineMTime(vtkInformation* request, vtkInformationVector** inInfoVec,
-    vtkInformationVector* outInfoVec, int requestFromOutputPort, vtkMTimeType* mtime);
+  virtual int
+  ComputePipelineMTime(vtkInformation* request,
+                       vtkInformationVector** inInfoVec,
+                       vtkInformationVector* outInfoVec,
+                       int requestFromOutputPort,
+                       vtkMTimeType* mtime);
 
   /**
    * Bring the output information up to date.
    */
-  virtual int UpdateInformation() { return 1; }
+  virtual int UpdateInformation() {return 1;}
 
   //@{
   /**
    * Bring the algorithm's outputs up-to-date.  Returns 1 for success
    * and 0 for failure.
    */
-  virtual vtkTypeBool Update();
-  virtual vtkTypeBool Update(int port);
+  virtual int Update();
+  virtual int Update(int port);
   //@}
 
   //@{
@@ -139,7 +144,7 @@ public:
    * Get/Set the data object for an output port of the algorithm.
    */
   virtual vtkDataObject* GetOutputData(int port);
-  virtual void SetOutputData(int port, vtkDataObject*, vtkInformation* info);
+  virtual void SetOutputData(int port, vtkDataObject*, vtkInformation *info);
   virtual void SetOutputData(int port, vtkDataObject*);
   //@}
 
@@ -148,7 +153,8 @@ public:
    * Get the data object for an input port of the algorithm.
    */
   virtual vtkDataObject* GetInputData(int port, int connection);
-  virtual vtkDataObject* GetInputData(int port, int connection, vtkInformationVector** inInfoVec);
+  virtual vtkDataObject* GetInputData(int port, int connection,
+                                      vtkInformationVector **inInfoVec);
   //@}
 
   /**
@@ -175,8 +181,8 @@ public:
   /**
    * Participate in garbage collection.
    */
-  void Register(vtkObjectBase* o) override;
-  void UnRegister(vtkObjectBase* o) override;
+  void Register(vtkObjectBase* o) VTK_OVERRIDE;
+  void UnRegister(vtkObjectBase* o) VTK_OVERRIDE;
   //@}
 
   /**
@@ -209,27 +215,20 @@ public:
   static vtkInformationKeyVectorKey* KEYS_TO_COPY();
   //@}
 
-  enum
-  {
-    RequestUpstream,
-    RequestDownstream
-  };
-  enum
-  {
-    BeforeForward,
-    AfterForward
-  };
+  enum { RequestUpstream, RequestDownstream };
+  enum { BeforeForward, AfterForward };
 
   /**
    * An API to CallAlgorithm that allows you to pass in the info objects to
    * be used
    */
-  virtual int CallAlgorithm(vtkInformation* request, int direction, vtkInformationVector** inInfo,
-    vtkInformationVector* outInfo);
+  virtual int CallAlgorithm(vtkInformation* request, int direction,
+                            vtkInformationVector** inInfo,
+                            vtkInformationVector* outInfo);
 
 protected:
   vtkExecutive();
-  ~vtkExecutive() override;
+  ~vtkExecutive() VTK_OVERRIDE;
 
   // Helper methods for subclasses.
   int InputPortIndexInRange(int port, const char* action);
@@ -249,16 +248,17 @@ protected:
   virtual int ForwardDownstream(vtkInformation* request);
   virtual int ForwardUpstream(vtkInformation* request);
   virtual void CopyDefaultInformation(vtkInformation* request, int direction,
-    vtkInformationVector** inInfo, vtkInformationVector* outInfo);
+                                      vtkInformationVector** inInfo,
+                                      vtkInformationVector* outInfo);
 
   // Reset the pipeline update values in the given output information object.
-  virtual void ResetPipelineInformation(int port, vtkInformation*) = 0;
+  virtual void ResetPipelineInformation(int port, vtkInformation*)=0;
 
   // Bring the existence of output data objects up to date.
-  virtual int UpdateDataObject() = 0;
+  virtual int UpdateDataObject()=0;
 
   // Garbage collection support.
-  void ReportReferences(vtkGarbageCollector*) override;
+  void ReportReferences(vtkGarbageCollector*) VTK_OVERRIDE;
 
   virtual void SetAlgorithm(vtkAlgorithm* algorithm);
 
@@ -284,8 +284,8 @@ private:
   friend class vtkAlgorithmToExecutiveFriendship;
 
 private:
-  vtkExecutive(const vtkExecutive&) = delete;
-  void operator=(const vtkExecutive&) = delete;
+  vtkExecutive(const vtkExecutive&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkExecutive&) VTK_DELETE_FUNCTION;
 };
 
 #endif

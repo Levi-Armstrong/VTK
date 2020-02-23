@@ -33,7 +33,7 @@
  * a balanced, partially ordered binary tree implemented as an ordered
  * array. This avoids the overhead associated with parent/child pointers,
  * and frequent memory allocation and deallocation.
- */
+*/
 
 #ifndef vtkPriorityQueue_h
 #define vtkPriorityQueue_h
@@ -46,6 +46,7 @@
 class VTKCOMMONCORE_EXPORT vtkPriorityQueue : public vtkObject
 {
 public:
+
   class Item
   {
   public:
@@ -56,15 +57,15 @@ public:
   /**
    * Instantiate priority queue with default size and extension size of 1000.
    */
-  static vtkPriorityQueue* New();
+  static vtkPriorityQueue *New();
 
-  vtkTypeMacro(vtkPriorityQueue, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkPriorityQueue,vtkObject);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Allocate initial space for priority queue.
    */
-  void Allocate(vtkIdType sz, vtkIdType ext = 1000);
+  void Allocate(const vtkIdType sz, const vtkIdType ext=1000);
 
   /**
    * Insert id with priority specified. The id is generally an
@@ -78,25 +79,25 @@ public:
    * is exhausted, then a value < 0 is returned. (Note: the location
    * is not the same as deleting an id; id is mapped to location.)
    */
-  vtkIdType Pop(vtkIdType location, double& priority);
+  vtkIdType Pop(vtkIdType location, double &priority);
 
   /**
    * Same as above but simplified for easier wrapping into interpreted
    * languages.
    */
-  vtkIdType Pop(vtkIdType location = 0);
+  vtkIdType Pop(vtkIdType location=0);
 
   /**
    * Peek into the queue without actually removing anything. Returns the
    * id and the priority.
    */
-  vtkIdType Peek(vtkIdType location, double& priority);
+  vtkIdType Peek(vtkIdType location, double &priority);
 
   /**
    * Peek into the queue without actually removing anything. Returns the
    * id.
    */
-  vtkIdType Peek(vtkIdType location = 0);
+  vtkIdType Peek(vtkIdType location=0);
 
   /**
    * Delete entry in queue with specified id. Returns priority value
@@ -113,7 +114,7 @@ public:
   /**
    * Return the number of items in this queue.
    */
-  vtkIdType GetNumberOfItems() { return this->MaxId + 1; }
+  vtkIdType GetNumberOfItems() {return this->MaxId+1;};
 
   /**
    * Empty the queue but without releasing memory. This avoids the
@@ -123,29 +124,29 @@ public:
 
 protected:
   vtkPriorityQueue();
-  ~vtkPriorityQueue() override;
+  ~vtkPriorityQueue() VTK_OVERRIDE;
 
-  Item* Resize(const vtkIdType sz);
+  Item *Resize(const vtkIdType sz);
 
-  vtkIdTypeArray* ItemLocation;
-  Item* Array;
+  vtkIdTypeArray *ItemLocation;
+  Item *Array;
   vtkIdType Size;
   vtkIdType MaxId;
   vtkIdType Extend;
-
 private:
-  vtkPriorityQueue(const vtkPriorityQueue&) = delete;
-  void operator=(const vtkPriorityQueue&) = delete;
+  vtkPriorityQueue(const vtkPriorityQueue&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPriorityQueue&) VTK_DELETE_FUNCTION;
 };
 
 inline double vtkPriorityQueue::DeleteId(vtkIdType id)
 {
-  double priority = VTK_DOUBLE_MAX;
+  double priority=VTK_DOUBLE_MAX;
   vtkIdType loc;
 
-  if (id <= this->ItemLocation->GetMaxId() && (loc = this->ItemLocation->GetValue(id)) != -1)
+  if ( id <= this->ItemLocation->GetMaxId() &&
+  (loc=this->ItemLocation->GetValue(id)) != -1 )
   {
-    this->Pop(loc, priority);
+    this->Pop(loc,priority);
   }
   return priority;
 }
@@ -154,16 +155,17 @@ inline double vtkPriorityQueue::GetPriority(vtkIdType id)
 {
   vtkIdType loc;
 
-  if (id <= this->ItemLocation->GetMaxId() && (loc = this->ItemLocation->GetValue(id)) != -1)
+  if ( id <= this->ItemLocation->GetMaxId() &&
+  (loc=this->ItemLocation->GetValue(id)) != -1 )
   {
     return this->Array[loc].priority;
   }
   return VTK_DOUBLE_MAX;
 }
 
-inline vtkIdType vtkPriorityQueue::Peek(vtkIdType location, double& priority)
+inline vtkIdType vtkPriorityQueue::Peek(vtkIdType location, double &priority)
 {
-  if (this->MaxId < 0)
+  if ( this->MaxId < 0 )
   {
     return -1;
   }
@@ -176,7 +178,7 @@ inline vtkIdType vtkPriorityQueue::Peek(vtkIdType location, double& priority)
 
 inline vtkIdType vtkPriorityQueue::Peek(vtkIdType location)
 {
-  if (this->MaxId < 0)
+  if ( this->MaxId < 0 )
   {
     return -1;
   }

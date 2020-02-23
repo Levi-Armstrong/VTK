@@ -14,102 +14,102 @@
 =========================================================================*/
 /**
  * @class   vtkTextPropertyCollection
- * @brief   an ordered list of vtkTextProperty objects.
+ * @brief   a list of vtkTextProperty objects.
  *
  * vtkTextPropertyCollection represents and provides methods to manipulate a
- * list of TextProperty objects. The list is ordered and
+ * list of TextProperty objects. The list is unsorted and
  * duplicate entries are not prevented.
  * @sa
  * vtkTextProperty vtkCollection
- */
+*/
 
 #ifndef vtkTextPropertyCollection_h
 #define vtkTextPropertyCollection_h
 
-#include "vtkCollection.h"
 #include "vtkRenderingCoreModule.h" // For export macro
-#include "vtkTextProperty.h"        // for inline functions
+#include "vtkCollection.h"
+#include "vtkTextProperty.h" // for inline functions
 
 class VTKRENDERINGCORE_EXPORT vtkTextPropertyCollection : public vtkCollection
 {
-public:
-  static vtkTextPropertyCollection* New();
-  vtkTypeMacro(vtkTextPropertyCollection, vtkCollection);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+ public:
+  static vtkTextPropertyCollection *New();
+  vtkTypeMacro(vtkTextPropertyCollection, vtkCollection)
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
-   * Add a vtkTextProperty to the bottom of the list.
+   * Add a vtkTextProperty to the list.
    */
-  void AddItem(vtkTextProperty* a);
+  void AddItem(vtkTextProperty *a);
 
   /**
    * Get the next vtkTextProperty in the list.
    */
-  vtkTextProperty* GetNextItem();
+  vtkTextProperty *GetNextItem();
 
   /**
    * Get the vtkTextProperty at the specified index.
    */
-  vtkTextProperty* GetItem(int idx);
+  vtkTextProperty *GetItem(int idx);
 
   /**
    * Get the last TextProperty in the list.
    */
-  vtkTextProperty* GetLastItem();
+  vtkTextProperty *GetLastItem();
 
   /**
    * Reentrant safe way to get an object in a collection. Just pass the
    * same cookie back and forth.
    */
-  vtkTextProperty* GetNextTextProperty(vtkCollectionSimpleIterator& cookie);
+  vtkTextProperty *GetNextTextProperty(vtkCollectionSimpleIterator &cookie);
 
 protected:
   vtkTextPropertyCollection();
-  ~vtkTextPropertyCollection() override;
+  ~vtkTextPropertyCollection();
 
 private:
   // hide the standard AddItem from the user and the compiler.
-  void AddItem(vtkObject* o);
+  void AddItem(vtkObject *o);
 
 private:
-  vtkTextPropertyCollection(const vtkTextPropertyCollection&) = delete;
-  void operator=(const vtkTextPropertyCollection&) = delete;
+  vtkTextPropertyCollection(const vtkTextPropertyCollection&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTextPropertyCollection&) VTK_DELETE_FUNCTION;
 };
 
-inline void vtkTextPropertyCollection::AddItem(vtkTextProperty* a)
+inline void vtkTextPropertyCollection::AddItem(vtkTextProperty *a)
 {
   this->vtkCollection::AddItem(a);
 }
 
-inline vtkTextProperty* vtkTextPropertyCollection::GetNextItem()
+inline vtkTextProperty *vtkTextPropertyCollection::GetNextItem()
 {
-  return static_cast<vtkTextProperty*>(this->GetNextItemAsObject());
+  return static_cast<vtkTextProperty *>(this->GetNextItemAsObject());
 }
 
-inline vtkTextProperty* vtkTextPropertyCollection::GetItem(int idx)
+inline vtkTextProperty *vtkTextPropertyCollection::GetItem(int idx)
 {
-  return static_cast<vtkTextProperty*>(this->GetItemAsObject(idx));
+  return static_cast<vtkTextProperty *>(this->GetItemAsObject(idx));
 }
 
-inline vtkTextProperty* vtkTextPropertyCollection::GetLastItem()
+inline vtkTextProperty *vtkTextPropertyCollection::GetLastItem()
 {
-  if (this->Bottom == nullptr)
+  if ( this->Bottom == NULL )
   {
-    return nullptr;
+    return NULL;
   }
   else
   {
-    return static_cast<vtkTextProperty*>(this->Bottom->Item);
+    return static_cast<vtkTextProperty *>(this->Bottom->Item);
   }
 }
 
-inline vtkTextProperty* vtkTextPropertyCollection::GetNextTextProperty(
-  vtkCollectionSimpleIterator& it)
+inline vtkTextProperty *
+vtkTextPropertyCollection::GetNextTextProperty(vtkCollectionSimpleIterator &it)
 {
-  return static_cast<vtkTextProperty*>(this->GetNextItemAsObject(it));
+  return static_cast<vtkTextProperty *>(this->GetNextItemAsObject(it));
 }
 
-inline void vtkTextPropertyCollection::AddItem(vtkObject* o)
+inline void vtkTextPropertyCollection::AddItem(vtkObject *o)
 {
   this->vtkCollection::AddItem(o);
 }

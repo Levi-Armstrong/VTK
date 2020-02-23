@@ -21,7 +21,7 @@
  *
  * @sa
  * vtkPNGReader
- */
+*/
 
 #ifndef vtkPNGWriter_h
 #define vtkPNGWriter_h
@@ -35,14 +35,14 @@ class vtkUnsignedCharArray;
 class VTKIOIMAGE_EXPORT vtkPNGWriter : public vtkImageWriter
 {
 public:
-  static vtkPNGWriter* New();
-  vtkTypeMacro(vtkPNGWriter, vtkImageWriter);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkPNGWriter *New();
+  vtkTypeMacro(vtkPNGWriter,vtkImageWriter);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * The main interface which triggers the writer to start.
    */
-  void Write() override;
+  virtual void Write();
 
   //@{
   /**
@@ -60,14 +60,14 @@ public:
   /**
    * Write the image to memory (a vtkUnsignedCharArray)
    */
-  vtkSetMacro(WriteToMemory, vtkTypeUBool);
-  vtkGetMacro(WriteToMemory, vtkTypeUBool);
-  vtkBooleanMacro(WriteToMemory, vtkTypeUBool);
+  vtkSetMacro(WriteToMemory, unsigned int);
+  vtkGetMacro(WriteToMemory, unsigned int);
+  vtkBooleanMacro(WriteToMemory, unsigned int);
   //@}
 
   //@{
   /**
-   * When writing to memory this is the result, it will be nullptr until the
+   * When writing to memory this is the result, it will be NULL until the
    * data is written the first time
    */
   virtual void SetResult(vtkUnsignedCharArray*);
@@ -100,18 +100,20 @@ public:
 
 protected:
   vtkPNGWriter();
-  ~vtkPNGWriter() override;
+  ~vtkPNGWriter();
 
-  void WriteSlice(vtkImageData* data, int* uExtent);
+  void WriteSlice(vtkImageData *data, int* uExtent);
   int CompressionLevel;
-  vtkUnsignedCharArray* Result;
-  FILE* TempFP;
+  unsigned int WriteToMemory;
+  vtkUnsignedCharArray *Result;
+  FILE *TempFP;
   class vtkInternals;
   vtkInternals* Internals;
 
+
 private:
-  vtkPNGWriter(const vtkPNGWriter&) = delete;
-  void operator=(const vtkPNGWriter&) = delete;
+  vtkPNGWriter(const vtkPNGWriter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPNGWriter&) VTK_DELETE_FUNCTION;
 };
 
 #endif

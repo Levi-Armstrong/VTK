@@ -35,7 +35,7 @@
  * Andrew Maclean andrew.amaclean@gmail.com for creating and contributing the
  * class.
  *
- */
+*/
 
 #ifndef vtkParametricSuperEllipsoid_h
 #define vtkParametricSuperEllipsoid_h
@@ -43,69 +43,68 @@
 #include "vtkCommonComputationalGeometryModule.h" // For export macro
 #include "vtkParametricFunction.h"
 
-class VTKCOMMONCOMPUTATIONALGEOMETRY_EXPORT vtkParametricSuperEllipsoid
-  : public vtkParametricFunction
+class VTKCOMMONCOMPUTATIONALGEOMETRY_EXPORT vtkParametricSuperEllipsoid : public vtkParametricFunction
 {
 public:
-  vtkTypeMacro(vtkParametricSuperEllipsoid, vtkParametricFunction);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkParametricSuperEllipsoid,vtkParametricFunction);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Construct a superellipsoid with the following parameters:
-   * MinimumU = -Pi, MaximumU = Pi,
-   * MinimumV = -Pi/2, MaximumV = Pi/2,
-   * JoinU = 0, JoinV = 0,
+   * MinimumU = 0, MaximumU = 2*Pi,
+   * MinimumV = 0, MaximumV = Pi,
+   * JoinU = 1, JoinV = 0,
    * TwistU = 0, TwistV = 0,
-   * ClockwiseOrdering = 0,
+   * ClockwiseOrdering = 1,
    * DerivativesAvailable = 0,
    * N1 = 1, N2 = 1, XRadius = 1, YRadius = 1,
    * ZRadius = 1, a sphere in this case.
    */
-  static vtkParametricSuperEllipsoid* New();
+  static vtkParametricSuperEllipsoid *New();
 
   /**
    * Return the parametric dimension of the class.
    */
-  int GetDimension() override { return 2; }
+  int GetDimension() VTK_OVERRIDE {return 2;}
 
   //@{
   /**
    * Set/Get the scaling factor for the x-axis. Default is 1.
    */
-  vtkSetMacro(XRadius, double);
-  vtkGetMacro(XRadius, double);
+  vtkSetMacro(XRadius,double);
+  vtkGetMacro(XRadius,double);
   //@}
 
   //@{
   /**
    * Set/Get the scaling factor for the y-axis. Default is 1.
    */
-  vtkSetMacro(YRadius, double);
-  vtkGetMacro(YRadius, double);
+  vtkSetMacro(YRadius,double);
+  vtkGetMacro(YRadius,double);
   //@}
 
   //@{
   /**
    * Set/Get the scaling factor for the z-axis. Default is 1.
    */
-  vtkSetMacro(ZRadius, double);
-  vtkGetMacro(ZRadius, double);
+  vtkSetMacro(ZRadius,double);
+  vtkGetMacro(ZRadius,double);
   //@}
 
   //@{
   /**
    * Set/Get the "squareness" parameter in the z axis.  Default is 1.
    */
-  vtkSetMacro(N1, double);
-  vtkGetMacro(N1, double);
+  vtkSetMacro(N1,double);
+  vtkGetMacro(N1,double);
   //@}
 
   //@{
   /**
    * Set/Get the "squareness" parameter in the x-y plane. Default is 1.
    */
-  vtkSetMacro(N2, double);
-  vtkGetMacro(N2, double);
+  vtkSetMacro(N2,double);
+  vtkGetMacro(N2,double);
   //@}
 
   /**
@@ -116,12 +115,12 @@ public:
    * \f$Pt = (x, y, z), Du = (dx/du, dy/du, dz/du), Dv = (dx/dv, dy/dv, dz/dv)\f$ .
    * Then the normal is \f$N = Du X Dv\f$ .
    */
-  void Evaluate(double uvw[3], double Pt[3], double Duvw[9]) override;
+  void Evaluate(double uvw[3], double Pt[3], double Duvw[9]) VTK_OVERRIDE;
 
   /**
    * Calculate a user defined scalar using one or all of uvw, Pt, Duvw.
 
-   * uvw are the parameters with Pt being the cartesian point,
+   * uvw are the parameters with Pt being the the cartesian point,
    * Duvw are the derivatives of this point with respect to u, v and w.
    * Pt, Duvw are obtained from Evaluate().
 
@@ -131,11 +130,11 @@ public:
    * If the user does not need to calculate a scalar, then the
    * instantiated function should return zero.
    */
-  double EvaluateScalar(double uvw[3], double Pt[3], double Duvw[9]) override;
+  double EvaluateScalar(double uvw[3], double Pt[3], double Duvw[9]) VTK_OVERRIDE;
 
 protected:
   vtkParametricSuperEllipsoid();
-  ~vtkParametricSuperEllipsoid() override;
+  ~vtkParametricSuperEllipsoid() VTK_OVERRIDE;
 
   // Variables
   double XRadius;
@@ -145,8 +144,14 @@ protected:
   double N2;
 
 private:
-  vtkParametricSuperEllipsoid(const vtkParametricSuperEllipsoid&) = delete;
-  void operator=(const vtkParametricSuperEllipsoid&) = delete;
+  vtkParametricSuperEllipsoid(const vtkParametricSuperEllipsoid&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkParametricSuperEllipsoid&) VTK_DELETE_FUNCTION;
+
+  /**
+   * Calculate sign(x)*(abs(x)^n).
+   */
+  double Power ( double x, double n );
+
 };
 
 #endif

@@ -46,23 +46,24 @@
  *
  * @par Thanks:
  * Developed by Timothy M. Shead (tshead@sandia.gov) at Sandia National Laboratories.
- */
+*/
 
 #ifndef vtkArrayDataWriter_h
 #define vtkArrayDataWriter_h
 
 #include "vtkIOCoreModule.h" // For export macro
-#include "vtkStdString.h"    // For string API
 #include "vtkWriter.h"
+#include "vtkStdString.h" // For string API
 
 class vtkArrayData;
 
-class VTKIOCORE_EXPORT vtkArrayDataWriter : public vtkWriter
+class VTKIOCORE_EXPORT vtkArrayDataWriter :
+  public vtkWriter
 {
 public:
-  static vtkArrayDataWriter* New();
+  static vtkArrayDataWriter *New();
   vtkTypeMacro(vtkArrayDataWriter, vtkWriter);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -76,15 +77,16 @@ public:
   /**
    * Get / set whether data will be written in binary format (when used as a filter).
    */
-  vtkSetMacro(Binary, vtkTypeBool);
-  vtkGetMacro(Binary, vtkTypeBool);
-  vtkBooleanMacro(Binary, vtkTypeBool);
+  vtkSetMacro(Binary, int);
+  vtkGetMacro(Binary, int);
+  vtkBooleanMacro(Binary, int);
   //@}
 
   /**
    * The output string. This is only set when WriteToOutputString is set.
    */
-  virtual vtkStdString GetOutputString() { return this->OutputString; }
+  virtual vtkStdString GetOutputString()
+    { return this->OutputString; }
 
   //@{
   /**
@@ -95,7 +97,7 @@ public:
   vtkBooleanMacro(WriteToOutputString, bool);
   //@}
 
-  int Write() override; // This is necessary to get Write() wrapped for scripting languages.
+  virtual int Write(); // This is necessary to get Write() wrapped for scripting languages.
 
   /**
    * Writes input port 0 data to a file, using an arbitrary filename and binary flag.
@@ -132,19 +134,19 @@ public:
 
 protected:
   vtkArrayDataWriter();
-  ~vtkArrayDataWriter() override;
+  ~vtkArrayDataWriter();
 
-  int FillInputPortInformation(int port, vtkInformation* info) override;
-  void WriteData() override;
+  virtual int FillInputPortInformation(int port, vtkInformation* info);
+  virtual void WriteData();
 
   char* FileName;
-  vtkTypeBool Binary;
+  int Binary;
   bool WriteToOutputString;
   vtkStdString OutputString;
 
 private:
-  vtkArrayDataWriter(const vtkArrayDataWriter&) = delete;
-  void operator=(const vtkArrayDataWriter&) = delete;
+  vtkArrayDataWriter(const vtkArrayDataWriter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkArrayDataWriter&) VTK_DELETE_FUNCTION;
 };
 
 #endif

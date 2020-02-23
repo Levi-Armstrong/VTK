@@ -17,7 +17,7 @@
 
 // Fragment shader used by the DOF render pass.
 
-in vec2 tcoordVC;
+varying vec2 tcoordVC;
 uniform sampler2D source;
 uniform sampler2D depth;
 

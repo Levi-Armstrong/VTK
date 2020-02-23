@@ -19,19 +19,19 @@
  *
  * vtkExtractSelectionBase is an abstract base class for all extract selection
  * filters. It defines some properties common to all extract selection filters.
- */
+*/
 
 #ifndef vtkExtractSelectionBase_h
 #define vtkExtractSelectionBase_h
 
-#include "vtkDataObjectAlgorithm.h"
 #include "vtkFiltersGeneralModule.h" // For export macro
+#include "vtkDataObjectAlgorithm.h"
 
 class VTKFILTERSGENERAL_EXPORT vtkExtractSelectionBase : public vtkDataObjectAlgorithm
 {
 public:
   vtkTypeMacro(vtkExtractSelectionBase, vtkDataObjectAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Convenience method to specify the selection connection (2nd input
@@ -48,28 +48,29 @@ public:
    * output into an unstructured grid, but instead to produce a vtkInsidedness
    * array and add it to the input dataset. Default value is false(0).
    */
-  vtkSetMacro(PreserveTopology, vtkTypeBool);
-  vtkGetMacro(PreserveTopology, vtkTypeBool);
-  vtkBooleanMacro(PreserveTopology, vtkTypeBool);
+  vtkSetMacro(PreserveTopology, int);
+  vtkGetMacro(PreserveTopology, int);
+  vtkBooleanMacro(PreserveTopology, int);
   //@}
 
 protected:
   vtkExtractSelectionBase();
-  ~vtkExtractSelectionBase() override;
+  ~vtkExtractSelectionBase() VTK_OVERRIDE;
 
   /**
    * Sets up empty output dataset
    */
-  int RequestDataObject(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  int RequestDataObject(vtkInformation* request,
+                        vtkInformationVector** inputVector,
+                        vtkInformationVector* outputVector) VTK_OVERRIDE;
 
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  int FillInputPortInformation(int port, vtkInformation* info) VTK_OVERRIDE;
 
-  vtkTypeBool PreserveTopology;
-
+  int PreserveTopology;
 private:
-  vtkExtractSelectionBase(const vtkExtractSelectionBase&) = delete;
-  void operator=(const vtkExtractSelectionBase&) = delete;
+  vtkExtractSelectionBase(const vtkExtractSelectionBase&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkExtractSelectionBase&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif

@@ -30,7 +30,7 @@
  * @par Thanks:
  * Thanks to Brian Wylie from Sandia National Laboratories for creating this
  * class.
- */
+*/
 
 #ifndef vtkTreeLevelsFilter_h
 #define vtkTreeLevelsFilter_h
@@ -41,19 +41,19 @@
 class VTKINFOVISCORE_EXPORT vtkTreeLevelsFilter : public vtkTreeAlgorithm
 {
 public:
-  static vtkTreeLevelsFilter* New();
-  vtkTypeMacro(vtkTreeLevelsFilter, vtkTreeAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkTreeLevelsFilter *New();
+  vtkTypeMacro(vtkTreeLevelsFilter,vtkTreeAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
 protected:
   vtkTreeLevelsFilter();
-  ~vtkTreeLevelsFilter() override {}
+  ~vtkTreeLevelsFilter() {}
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 
 private:
-  vtkTreeLevelsFilter(const vtkTreeLevelsFilter&) = delete;
-  void operator=(const vtkTreeLevelsFilter&) = delete;
+  vtkTreeLevelsFilter(const vtkTreeLevelsFilter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTreeLevelsFilter&) VTK_DELETE_FUNCTION;
 };
 
 #endif

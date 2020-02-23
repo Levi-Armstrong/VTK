@@ -18,7 +18,7 @@
 #include "vtkFloatArray.h"
 #include "vtkIdList.h"
 
-int otherFieldData(int, char*[])
+int otherFieldData(int,char *[])
 {
   int i;
   vtkFieldData* fd = vtkFieldData::New();
@@ -26,16 +26,16 @@ int otherFieldData(int, char*[])
   vtkFloatArray* fa;
 
   char name[128];
-  for (i = 0; i < 5; i++)
+  for(i=0; i<5; i++)
   {
-    snprintf(name, sizeof(name), "Array%d", i);
+    sprintf(name, "Array%d", i);
     fa = vtkFloatArray::New();
     fa->SetName(name);
     // the tuples must be set before being read to avoid a UMR
     // this must have been a UMR in the past that was suppressed
     fa->Allocate(20);
-    fa->SetTuple1(0, 0.0);
-    fa->SetTuple1(2, 0.0);
+    fa->SetTuple1(0,0.0);
+    fa->SetTuple1(2,0.0);
     fd->AddArray(fa);
     fa->Delete();
   }
@@ -43,8 +43,9 @@ int otherFieldData(int, char*[])
   // Coverage
   vtkFieldData::Iterator it(fd);
   vtkFieldData::Iterator it2(it);
-  (void)it;
-  (void)it2;
+
+  it = it;
+  it2 = it;
 
   fd->Allocate(20);
   fd->CopyFieldOff("Array0");
@@ -89,4 +90,5 @@ int otherFieldData(int, char*[])
   fd2->Delete();
 
   return 0;
+
 }

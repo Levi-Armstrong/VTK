@@ -12,10 +12,10 @@
      PURPOSE.  See the above copyright notice for more information.
 
 =========================================================================*/
-#include "vtkQuaternionInterpolator.h"
 #include "vtkMath.h"
 #include "vtkObjectFactory.h"
 #include "vtkQuaternion.h"
+#include "vtkQuaternionInterpolator.h"
 #include <vector>
 
 vtkStandardNewMacro(vtkQuaternionInterpolator);
@@ -28,24 +28,22 @@ vtkStandardNewMacro(vtkQuaternionInterpolator);
 struct TimedQuaternion
 {
   double Time;
-  vtkQuaterniond Q; // VTK's quaternion: unit rotation axis with angles in degrees
+  vtkQuaterniond Q;     //VTK's quaternion: unit rotation axis with angles in degrees
 
   TimedQuaternion()
-    : Time(0.0)
-    , Q(0.0)
+    : Q(0.0)
   {
+    this->Time = 0.0;
   }
-  TimedQuaternion(double t, const vtkQuaterniond& q)
-    : Time(t)
-    , Q(q)
+  TimedQuaternion(double t, vtkQuaterniond q)
   {
+    this->Time = t;
+    this->Q = q;
   }
 };
 
 // The list is arranged in increasing order in T
-class vtkQuaternionList : public std::vector<TimedQuaternion>
-{
-};
+class vtkQuaternionList : public std::vector<TimedQuaternion> {};
 typedef vtkQuaternionList::iterator QuaternionListIterator;
 
 //----------------------------------------------------------------------------
@@ -69,10 +67,11 @@ int vtkQuaternionInterpolator::GetNumberOfQuaternions()
   return static_cast<int>(this->QuaternionList->size());
 }
 
+
 //----------------------------------------------------------------------------
 double vtkQuaternionInterpolator::GetMinimumT()
 {
-  if (!this->QuaternionList->empty())
+  if (this->QuaternionList->size() > 0)
   {
     return this->QuaternionList->front().Time;
   }
@@ -82,10 +81,11 @@ double vtkQuaternionInterpolator::GetMinimumT()
   }
 }
 
+
 //----------------------------------------------------------------------------
 double vtkQuaternionInterpolator::GetMaximumT()
 {
-  if (!this->QuaternionList->empty())
+  if (this->QuaternionList->size() > 0)
   {
     return this->QuaternionList->back().Time;
   }
@@ -94,6 +94,7 @@ double vtkQuaternionInterpolator::GetMaximumT()
     return 0.0;
   }
 }
+
 
 //----------------------------------------------------------------------------
 void vtkQuaternionInterpolator::Initialize()
@@ -110,43 +111,44 @@ void vtkQuaternionInterpolator::AddQuaternion(double t, double q[4])
 }
 
 //----------------------------------------------------------------------------
-void vtkQuaternionInterpolator::AddQuaternion(double t, const vtkQuaterniond& q)
+void vtkQuaternionInterpolator::AddQuaternion(double t,
+                                              const vtkQuaterniond& q)
 {
   int size = static_cast<int>(this->QuaternionList->size());
 
   // Check special cases: t at beginning or end of list
-  if (size <= 0 || t < this->QuaternionList->front().Time)
+  if ( size <= 0 || t < this->QuaternionList->front().Time )
   {
-    this->QuaternionList->insert(this->QuaternionList->begin(), TimedQuaternion(t, q));
+    this->QuaternionList->insert(this->QuaternionList->begin(),TimedQuaternion(t,q));
     return;
   }
-  else if (t > this->QuaternionList->back().Time)
+  else if ( t > this->QuaternionList->back().Time )
   {
-    this->QuaternionList->push_back(TimedQuaternion(t, q));
+    this->QuaternionList->push_back(TimedQuaternion(t,q));
     return;
   }
-  else if (size == 1 && t == this->QuaternionList->front().Time)
+  else if ( size == 1 && t == this->QuaternionList->front().Time )
   {
-    this->QuaternionList->front() = TimedQuaternion(t, q);
+    this->QuaternionList->front() = TimedQuaternion(t,q);
     return;
   }
 
   // Okay, insert in sorted order
   QuaternionListIterator iter = this->QuaternionList->begin();
   QuaternionListIterator nextIter = iter + 1;
-  for (int i = 0; i < (size - 1); i++, ++iter, ++nextIter)
+  for (int i=0; i < (size-1); i++, ++iter, ++nextIter)
   {
-    if (t == iter->Time)
+    if ( t == iter->Time )
     {
-      (*iter) = TimedQuaternion(t, q); // overwrite
+      (*iter) = TimedQuaternion(t,q); //overwrite
       break;
     }
-    else if (t > iter->Time && t < nextIter->Time)
+    else if ( t > iter->Time && t < nextIter->Time )
     {
-      this->QuaternionList->insert(nextIter, TimedQuaternion(t, q));
+      this->QuaternionList->insert(nextIter, TimedQuaternion(t,q));
       break;
     }
-  } // for not in the right spot
+  }//for not in the right spot
 
   this->Modified();
 }
@@ -154,16 +156,17 @@ void vtkQuaternionInterpolator::AddQuaternion(double t, const vtkQuaterniond& q)
 //----------------------------------------------------------------------------
 void vtkQuaternionInterpolator::RemoveQuaternion(double t)
 {
-  if (t < this->QuaternionList->front().Time || t > this->QuaternionList->back().Time)
+  if ( t < this->QuaternionList->front().Time ||
+       t > this->QuaternionList->back().Time )
   {
     return;
   }
 
   QuaternionListIterator iter = this->QuaternionList->begin();
-  for (; iter->Time != t && iter != this->QuaternionList->end(); ++iter)
+  for ( ; iter->Time != t && iter != this->QuaternionList->end(); ++iter )
   {
   }
-  if (iter != this->QuaternionList->end())
+  if ( iter != this->QuaternionList->end() )
   {
     this->QuaternionList->erase(iter);
   }
@@ -183,19 +186,20 @@ void vtkQuaternionInterpolator::InterpolateQuaternion(double t, double q[4])
 }
 
 //----------------------------------------------------------------------------
-void vtkQuaternionInterpolator::InterpolateQuaternion(double t, vtkQuaterniond& q)
+void vtkQuaternionInterpolator::InterpolateQuaternion(double t,
+                                                      vtkQuaterniond& q)
 {
   // The quaternion may be clamped if it is outside the range specified
-  if (t <= this->QuaternionList->front().Time)
+  if ( t <= this->QuaternionList->front().Time )
   {
-    TimedQuaternion& Q = this->QuaternionList->front();
+    TimedQuaternion &Q = this->QuaternionList->front();
     q = Q.Q;
     return;
   }
 
-  else if (t >= this->QuaternionList->back().Time)
+  else if ( t >= this->QuaternionList->back().Time )
   {
-    TimedQuaternion& Q = this->QuaternionList->front();
+    TimedQuaternion &Q = this->QuaternionList->front();
     q = Q.Q;
     return;
   }
@@ -203,20 +207,20 @@ void vtkQuaternionInterpolator::InterpolateQuaternion(double t, vtkQuaterniond& 
   // Depending on the interpolation type we do the right thing.
   // The code above guarantees that there are at least two quaternions defined.
   int numQuats = this->GetNumberOfQuaternions();
-  if (this->InterpolationType == INTERPOLATION_TYPE_LINEAR || numQuats < 3)
+  if ( this->InterpolationType == INTERPOLATION_TYPE_LINEAR || numQuats < 3 )
   {
     QuaternionListIterator iter = this->QuaternionList->begin();
     QuaternionListIterator nextIter = iter + 1;
-    for (; nextIter != this->QuaternionList->end(); ++iter, ++nextIter)
+    for ( ; nextIter != this->QuaternionList->end(); ++iter, ++nextIter)
     {
-      if (iter->Time <= t && t <= nextIter->Time)
+      if ( iter->Time <= t && t <= nextIter->Time )
       {
         double T = (t - iter->Time) / (nextIter->Time - iter->Time);
-        q = iter->Q.Slerp(T, nextIter->Q);
+        q = iter->Q.Slerp(T,nextIter->Q);
         break;
       }
     }
-  } // if linear quaternion interpolation
+  }//if linear quaternion interpolation
 
   else // this->InterpolationType == INTERPOLATION_TYPE_SPLINE
   {
@@ -224,12 +228,12 @@ void vtkQuaternionInterpolator::InterpolateQuaternion(double t, vtkQuaterniond& 
     QuaternionListIterator nextIter = iter + 1;
     QuaternionListIterator iter0, iter1, iter2, iter3;
 
-    // find the interval
-    double T = 0.0;
+    //find the interval
+    double T=0.0;
     int i;
-    for (i = 0; nextIter != this->QuaternionList->end(); ++iter, ++nextIter, ++i)
+    for (i=0; nextIter != this->QuaternionList->end(); ++iter, ++nextIter, ++i)
     {
-      if (iter->Time <= t && t <= nextIter->Time)
+      if ( iter->Time <= t && t <= nextIter->Time )
       {
         T = (t - iter->Time) / (nextIter->Time - iter->Time);
         break;
@@ -237,17 +241,17 @@ void vtkQuaternionInterpolator::InterpolateQuaternion(double t, vtkQuaterniond& 
     }
 
     vtkQuaterniond ai, bi, qc, qd;
-    if (i == 0) // initial interval
+    if ( i == 0 ) //initial interval
     {
       iter1 = iter;
       iter2 = nextIter;
       iter3 = nextIter + 1;
 
-      ai = iter1->Q.Normalized(); // just duplicate first quaternion
+      ai = iter1->Q.Normalized(); //just duplicate first quaternion
       vtkQuaterniond q1 = iter1->Q.Normalized();
       bi = q1.InnerPoint(iter2->Q.Normalized(), iter3->Q.Normalized());
     }
-    else if (i == (numQuats - 2)) // final interval
+    else if ( i == (numQuats-2) ) //final interval
     {
       iter0 = iter - 1;
       iter1 = iter;
@@ -256,9 +260,9 @@ void vtkQuaternionInterpolator::InterpolateQuaternion(double t, vtkQuaterniond& 
       vtkQuaterniond q0 = iter0->Q.Normalized();
       ai = q0.InnerPoint(iter1->Q.Normalized(), iter2->Q.Normalized());
 
-      bi = iter2->Q.Normalized(); // just duplicate last quaternion
+      bi = iter2->Q.Normalized(); //just duplicate last quaternion
     }
-    else // in a middle interval somewhere
+    else //in a middle interval somewhere
     {
       iter0 = iter - 1;
       iter1 = iter;
@@ -274,11 +278,13 @@ void vtkQuaternionInterpolator::InterpolateQuaternion(double t, vtkQuaterniond& 
 
     // These three Slerp operations implement a Squad interpolation
     vtkQuaterniond q1 = iter1->Q.Normalized();
-    qc = q1.Slerp(T, iter2->Q.Normalized());
-    qd = ai.Slerp(T, bi);
-    q = qc.Slerp(2.0 * T * (1.0 - T), qd);
+    qc = q1.Slerp(T,iter2->Q.Normalized());
+    qd = ai.Slerp(T,bi);
+    q = qc.Slerp(2.0*T*(1.0-T),qd);
     q.NormalizeWithAngleInDegrees();
   }
+
+  return;
 }
 
 //----------------------------------------------------------------------------
@@ -290,5 +296,9 @@ void vtkQuaternionInterpolator::PrintSelf(ostream& os, vtkIndent indent)
      << " quaternions to interpolate\n";
 
   os << indent << "InterpolationType: "
-     << (this->InterpolationType == INTERPOLATION_TYPE_LINEAR ? "Linear\n" : "Spline\n");
+     << (this->InterpolationType == INTERPOLATION_TYPE_LINEAR ?
+         "Linear\n" : "Spline\n");
 }
+
+
+

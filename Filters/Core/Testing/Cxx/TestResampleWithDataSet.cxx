@@ -24,19 +24,19 @@
 #include "vtkMultiBlockDataSet.h"
 #include "vtkNew.h"
 #include "vtkPointData.h"
-#include "vtkRTAnalyticSource.h"
 #include "vtkRandomAttributeGenerator.h"
 #include "vtkRegressionTestImage.h"
+#include "vtkRenderer.h"
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
-#include "vtkRenderer.h"
+#include "vtkRTAnalyticSource.h"
 #include "vtkSphere.h"
 #include "vtkTableBasedClipDataSet.h"
 #include "vtkTransform.h"
 #include "vtkTransformFilter.h"
 
-namespace
-{
+
+namespace {
 
 void CreateInputDataSet(vtkMultiBlockDataSet* dataset, int numberOfBlocks)
 {
@@ -56,7 +56,7 @@ void CreateInputDataSet(vtkMultiBlockDataSet* dataset, int numberOfBlocks)
   cylinder->SetRadius(15);
   cylinder->SetAxis(0, 1, 0);
   vtkNew<vtkTableBasedClipDataSet> clipCyl;
-  clipCyl->SetClipFunction(cylinder);
+  clipCyl->SetClipFunction(cylinder.GetPointer());
   clipCyl->InsideOutOn();
 
   vtkNew<vtkSphere> sphere;
@@ -64,20 +64,18 @@ void CreateInputDataSet(vtkMultiBlockDataSet* dataset, int numberOfBlocks)
   sphere->SetRadius(12);
   vtkNew<vtkTableBasedClipDataSet> clipSphr;
   clipSphr->SetInputConnection(clipCyl->GetOutputPort());
-  clipSphr->SetClipFunction(sphere);
+  clipSphr->SetClipFunction(sphere.GetPointer());
 
   vtkNew<vtkTransform> transform;
   transform->RotateZ(45);
   vtkNew<vtkTransformFilter> transFilter;
   transFilter->SetInputConnection(clipSphr->GetOutputPort());
-  transFilter->SetTransform(transform);
+  transFilter->SetTransform(transform.GetPointer());
 
   vtkNew<vtkRandomAttributeGenerator> randomAttrs;
   randomAttrs->SetInputConnection(transFilter->GetOutputPort());
   randomAttrs->GenerateAllPointDataOn();
-  randomAttrs->GeneratePointArrayOff();
   randomAttrs->GenerateAllCellDataOn();
-  randomAttrs->GenerateCellArrayOff();
   randomAttrs->GenerateFieldArrayOn();
   randomAttrs->SetNumberOfTuples(100);
 
@@ -92,7 +90,7 @@ void CreateInputDataSet(vtkMultiBlockDataSet* dataset, int numberOfBlocks)
     clipCyl->SetInputData(wavelet->GetOutputDataObject(0));
     randomAttrs->Update();
 
-    vtkDataObject* block = randomAttrs->GetOutputDataObject(0)->NewInstance();
+    vtkDataObject *block = randomAttrs->GetOutputDataObject(0)->NewInstance();
     block->DeepCopy(randomAttrs->GetOutputDataObject(0));
     dataset->SetBlock(i, block);
     block->Delete();
@@ -121,7 +119,7 @@ void CreateSourceDataSet(vtkMultiBlockDataSet* dataset, int numberOfBlocks)
 
     wavelet->UpdateExtent(blockExtent);
 
-    vtkDataObject* block = wavelet->GetOutputDataObject(0)->NewInstance();
+    vtkDataObject *block = wavelet->GetOutputDataObject(0)->NewInstance();
     block->DeepCopy(wavelet->GetOutputDataObject(0));
     dataset->SetBlock(i, block);
     block->Delete();
@@ -130,26 +128,27 @@ void CreateSourceDataSet(vtkMultiBlockDataSet* dataset, int numberOfBlocks)
 
 } // anonymous namespace
 
-int TestResampleWithDataSet(int argc, char* argv[])
+
+int TestResampleWithDataSet(int argc, char *argv[])
 {
   // create input dataset
   vtkNew<vtkMultiBlockDataSet> input;
-  CreateInputDataSet(input, 3);
+  CreateInputDataSet(input.GetPointer(), 3);
 
   vtkNew<vtkMultiBlockDataSet> source;
-  CreateSourceDataSet(source, 5);
+  CreateSourceDataSet(source.GetPointer(), 5);
 
   vtkNew<vtkResampleWithDataSet> resample;
-  resample->SetInputData(input);
-  resample->SetSourceData(source);
+  resample->SetInputData(input.GetPointer());
+  resample->SetSourceData(source.GetPointer());
 
   // test default output
   resample->Update();
-  vtkMultiBlockDataSet* result = static_cast<vtkMultiBlockDataSet*>(resample->GetOutput());
-  vtkDataSet* block = static_cast<vtkDataSet*>(result->GetBlock(0));
+  vtkMultiBlockDataSet *result = static_cast<vtkMultiBlockDataSet*>(resample->GetOutput());
+  vtkDataSet *block = static_cast<vtkDataSet*>(result->GetBlock(0));
   if (block->GetFieldData()->GetNumberOfArrays() != 1 ||
-    block->GetCellData()->GetNumberOfArrays() != 1 ||
-    block->GetPointData()->GetNumberOfArrays() != 3)
+      block->GetCellData()->GetNumberOfArrays() != 1 ||
+      block->GetPointData()->GetNumberOfArrays() != 3)
   {
     std::cout << "Unexpected number of arrays in default output" << std::endl;
     return !vtkTesting::FAILED;
@@ -162,22 +161,21 @@ int TestResampleWithDataSet(int argc, char* argv[])
   result = static_cast<vtkMultiBlockDataSet*>(resample->GetOutput());
   block = static_cast<vtkDataSet*>(result->GetBlock(0));
   if (block->GetFieldData()->GetNumberOfArrays() != 1 ||
-    block->GetCellData()->GetNumberOfArrays() != 6 ||
-    block->GetPointData()->GetNumberOfArrays() != 8)
+      block->GetCellData()->GetNumberOfArrays() != 6 ||
+      block->GetPointData()->GetNumberOfArrays() != 8)
   {
-    std::cout << "Unexpected number of arrays in output with pass cell and point arrays"
-              << std::endl;
+    std::cout << "Unexpected number of arrays in output with pass cell and point arrays" << std::endl;
     return !vtkTesting::FAILED;
   }
 
-  // don't pass field arrays
+  // dont pass field arrays
   resample->PassFieldArraysOff();
   resample->Update();
   result = static_cast<vtkMultiBlockDataSet*>(resample->GetOutput());
   block = static_cast<vtkDataSet*>(result->GetBlock(0));
   if (block->GetFieldData()->GetNumberOfArrays() != 0 ||
-    block->GetCellData()->GetNumberOfArrays() != 6 ||
-    block->GetPointData()->GetNumberOfArrays() != 8)
+      block->GetCellData()->GetNumberOfArrays() != 6 ||
+      block->GetPointData()->GetNumberOfArrays() != 8)
   {
     std::cout << "Unexpected number of arrays in output with pass field arrays off" << std::endl;
     return !vtkTesting::FAILED;
@@ -196,22 +194,22 @@ int TestResampleWithDataSet(int argc, char* argv[])
   mapper->SetScalarRange(range);
 
   vtkNew<vtkActor> actor;
-  actor->SetMapper(mapper);
+  actor->SetMapper(mapper.GetPointer());
 
   vtkNew<vtkRenderer> renderer;
-  renderer->AddActor(actor);
+  renderer->AddActor(actor.GetPointer());
   renderer->ResetCamera();
 
   vtkNew<vtkRenderWindow> renWin;
-  renWin->AddRenderer(renderer);
+  renWin->AddRenderer(renderer.GetPointer());
 
   vtkNew<vtkRenderWindowInteractor> iren;
-  iren->SetRenderWindow(renWin);
+  iren->SetRenderWindow(renWin.GetPointer());
   iren->Initialize();
 
   renWin->Render();
 
-  int retVal = vtkRegressionTestImage(renWin);
+  int retVal = vtkRegressionTestImage(renWin.GetPointer());
   if (retVal == vtkRegressionTester::DO_INTERACTOR)
   {
     iren->Start();

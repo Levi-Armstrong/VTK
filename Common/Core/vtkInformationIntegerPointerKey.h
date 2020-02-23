@@ -18,7 +18,7 @@
  *
  * vtkInformationIntegerPointerKey is used to represent keys for pointer
  * to integer values in vtkInformation.h
- */
+*/
 
 #ifndef vtkInformationIntegerPointerKey_h
 #define vtkInformationIntegerPointerKey_h
@@ -31,11 +31,12 @@
 class VTKCOMMONCORE_EXPORT vtkInformationIntegerPointerKey : public vtkInformationKey
 {
 public:
-  vtkTypeMacro(vtkInformationIntegerPointerKey, vtkInformationKey);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkInformationIntegerPointerKey,vtkInformationKey);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
-  vtkInformationIntegerPointerKey(const char* name, const char* location, int length = -1);
-  ~vtkInformationIntegerPointerKey() override;
+  vtkInformationIntegerPointerKey(const char* name, const char* location,
+                                 int length=-1);
+  ~vtkInformationIntegerPointerKey() VTK_OVERRIDE;
 
   //@{
   /**
@@ -53,12 +54,12 @@ public:
    * object to another.  If there is no entry in the first information
    * object for this key, the value is removed from the second.
    */
-  void ShallowCopy(vtkInformation* from, vtkInformation* to) override;
+  void ShallowCopy(vtkInformation* from, vtkInformation* to) VTK_OVERRIDE;
 
   /**
    * Print the key's value in an information object to a stream.
    */
-  void Print(ostream& os, vtkInformation* info) override;
+  void Print(ostream& os, vtkInformation* info) VTK_OVERRIDE;
 
 protected:
   // The required length of the vector value (-1 is no restriction).
@@ -72,8 +73,8 @@ protected:
   int* GetWatchAddress(vtkInformation* info);
 
 private:
-  vtkInformationIntegerPointerKey(const vtkInformationIntegerPointerKey&) = delete;
-  void operator=(const vtkInformationIntegerPointerKey&) = delete;
+  vtkInformationIntegerPointerKey(const vtkInformationIntegerPointerKey&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkInformationIntegerPointerKey&) VTK_DELETE_FUNCTION;
 };
 
 #endif

@@ -25,7 +25,7 @@
  * This class combines vtkSQLDatabase, vtkSQLQuery, and vtkQueryToTable to
  * provide a convenience class for generating tables from databases.
  * Also this class can be easily wrapped and used within ParaView / OverView.
- */
+*/
 
 #ifndef vtkSQLDatabaseTableSource_h
 #define vtkSQLDatabaseTableSource_h
@@ -41,7 +41,7 @@ class VTKIOSQL_EXPORT vtkSQLDatabaseTableSource : public vtkTableAlgorithm
 public:
   static vtkSQLDatabaseTableSource* New();
   vtkTypeMacro(vtkSQLDatabaseTableSource, vtkTableAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   vtkStdString GetURL();
   void SetURL(const vtkStdString& url);
@@ -72,13 +72,16 @@ public:
 
 protected:
   vtkSQLDatabaseTableSource();
-  ~vtkSQLDatabaseTableSource() override;
+  ~vtkSQLDatabaseTableSource();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(
+    vtkInformation*,
+    vtkInformationVector**,
+    vtkInformationVector*);
 
 private:
-  vtkSQLDatabaseTableSource(const vtkSQLDatabaseTableSource&) = delete;
-  void operator=(const vtkSQLDatabaseTableSource&) = delete;
+  vtkSQLDatabaseTableSource(const vtkSQLDatabaseTableSource&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkSQLDatabaseTableSource&) VTK_DELETE_FUNCTION;
 
   char* PedigreeIdArrayName;
   bool GeneratePedigreeIds;
@@ -87,10 +90,11 @@ private:
    * This intercepts events from the graph layout class
    * and re-emits them as if they came from this class.
    */
-  vtkEventForwarderCommand* EventForwarder;
+  vtkEventForwarderCommand *EventForwarder;
 
   class implementation;
   implementation* const Implementation;
+
 };
 
 #endif

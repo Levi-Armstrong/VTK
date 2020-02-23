@@ -19,13 +19,13 @@
  *
  *
  * This defines the interface for a box plot chart.
- */
+*/
 
 #ifndef vtkChartBox_h
 #define vtkChartBox_h
 
-#include "vtkChart.h"
 #include "vtkChartsCoreModule.h" // For export macro
+#include "vtkChart.h"
 
 class vtkIdTypeArray;
 class vtkPlotBox;
@@ -37,10 +37,10 @@ class VTKCHARTSCORE_EXPORT vtkChartBox : public vtkChart
 {
 public:
   vtkTypeMacro(vtkChartBox, vtkChart);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  virtual void PrintSelf(ostream &os, vtkIndent indent);
 
   /**
-   * Creates a box chart
+   * Creates a parallel coordinates chart
    */
   static vtkChartBox* New();
 
@@ -49,12 +49,12 @@ public:
    * The scene should take care of calling this on all items before their
    * Paint function is invoked.
    */
-  void Update() override;
+  virtual void Update();
 
   /**
    * Paint event for the chart, called whenever the chart needs to be drawn
    */
-  bool Paint(vtkContext2D* painter) override;
+  virtual bool Paint(vtkContext2D *painter);
 
   //@{
   /**
@@ -97,12 +97,12 @@ public:
   /**
    * Get the plot at the specified index, returns null if the index is invalid.
    */
-  vtkPlot* GetPlot(vtkIdType index) override;
+  virtual vtkPlot* GetPlot(vtkIdType index);
 
   /**
    * Get the number of plots the chart contains.
    */
-  vtkIdType GetNumberOfPlots() override;
+  virtual vtkIdType GetNumberOfPlots();
 
   /**
    * Get the chart Y axis
@@ -123,32 +123,32 @@ public:
    * Set plot to use for the chart. Since this type of chart can
    * only contain one plot, this will replace the previous plot.
    */
-  virtual void SetPlot(vtkPlotBox* plot);
+  virtual void SetPlot(vtkPlotBox *plot);
 
   /**
    * Return true if the supplied x, y coordinate is inside the item.
    */
-  bool Hit(const vtkContextMouseEvent& mouse) override;
+  virtual bool Hit(const vtkContextMouseEvent &mouse);
 
   /**
    * Mouse move event.
    */
-  bool MouseMoveEvent(const vtkContextMouseEvent& mouse) override;
+  virtual bool MouseMoveEvent(const vtkContextMouseEvent &mouse);
 
   /**
    * Mouse button down event
    */
-  bool MouseButtonPressEvent(const vtkContextMouseEvent& mouse) override;
+  virtual bool MouseButtonPressEvent(const vtkContextMouseEvent &mouse);
 
   /**
    * Mouse button release event.
    */
-  bool MouseButtonReleaseEvent(const vtkContextMouseEvent& mouse) override;
+  virtual bool MouseButtonReleaseEvent(const vtkContextMouseEvent &mouse);
 
   /**
    * Set the vtkTooltipItem object that will be displayed by the chart.
    */
-  virtual void SetTooltip(vtkTooltipItem* tooltip);
+  virtual void SetTooltip(vtkTooltipItem *tooltip);
 
   /**
    * Get the vtkTooltipItem object that will be displayed by the chart.
@@ -158,19 +158,21 @@ public:
   /**
    * Set the information passed to the tooltip.
    */
-  virtual void SetTooltipInfo(const vtkContextMouseEvent&, const vtkVector2d&, vtkIdType, vtkPlot*,
-    vtkIdType segmentIndex = -1);
+  virtual void SetTooltipInfo(const vtkContextMouseEvent &,
+                              const vtkVector2d &,
+                              vtkIdType, vtkPlot*,
+                              vtkIdType segmentIndex = -1);
 
 protected:
   vtkChartBox();
-  ~vtkChartBox() override;
+  ~vtkChartBox();
 
   //@{
   /**
    * Private storage object - where we hide all of our STL objects...
    */
   class Private;
-  Private* Storage;
+  Private *Storage;
   //@}
 
   bool GeometryValid;
@@ -178,12 +180,12 @@ protected:
   /**
    * Selected indices for the table the plot is rendering
    */
-  vtkIdTypeArray* Selection;
+  vtkIdTypeArray *Selection;
 
   /**
    * A list of the visible columns in the chart.
    */
-  vtkStringArray* VisibleColumns;
+  vtkStringArray *VisibleColumns;
 
   //@{
   /**
@@ -213,14 +215,17 @@ protected:
    * If invokeEvent is greater than 0, then an event will be invoked if a point
    * is at that mouse position.
    */
-  bool LocatePointInPlots(const vtkContextMouseEvent& mouse, int invokeEvent = -1);
+  bool LocatePointInPlots(const vtkContextMouseEvent &mouse,
+                          int invokeEvent = -1);
 
-  int LocatePointInPlot(const vtkVector2f& position, const vtkVector2f& tolerance,
-    vtkVector2f& plotPos, vtkPlot* plot, vtkIdType& segmentIndex);
+  int LocatePointInPlot(const vtkVector2f &position,
+                        const vtkVector2f &tolerance, vtkVector2f &plotPos,
+                        vtkPlot *plot, vtkIdType &segmentIndex);
 
 private:
-  vtkChartBox(const vtkChartBox&) = delete;
-  void operator=(const vtkChartBox&) = delete;
+  vtkChartBox(const vtkChartBox &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkChartBox &) VTK_DELETE_FUNCTION;
+
 };
 
 //@{
@@ -238,4 +243,4 @@ struct vtkChartBoxData
 };
 //@}
 
-#endif // vtkChartBox_h
+#endif //vtkChartBox_h

@@ -19,14 +19,14 @@
  *
  *
  * This defines the interface for a 2D histogram chart.
- */
+*/
 
 #ifndef vtkChartHistogram2D_h
 #define vtkChartHistogram2D_h
 
-#include "vtkChartXY.h"
 #include "vtkChartsCoreModule.h" // For export macro
-#include "vtkSmartPointer.h"     // For SP ivars
+#include "vtkChartXY.h"
+#include "vtkSmartPointer.h" // For SP ivars
 
 class vtkColorLegend;
 class vtkPlotHistogram2D;
@@ -37,7 +37,7 @@ class VTKCHARTSCORE_EXPORT vtkChartHistogram2D : public vtkChartXY
 {
 public:
   vtkTypeMacro(vtkChartHistogram2D, vtkChartXY);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  virtual void PrintSelf(ostream &os, vtkIndent indent);
 
   /**
    * Creates a 2D histogram chart
@@ -49,24 +49,24 @@ public:
    * The scene should take care of calling this on all items before their
    * Paint function is invoked.
    */
-  void Update() override;
+  virtual void Update();
 
-  virtual void SetInputData(vtkImageData* data, vtkIdType z = 0);
-  virtual void SetTransferFunction(vtkScalarsToColors* function);
+  virtual void SetInputData(vtkImageData *data, vtkIdType z = 0);
+  virtual void SetTransferFunction(vtkScalarsToColors *function);
 
   /**
    * Return true if the supplied x, y coordinate is inside the item.
    */
-  bool Hit(const vtkContextMouseEvent& mouse) override;
+  virtual bool Hit(const vtkContextMouseEvent &mouse);
 
   /**
    * Get the plot at the specified index, returns null if the index is invalid.
    */
-  vtkPlot* GetPlot(vtkIdType index) override;
+  virtual vtkPlot* GetPlot(vtkIdType index);
 
 protected:
   vtkChartHistogram2D();
-  ~vtkChartHistogram2D() override;
+  ~vtkChartHistogram2D();
 
   vtkSmartPointer<vtkPlotHistogram2D> Histogram;
 
@@ -78,11 +78,11 @@ protected:
   class Private;
   Private* Storage;
 
-  bool UpdateLayout(vtkContext2D* painter) override;
+  virtual bool UpdateLayout(vtkContext2D *painter);
 
 private:
-  vtkChartHistogram2D(const vtkChartHistogram2D&) = delete;
-  void operator=(const vtkChartHistogram2D&) = delete;
+  vtkChartHistogram2D(const vtkChartHistogram2D &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkChartHistogram2D &) VTK_DELETE_FUNCTION;
 };
 
-#endif // vtkChartHistogram2D_h
+#endif //vtkChartHistogram2D_h

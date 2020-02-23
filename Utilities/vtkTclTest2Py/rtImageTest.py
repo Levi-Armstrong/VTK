@@ -10,26 +10,17 @@ for i in range(2, len(sys.argv)):
         sys.path = sys.path + [sys.argv[i+1]]
 
 import vtk
+import math
 
 #these are the modules that define methods/variables
 #used by many scripts. We just include them always
 from backdrop import *
 from mccases import *
-import catch
 import expr
-import file
+import catch
 import info
-import math
+import file
 from vtk.util.colors import *
-
-
-# Mock class that overrides the Start() method from vtkRenderWindowInteractor
-# to do nothing. This allows VTK's python tests to be standard VTK scripts that
-# call Start() on the interactor.
-class vtkTestingInteractor(vtk.vtkRenderWindowInteractor):
-    def Start(self):
-        pass
-
 
 #implementation for lindex.
 def lindex(list, index):
@@ -65,7 +56,7 @@ def get_variable_name(*args):
             continue
         # it is essential to qualify the scope of type since
         # some test define type variable which messes up the
-        # builtin call.
+        # bultin call.
         if __builtins__.type(arg) == __builtins__.type("string"):
             var_name += arg
         else:
@@ -93,9 +84,6 @@ for arg in sys.argv[2:]:
     rtTester.AddArgument(arg)
 
 VTK_DATA_ROOT = rtTester.GetDataRoot()
-
-if rtTester.IsInteractiveModeSpecified() == 0:
-    vtk.vtkRenderWindowInteractor = vtkTestingInteractor
 
 # load in the script
 test_script = sys.argv[1]
@@ -126,10 +114,10 @@ if rtTester.IsValidImageSpecified() != 0:
     if "renWin" in local_variables_dict:
         rtTester.SetRenderWindow(renWin)
         if threshold == -1:
-            threshold = 0.15
+            threshold = 10
     else:
         if threshold == -1:
-            threshold = 0.15
+            threshold = 5
 
         if "viewer" in local_variables_dict:
             rtTester.SetRenderWindow(viewer.GetRenderWindow())
@@ -138,6 +126,10 @@ if rtTester.IsValidImageSpecified() != 0:
             rtTester.SetRenderWindow(imgWin)
             imgWin.Render()
     rtResult = rtTester.RegressionTest(threshold)
+
+if rtTester.IsInteractiveModeSpecified() != 0:
+    if "iren" in local_variables_dict:
+        iren.Start()
 
 if rtResult == 0:
     sys.exit(1)

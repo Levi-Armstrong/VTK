@@ -15,26 +15,26 @@
 
 #include "vtkChartXYZ.h"
 #include "vtkContextMouseEvent.h"
-#include "vtkContextScene.h"
 #include "vtkContextView.h"
+#include "vtkContextScene.h"
 #include "vtkFloatArray.h"
 #include "vtkNew.h"
 #include "vtkPlotPoints3D.h"
-#include "vtkRegressionTestImage.h"
+#include "vtkRenderer.h"
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
-#include "vtkRenderer.h"
 #include "vtkTable.h"
+#include "vtkRegressionTestImage.h"
 #include "vtkUnsignedCharArray.h"
 #include "vtkVector.h"
 
-int TestInteractiveChartXYZ(int, char*[])
+int TestInteractiveChartXYZ(int , char * [])
 {
   // Now the chart
   vtkNew<vtkChartXYZ> chart;
   vtkNew<vtkContextView> view;
   view->GetRenderWindow()->SetSize(400, 300);
-  view->GetScene()->AddItem(chart);
+  view->GetScene()->AddItem(chart.GetPointer());
 
   chart->SetGeometry(vtkRectf(75.0, 20.0, 250, 260));
 
@@ -42,19 +42,19 @@ int TestInteractiveChartXYZ(int, char*[])
   vtkNew<vtkTable> table;
   vtkNew<vtkFloatArray> arrX;
   arrX->SetName("X Axis");
-  table->AddColumn(arrX);
+  table->AddColumn(arrX.GetPointer());
   vtkNew<vtkFloatArray> arrC;
   arrC->SetName("Cosine");
-  table->AddColumn(arrC);
+  table->AddColumn(arrC.GetPointer());
   vtkNew<vtkFloatArray> arrS;
   arrS->SetName("Sine");
-  table->AddColumn(arrS);
+  table->AddColumn(arrS.GetPointer());
   vtkNew<vtkFloatArray> arrColor;
   arrColor->SetName("Color");
-  table->AddColumn(arrColor);
+  table->AddColumn(arrColor.GetPointer());
   // Test charting with a few more points...
   int numPoints = 69;
-  float inc = 7.5 / (numPoints - 1);
+  float inc = 7.5 / (numPoints-1);
   table->SetNumberOfRows(numPoints);
   for (int i = 0; i < numPoints; ++i)
   {
@@ -66,8 +66,8 @@ int TestInteractiveChartXYZ(int, char*[])
 
   // Add the dimensions we are interested in visualizing.
   vtkNew<vtkPlotPoints3D> plot;
-  plot->SetInputData(table, "X Axis", "Sine", "Cosine", "Color");
-  chart->AddPlot(plot);
+  plot->SetInputData(table.GetPointer(), "X Axis", "Sine", "Cosine", "Color");
+  chart->AddPlot(plot.GetPointer());
 
   view->GetRenderWindow()->SetMultiSamples(0);
   view->GetInteractor()->Initialize();
@@ -123,11 +123,11 @@ int TestInteractiveChartXYZ(int, char*[])
   chart->MouseMoveEvent(mouseEvent);
 
   // remove colors
-  plot->SetInputData(table, "X Axis", "Sine", "Cosine");
+  plot->SetInputData(table.GetPointer(), "X Axis", "Sine", "Cosine");
   view->GetRenderWindow()->Render();
 
   // add them back in
-  plot->SetColors(arrColor);
+  plot->SetColors(arrColor.GetPointer());
 
   view->GetInteractor()->Start();
 

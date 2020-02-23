@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import vtk
+from vtk.test import Testing
 from vtk.util.misc import vtkGetDataRoot
 VTK_DATA_ROOT = vtkGetDataRoot()
 
@@ -73,6 +74,7 @@ mapper.SetInputConnection(streamer.GetOutputPort())
 mapper.ScalarVisibilityOff()
 mapper.SetPiece(0)
 mapper.SetNumberOfPieces(2)
+mapper.ImmediateModeRenderingOn()
 
 actor = vtk.vtkActor()
 actor.SetMapper(mapper)

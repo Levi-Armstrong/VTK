@@ -22,13 +22,13 @@
  * @sa
  * vtkRibbonFilter vtkRuledSurfaceFilter vtkInitialValueProblemSolver
  * vtkRungeKutta2 vtkRungeKutta4 vtkRungeKutta45 vtkStreamTracer
- */
+*/
 
 #ifndef vtkPParticleTracerBase_h
 #define vtkPParticleTracerBase_h
 
-#include "vtkParticleTracerBase.h"
 #include "vtkSmartPointer.h" // For protected ivars.
+#include "vtkParticleTracerBase.h"
 
 #include <vector> // STL Header
 
@@ -37,8 +37,8 @@
 class VTKFILTERSPARALLELFLOWPATHS_EXPORT vtkPParticleTracerBase : public vtkParticleTracerBase
 {
 public:
-  vtkTypeMacro(vtkPParticleTracerBase, vtkParticleTracerBase);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkPParticleTracerBase,vtkParticleTracerBase);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -50,27 +50,28 @@ public:
   //@}
 
 protected:
-  struct RemoteParticleInfo
+  struct  RemoteParticleInfo
   {
     vtkParticleTracerBaseNamespace::ParticleInformation Current;
     vtkParticleTracerBaseNamespace::ParticleInformation Previous;
     vtkSmartPointer<vtkPointData> PreviousPD;
   };
 
-  typedef std::vector<RemoteParticleInfo> RemoteParticleVector;
+  typedef std::vector<RemoteParticleInfo>  RemoteParticleVector;
 
   vtkPParticleTracerBase();
   ~vtkPParticleTracerBase();
 
-  virtual int RequestUpdateExtent(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  virtual int RequestUpdateExtent(vtkInformation* request,
+                                  vtkInformationVector** inputVector,
+                                  vtkInformationVector* outputVector);
 
-  //
+//
 
-  virtual vtkPolyData* Execute(vtkInformationVector** inputVector) override;
-  virtual bool SendParticleToAnotherProcess(
-    vtkParticleTracerBaseNamespace::ParticleInformation& info,
-    vtkParticleTracerBaseNamespace::ParticleInformation& previous, vtkPointData*) override;
+  virtual vtkPolyData* Execute(vtkInformationVector** inputVector);
+  virtual bool SendParticleToAnotherProcess(vtkParticleTracerBaseNamespace::ParticleInformation & info,
+                                            vtkParticleTracerBaseNamespace::ParticleInformation & previous,
+                                            vtkPointData*);
 
   /**
    * Before starting the particle trace, classify
@@ -79,37 +80,38 @@ protected:
    * providing 1) The volumes are static, 2) the seed points are static
    * If either are non static, then this step is skipped.
    */
-  virtual void AssignSeedsToProcessors(double time, vtkDataSet* source, int sourceID, int ptId,
-    vtkParticleTracerBaseNamespace::ParticleVector& localSeedPoints,
-    int& localAssignedCount) override;
+  virtual void AssignSeedsToProcessors(double time,
+                                       vtkDataSet *source, int sourceID, int ptId,
+                                       vtkParticleTracerBaseNamespace::ParticleVector &localSeedPoints,
+                                       int &localAssignedCount);
 
   /**
-   * give each one a unique ID. We need to use MPI to find out
+   * give each one a uniqu ID. We need to use MPI to find out
    * who is using which numbers.
    */
   virtual void AssignUniqueIds(
-    vtkParticleTracerBaseNamespace::ParticleVector& localSeedPoints) override;
+    vtkParticleTracerBaseNamespace::ParticleVector &localSeedPoints);
 
   /**
    * this is used during classification of seed points and also between iterations
    * of the main loop as particles leave each processor domain. Returns
    * true if particles were migrated to any new process.
    */
-  virtual bool SendReceiveParticles(
-    RemoteParticleVector& outofdomain, RemoteParticleVector& received);
+  virtual bool SendReceiveParticles(RemoteParticleVector &outofdomain, RemoteParticleVector &received);
 
-  virtual bool UpdateParticleListFromOtherProcesses() override;
+  virtual bool UpdateParticleListFromOtherProcesses();
 
   /**
    * Method that checks that the input arrays are ordered the
    * same on all data sets. This needs to be true for all
    * blocks in a composite data set as well as across all processes.
    */
-  virtual bool IsPointDataValid(vtkDataObject* input) override;
+  virtual bool IsPointDataValid(vtkDataObject* input);
 
-  //
 
-  //
+//
+
+//
 
   // MPI controller needed when running in parallel
   vtkMultiProcessController* Controller;
@@ -117,9 +119,9 @@ protected:
   // List used for transmitting between processors during parallel operation
   RemoteParticleVector MPISendList;
 
-  RemoteParticleVector Tail; // this is to receive the "tails" of traces from other processes
+  RemoteParticleVector Tail; //this is to receive the "tails" of traces from other processes
 private:
-  vtkPParticleTracerBase(const vtkPParticleTracerBase&) = delete;
-  void operator=(const vtkPParticleTracerBase&) = delete;
+  vtkPParticleTracerBase(const vtkPParticleTracerBase&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPParticleTracerBase&) VTK_DELETE_FUNCTION;
 };
 #endif

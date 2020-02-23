@@ -18,22 +18,22 @@
  *
  * Sends the piece and number of pieces to upstream filters; passes the input
  * to the output unmodified.
- */
+*/
 
 #ifndef vtkPieceRequestFilter_h
 #define vtkPieceRequestFilter_h
 
-#include "vtkAlgorithm.h"
 #include "vtkFiltersParallelModule.h" // For export macro
+#include "vtkAlgorithm.h"
 
 class vtkDataObject;
 
 class VTKFILTERSPARALLEL_EXPORT vtkPieceRequestFilter : public vtkAlgorithm
 {
 public:
-  static vtkPieceRequestFilter* New();
-  vtkTypeMacro(vtkPieceRequestFilter, vtkAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkPieceRequestFilter *New();
+  vtkTypeMacro(vtkPieceRequestFilter,vtkAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -70,29 +70,37 @@ public:
   /**
    * see vtkAlgorithm for details
    */
-  vtkTypeBool ProcessRequest(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  virtual int ProcessRequest(vtkInformation* request,
+                             vtkInformationVector** inputVector,
+                             vtkInformationVector* outputVector);
 
 protected:
   vtkPieceRequestFilter();
-  ~vtkPieceRequestFilter() override {}
+  ~vtkPieceRequestFilter() {}
 
-  virtual int RequestDataObject(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector);
+  virtual int RequestDataObject(vtkInformation* request,
+                                vtkInformationVector** inputVector,
+                                vtkInformationVector* outputVector);
 
-  virtual int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  virtual int RequestData(vtkInformation*,
+                          vtkInformationVector**,
+                          vtkInformationVector*);
 
-  virtual int RequestUpdateExtent(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  virtual int RequestUpdateExtent(vtkInformation*,
+                                  vtkInformationVector**,
+                                  vtkInformationVector*);
 
-  int FillOutputPortInformation(int port, vtkInformation* info) override;
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  virtual int FillOutputPortInformation(int port, vtkInformation* info);
+  virtual int FillInputPortInformation(int port, vtkInformation* info);
 
   int NumberOfPieces;
   int Piece;
 
 private:
-  vtkPieceRequestFilter(const vtkPieceRequestFilter&) = delete;
-  void operator=(const vtkPieceRequestFilter&) = delete;
+  vtkPieceRequestFilter(const vtkPieceRequestFilter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPieceRequestFilter&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+

@@ -13,13 +13,13 @@
 
 =========================================================================*/
 
+#include "vtkTreeDifferenceFilter.h"
 #include "vtkDataSetAttributes.h"
 #include "vtkDoubleArray.h"
 #include "vtkMutableDirectedGraph.h"
 #include "vtkNew.h"
 #include "vtkStringArray.h"
 #include "vtkTree.h"
-#include "vtkTreeDifferenceFilter.h"
 
 //----------------------------------------------------------------------------
 int TestTreeDifferenceFilter(int, char*[])
@@ -41,7 +41,7 @@ int TestTreeDifferenceFilter(int, char*[])
   weights1->SetValue(graph1->GetEdgeId(internalTwo, b), 1.0f);
   weights1->SetValue(graph1->GetEdgeId(internalOne, c), 3.0f);
   weights1->SetName("weight");
-  graph1->GetEdgeData()->AddArray(weights1);
+  graph1->GetEdgeData()->AddArray(weights1.GetPointer());
 
   vtkNew<vtkStringArray> names1;
   names1->SetNumberOfTuples(6);
@@ -49,10 +49,10 @@ int TestTreeDifferenceFilter(int, char*[])
   names1->SetValue(b, "b");
   names1->SetValue(c, "c");
   names1->SetName("node name");
-  graph1->GetVertexData()->AddArray(names1);
+  graph1->GetVertexData()->AddArray(names1.GetPointer());
 
   vtkNew<vtkTree> tree1;
-  tree1->ShallowCopy(graph1);
+  tree1->ShallowCopy(graph1.GetPointer());
 
   // create tree 2.  Same topology as tree 1, but its vertices are created in
   // a different order.  Also, its edge weights are different.
@@ -70,7 +70,7 @@ int TestTreeDifferenceFilter(int, char*[])
   names2->SetValue(b, "b");
   names2->SetValue(c, "c");
   names2->SetName("node name");
-  graph2->GetVertexData()->AddArray(names2);
+  graph2->GetVertexData()->AddArray(names2.GetPointer());
 
   vtkNew<vtkDoubleArray> weights2;
   weights2->SetNumberOfTuples(5);
@@ -80,15 +80,15 @@ int TestTreeDifferenceFilter(int, char*[])
   weights2->SetValue(graph2->GetEdgeId(internalTwo, b), 5.0f);
   weights2->SetValue(graph2->GetEdgeId(internalOne, c), 8.0f);
   weights2->SetName("weight");
-  graph2->GetEdgeData()->AddArray(weights2);
+  graph2->GetEdgeData()->AddArray(weights2.GetPointer());
 
   vtkNew<vtkTree> tree2;
-  tree2->ShallowCopy(graph2);
+  tree2->ShallowCopy(graph2.GetPointer());
 
   vtkNew<vtkTreeDifferenceFilter> filter;
   filter->Print(std::cout);
-  filter->SetInputDataObject(0, tree1);
-  filter->SetInputDataObject(1, tree2);
+  filter->SetInputDataObject(0, tree1.GetPointer());
+  filter->SetInputDataObject(1, tree2.GetPointer());
   filter->SetIdArrayName("node name");
   filter->SetComparisonArrayIsVertexData(false);
   filter->SetComparisonArrayName("weight");
@@ -98,7 +98,7 @@ int TestTreeDifferenceFilter(int, char*[])
 
   vtkNew<vtkTree> outputTree;
   outputTree->ShallowCopy(filter->GetOutput());
-  vtkDoubleArray* diff = vtkArrayDownCast<vtkDoubleArray>(
+  vtkDoubleArray *diff = vtkArrayDownCast<vtkDoubleArray>(
     outputTree->GetEdgeData()->GetAbstractArray("weight differences"));
 
   if (diff->GetValue(0) != -1.0)

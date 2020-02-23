@@ -14,30 +14,35 @@
 =========================================================================*/
 #include "vtkXMLFileReadTester.h"
 #include "vtkObjectFactory.h"
-#include "vtksys/FStream.hxx"
 
 vtkStandardNewMacro(vtkXMLFileReadTester);
 
 //----------------------------------------------------------------------------
 vtkXMLFileReadTester::vtkXMLFileReadTester()
 {
-  this->FileDataType = nullptr;
-  this->FileVersion = nullptr;
+  this->FileName = 0;
+  this->FileDataType = 0;
+  this->FileVersion = 0;
 }
 
 //----------------------------------------------------------------------------
 vtkXMLFileReadTester::~vtkXMLFileReadTester()
 {
-  this->SetFileDataType(nullptr);
-  this->SetFileVersion(nullptr);
+  this->SetFileName(0);
+  this->SetFileDataType(0);
+  this->SetFileVersion(0);
 }
 
 //----------------------------------------------------------------------------
 void vtkXMLFileReadTester::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
-  os << indent << "FileDataType: " << (this->FileDataType ? this->FileDataType : "") << "\n";
-  os << indent << "FileVersion: " << (this->FileVersion ? this->FileVersion : "") << "\n";
+  os << indent << "FileName: "
+     << (this->FileName? this->FileName:"") << "\n";
+  os << indent << "FileDataType: "
+     << (this->FileDataType? this->FileDataType:"") << "\n";
+  os << indent << "FileVersion: "
+     << (this->FileVersion? this->FileVersion:"") << "\n";
 }
 
 //----------------------------------------------------------------------------
@@ -48,7 +53,7 @@ int vtkXMLFileReadTester::TestReadFile()
     return 0;
   }
 
-  vtksys::ifstream inFile(this->FileName);
+  ifstream inFile(this->FileName);
   if (!inFile)
   {
     return 0;
@@ -68,15 +73,15 @@ void vtkXMLFileReadTester::StartElement(const char* name, const char** atts)
   this->Done = 1;
   if (strcmp(name, "VTKFile") == 0)
   {
-    for (unsigned int i = 0; atts[i] && atts[i + 1]; i += 2)
+    for(unsigned int i = 0; atts[i] && atts[i+1]; i += 2)
     {
       if (strcmp(atts[i], "type") == 0)
       {
-        this->SetFileDataType(atts[i + 1]);
+        this->SetFileDataType(atts[i+1]);
       }
       else if (strcmp(atts[i], "version") == 0)
       {
-        this->SetFileVersion(atts[i + 1]);
+        this->SetFileVersion(atts[i+1]);
       }
     }
   }

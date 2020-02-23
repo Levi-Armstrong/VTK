@@ -24,7 +24,7 @@ VTK_DATA_ROOT = vtkGetDataRoot()
 # accordingly.
 # 6) ctrl key + right button down on any handle will erase it. Any existing
 # snap line segments are updated accordingly.  If the line was formed by
-# continuous tracing, the line is deleted leaving one handle.
+# continous tracing, the line is deleted leaving one handle.
 # 7) shift key + right button down on any snap line segment will insert a
 # handle at the cursor position.  The snap line segment is split accordingly.
 #

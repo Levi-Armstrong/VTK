@@ -18,21 +18,22 @@
  *
  * vtkImageFlip will reflect the data along the filtered axis.  This filter is
  * actually a thin wrapper around vtkImageReslice.
- */
+*/
 
 #ifndef vtkImageFlip_h
 #define vtkImageFlip_h
 
-#include "vtkImageReslice.h"
+
 #include "vtkImagingCoreModule.h" // For export macro
+#include "vtkImageReslice.h"
 
 class VTKIMAGINGCORE_EXPORT vtkImageFlip : public vtkImageReslice
 {
 public:
-  static vtkImageFlip* New();
+  static vtkImageFlip *New();
 
-  vtkTypeMacro(vtkImageFlip, vtkImageReslice);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkImageFlip,vtkImageReslice);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   //@{
   /**
@@ -60,9 +61,9 @@ public:
    * it does not refer to the Origin ivar that is associated with a
    * vtkImageData.
    */
-  vtkSetMacro(FlipAboutOrigin, vtkTypeBool);
-  vtkGetMacro(FlipAboutOrigin, vtkTypeBool);
-  vtkBooleanMacro(FlipAboutOrigin, vtkTypeBool);
+  vtkSetMacro(FlipAboutOrigin, int);
+  vtkGetMacro(FlipAboutOrigin, int);
+  vtkBooleanMacro(FlipAboutOrigin, int);
   //@}
 
   /**
@@ -78,24 +79,26 @@ public:
    * implementation was broken.  It is deprecated now and it has
    * no effect (i.e. the ImageExtent is always preserved).
    */
-  vtkSetMacro(PreserveImageExtent, vtkTypeBool);
-  vtkGetMacro(PreserveImageExtent, vtkTypeBool);
-  vtkBooleanMacro(PreserveImageExtent, vtkTypeBool);
+  vtkSetMacro(PreserveImageExtent, int);
+  vtkGetMacro(PreserveImageExtent, int);
+  vtkBooleanMacro(PreserveImageExtent, int);
   //@}
 
 protected:
   vtkImageFlip();
-  ~vtkImageFlip() override {}
+  ~vtkImageFlip() {}
 
-  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int RequestInformation(vtkInformation *,
+                                 vtkInformationVector **,
+                                 vtkInformationVector *) VTK_OVERRIDE;
 
   int FilteredAxis;
-  vtkTypeBool FlipAboutOrigin;
-  vtkTypeBool PreserveImageExtent;
+  int FlipAboutOrigin;
+  int PreserveImageExtent;
 
 private:
-  vtkImageFlip(const vtkImageFlip&) = delete;
-  void operator=(const vtkImageFlip&) = delete;
+  vtkImageFlip(const vtkImageFlip&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkImageFlip&) VTK_DELETE_FUNCTION;
 };
 
 #endif

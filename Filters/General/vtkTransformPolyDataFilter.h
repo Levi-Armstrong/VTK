@@ -32,7 +32,7 @@
  *
  * @sa
  * vtkTransform vtkTransformFilter vtkActor
- */
+*/
 
 #ifndef vtkTransformPolyDataFilter_h
 #define vtkTransformPolyDataFilter_h
@@ -45,21 +45,21 @@ class vtkAbstractTransform;
 class VTKFILTERSGENERAL_EXPORT vtkTransformPolyDataFilter : public vtkPolyDataAlgorithm
 {
 public:
-  static vtkTransformPolyDataFilter* New();
-  vtkTypeMacro(vtkTransformPolyDataFilter, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkTransformPolyDataFilter *New();
+  vtkTypeMacro(vtkTransformPolyDataFilter,vtkPolyDataAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Return the MTime also considering the transform.
    */
-  vtkMTimeType GetMTime() override;
+  vtkMTimeType GetMTime() VTK_OVERRIDE;
 
   //@{
   /**
    * Specify the transform object used to transform points.
    */
   virtual void SetTransform(vtkAbstractTransform*);
-  vtkGetObjectMacro(Transform, vtkAbstractTransform);
+  vtkGetObjectMacro(Transform,vtkAbstractTransform);
   //@}
 
   //@{
@@ -68,22 +68,21 @@ public:
    * for the vtkAlgorithm::DesiredOutputPrecision enum for an explanation of
    * the available precision settings.
    */
-  vtkSetMacro(OutputPointsPrecision, int);
-  vtkGetMacro(OutputPointsPrecision, int);
+  vtkSetMacro(OutputPointsPrecision,int);
+  vtkGetMacro(OutputPointsPrecision,int);
   //@}
 
 protected:
   vtkTransformPolyDataFilter();
-  ~vtkTransformPolyDataFilter() override;
+  ~vtkTransformPolyDataFilter() VTK_OVERRIDE;
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *) VTK_OVERRIDE;
 
-  vtkAbstractTransform* Transform;
+  vtkAbstractTransform *Transform;
   int OutputPointsPrecision;
-
 private:
-  vtkTransformPolyDataFilter(const vtkTransformPolyDataFilter&) = delete;
-  void operator=(const vtkTransformPolyDataFilter&) = delete;
+  vtkTransformPolyDataFilter(const vtkTransformPolyDataFilter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTransformPolyDataFilter&) VTK_DELETE_FUNCTION;
 };
 
 #endif

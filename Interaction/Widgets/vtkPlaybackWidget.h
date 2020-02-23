@@ -23,15 +23,16 @@
  *
  * @sa
  * vtkBorderWidget
- */
+*/
 
 #ifndef vtkPlaybackWidget_h
 #define vtkPlaybackWidget_h
 
-#include "vtkBorderWidget.h"
 #include "vtkInteractionWidgetsModule.h" // For export macro
+#include "vtkBorderWidget.h"
 
 class vtkPlaybackRepresentation;
+
 
 class VTKINTERACTIONWIDGETS_EXPORT vtkPlaybackWidget : public vtkBorderWidget
 {
@@ -39,14 +40,14 @@ public:
   /**
    * Instantiate this class.
    */
-  static vtkPlaybackWidget* New();
+  static vtkPlaybackWidget *New();
 
   //@{
   /**
-   * Standard VTK class methods.
+   * Standar VTK class methods.
    */
-  vtkTypeMacro(vtkPlaybackWidget, vtkBorderWidget);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkPlaybackWidget,vtkBorderWidget);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   /**
@@ -54,29 +55,27 @@ public:
    * widget in the scene. Note that the representation is a subclass of vtkProp
    * so it can be added to the renderer independent of the widget.
    */
-  void SetRepresentation(vtkPlaybackRepresentation* r)
-  {
-    this->Superclass::SetWidgetRepresentation(reinterpret_cast<vtkWidgetRepresentation*>(r));
-  }
+  void SetRepresentation(vtkPlaybackRepresentation *r)
+    {this->Superclass::SetWidgetRepresentation(reinterpret_cast<vtkWidgetRepresentation*>(r));}
 
   /**
    * Create the default widget representation if one is not set.
    */
-  void CreateDefaultRepresentation() override;
+  void CreateDefaultRepresentation();
 
 protected:
   vtkPlaybackWidget();
-  ~vtkPlaybackWidget() override;
+  ~vtkPlaybackWidget();
 
   /**
    * When selecting the interior of this widget, special operations occur
    * (i.e., operating the playback controls).
    */
-  void SelectRegion(double eventPos[2]) override;
+  virtual void SelectRegion(double eventPos[2]);
 
 private:
-  vtkPlaybackWidget(const vtkPlaybackWidget&) = delete;
-  void operator=(const vtkPlaybackWidget&) = delete;
+  vtkPlaybackWidget(const vtkPlaybackWidget&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPlaybackWidget&) VTK_DELETE_FUNCTION;
 };
 
 #endif

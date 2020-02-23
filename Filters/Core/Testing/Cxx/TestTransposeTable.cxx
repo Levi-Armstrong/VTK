@@ -23,7 +23,7 @@
 
 #include <sstream>
 
-int TestTransposeTable(int, char*[])
+int TestTransposeTable(int, char *[])
 {
   vtkNew<vtkTable> table;
 
@@ -37,7 +37,7 @@ int TestTransposeTable(int, char*[])
   colName->SetValue(2, "cream");
   colName->SetValue(3, "pasta");
   colName->SetValue(4, "tomato");
-  table->AddColumn(colName);
+  table->AddColumn(colName.GetPointer());
 
   vtkNew<vtkIntArray> colId;
   colId->SetName("Id");
@@ -47,7 +47,7 @@ int TestTransposeTable(int, char*[])
   colId->SetValue(2, 2);
   colId->SetValue(3, 3);
   colId->SetValue(4, 4);
-  table->AddColumn(colId);
+  table->AddColumn(colId.GetPointer());
 
   vtkNew<vtkDoubleArray> colDouble;
   colDouble->SetName("Double");
@@ -57,7 +57,7 @@ int TestTransposeTable(int, char*[])
   colDouble->SetValue(2, 2.65);
   colDouble->SetValue(3, 1.1);
   colDouble->SetValue(4, 0.4);
-  table->AddColumn(colDouble);
+  table->AddColumn(colDouble.GetPointer());
 
   vtkNew<vtkFloatArray> colFloat;
   colFloat->SetName("Float");
@@ -67,11 +67,11 @@ int TestTransposeTable(int, char*[])
   colFloat->SetValue(2, 12.65f);
   colFloat->SetValue(3, 11.1f);
   colFloat->SetValue(4, 10.4f);
-  table->AddColumn(colFloat);
+  table->AddColumn(colFloat.GetPointer());
 
   // Transpose the input table
   vtkNew<vtkTransposeTable> filter;
-  filter->SetInputData(table);
+  filter->SetInputData(table.GetPointer());
   filter->Update();
 
   vtkTable* outTable = filter->GetOutput();

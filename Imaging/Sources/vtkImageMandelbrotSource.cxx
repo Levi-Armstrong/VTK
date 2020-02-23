@@ -19,8 +19,8 @@
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
 #include "vtkObjectFactory.h"
-#include "vtkPointData.h"
 #include "vtkStreamingDemandDrivenPipeline.h"
+#include "vtkPointData.h"
 
 vtkStandardNewMacro(vtkImageMandelbrotSource);
 
@@ -62,20 +62,26 @@ vtkImageMandelbrotSource::vtkImageMandelbrotSource()
 }
 
 //----------------------------------------------------------------------------
-vtkImageMandelbrotSource::~vtkImageMandelbrotSource() = default;
+vtkImageMandelbrotSource::~vtkImageMandelbrotSource()
+{
+}
 
 //----------------------------------------------------------------------------
 void vtkImageMandelbrotSource::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 
-  os << indent << "OriginC: (" << this->OriginCX[0] << ", " << this->OriginCX[1] << ")\n";
-  os << indent << "OriginX: (" << this->OriginCX[2] << ", " << this->OriginCX[3] << ")\n";
+  os << indent << "OriginC: (" << this->OriginCX[0] << ", "
+     << this->OriginCX[1] << ")\n";
+  os << indent << "OriginX: (" << this->OriginCX[2] << ", "
+     << this->OriginCX[3] << ")\n";
 
-  os << indent << "SampleC: (" << this->SampleCX[0] << ", " << this->SampleCX[1] << ")\n";
-  os << indent << "SampleX: (" << this->SampleCX[2] << ", " << this->SampleCX[3] << ")\n";
+  os << indent << "SampleC: (" << this->SampleCX[0] << ", "
+     << this->SampleCX[1] << ")\n";
+  os << indent << "SampleX: (" << this->SampleCX[2] << ", "
+     << this->SampleCX[3] << ")\n";
 
-  double* size = this->GetSizeCX();
+  double *size = this->GetSizeCX();
   os << indent << "SizeC: (" << size[0] << ", " << size[1] << ")\n";
   os << indent << "SizeX: (" << size[2] << ", " << size[3] << ")\n";
 
@@ -88,13 +94,14 @@ void vtkImageMandelbrotSource::PrintSelf(ostream& os, vtkIndent indent)
     os << indent << "ConstantSpacing\n";
   }
 
-  os << indent << "WholeExtent: (" << this->WholeExtent[0] << ", " << this->WholeExtent[1] << ", "
-     << this->WholeExtent[2] << ", " << this->WholeExtent[3] << ", " << this->WholeExtent[4] << ", "
+  os << indent << "WholeExtent: (" << this->WholeExtent[0] << ", "
+     << this->WholeExtent[1] << ", " << this->WholeExtent[2] << ", "
+     << this->WholeExtent[3] << ", " << this->WholeExtent[4] << ", "
      << this->WholeExtent[5] << ")\n";
   os << "MaximumNumberOfIterations: " << this->MaximumNumberOfIterations << endl;
 
-  os << indent << "ProjectionAxes: (" << this->ProjectionAxes[0] << ", " << this->ProjectionAxes[1]
-     << this->ProjectionAxes[2] << ")\n";
+  os << indent << "ProjectionAxes: (" << this->ProjectionAxes[0] << ", "
+     << this->ProjectionAxes[1] << this->ProjectionAxes[2] << ")\n";
 
   os << indent << "SubsampleRate: " << this->SubsampleRate << endl;
 }
@@ -106,6 +113,7 @@ void vtkImageMandelbrotSource::SetWholeExtent(int extent[6])
   double saveSize[4];
 
   this->GetSizeCX(saveSize);
+
 
   for (idx = 0; idx < 6; ++idx)
   {
@@ -126,12 +134,14 @@ void vtkImageMandelbrotSource::SetWholeExtent(int extent[6])
   }
 }
 
+
 //----------------------------------------------------------------------------
 void vtkImageMandelbrotSource::SetProjectionAxes(int x, int y, int z)
 {
   double saveSize[4];
 
-  if (this->ProjectionAxes[0] == x && this->ProjectionAxes[1] == y && this->ProjectionAxes[2] == z)
+  if (this->ProjectionAxes[0] == x && this->ProjectionAxes[1] == y &&
+      this->ProjectionAxes[2] == z)
   {
     return;
   }
@@ -147,29 +157,29 @@ void vtkImageMandelbrotSource::SetProjectionAxes(int x, int y, int z)
   }
 }
 
+
 //----------------------------------------------------------------------------
-void vtkImageMandelbrotSource::SetWholeExtent(
-  int minX, int maxX, int minY, int maxY, int minZ, int maxZ)
+void vtkImageMandelbrotSource::SetWholeExtent(int minX, int maxX,
+                                            int minY, int maxY,
+                                            int minZ, int maxZ)
 {
   int extent[6];
 
-  extent[0] = minX;
-  extent[1] = maxX;
-  extent[2] = minY;
-  extent[3] = maxY;
-  extent[4] = minZ;
-  extent[5] = maxZ;
+  extent[0] = minX;  extent[1] = maxX;
+  extent[2] = minY;  extent[3] = maxY;
+  extent[4] = minZ;  extent[5] = maxZ;
   this->SetWholeExtent(extent);
 }
 
 //----------------------------------------------------------------------------
-void vtkImageMandelbrotSource::SetSizeCX(double cReal, double cImag, double xReal, double xImag)
+void vtkImageMandelbrotSource::SetSizeCX(double cReal, double cImag,
+                                         double xReal, double xImag)
 {
   int axis;
   int idx;
   int d;
 
-  double* s = this->GetSizeCX();
+  double *s = this->GetSizeCX();
   if (s[0] == cReal && s[1] == cImag && s[2] == xReal && s[3] == xImag)
   {
     return;
@@ -185,7 +195,7 @@ void vtkImageMandelbrotSource::SetSizeCX(double cReal, double cImag, double xRea
   // Now compute the gold standard (for non collapsed axes.
   for (idx = 0; idx < 3; ++idx)
   {
-    d = this->WholeExtent[idx * 2 + 1] - this->WholeExtent[idx * 2];
+    d = this->WholeExtent[idx*2+1] - this->WholeExtent[idx*2];
     if (d > 0)
     {
       axis = this->ProjectionAxes[idx];
@@ -204,7 +214,7 @@ double* vtkImageMandelbrotSource::GetSizeCX()
   // Recompute the size for the spacing (gold standard).
   for (idx = 0; idx < 3; ++idx)
   {
-    d = this->WholeExtent[idx * 2 + 1] - this->WholeExtent[idx * 2];
+    d = this->WholeExtent[idx*2+1] - this->WholeExtent[idx*2];
     if (d > 0)
     {
       axis = this->ProjectionAxes[idx];
@@ -218,7 +228,7 @@ double* vtkImageMandelbrotSource::GetSizeCX()
 //----------------------------------------------------------------------------
 void vtkImageMandelbrotSource::GetSizeCX(double s[4])
 {
-  double* p = this->GetSizeCX();
+  double *p = this->GetSizeCX();
 
   s[0] = p[0];
   s[1] = p[1];
@@ -227,8 +237,10 @@ void vtkImageMandelbrotSource::GetSizeCX(double s[4])
 }
 
 //----------------------------------------------------------------------------
-int vtkImageMandelbrotSource::RequestInformation(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector)
+int vtkImageMandelbrotSource::RequestInformation (
+  vtkInformation * vtkNotUsed(request),
+  vtkInformationVector** vtkNotUsed( inputVector ),
+  vtkInformationVector *outputVector)
 {
   // get the info objects
   vtkInformation* outInfo = outputVector->GetInformationObject(0);
@@ -238,12 +250,12 @@ int vtkImageMandelbrotSource::RequestInformation(vtkInformation* vtkNotUsed(requ
   double spacing[3];
 
   int ext[6];
-  for (int i = 0; i < 6; i++)
+  for (int i=0; i < 6; i++)
   {
     ext[i] = this->WholeExtent[i] / this->SubsampleRate;
   }
 
-  outInfo->Set(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT(), ext, 6);
+  outInfo->Set(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT(), ext ,6);
   for (idx = 0; idx < 3; ++idx)
   {
     axis = this->ProjectionAxes[idx];
@@ -260,8 +272,8 @@ int vtkImageMandelbrotSource::RequestInformation(vtkInformation* vtkNotUsed(requ
     }
   }
 
-  outInfo->Set(vtkDataObject::SPACING(), spacing, 3);
-  outInfo->Set(vtkDataObject::ORIGIN(), origin, 3);
+  outInfo->Set(vtkDataObject::SPACING(),spacing,3);
+  outInfo->Set(vtkDataObject::ORIGIN(),origin,3);
   vtkDataObject::SetPointDataActiveScalarInfo(outInfo, VTK_FLOAT, 1);
   return 1;
 }
@@ -293,9 +305,7 @@ void vtkImageMandelbrotSource::Pan(double x, double y, double z)
   }
 
   this->Modified();
-  pan[0] = x;
-  pan[1] = y;
-  pan[2] = z;
+  pan[0]=x;    pan[1]=y;    pan[2]=z;
   for (idx = 0; idx < 3; ++idx)
   {
     axis = this->ProjectionAxes[idx];
@@ -307,7 +317,8 @@ void vtkImageMandelbrotSource::Pan(double x, double y, double z)
 }
 
 //----------------------------------------------------------------------------
-void vtkImageMandelbrotSource::CopyOriginAndSample(vtkImageMandelbrotSource* source)
+void
+vtkImageMandelbrotSource::CopyOriginAndSample(vtkImageMandelbrotSource *source)
 {
   int idx;
 
@@ -320,21 +331,24 @@ void vtkImageMandelbrotSource::CopyOriginAndSample(vtkImageMandelbrotSource* sou
   this->Modified();
 }
 //----------------------------------------------------------------------------
-int vtkImageMandelbrotSource::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector)
+int vtkImageMandelbrotSource::RequestData(
+  vtkInformation* vtkNotUsed( request ),
+  vtkInformationVector** vtkNotUsed(inputVector),
+  vtkInformationVector* outputVector)
 {
   // get the output
-  vtkInformation* outInfo = outputVector->GetInformationObject(0);
-  vtkImageData* data = vtkImageData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
+  vtkInformation *outInfo = outputVector->GetInformationObject(0);
+  vtkImageData *data = vtkImageData::SafeDownCast(
+    outInfo->Get(vtkDataObject::DATA_OBJECT()));
 
   // We need to allocate our own scalars since we are overriding
   // the superclasses "Execute()" method.
-  int* ext = outInfo->Get(vtkStreamingDemandDrivenPipeline::UPDATE_EXTENT());
+  int *ext = outInfo->Get(vtkStreamingDemandDrivenPipeline::UPDATE_EXTENT());
   data->SetExtent(ext);
   data->AllocateScalars(outInfo);
 
   int a0, a1, a2;
-  float* ptr;
+  float *ptr;
   int min0, max0;
   int idx0, idx1, idx2;
   vtkIdType inc0, inc1, inc2;
@@ -357,17 +371,18 @@ int vtkImageMandelbrotSource::RequestData(vtkInformation* vtkNotUsed(request),
     p[idx0] = this->OriginCX[idx0];
   }
 
-  ptr = static_cast<float*>(data->GetScalarPointerForExtent(ext));
+  ptr = static_cast<float *>(data->GetScalarPointerForExtent(ext));
 
-  vtkDebugMacro(
-    "Generating Extent: " << ext[0] << " -> " << ext[1] << ", " << ext[2] << " -> " << ext[3]);
+  vtkDebugMacro("Generating Extent: " << ext[0] << " -> " << ext[1] << ", "
+                << ext[2] << " -> " << ext[3]);
 
   // Get min and max of axis 0 because it is the innermost loop.
   min0 = ext[0];
   max0 = ext[1];
   data->GetContinuousIncrements(ext, inc0, inc1, inc2);
 
-  target = static_cast<unsigned long>((ext[5] - ext[4] + 1) * (ext[3] - ext[2] + 1) / 50.0);
+  target = static_cast<unsigned long>(
+    (ext[5]-ext[4]+1)*(ext[3]-ext[2]+1)/50.0);
   target++;
 
   a0 = this->ProjectionAxes[0];
@@ -376,7 +391,7 @@ int vtkImageMandelbrotSource::RequestData(vtkInformation* vtkNotUsed(request),
   origin = this->OriginCX;
   sample = this->SampleCX;
 
-  if (a0 < 0 || a1 < 0 || a2 < 0 || a0 > 3 || a1 > 3 || a2 > 3)
+  if (a0<0 || a1<0 || a2<0 || a0>3 || a1>3 || a2>3)
   {
     vtkErrorMacro("Bad projection axis");
     return 0;
@@ -384,20 +399,21 @@ int vtkImageMandelbrotSource::RequestData(vtkInformation* vtkNotUsed(request),
   for (idx2 = ext[4]; idx2 <= ext[5]; ++idx2)
   {
     p[a2] = static_cast<double>(origin[a2]) +
-      static_cast<double>(idx2) * (sample[a2] * this->SubsampleRate);
+      static_cast<double>(idx2)*(sample[a2]*this->SubsampleRate);
     for (idx1 = ext[2]; !this->AbortExecute && idx1 <= ext[3]; ++idx1)
     {
-      if (!(count % target))
+      if (!(count%target))
       {
-        this->UpdateProgress(static_cast<double>(count) / (50.0 * static_cast<double>(target)));
+        this->UpdateProgress(static_cast<double>(count)/
+                             (50.0*static_cast<double>(target)));
       }
       count++;
       p[a1] = static_cast<double>(origin[a1]) +
-        static_cast<double>(idx1) * (sample[a1] * this->SubsampleRate);
+        static_cast<double>(idx1)*(sample[a1]*this->SubsampleRate);
       for (idx0 = min0; idx0 <= max0; ++idx0)
       {
         p[a0] = static_cast<double>(origin[a0]) +
-          static_cast<double>(idx0) * (sample[a0] * this->SubsampleRate);
+          static_cast<double>(idx0)*(sample[a0]*this->SubsampleRate);
 
         *ptr = static_cast<float>(this->EvaluateSet(p));
 
@@ -411,6 +427,7 @@ int vtkImageMandelbrotSource::RequestData(vtkInformation* vtkNotUsed(request),
 
   return 1;
 }
+
 
 //----------------------------------------------------------------------------
 double vtkImageMandelbrotSource::EvaluateSet(double p[4])
@@ -429,7 +446,7 @@ double vtkImageMandelbrotSource::EvaluateSet(double p[4])
   zImag2 = zImag * zImag;
   v0 = 0.0;
   v1 = (zReal2 + zImag2);
-  while (v1 < 4.0 && count < this->MaximumNumberOfIterations)
+  while ( v1 < 4.0 && count < this->MaximumNumberOfIterations)
   {
     zImag = 2.0 * zReal * zImag + cImag;
     zReal = zReal2 - zImag2 + cReal;
@@ -445,5 +462,12 @@ double vtkImageMandelbrotSource::EvaluateSet(double p[4])
     return static_cast<double>(count);
   }
 
-  return static_cast<double>(count) + (4.0 - v0) / (v1 - v0);
+  return static_cast<double>(count) + (4.0 - v0)/(v1 - v0);
 }
+
+
+
+
+
+
+

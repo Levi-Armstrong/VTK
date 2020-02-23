@@ -16,7 +16,7 @@
  * @class   vtkDataArrayTemplate
  *
  * vtkDataArrayTemplate is deprecated, use vtkAOSDataArrayTemplate instead.
- */
+*/
 
 #ifndef vtkDataArrayTemplate_h
 #define vtkDataArrayTemplate_h
@@ -29,7 +29,8 @@ template <typename ValueType>
 class vtkDataArrayTemplate : public vtkAOSDataArrayTemplate<ValueType>
 {
 public:
-  vtkTemplateTypeMacro(vtkDataArrayTemplate<ValueType>, vtkAOSDataArrayTemplate<ValueType>);
+  vtkTemplateTypeMacro(vtkDataArrayTemplate<ValueType>,
+                       vtkAOSDataArrayTemplate<ValueType>)
 
   static vtkDataArrayTemplate<ValueType>* New()
   {
@@ -38,11 +39,11 @@ public:
 
 protected:
   vtkDataArrayTemplate() {}
-  ~vtkDataArrayTemplate() override {}
+  ~vtkDataArrayTemplate() {}
 
 private:
-  vtkDataArrayTemplate(const vtkDataArrayTemplate&) = delete;
-  void operator=(const vtkDataArrayTemplate&) = delete;
+  vtkDataArrayTemplate(const vtkDataArrayTemplate&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkDataArrayTemplate&) VTK_DELETE_FUNCTION;
 };
 
 #endif // VTK_LEGACY_REMOVE

@@ -23,13 +23,13 @@
  * configure and debug python initialization (all are optional):
  * - VTK_MATPLOTLIB_DEBUG: Enable verbose debugging output during initialization
  * of the python environment.
- */
+*/
 
 #ifndef vtkMatplotlibMathTextUtilities_h
 #define vtkMatplotlibMathTextUtilities_h
 
-#include "vtkMathTextUtilities.h"
 #include "vtkRenderingMatplotlibModule.h" // For export macro
+#include "vtkMathTextUtilities.h"
 
 struct _object;
 typedef struct _object PyObject;
@@ -38,15 +38,16 @@ class vtkPath;
 class vtkPythonInterpreter;
 class vtkTextProperty;
 
-class VTKRENDERINGMATPLOTLIB_EXPORT vtkMatplotlibMathTextUtilities : public vtkMathTextUtilities
+class VTKRENDERINGMATPLOTLIB_EXPORT vtkMatplotlibMathTextUtilities :
+    public vtkMathTextUtilities
 {
 public:
   vtkTypeMacro(vtkMatplotlibMathTextUtilities, vtkMathTextUtilities);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
-  static vtkMatplotlibMathTextUtilities* New();
+  static vtkMatplotlibMathTextUtilities *New();
 
-  bool IsAvailable() override;
+  virtual bool IsAvailable();
 
   /**
    * Given a text property and a string, get the bounding box {xmin, xmax,
@@ -55,10 +56,11 @@ public:
    * justification text property variables.
    * Returns true on success, false otherwise.
    */
-  bool GetBoundingBox(vtkTextProperty* tprop, const char* str, int dpi, int bbox[4]) override;
+  bool GetBoundingBox(vtkTextProperty *tprop, const char *str, int dpi,
+                      int bbox[4]);
 
-  bool GetMetrics(
-    vtkTextProperty* tprop, const char* str, int dpi, vtkTextRenderer::Metrics& metrics) override;
+  bool GetMetrics(vtkTextProperty *tprop, const char *str, int dpi,
+                  vtkTextRenderer::Metrics &metrics);
 
   /**
    * Render the given string @a str into the vtkImageData @a data with a
@@ -70,8 +72,8 @@ public:
    * described by the text property's vertical and horizontal justification
    * options.
    */
-  bool RenderString(const char* str, vtkImageData* data, vtkTextProperty* tprop, int dpi,
-    int textDims[2] = NULL) override;
+  bool RenderString(const char *str, vtkImageData *data, vtkTextProperty *tprop,
+                    int dpi, int textDims[2] = NULL);
 
   /**
    * Parse the MathText expression in str and fill path with a contour of the
@@ -79,34 +81,35 @@ public:
    * described by the text property's horizontal and vertical justification
    * options.
    */
-  bool StringToPath(const char* str, vtkPath* path, vtkTextProperty* tprop, int dpi) override;
+  bool StringToPath(const char *str, vtkPath *path, vtkTextProperty *tprop,
+                    int dpi);
 
   //@{
   /**
-   * Set to true if the graphics implementation requires texture image dimensions
+   * Set to true if the graphics implmentation requires texture image dimensions
    * to be a power of two. Default is true, but this member will be set
    * appropriately when GL is inited.
    */
-  void SetScaleToPowerOfTwo(bool val) override;
-  bool GetScaleToPowerOfTwo() override;
+  vtkSetMacro(ScaleToPowerOfTwo, bool);
+  vtkGetMacro(ScaleToPowerOfTwo, bool);
   //@}
 
 protected:
   vtkMatplotlibMathTextUtilities();
-  ~vtkMatplotlibMathTextUtilities() override;
+  virtual ~vtkMatplotlibMathTextUtilities();
 
   bool InitializeMaskParser();
   bool InitializePathParser();
   bool InitializeFontPropertiesClass();
 
   bool CheckForError();
-  bool CheckForError(PyObject* object);
+  bool CheckForError(PyObject *object);
 
   /**
    * Returns a matplotlib.font_manager.FontProperties PyObject, initialized from
    * the vtkTextProperty tprop.
    */
-  PyObject* GetFontProperties(vtkTextProperty* tprop);
+  PyObject * GetFontProperties(vtkTextProperty *tprop);
 
   /**
    * Cleanup and destroy any python objects. This is called during destructor as
@@ -116,22 +119,24 @@ protected:
   void CleanupPythonObjects();
 
   vtkPythonInterpreter* Interpreter;
-  PyObject* MaskParser;
-  PyObject* PathParser;
-  PyObject* FontPropertiesClass;
+  PyObject *MaskParser;
+  PyObject *PathParser;
+  PyObject *FontPropertiesClass;
 
-  static void GetJustifiedBBox(int rows, int cols, vtkTextProperty* tprop, int bbox[4]);
+  static void GetJustifiedBBox(int rows, int cols, vtkTextProperty *tprop,
+                               int bbox[4]);
 
   // Rotate the 4 2D corner points by the specified angle (degrees) around the
   // origin and calculate the bounding box
-  static void RotateCorners(double angleDeg, double corners[4][2], double bbox[4]);
+  static void RotateCorners(double angleDeg, double corners[4][2],
+                            double bbox[4]);
 
   bool ScaleToPowerOfTwo;
-  bool PrepareImageData(vtkImageData* data, int bbox[4]);
+  bool PrepareImageData(vtkImageData *data, int bbox[4]);
 
 private:
-  vtkMatplotlibMathTextUtilities(const vtkMatplotlibMathTextUtilities&) = delete;
-  void operator=(const vtkMatplotlibMathTextUtilities&) = delete;
+  vtkMatplotlibMathTextUtilities(const vtkMatplotlibMathTextUtilities&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkMatplotlibMathTextUtilities&) VTK_DELETE_FUNCTION;
 
   /**
    * Used for runtime checking of matplotlib's mathtext availability.
@@ -157,7 +162,7 @@ private:
    * Cache the availability of matplotlib in the current python session.
    */
   static Availability MPLMathTextAvailable;
-  //@}
 };
+  //@}
 
 #endif

@@ -29,18 +29,17 @@
 #include <iostream>
 #include <stdexcept>
 
-#define test_expression(expression)                                                                \
-  {                                                                                                \
-    if (!(expression))                                                                             \
-      throw std::runtime_error("Expression failed: " #expression);                                 \
-  }
+#define test_expression(expression) \
+{ \
+  if(!(expression)) \
+    throw std::runtime_error("Expression failed: " #expression); \
+}
 
-int ArrayDiagonalMatrixSource(int vtkNotUsed(argc), char* vtkNotUsed(argv)[])
+int ArrayDiagonalMatrixSource(int vtkNotUsed(argc), char *vtkNotUsed(argv)[])
 {
   try
   {
-    vtkSmartPointer<vtkDiagonalMatrixSource> source =
-      vtkSmartPointer<vtkDiagonalMatrixSource>::New();
+    vtkSmartPointer<vtkDiagonalMatrixSource> source = vtkSmartPointer<vtkDiagonalMatrixSource>::New();
     source->SetExtents(3);
     source->SetArrayType(vtkDiagonalMatrixSource::SPARSE);
     source->SetDiagonal(1.0);
@@ -68,8 +67,8 @@ int ArrayDiagonalMatrixSource(int vtkNotUsed(argc), char* vtkNotUsed(argv)[])
     source->SetArrayType(vtkDiagonalMatrixSource::DENSE);
     source->Update();
 
-    vtkDenseArray<double>* const dense_array =
-      vtkDenseArray<double>::SafeDownCast(source->GetOutput()->GetArray(static_cast<vtkIdType>(0)));
+    vtkDenseArray<double>* const dense_array = vtkDenseArray<double>::SafeDownCast(
+      source->GetOutput()->GetArray(static_cast<vtkIdType>(0)));
 
     cout << "dense diagonal matrix:\n";
     vtkPrintMatrixFormat(cout, dense_array);
@@ -87,9 +86,10 @@ int ArrayDiagonalMatrixSource(int vtkNotUsed(argc), char* vtkNotUsed(argv)[])
 
     return 0;
   }
-  catch (std::exception& e)
+  catch(std::exception& e)
   {
     cerr << e.what() << endl;
     return 1;
   }
 }
+

@@ -38,38 +38,38 @@
  * @par Thanks:
  *  Developed by David Feng at Sandia National Laboratories
  *------------------------------------------------------------------------------
- */
+*/
 
 #ifndef vtkPComputeHistogram2DOutliers_h
 #define vtkPComputeHistogram2DOutliers_h
 //------------------------------------------------------------------------------
-#include "vtkComputeHistogram2DOutliers.h"
 #include "vtkFiltersParallelImagingModule.h" // For export macro
+#include "vtkComputeHistogram2DOutliers.h"
 //------------------------------------------------------------------------------
 class vtkMultiProcessController;
 //------------------------------------------------------------------------------
-class VTKFILTERSPARALLELIMAGING_EXPORT vtkPComputeHistogram2DOutliers
-  : public vtkComputeHistogram2DOutliers
+class VTKFILTERSPARALLELIMAGING_EXPORT vtkPComputeHistogram2DOutliers : public vtkComputeHistogram2DOutliers
 {
 public:
   static vtkPComputeHistogram2DOutliers* New();
   vtkTypeMacro(vtkPComputeHistogram2DOutliers, vtkComputeHistogram2DOutliers);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   virtual void SetController(vtkMultiProcessController*);
-  vtkGetObjectMacro(Controller, vtkMultiProcessController);
-
+  vtkGetObjectMacro(Controller,vtkMultiProcessController);
 protected:
   vtkPComputeHistogram2DOutliers();
-  ~vtkPComputeHistogram2DOutliers() override;
+  ~vtkPComputeHistogram2DOutliers();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int RequestData(
+    vtkInformation*,
+    vtkInformationVector**,
+    vtkInformationVector*);
 
   vtkMultiProcessController* Controller;
-
 private:
-  vtkPComputeHistogram2DOutliers(const vtkPComputeHistogram2DOutliers&) = delete;
-  void operator=(const vtkPComputeHistogram2DOutliers&) = delete;
+  vtkPComputeHistogram2DOutliers(const vtkPComputeHistogram2DOutliers&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPComputeHistogram2DOutliers&) VTK_DELETE_FUNCTION;
 };
 
 #endif

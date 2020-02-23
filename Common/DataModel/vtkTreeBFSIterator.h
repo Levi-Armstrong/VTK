@@ -26,7 +26,7 @@
  *
  * @par Thanks:
  * Thanks to David Doria for submitting this class.
- */
+*/
 
 #ifndef vtkTreeBFSIterator_h
 #define vtkTreeBFSIterator_h
@@ -42,14 +42,14 @@ class VTKCOMMONDATAMODEL_EXPORT vtkTreeBFSIterator : public vtkTreeIterator
 public:
   static vtkTreeBFSIterator* New();
   vtkTypeMacro(vtkTreeBFSIterator, vtkTreeIterator);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
 protected:
   vtkTreeBFSIterator();
-  ~vtkTreeBFSIterator() override;
+  ~vtkTreeBFSIterator() VTK_OVERRIDE;
 
-  void Initialize() override;
-  vtkIdType NextInternal() override;
+  void Initialize() VTK_OVERRIDE;
+  vtkIdType NextInternal() VTK_OVERRIDE;
 
   vtkTreeBFSIteratorInternals* Internals;
   vtkIntArray* Color;
@@ -62,8 +62,8 @@ protected:
   };
 
 private:
-  vtkTreeBFSIterator(const vtkTreeBFSIterator&) = delete;
-  void operator=(const vtkTreeBFSIterator&) = delete;
+  vtkTreeBFSIterator(const vtkTreeBFSIterator &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTreeBFSIterator &) VTK_DELETE_FUNCTION;
 };
 
 #endif

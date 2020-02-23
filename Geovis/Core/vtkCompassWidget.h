@@ -18,6 +18,7 @@
   the U.S. Government retains certain rights in this software.
 -------------------------------------------------------------------------*/
 
+
 /**
  * @class   vtkCompassWidget
  * @brief   set a value by manipulating something
@@ -59,15 +60,16 @@
  *   vtkCommand::InteractionEvent (on vtkWidgetEvent::Move)
  * </pre>
  *
- */
+*/
 
 #ifndef vtkCompassWidget_h
 #define vtkCompassWidget_h
 
-#include "vtkAbstractWidget.h"
 #include "vtkGeovisCoreModule.h" // For export macro
+#include "vtkAbstractWidget.h"
 
 class vtkCompassRepresentation;
+
 
 class VTKGEOVISCORE_EXPORT vtkCompassWidget : public vtkAbstractWidget
 {
@@ -75,14 +77,14 @@ public:
   /**
    * Instantiate the class.
    */
-  static vtkCompassWidget* New();
+  static vtkCompassWidget *New();
 
   //@{
   /**
    * Standard macros.
    */
-  vtkTypeMacro(vtkCompassWidget, vtkAbstractWidget);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkCompassWidget,vtkAbstractWidget);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   /**
@@ -90,15 +92,14 @@ public:
    * widget in the scene. Note that the representation is a subclass of vtkProp
    * so it can be added to the renderer independent of the widget.
    */
-  void SetRepresentation(vtkCompassRepresentation* r)
-  {
-    this->Superclass::SetWidgetRepresentation(reinterpret_cast<vtkWidgetRepresentation*>(r));
-  }
+  void SetRepresentation(vtkCompassRepresentation *r)
+  {this->Superclass::SetWidgetRepresentation
+     (reinterpret_cast<vtkWidgetRepresentation*>(r));}
 
   /**
    * Create the default widget representation if one is not set.
    */
-  void CreateDefaultRepresentation() override;
+  void CreateDefaultRepresentation();
 
   //@{
   /**
@@ -114,7 +115,7 @@ public:
 
 protected:
   vtkCompassWidget();
-  ~vtkCompassWidget() override {}
+  ~vtkCompassWidget() {}
 
   // These are the events that are handled
   static void SelectAction(vtkAbstractWidget*);
@@ -125,7 +126,7 @@ protected:
   int WidgetState;
   enum _WidgetState
   {
-    Start = 0,
+    Start=0,
     Highlighting,
     Adjusting,
     TiltAdjusting,
@@ -137,8 +138,8 @@ protected:
   double StartTime;
 
 private:
-  vtkCompassWidget(const vtkCompassWidget&) = delete;
-  void operator=(const vtkCompassWidget&) = delete;
+  vtkCompassWidget(const vtkCompassWidget&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkCompassWidget&) VTK_DELETE_FUNCTION;
 };
 
 #endif

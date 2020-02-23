@@ -18,8 +18,8 @@
   the U.S. Government retains certain rights in this software.
 -------------------------------------------------------------------------*/
 
-#include "vtkQtInitialization.h"
 #include "vtkObjectFactory.h"
+#include "vtkQtInitialization.h"
 
 #include <QApplication>
 
@@ -27,11 +27,11 @@ vtkStandardNewMacro(vtkQtInitialization);
 
 vtkQtInitialization::vtkQtInitialization()
 {
-  this->Application = nullptr;
-  if (!QApplication::instance())
+  this->Application = NULL;
+  if(!QApplication::instance())
   {
     int argc = 0;
-    this->Application = new QApplication(argc, nullptr);
+    this->Application = new QApplication(argc, 0);
   }
 }
 
@@ -40,7 +40,7 @@ vtkQtInitialization::~vtkQtInitialization()
   delete this->Application;
 }
 
-void vtkQtInitialization::PrintSelf(ostream& os, vtkIndent indent)
+void vtkQtInitialization::PrintSelf(ostream &os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
   os << indent << "QApplication: " << QApplication::instance() << endl;

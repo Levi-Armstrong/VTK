@@ -1,13 +1,13 @@
 
 #include "WebView.h"
+#include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <QToolButton>
 #include <QLineEdit>
 #include <QStyle>
-#include <QToolButton>
-#include <QVBoxLayout>
 
 WebView::WebView(QWidget* p)
-  : QFrame(p)
+: QFrame(p)
 {
   QVBoxLayout* l = new QVBoxLayout(this);
   QHBoxLayout* hl = new QHBoxLayout;
@@ -32,7 +32,9 @@ WebView::WebView(QWidget* p)
   QObject::connect(mWebView, SIGNAL(urlChanged(const QUrl&)), this, SLOT(updateUrl(const QUrl&)));
 }
 
-WebView::~WebView() {}
+WebView::~WebView()
+{
+}
 
 void WebView::go()
 {

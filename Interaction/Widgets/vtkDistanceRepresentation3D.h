@@ -24,13 +24,13 @@
  *
  * @sa
  * vtkDistanceWidget vtkDistanceRepresentation vtkDistanceRepresentation2D
- */
+*/
 
 #ifndef vtkDistanceRepresentation3D_h
 #define vtkDistanceRepresentation3D_h
 
-#include "vtkDistanceRepresentation.h"
 #include "vtkInteractionWidgetsModule.h" // For export macro
+#include "vtkDistanceRepresentation.h"
 
 class vtkPoints;
 class vtkPolyData;
@@ -45,26 +45,28 @@ class vtkDoubleArray;
 class vtkTransformPolyDataFilter;
 class vtkProperty;
 
+
 class VTKINTERACTIONWIDGETS_EXPORT vtkDistanceRepresentation3D : public vtkDistanceRepresentation
 {
 public:
   /**
    * Instantiate class.
    */
-  static vtkDistanceRepresentation3D* New();
+  static vtkDistanceRepresentation3D *New();
 
   //@{
   /**
    * Standard VTK methods.
    */
-  vtkTypeMacro(vtkDistanceRepresentation3D, vtkDistanceRepresentation);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkDistanceRepresentation3D,vtkDistanceRepresentation);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   /**
    * Satisfy the superclasses API.
    */
-  double GetDistance() override { return this->Distance; }
+  virtual double GetDistance()
+    {return this->Distance;}
 
   //@{
   /**
@@ -78,7 +80,7 @@ public:
   /**
    * Convenience method to get the line actor property.
    */
-  virtual vtkProperty* GetLineProperty();
+  virtual vtkProperty *GetLineProperty();
 
   //@{
   /**
@@ -111,7 +113,6 @@ public:
    * control the appearance of the label.
    */
   vtkGetObjectMacro(LabelActor, vtkFollower);
-  virtual void SetLabelActor(vtkFollower*);
   //@}
 
   //@{
@@ -120,34 +121,34 @@ public:
    * this representation. Note that methods are available for both
    * display and world coordinates.
    */
-  double* GetPoint1WorldPosition() override;
-  double* GetPoint2WorldPosition() override;
-  void GetPoint1WorldPosition(double pos[3]) override;
-  void GetPoint2WorldPosition(double pos[3]) override;
-  void SetPoint1WorldPosition(double pos[3]) override;
-  void SetPoint2WorldPosition(double pos[3]) override;
+  double* GetPoint1WorldPosition();
+  double* GetPoint2WorldPosition();
+  void GetPoint1WorldPosition(double pos[3]);
+  void GetPoint2WorldPosition(double pos[3]);
+  void SetPoint1WorldPosition(double pos[3]);
+  void SetPoint2WorldPosition(double pos[3]);
   //@}
 
-  void SetPoint1DisplayPosition(double pos[3]) override;
-  void SetPoint2DisplayPosition(double pos[3]) override;
-  void GetPoint1DisplayPosition(double pos[3]) override;
-  void GetPoint2DisplayPosition(double pos[3]) override;
+  void SetPoint1DisplayPosition(double pos[3]);
+  void SetPoint2DisplayPosition(double pos[3]);
+  void GetPoint1DisplayPosition(double pos[3]);
+  void GetPoint2DisplayPosition(double pos[3]);
 
   //@{
   /**
    * Method to satisfy superclasses' API.
    */
-  void BuildRepresentation() override;
-  double* GetBounds() override;
+  virtual void BuildRepresentation();
+  virtual double *GetBounds();
   //@}
 
   //@{
   /**
    * Methods required by vtkProp superclass.
    */
-  void ReleaseGraphicsResources(vtkWindow* w) override;
-  int RenderOpaqueGeometry(vtkViewport* viewport) override;
-  int RenderTranslucentPolygonalGeometry(vtkViewport* viewport) override;
+  virtual void ReleaseGraphicsResources(vtkWindow *w);
+  virtual int RenderOpaqueGeometry(vtkViewport *viewport);
+  virtual int RenderTranslucentPolygonalGeometry(vtkViewport *viewport);
   //@}
 
   //@{
@@ -163,52 +164,52 @@ public:
     scale[2] = z;
     this->SetLabelScale(scale);
   }
-  virtual void SetLabelScale(double scale[3]);
-  virtual double* GetLabelScale();
+  virtual void SetLabelScale( double scale[3] );
+  virtual double * GetLabelScale();
   //@}
 
   /**
    * Get the distance annotation property
    */
-  virtual vtkProperty* GetLabelProperty();
+  virtual vtkProperty *GetLabelProperty();
 
 protected:
   vtkDistanceRepresentation3D();
-  ~vtkDistanceRepresentation3D() override;
+  ~vtkDistanceRepresentation3D();
 
   // The line
-  vtkPoints* LinePoints;
-  vtkPolyData* LinePolyData;
-  vtkPolyDataMapper* LineMapper;
-  vtkActor* LineActor;
+  vtkPoints         *LinePoints;
+  vtkPolyData       *LinePolyData;
+  vtkPolyDataMapper *LineMapper;
+  vtkActor          *LineActor;
 
   // The distance label
-  vtkVectorText* LabelText;
-  vtkPolyDataMapper* LabelMapper;
-  vtkFollower* LabelActor;
+  vtkVectorText     *LabelText;
+  vtkPolyDataMapper *LabelMapper;
+  vtkFollower       *LabelActor;
 
   // Support internal operations
   bool LabelScaleSpecified;
 
   // The 3D disk tick marks
-  vtkPoints* GlyphPoints;
-  vtkDoubleArray* GlyphVectors;
-  vtkPolyData* GlyphPolyData;
-  vtkCylinderSource* GlyphCylinder;
-  vtkTransformPolyDataFilter* GlyphXForm;
-  vtkGlyph3D* Glyph3D;
-  vtkPolyDataMapper* GlyphMapper;
-  vtkActor* GlyphActor;
+  vtkPoints         *GlyphPoints;
+  vtkDoubleArray    *GlyphVectors;
+  vtkPolyData       *GlyphPolyData;
+  vtkCylinderSource *GlyphCylinder;
+  vtkTransformPolyDataFilter *GlyphXForm;
+  vtkGlyph3D        *Glyph3D;
+  vtkPolyDataMapper *GlyphMapper;
+  vtkActor          *GlyphActor;
 
   // Glyph3D scale
   double GlyphScale;
-  bool GlyphScaleSpecified;
+  bool   GlyphScaleSpecified;
 
   // The distance between the two points
   double Distance;
 
   // Support GetBounds() method
-  vtkBox* BoundingBox;
+  vtkBox *BoundingBox;
 
   // Maximum number of ticks on the 3d ruler
   int MaximumNumberOfRulerTicks;
@@ -217,8 +218,8 @@ protected:
   double LabelPosition;
 
 private:
-  vtkDistanceRepresentation3D(const vtkDistanceRepresentation3D&) = delete;
-  void operator=(const vtkDistanceRepresentation3D&) = delete;
+  vtkDistanceRepresentation3D(const vtkDistanceRepresentation3D&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkDistanceRepresentation3D&) VTK_DELETE_FUNCTION;
 
   // Internal method to update the position of the label.
   void UpdateLabelPosition();

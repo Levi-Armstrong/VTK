@@ -13,14 +13,15 @@
 
 =========================================================================*/
 
-#include <vtk_mpi.h>
+#include <mpi.h>
 
 #include "vtkMPIController.h"
 #include "vtkPDirectory.h"
 #include "vtkPSystemTools.h"
 
 #include "vtkSmartPointer.h"
-#define VTK_CREATE(type, name) vtkSmartPointer<type> name = vtkSmartPointer<type>::New()
+#define VTK_CREATE(type, name) \
+  vtkSmartPointer<type> name = vtkSmartPointer<type>::New()
 
 int PDirectory(int argc, char* argv[])
 {
@@ -42,30 +43,30 @@ int PDirectory(int argc, char* argv[])
 
   VTK_CREATE(vtkPDirectory, directory);
 
-  if (!directory->Load(str))
+  if(!directory->Load(str))
   {
     vtkGenericWarningMacro("Could not load directory");
     retVal++;
   }
 
-  if (directory->GetNumberOfFiles() < 3)
+  if(directory->GetNumberOfFiles() < 3)
   {
     vtkGenericWarningMacro("Missing files");
     retVal++;
   }
 
   bool hasFile = false;
-  for (vtkIdType i = 0; i < directory->GetNumberOfFiles(); i++)
+  for(vtkIdType i=0;i<directory->GetNumberOfFiles();i++)
   {
     hasFile = hasFile || (strcmp(directory->GetFile(i), "cmake_install.cmake") == 0);
   }
-  if (!hasFile)
+  if(!hasFile)
   {
     vtkGenericWarningMacro("Missing cmake_install.cmake");
     retVal++;
   }
 
-  controller->SetGlobalController(nullptr);
+  controller->SetGlobalController(NULL);
   controller->Finalize();
 
   return retVal;

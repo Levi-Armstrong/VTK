@@ -28,7 +28,7 @@
  * Start() method just returns.
  * To use this factory:
  * \code
- */
+*/
 
 #include "vtkTestingRenderingModule.h" // For export macro
 //   #include "vtkTestingObjectFactory.h"
@@ -38,19 +38,20 @@
 
 #include "vtkObjectFactory.h"
 
-#include "vtkSmartPointer.h"      // Required for testing framework
-#include "vtkTestDriver.h"        // Required for testing framework
-#include "vtkTesting.h"           // Required for testing framework
-#include "vtkTestingInteractor.h" // Required for testing framework
+#include "vtkTesting.h"            // Required for testing framework
+#include "vtkTestDriver.h"         // Required for testing framework
+#include "vtkTestingInteractor.h"  // Required for testing framework
+#include "vtkSmartPointer.h"       // Required for testing framework
+
 
 class VTKTESTINGRENDERING_EXPORT vtkTestingObjectFactory : public vtkObjectFactory
 {
 public:
   static vtkTestingObjectFactory* New();
-  vtkTypeMacro(vtkTestingObjectFactory, vtkObjectFactory);
-  const char* GetVTKSourceVersion() override;
-  const char* GetDescription() override { return "Factory for overrides during testing"; }
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkTestingObjectFactory,vtkObjectFactory);
+  const char* GetVTKSourceVersion() VTK_OVERRIDE;
+  const char* GetDescription() VTK_OVERRIDE { return "Factory for overrides during testing"; }
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
 protected:
   /**
@@ -59,7 +60,7 @@ protected:
   vtkTestingObjectFactory();
 
 private:
-  vtkTestingObjectFactory(const vtkTestingObjectFactory&) = delete;
-  void operator=(const vtkTestingObjectFactory&) = delete;
+  vtkTestingObjectFactory(const vtkTestingObjectFactory&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTestingObjectFactory&) VTK_DELETE_FUNCTION;
 };
 #endif

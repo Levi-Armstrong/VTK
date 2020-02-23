@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import vtk
+from vtk.test import Testing
 from vtk.util.misc import vtkGetDataRoot
 VTK_DATA_ROOT = vtkGetDataRoot()
 
@@ -50,6 +51,7 @@ isoMapper = vtk.vtkDataSetMapper()
 isoMapper.SetInputConnection(gradient.GetOutputPort())
 isoMapper.ScalarVisibilityOn()
 isoMapper.SetScalarRange(0, 1200)
+isoMapper.ImmediateModeRenderingOn()
 
 isoActor = vtk.vtkActor()
 isoActor.SetMapper(isoMapper)

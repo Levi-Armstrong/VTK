@@ -30,13 +30,13 @@
  *
  * @sa
  * vtkInteractorObserver
- */
+*/
 
 #ifndef vtkScalarBarWidget_h
 #define vtkScalarBarWidget_h
 
-#include "vtkBorderWidget.h"
 #include "vtkInteractionWidgetsModule.h" // For export macro
+#include "vtkBorderWidget.h"
 
 class vtkScalarBarActor;
 class vtkScalarBarRepresentation;
@@ -44,31 +44,29 @@ class vtkScalarBarRepresentation;
 class VTKINTERACTIONWIDGETS_EXPORT vtkScalarBarWidget : public vtkBorderWidget
 {
 public:
-  static vtkScalarBarWidget* New();
+  static vtkScalarBarWidget *New();
   vtkTypeMacro(vtkScalarBarWidget, vtkBorderWidget);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Specify an instance of vtkWidgetRepresentation used to represent this
    * widget in the scene. Note that the representation is a subclass of vtkProp
    * so it can be added to the renderer independent of the widget.
    */
-  virtual void SetRepresentation(vtkScalarBarRepresentation* rep);
+  virtual void SetRepresentation(vtkScalarBarRepresentation *rep);
 
   /**
    * Return the representation as a vtkScalarBarRepresentation.
    */
-  vtkScalarBarRepresentation* GetScalarBarRepresentation()
-  {
-    return reinterpret_cast<vtkScalarBarRepresentation*>(this->GetRepresentation());
-  }
+  vtkScalarBarRepresentation *GetScalarBarRepresentation()
+    { return reinterpret_cast<vtkScalarBarRepresentation *>(this->GetRepresentation()); }
 
   //@{
   /**
    * Get the ScalarBar used by this Widget. One is created automatically.
    */
-  virtual void SetScalarBarActor(vtkScalarBarActor* actor);
-  virtual vtkScalarBarActor* GetScalarBarActor();
+  virtual void SetScalarBarActor(vtkScalarBarActor *actor);
+  virtual vtkScalarBarActor *GetScalarBarActor();
   //@}
 
   //@{
@@ -78,31 +76,31 @@ public:
 
    * TODO: This functionality should probably be moved to the superclass.
    */
-  vtkSetMacro(Repositionable, vtkTypeBool);
-  vtkGetMacro(Repositionable, vtkTypeBool);
-  vtkBooleanMacro(Repositionable, vtkTypeBool);
+  vtkSetMacro(Repositionable, int);
+  vtkGetMacro(Repositionable, int);
+  vtkBooleanMacro(Repositionable, int);
   //@}
 
   /**
    * Create the default widget representation if one is not set.
    */
-  void CreateDefaultRepresentation() override;
+  virtual void CreateDefaultRepresentation();
 
 protected:
   vtkScalarBarWidget();
-  ~vtkScalarBarWidget() override;
+  ~vtkScalarBarWidget();
 
-  vtkTypeBool Repositionable;
+  int Repositionable;
 
   // Handle the case of Repositionable == 0
   static void MoveAction(vtkAbstractWidget*);
 
   // set the cursor to the correct shape based on State argument
-  void SetCursor(int State) override;
+  virtual void SetCursor(int State);
 
 private:
-  vtkScalarBarWidget(const vtkScalarBarWidget&) = delete;
-  void operator=(const vtkScalarBarWidget&) = delete;
+  vtkScalarBarWidget(const vtkScalarBarWidget&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkScalarBarWidget&) VTK_DELETE_FUNCTION;
 };
 
 #endif

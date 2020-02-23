@@ -18,60 +18,76 @@
 #include "vtkCharArray.h"
 #include "vtkCompositeDataProbeFilter.h"
 #include "vtkCompositeDataSet.h"
-#include "vtkDIYUtilities.h"
-#include "vtkDataArrayRange.h"
+#include "vtkDataArrayAccessor.h"
 #include "vtkDataSetAttributes.h"
 #include "vtkExtentTranslator.h"
 #include "vtkIdList.h"
 #include "vtkImageData.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
-#include "vtkMultiProcessController.h"
+#include "vtkMPI.h"
+#include "vtkMPIController.h"
+#include "vtkMPICommunicator.h"
 #include "vtkNew.h"
 #include "vtkObjectFactory.h"
 #include "vtkPointData.h"
 #include "vtkStreamingDemandDrivenPipeline.h"
 #include "vtkUnsignedCharArray.h"
 
-// clang-format off
-#include "vtk_diy2.h" // must include this before any diy header
-#include VTK_DIY2(diy/assigner.hpp)
-#include VTK_DIY2(diy/link.hpp)
-#include VTK_DIY2(diy/master.hpp)
-#include VTK_DIY2(diy/mpi.hpp)
-#include VTK_DIY2(diy/reduce.hpp)
-#include VTK_DIY2(diy/partners/swap.hpp)
-#include VTK_DIY2(diy/decomposition.hpp)
-// clang-format on
+#include "vtk_diy2.h"   // must include this before any diy header
+VTKDIY2_PRE_INCLUDE
+#include VTK_DIY2_HEADER(diy/assigner.hpp)
+#include VTK_DIY2_HEADER(diy/link.hpp)
+#include VTK_DIY2_HEADER(diy/master.hpp)
+#include VTK_DIY2_HEADER(diy/mpi.hpp)
+#include VTK_DIY2_HEADER(diy/reduce.hpp)
+#include VTK_DIY2_HEADER(diy/partners/swap.hpp)
+#include VTK_DIY2_HEADER(diy/decomposition.hpp)
+VTKDIY2_POST_INCLUDE
 
 #include <algorithm>
-#include <iterator>
+
 
 vtkStandardNewMacro(vtkPResampleToImage);
 
 vtkCxxSetObjectMacro(vtkPResampleToImage, Controller, vtkMultiProcessController);
 
-namespace
-{
+namespace {
 
 //----------------------------------------------------------------------------
 template <typename T, std::size_t Len>
 struct Array
 {
 public:
-  T& operator[](std::size_t idx) { return this->Data[idx]; }
+  T& operator[](std::size_t idx)
+  {
+    return this->Data[idx];
+  }
 
-  const T& operator[](std::size_t idx) const { return this->Data[idx]; }
+  const T& operator[](std::size_t idx) const
+  {
+    return this->Data[idx];
+  }
 
-  T* data() { return this->Data; }
+  T* data()
+  {
+    return this->Data;
+  }
 
-  const T* data() const { return this->Data; }
+  const T* data() const
+  {
+    return this->Data;
+  }
 
-  std::size_t size() const { return Len; }
+  std::size_t size() const
+  {
+    return Len;
+  }
 
 private:
   T Data[Len];
 };
+
 
 //-----------------------------------------------------------------------------
 struct FieldMetaData
@@ -82,15 +98,16 @@ struct FieldMetaData
   int AttributeType;
 };
 
-inline void ExtractFieldMetaData(vtkDataSetAttributes* data, std::vector<FieldMetaData>* metadata)
+inline void ExtractFieldMetaData(vtkDataSetAttributes *data,
+                                 std::vector<FieldMetaData> *metadata)
 {
   std::size_t numFields = static_cast<std::size_t>(data->GetNumberOfArrays());
   metadata->resize(numFields);
 
   for (std::size_t i = 0; i < numFields; ++i)
   {
-    FieldMetaData& md = (*metadata)[i];
-    vtkDataArray* da = data->GetArray(static_cast<int>(i));
+    FieldMetaData &md = (*metadata)[i];
+    vtkDataArray *da = data->GetArray(static_cast<int>(i));
 
     md.Name = da->GetName();
     md.DataType = da->GetDataType();
@@ -99,14 +116,15 @@ inline void ExtractFieldMetaData(vtkDataSetAttributes* data, std::vector<FieldMe
   }
 }
 
-inline void InitializeFieldData(
-  const std::vector<FieldMetaData>& metadata, vtkIdType numTuples, vtkDataSetAttributes* data)
+inline void InitializeFieldData(const std::vector<FieldMetaData> &metadata,
+                                vtkIdType numTuples,
+                                vtkDataSetAttributes *data)
 {
   std::size_t numFields = metadata.size();
   for (std::size_t i = 0; i < numFields; ++i)
   {
-    const FieldMetaData& md = metadata[i];
-    vtkDataArray* da = vtkDataArray::CreateDataArray(md.DataType);
+    const FieldMetaData &md = metadata[i];
+    vtkDataArray *da = vtkDataArray::CreateDataArray(md.DataType);
     da->SetName(md.Name.c_str());
     da->SetNumberOfComponents(md.NumComponents);
     da->SetNumberOfTuples(numTuples);
@@ -126,66 +144,90 @@ inline void InitializeFieldData(
   }
 }
 
+
 //----------------------------------------------------------------------------
-struct SerializeWorklet
+class SerializeWorklet
 {
+public:
+  SerializeWorklet(vtkIdType tuple, int numComponents, diy::MemoryBuffer &buffer)
+    : Tuple(tuple), NumComponents(numComponents), Buffer(&buffer)
+  { }
+
   template <typename ArrayType>
-  void operator()(ArrayType* array, vtkIdType tupleIdx, diy::MemoryBuffer& buffer) const
+  void operator()(ArrayType *array) const
   {
-    using T = vtk::GetAPIType<ArrayType>; // Need value type for diy::save template resolution
-    const auto tuple = vtk::DataArrayTupleRange(array)[tupleIdx];
-    for (const T comp : tuple)
+    vtkDataArrayAccessor<ArrayType> accessor(array);
+    for (int i = 0; i < this->NumComponents; ++i)
     {
-      diy::save(buffer, comp);
+      diy::save(*this->Buffer, accessor.Get(this->Tuple, i));
     }
   }
+
+private:
+  vtkIdType Tuple;
+  int NumComponents;
+  diy::MemoryBuffer *Buffer;
 };
 
-inline void SerializeFieldData(vtkFieldData* field, vtkIdType tuple, diy::MemoryBuffer& bb)
+inline void SerializeFieldData(vtkFieldData *field, vtkIdType tuple,
+                               diy::MemoryBuffer &bb)
 {
   int numFields = field->GetNumberOfArrays();
   for (int i = 0; i < numFields; ++i)
   {
-    vtkDataArray* da = field->GetArray(i);
-    if (!vtkArrayDispatch::Dispatch::Execute(da, SerializeWorklet{}, tuple, bb))
+    vtkDataArray *da = field->GetArray(i);
+    std::size_t numComponents = static_cast<std::size_t>(da->GetNumberOfComponents());
+    SerializeWorklet worklet(tuple, numComponents, bb);
+    if (!vtkArrayDispatch::Dispatch::Execute(da, worklet))
     {
       vtkGenericWarningMacro(<< "Dispatch failed, fallback to vtkDataArray Get/Set");
-      SerializeWorklet{}(da, tuple, bb);
+      worklet(da);
     }
   }
 }
 
-struct DeserializeWorklet
+class DeserializeWorklet
 {
+public:
+  DeserializeWorklet(vtkIdType tuple, int numComponents, diy::MemoryBuffer &buffer)
+    : Tuple(tuple), NumComponents(numComponents), Buffer(&buffer)
+  { }
+
   template <typename ArrayType>
-  void operator()(ArrayType* array, vtkIdType tupleIdx, diy::MemoryBuffer& buffer) const
+  void operator()(ArrayType *array) const
   {
-    auto tuple = vtk::DataArrayTupleRange(array)[tupleIdx];
-    using CompRefT = typename std::iterator_traits<decltype(tuple.begin())>::reference;
-    // Need value type for diy::load template resolution
-    using ValueT = typename std::iterator_traits<decltype(tuple.begin())>::value_type;
-    for (CompRefT compRef : tuple)
+    vtkDataArrayAccessor<ArrayType> accessor(array);
+    for (int i = 0; i < this->NumComponents; ++i)
     {
-      ValueT val;
-      diy::load(buffer, val);
-      compRef = val;
+      typename vtkDataArrayAccessor<ArrayType>::APIType val;
+      diy::load(*this->Buffer, val);
+      accessor.Set(this->Tuple, i, val);
     }
   }
+
+private:
+  vtkIdType Tuple;
+  int NumComponents;
+  diy::MemoryBuffer *Buffer;
 };
 
-inline void DeserializeFieldData(diy::MemoryBuffer& bb, vtkFieldData* field, vtkIdType tuple)
+inline void DeserializeFieldData(diy::MemoryBuffer &bb, vtkFieldData *field,
+                                 vtkIdType tuple)
 {
   int numFields = field->GetNumberOfArrays();
   for (int i = 0; i < numFields; ++i)
   {
-    vtkDataArray* da = field->GetArray(i);
-    if (!vtkArrayDispatch::Dispatch::Execute(da, DeserializeWorklet{}, tuple, bb))
+    vtkDataArray *da = field->GetArray(i);
+    std::size_t numComponents = static_cast<std::size_t>(da->GetNumberOfComponents());
+    DeserializeWorklet worklet(tuple, numComponents, bb);
+    if (!vtkArrayDispatch::Dispatch::Execute(da, worklet))
     {
       vtkGenericWarningMacro(<< "Dispatch failed, fallback to vtkDataArray Get/Set");
-      DeserializeWorklet{}(da, tuple, bb);
+      worklet(da);
     }
   }
 }
+
 
 //----------------------------------------------------------------------------
 // A structure representing a list of points from an ImageData. Stores the
@@ -196,23 +238,24 @@ struct PointList
   typedef Array<int, 3> IndexType;
 
   std::vector<IndexType> Indices; // indices
-  std::vector<char> Data;         // serialized data
-  vtkIdType DataSize;             // size in bytes of serialized data of one point
+  std::vector<char> Data; // serialized data
+  vtkIdType DataSize; // size in bytes of serialized data of one point
 };
 
-inline void swap(PointList& a, PointList& b)
+inline void swap(PointList &a, PointList &b)
 {
   a.Indices.swap(b.Indices);
   a.Data.swap(b.Data);
   std::swap(a.DataSize, b.DataSize);
 }
 
-inline vtkIdType ComputeSerializedFieldDataSize(const std::vector<FieldMetaData>& fieldMetaData)
+inline vtkIdType ComputeSerializedFieldDataSize(
+  const std::vector<FieldMetaData> &fieldMetaData)
 {
   vtkNew<vtkDataSetAttributes> attribs;
-  InitializeFieldData(fieldMetaData, 1, attribs);
+  InitializeFieldData(fieldMetaData, 1, attribs.GetPointer());
   diy::MemoryBuffer bb;
-  SerializeFieldData(attribs, 0, bb);
+  SerializeFieldData(attribs.GetPointer(), 0, bb);
   return static_cast<vtkIdType>(bb.buffer.size());
 }
 
@@ -228,23 +271,25 @@ inline void* CreateBlock()
   return new Block;
 }
 
-inline void DestroyBlock(void* blockp)
+inline void DestroyBlock(void *blockp)
 {
   delete static_cast<Block*>(blockp);
 }
 
+
 //---------------------------------------------------------------------------
 // Creates a PointList of all the valid points in img
-inline void GetPointsFromImage(vtkImageData* img, const char* maskArrayName, PointList* points)
+inline void GetPointsFromImage(vtkImageData *img, const char *maskArrayName,
+                               PointList *points)
 {
   if (img->GetNumberOfPoints() <= 0)
   {
     return;
   }
 
-  vtkPointData* pd = img->GetPointData();
-  vtkCharArray* maskArray = vtkArrayDownCast<vtkCharArray>(pd->GetArray(maskArrayName));
-  char* mask = maskArray->GetPointer(0);
+  vtkPointData *pd = img->GetPointData();
+  vtkCharArray *maskArray = vtkArrayDownCast<vtkCharArray>(pd->GetArray(maskArrayName));
+  char *mask = maskArray->GetPointer(0);
 
   // use diy's serialization facilities
   diy::MemoryBuffer bb;
@@ -274,10 +319,10 @@ inline void GetPointsFromImage(vtkImageData* img, const char* maskArrayName, Poi
 
 // Sets the points from the PointList (points) to img. 'points' is modified
 // in the process.
-void SetPointsToImage(
-  const std::vector<FieldMetaData>& fieldMetaData, PointList& points, vtkImageData* img)
+void SetPointsToImage(const std::vector<FieldMetaData> &fieldMetaData,
+                      PointList &points, vtkImageData *img)
 {
-  vtkPointData* pd = img->GetPointData();
+  vtkPointData *pd = img->GetPointData();
   InitializeFieldData(fieldMetaData, img->GetNumberOfPoints(), pd);
 
   diy::MemoryBuffer bb;
@@ -293,29 +338,32 @@ void SetPointsToImage(
 }
 
 //----------------------------------------------------------------------------
-inline void ComputeGlobalBounds(
-  diy::mpi::communicator& comm, const double lbounds[6], double gbounds[6])
+inline void ComputeGlobalBounds(diy::mpi::communicator &comm,
+                                const double lbounds[6], double gbounds[6])
 {
   Array<double, 3> localBoundsMin, localBoundsMax;
   for (std::size_t i = 0; i < 3; ++i)
   {
-    localBoundsMin[i] = lbounds[2 * i];
-    localBoundsMax[i] = lbounds[2 * i + 1];
+    localBoundsMin[i] = lbounds[2*i];
+    localBoundsMax[i] = lbounds[2*i + 1];
   }
 
   Array<double, 3> globalBoundsMin, globalBoundsMax;
-  diy::mpi::all_reduce(comm, localBoundsMin, globalBoundsMin, diy::mpi::minimum<double>());
-  diy::mpi::all_reduce(comm, localBoundsMax, globalBoundsMax, diy::mpi::maximum<double>());
+  diy::mpi::all_reduce(comm, localBoundsMin, globalBoundsMin,
+                       diy::mpi::minimum<double>());
+  diy::mpi::all_reduce(comm, localBoundsMax, globalBoundsMax,
+                       diy::mpi::maximum<double>());
 
   for (std::size_t i = 0; i < 3; ++i)
   {
-    gbounds[2 * i] = globalBoundsMin[i];
-    gbounds[2 * i + 1] = globalBoundsMax[i];
+    gbounds[2*i] = globalBoundsMin[i];
+    gbounds[2*i + 1] = globalBoundsMax[i];
   }
 }
 
-inline void GetGlobalFieldMetaData(
-  diy::mpi::communicator& comm, vtkDataSetAttributes* data, std::vector<FieldMetaData>* metadata)
+inline void GetGlobalFieldMetaData(diy::mpi::communicator &comm,
+                                   vtkDataSetAttributes *data,
+                                   std::vector<FieldMetaData> *metadata)
 {
   std::vector<FieldMetaData> local;
   ExtractFieldMetaData(data, &local);
@@ -326,7 +374,7 @@ inline void GetGlobalFieldMetaData(
   int source;
   diy::mpi::all_reduce(comm, rank, source, diy::mpi::minimum<int>());
 
-  if (source < comm.size()) // at least one process has field meta data
+  if (source < comm.size()) // atleast one process has field meta data
   {
     diy::MemoryBuffer bb;
     if (comm.rank() == source)
@@ -339,15 +387,16 @@ inline void GetGlobalFieldMetaData(
   }
 }
 
+
 //---------------------------------------------------------------------------
-void Redistribute(
-  void* blockp, const diy::ReduceProxy& srp, const diy::RegularSwapPartners& partners)
+void Redistribute(void* blockp, const diy::ReduceProxy& srp,
+                  const diy::RegularSwapPartners& partners)
 {
-  Block* b = static_cast<Block*>(blockp);
+  Block *b = static_cast<Block*>(blockp);
   unsigned round = srp.round();
 
   // step 1: dequeue all the incoming points and add them to this block's vector
-  diy::Master::IncomingQueues& in = *srp.incoming();
+  diy::Master::IncomingQueues &in = *srp.incoming();
   for (diy::Master::IncomingQueues::iterator i = in.begin(); i != in.end(); ++i)
   {
     while (i->second)
@@ -386,18 +435,18 @@ void Redistribute(
   int length = (maxIdx - minIdx + 1 + groupSize - 1) / groupSize;
 
   PointList myPoints;
-  myPoints.DataSize = b->Points.DataSize; // initialize myPoints
+  myPoints.DataSize = b->Points.DataSize; // initilize myPoints
   std::size_t numPoints = b->Points.Indices.size();
   for (size_t i = 0; i < numPoints; ++i)
   {
     PointList::IndexType idx = b->Points.Indices[i];
-    const char* data = &b->Points.Data[i * b->Points.DataSize];
+    const char *data = &b->Points.Data[i * b->Points.DataSize];
 
     int nlocs = 1;
-    int loc[2] = { (idx[axis] - minIdx) / length, 0 };
+    int loc[2] = { (idx[axis] - minIdx)/length, 0 };
 
     // duplicate shared point
-    if (((idx[axis] - minIdx) % length == 0) && (loc[0] != 0))
+    if (((idx[axis] - minIdx)%length == 0) && (loc[0] != 0))
     {
       loc[1] = loc[0] - 1;
       ++nlocs;
@@ -420,15 +469,25 @@ void Redistribute(
   swap(b->Points, myPoints);
 
   // step 3: readjust extents for next round
-  b->Extent[2 * axis] = minIdx + (length * myPos);
-  b->Extent[2 * axis + 1] = std::min(b->Extent[2 * axis] + length, maxIdx);
+  b->Extent[2*axis] = minIdx + (length * myPos);
+  b->Extent[2*axis + 1] = std::min(b->Extent[2*axis] + length, maxIdx);
+}
+
+
+//----------------------------------------------------------------------------
+inline diy::mpi::communicator GetDiyCommunicator(vtkMPIController *controller)
+{
+  vtkMPICommunicator *vtkcomm = vtkMPICommunicator::SafeDownCast(
+    controller->GetCommunicator());
+  return diy::mpi::communicator(*vtkcomm->GetMPIComm()->GetHandle());
 }
 
 } // anonymous namespace
 
+
 //---------------------------------------------------------------------------
 vtkPResampleToImage::vtkPResampleToImage()
-  : Controller(nullptr)
+  : Controller(NULL)
 {
   this->SetController(vtkMultiProcessController::GetGlobalController());
 }
@@ -436,7 +495,7 @@ vtkPResampleToImage::vtkPResampleToImage()
 //----------------------------------------------------------------------------
 vtkPResampleToImage::~vtkPResampleToImage()
 {
-  this->SetController(nullptr);
+  this->SetController(NULL);
 }
 
 //----------------------------------------------------------------------------
@@ -450,23 +509,27 @@ void vtkPResampleToImage::PrintSelf(ostream& os, vtkIndent indent)
 }
 
 //---------------------------------------------------------------------------
-int vtkPResampleToImage::RequestData(
-  vtkInformation* request, vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+int vtkPResampleToImage::RequestData(vtkInformation *request,
+                                     vtkInformationVector **inputVector,
+                                     vtkInformationVector *outputVector)
 {
-  if (!this->Controller || this->Controller->GetNumberOfProcesses() == 1)
+  vtkMPIController *mpiCont = vtkMPIController::SafeDownCast(this->Controller);
+  if (!mpiCont || mpiCont->GetNumberOfProcesses() == 1)
   {
     return this->Superclass::RequestData(request, inputVector, outputVector);
   }
 
   // get the info objects
-  vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
-  vtkInformation* outInfo = outputVector->GetInformationObject(0);
+  vtkInformation *inInfo = inputVector[0]->GetInformationObject(0);
+  vtkInformation *outInfo = outputVector->GetInformationObject(0);
 
   // get the input and output
-  vtkDataObject* input = inInfo->Get(vtkDataObject::DATA_OBJECT());
-  vtkImageData* output = vtkImageData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
+  vtkDataObject *input = inInfo->Get(vtkDataObject::DATA_OBJECT());
+  vtkImageData *output = vtkImageData::SafeDownCast(
+    outInfo->Get(vtkDataObject::DATA_OBJECT()));
 
-  diy::mpi::communicator comm = vtkDIYUtilities::GetCommunicator(this->Controller);
+
+  diy::mpi::communicator comm = GetDiyCommunicator(mpiCont);
 
   double localBounds[6];
   ComputeDataBounds(input, localBounds);
@@ -482,7 +545,9 @@ int vtkPResampleToImage::RequestData(
   }
 
   vtkNew<vtkImageData> mypiece;
-  this->PerformResampling(input, samplingBounds, true, localBounds, mypiece);
+  this->PerformResampling(input, samplingBounds, true, localBounds,
+                          mypiece.GetPointer());
+
 
   // Ensure every node has fields' metadata information
   std::vector<FieldMetaData> pointFieldMetaData;
@@ -492,12 +557,12 @@ int vtkPResampleToImage::RequestData(
   // into non-overlapping rectangular regions
   diy::RoundRobinAssigner assigner(comm.size(), comm.size());
 
-  int* updateExtent = this->GetUpdateExtent();
-  diy::DiscreteBounds domain(3);
+  int *updateExtent = this->GetUpdateExtent();
+  diy::DiscreteBounds domain;
   for (int i = 0; i < 3; ++i)
   {
-    domain.min[i] = updateExtent[2 * i];
-    domain.max[i] = updateExtent[2 * i + 1];
+    domain.min[i] = updateExtent[2*i];
+    domain.max[i] = updateExtent[2*i + 1];
   }
 
   diy::Master master(comm, 1, -1, &CreateBlock, &DestroyBlock);
@@ -506,12 +571,13 @@ int vtkPResampleToImage::RequestData(
   decomposer.decompose(comm.rank(), assigner, master);
 
   // Set up master's block
-  Block* block = master.block<Block>(0);
+  Block *block = master.block<Block>(0);
   std::copy(updateExtent, updateExtent + 6, block->Extent);
   block->Points.DataSize = ComputeSerializedFieldDataSize(pointFieldMetaData);
-  GetPointsFromImage(mypiece, this->GetMaskArrayName(), &block->Points);
+  GetPointsFromImage(mypiece.GetPointer(), this->GetMaskArrayName(),
+                     &block->Points);
 
-  diy::RegularSwapPartners partners(decomposer, 2, false);
+  diy::RegularSwapPartners  partners(decomposer, 2, false);
   diy::reduce(master, assigner, partners, &Redistribute);
 
   output->SetOrigin(mypiece->GetOrigin());
@@ -523,14 +589,12 @@ int vtkPResampleToImage::RequestData(
   return 1;
 }
 
-//----------------------------------------------------------------------------
-namespace diy
-{
 
-namespace mpi
-{
-namespace detail
-{
+//----------------------------------------------------------------------------
+namespace diy {
+
+namespace mpi {
+namespace detail {
 
 template <class T, std::size_t Len>
 struct mpi_datatype<Array<T, Len> >
@@ -546,7 +610,8 @@ struct mpi_datatype<Array<T, Len> >
 }
 } // namespace mpi::detail
 
-template <>
+
+template<>
 struct Serialization<FieldMetaData>
 {
   static void save(BinaryBuffer& bb, const FieldMetaData& f)

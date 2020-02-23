@@ -23,7 +23,7 @@
  * <a href="http://mathworld.wolfram.com/Pseudosphere.html">Math World</a>.
  * @par Thanks:
  * Tim Meehan
- */
+*/
 
 #ifndef vtkParametricPseudosphere_h
 #define vtkParametricPseudosphere_h
@@ -34,8 +34,9 @@
 class VTKCOMMONCOMPUTATIONALGEOMETRY_EXPORT vtkParametricPseudosphere : public vtkParametricFunction
 {
 public:
-  vtkTypeMacro(vtkParametricPseudosphere, vtkParametricFunction);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+
+  vtkTypeMacro(vtkParametricPseudosphere,vtkParametricFunction);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Construct a pseudosphere surface with the following parameters:
@@ -43,15 +44,15 @@ public:
    * (MinimumV, MaximumV) = (-pi, pi),
    * JoinU = 0, JoinV = 1,
    * TwistU = 0, TwistV = 0;
-   * ClockwiseOrdering = 0,
+   * ClockwiseOrdering = 1,
    * DerivativesAvailable = 1,
    */
-  static vtkParametricPseudosphere* New();
+  static vtkParametricPseudosphere *New();
 
   /**
    * Return the parametric dimension of the class.
    */
-  int GetDimension() override { return 2; }
+  int GetDimension() VTK_OVERRIDE {return 2;}
 
   /**
    * Pseudosphere surface.
@@ -61,21 +62,21 @@ public:
    * \f$Pt = (x, y, z), D_u\vec{f} = (dx/du, dy/du, dz/du), D_v\vec{f} = (dx/dv, dy/dv, dz/dv)\f$ .
    * Then the normal is \f$N = D_u\vec{f} \times D_v\vec{f}\f$ .
    */
-  void Evaluate(double uvw[3], double Pt[3], double Duvw[9]) override;
+  void Evaluate(double uvw[3], double Pt[3], double Duvw[9]) VTK_OVERRIDE;
 
   /**
    * Calculate a user defined scalar using one or all of uvw, Pt, Duvw.
    * This method simply returns 0.
    */
-  double EvaluateScalar(double uvw[3], double Pt[3], double Duvw[9]) override;
+  double EvaluateScalar(double uvw[3], double Pt[3], double Duvw[9]) VTK_OVERRIDE;
 
 protected:
   vtkParametricPseudosphere();
-  ~vtkParametricPseudosphere() override;
+  ~vtkParametricPseudosphere() VTK_OVERRIDE;
 
 private:
-  vtkParametricPseudosphere(const vtkParametricPseudosphere&) = delete;
-  void operator=(const vtkParametricPseudosphere&) = delete;
+  vtkParametricPseudosphere(const vtkParametricPseudosphere&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkParametricPseudosphere&) VTK_DELETE_FUNCTION;
 };
 
 #endif

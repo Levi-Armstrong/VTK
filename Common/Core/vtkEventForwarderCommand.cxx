@@ -19,14 +19,17 @@
 //----------------------------------------------------------------
 vtkEventForwarderCommand::vtkEventForwarderCommand()
 {
-  this->Target = nullptr;
+  this->Target = NULL;
 }
 
 //----------------------------------------------------------------
-void vtkEventForwarderCommand::Execute(vtkObject*, unsigned long event, void* call_data)
+void vtkEventForwarderCommand::Execute(vtkObject *,
+                                       unsigned long event,
+                                       void *call_data)
 {
   if (this->Target)
   {
     this->Target->InvokeEvent(event, call_data);
   }
 }
+

@@ -14,25 +14,32 @@
 =========================================================================*/
 #include "vtkMultiBlockDataSet.h"
 
+#include "vtkDataSet.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
 #include "vtkObjectFactory.h"
 
 vtkStandardNewMacro(vtkMultiBlockDataSet);
 //----------------------------------------------------------------------------
-vtkMultiBlockDataSet::vtkMultiBlockDataSet() = default;
+vtkMultiBlockDataSet::vtkMultiBlockDataSet()
+{
+}
 
 //----------------------------------------------------------------------------
-vtkMultiBlockDataSet::~vtkMultiBlockDataSet() = default;
+vtkMultiBlockDataSet::~vtkMultiBlockDataSet()
+{
+}
 
 //----------------------------------------------------------------------------
 vtkMultiBlockDataSet* vtkMultiBlockDataSet::GetData(vtkInformation* info)
 {
-  return info ? vtkMultiBlockDataSet::SafeDownCast(info->Get(DATA_OBJECT())) : nullptr;
+  return
+    info? vtkMultiBlockDataSet::SafeDownCast(info->Get(DATA_OBJECT())) : 0;
 }
 
 //----------------------------------------------------------------------------
-vtkMultiBlockDataSet* vtkMultiBlockDataSet::GetData(vtkInformationVector* v, int i)
+vtkMultiBlockDataSet* vtkMultiBlockDataSet::GetData(vtkInformationVector* v,
+                                                    int i)
 {
   return vtkMultiBlockDataSet::GetData(v->GetInformationObject(i));
 }
@@ -42,6 +49,7 @@ void vtkMultiBlockDataSet::SetNumberOfBlocks(unsigned int numBlocks)
 {
   this->Superclass::SetNumberOfChildren(numBlocks);
 }
+
 
 //----------------------------------------------------------------------------
 unsigned int vtkMultiBlockDataSet::GetNumberOfBlocks()
@@ -58,8 +66,8 @@ vtkDataObject* vtkMultiBlockDataSet::GetBlock(unsigned int blockno)
 //----------------------------------------------------------------------------
 void vtkMultiBlockDataSet::SetBlock(unsigned int blockno, vtkDataObject* block)
 {
-  if (block && block->IsA("vtkCompositeDataSet") && !block->IsA("vtkMultiBlockDataSet") &&
-    !block->IsA("vtkMultiPieceDataSet") && !block->IsA("vtkPartitionedDataSet"))
+  if (block && block->IsA("vtkCompositeDataSet") &&
+    !block->IsA("vtkMultiBlockDataSet") && !block->IsA("vtkMultiPieceDataSet"))
   {
     vtkErrorMacro(<< block->GetClassName() << " cannot be added as a block.");
     return;
@@ -78,3 +86,4 @@ void vtkMultiBlockDataSet::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 }
+

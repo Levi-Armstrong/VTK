@@ -17,25 +17,26 @@
 #include "vtkTesting.h"
 #include "vtkTestingInteractor.h"
 
-#include <cstdio> // For remove
 #include <string>
+#include <cstdio> // For remove
 
-int PNGCompare(int argc, char* argv[])
+int PNGCompare(int argc, char *argv[])
 {
   // Grab the test image
   std::string testImageFileName;
   for (int i = 0; i < argc; ++i)
   {
-    if (i < argc - 1 && strcmp(argv[i], "--test-file") == 0)
+    if ( strcmp(argv[i],"--test-file") == 0 && i < argc-1)
     {
-      testImageFileName = std::string(argv[i + 1]);
+      testImageFileName = std::string(argv[i+1]);
       break;
     }
   }
 
   if (testImageFileName.empty())
   {
-    cout << "Error: No reference image specified (use --test-file <png file>)" << endl;
+    cout << "Error: No reference image specified (use --test-file <png file>)"
+         << endl;
     return EXIT_FAILURE;
   }
 
@@ -55,7 +56,8 @@ int PNGCompare(int argc, char* argv[])
   testing->AddArgument(vtkTestingInteractor::ValidBaseline.c_str());
 
   // Regression test the image
-  int result = testing->RegressionTest(testImageFileName, vtkTestingInteractor::ErrorThreshold);
+  int result = testing->RegressionTest(testImageFileName,
+                                       vtkTestingInteractor::ErrorThreshold);
 
   vtkTestingInteractor::TestReturnStatus = result;
 

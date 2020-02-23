@@ -44,7 +44,7 @@
  * @sa
  * vtkPointCloudFilter vtkStatisticalOutlierRemoval vtkExtractPoints
  * vtkThresholdPoints vtkImplicitFunction
- */
+*/
 
 #ifndef vtkRadiusOutlierRemoval_h
 #define vtkRadiusOutlierRemoval_h
@@ -55,6 +55,7 @@
 class vtkAbstractPointLocator;
 class vtkPointSet;
 
+
 class VTKFILTERSPOINTS_EXPORT vtkRadiusOutlierRemoval : public vtkPointCloudFilter
 {
 public:
@@ -63,17 +64,17 @@ public:
    * Standard methods for instantiating, obtaining type information, and
    * printing information.
    */
-  static vtkRadiusOutlierRemoval* New();
-  vtkTypeMacro(vtkRadiusOutlierRemoval, vtkPointCloudFilter);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkRadiusOutlierRemoval *New();
+  vtkTypeMacro(vtkRadiusOutlierRemoval,vtkPointCloudFilter);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   //@{
   /**
    * Specify the local search radius.
    */
-  vtkSetClampMacro(Radius, double, 0.0, VTK_FLOAT_MAX);
-  vtkGetMacro(Radius, double);
+  vtkSetClampMacro(Radius,double,0.0,VTK_FLOAT_MAX);
+  vtkGetMacro(Radius,double);
   //@}
 
   //@{
@@ -81,8 +82,8 @@ public:
    * Specify the number of neighbors that a point must have, within
    * the specified radius, for the point to not be considered isolated.
    */
-  vtkSetClampMacro(NumberOfNeighbors, int, 1, VTK_INT_MAX);
-  vtkGetMacro(NumberOfNeighbors, int);
+  vtkSetClampMacro(NumberOfNeighbors,int,1,VTK_INT_MAX);
+  vtkGetMacro(NumberOfNeighbors,int);
   //@}
 
   //@{
@@ -91,25 +92,26 @@ public:
    * used. The locator performs efficient searches to locate near a
    * specified interpolation position.
    */
-  void SetLocator(vtkAbstractPointLocator* locator);
-  vtkGetObjectMacro(Locator, vtkAbstractPointLocator);
+  void SetLocator(vtkAbstractPointLocator *locator);
+  vtkGetObjectMacro(Locator,vtkAbstractPointLocator);
   //@}
 
 protected:
   vtkRadiusOutlierRemoval();
-  ~vtkRadiusOutlierRemoval() override;
+  ~vtkRadiusOutlierRemoval();
 
   double Radius;
   int NumberOfNeighbors;
-  vtkAbstractPointLocator* Locator;
+  vtkAbstractPointLocator *Locator;
 
   // All derived classes must implement this method. Note that a side effect of
   // the class is to populate the PointMap. Zero is returned if there is a failure.
-  int FilterPoints(vtkPointSet* input) override;
+  virtual int FilterPoints(vtkPointSet *input);
 
 private:
-  vtkRadiusOutlierRemoval(const vtkRadiusOutlierRemoval&) = delete;
-  void operator=(const vtkRadiusOutlierRemoval&) = delete;
+  vtkRadiusOutlierRemoval(const vtkRadiusOutlierRemoval&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkRadiusOutlierRemoval&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif

@@ -13,11 +13,11 @@
 
 =========================================================================*/
 #include "vtkImagePointDataIterator.h"
-#include "vtkAlgorithm.h"
-#include "vtkDataArray.h"
 #include "vtkImageData.h"
 #include "vtkImageStencilData.h"
+#include "vtkDataArray.h"
 #include "vtkPointData.h"
+#include "vtkAlgorithm.h"
 
 #include <algorithm>
 
@@ -25,12 +25,16 @@
 class vtkImageStencilIteratorFriendship
 {
 public:
-  static int* GetExtentListLengths(vtkImageStencilData* stencil)
+
+  static int *GetExtentListLengths(vtkImageStencilData *stencil)
   {
     return stencil->ExtentListLengths;
   }
 
-  static int** GetExtentLists(vtkImageStencilData* stencil) { return stencil->ExtentLists; }
+  static int **GetExtentLists(vtkImageStencilData *stencil)
+  {
+    return stencil->ExtentLists;
+  }
 };
 
 //----------------------------------------------------------------------------
@@ -64,21 +68,22 @@ vtkImagePointDataIterator::vtkImagePointDataIterator()
   this->SpanSliceEndIncrement = 0;
   this->SpanSliceIncrement = 0;
   this->SpanIndex = 0;
-  this->SpanCountPointer = nullptr;
-  this->SpanListPointer = nullptr;
+  this->SpanCountPointer = 0;
+  this->SpanListPointer = 0;
 
-  this->Algorithm = nullptr;
+  this->Algorithm = 0;
   this->Count = 0;
   this->Target = 0;
   this->ThreadId = 0;
 }
 
 //----------------------------------------------------------------------------
-void vtkImagePointDataIterator::Initialize(vtkImageData* image, const int extent[6],
-  vtkImageStencilData* stencil, vtkAlgorithm* algorithm, int threadId)
+void vtkImagePointDataIterator::Initialize(
+  vtkImageData *image, const int extent[6], vtkImageStencilData *stencil,
+  vtkAlgorithm *algorithm, int threadId)
 {
-  const int* dataExtent = image->GetExtent();
-  if (extent == nullptr)
+  const int *dataExtent = image->GetExtent();
+  if (extent == 0)
   {
     extent = dataExtent;
   }
@@ -88,8 +93,8 @@ void vtkImagePointDataIterator::Initialize(vtkImageData* image, const int extent
   for (int i = 0; i < 6; i += 2)
   {
     this->Extent[i] = std::max(extent[i], dataExtent[i]);
-    this->Extent[i + 1] = std::min(extent[i + 1], dataExtent[i + 1]);
-    if (this->Extent[i] > this->Extent[i + 1])
+    this->Extent[i+1] = std::min(extent[i+1], dataExtent[i+1]);
+    if (this->Extent[i] > this->Extent[i+1])
     {
       emptyExtent = true;
     }
@@ -97,7 +102,8 @@ void vtkImagePointDataIterator::Initialize(vtkImageData* image, const int extent
 
   // Compute the increments for marching through the data.
   this->RowIncrement = dataExtent[1] - dataExtent[0] + 1;
-  this->SliceIncrement = this->RowIncrement * (dataExtent[3] - dataExtent[2] + 1);
+  this->SliceIncrement =
+    this->RowIncrement*(dataExtent[3] - dataExtent[2] + 1);
 
   int rowSpan, sliceSpan, volumeSpan;
 
@@ -108,13 +114,13 @@ void vtkImagePointDataIterator::Initialize(vtkImageData* image, const int extent
     sliceSpan = this->Extent[3] - this->Extent[2] + 1;
     volumeSpan = this->Extent[5] - this->Extent[4] + 1;
     this->Id = (this->Extent[0] - dataExtent[0]) +
-      (this->Extent[2] - dataExtent[2]) * this->RowIncrement +
-      (this->Extent[4] - dataExtent[4]) * this->SliceIncrement;
+      (this->Extent[2] - dataExtent[2])*this->RowIncrement +
+      (this->Extent[4] - dataExtent[4])*this->SliceIncrement;
 
-    // Compute the end increments (continuous increments).
+    // Compute the end increments (continous increments).
     this->RowEndIncrement = this->RowIncrement - rowSpan;
-    this->SliceEndIncrement =
-      this->RowEndIncrement + this->SliceIncrement - this->RowIncrement * sliceSpan;
+    this->SliceEndIncrement = this->RowEndIncrement +
+      this->SliceIncrement - this->RowIncrement*sliceSpan;
   }
   else
   {
@@ -128,15 +134,17 @@ void vtkImagePointDataIterator::Initialize(vtkImageData* image, const int extent
     for (int i = 0; i < 6; i += 2)
     {
       this->Extent[i] = dataExtent[i];
-      this->Extent[i + 1] = dataExtent[i] - 1;
+      this->Extent[i+1] = dataExtent[i]-1;
     }
   }
 
   // Get the end pointers for row, slice, and volume.
   this->SpanEnd = this->Id + rowSpan;
   this->RowEnd = this->Id + rowSpan;
-  this->SliceEnd = this->Id + (this->RowIncrement * sliceSpan - this->RowEndIncrement);
-  this->End = this->Id + (this->SliceIncrement * volumeSpan - this->SliceEndIncrement);
+  this->SliceEnd = this->Id +
+    (this->RowIncrement*sliceSpan - this->RowEndIncrement);
+  this->End = this->Id +
+    (this->SliceIncrement*volumeSpan - this->SliceEndIncrement);
 
   // For keeping track of the current x,y,z index.
   this->Index[0] = this->Extent[0];
@@ -161,7 +169,8 @@ void vtkImagePointDataIterator::Initialize(vtkImageData* image, const int extent
     this->SpanSliceIncrement = 0;
     this->SpanSliceEndIncrement = 0;
 
-    if (stencilExtent[3] >= stencilExtent[2] && stencilExtent[5] >= stencilExtent[4])
+    if (stencilExtent[3] >= stencilExtent[2] &&
+        stencilExtent[5] >= stencilExtent[4])
     {
       this->SpanSliceIncrement = stencilExtent[3] - stencilExtent[2] + 1;
       int botOffset = this->Extent[2] - stencilExtent[2];
@@ -212,7 +221,7 @@ void vtkImagePointDataIterator::Initialize(vtkImageData* image, const int extent
     else
     {
       // starting partway into the stencil, so add an offset
-      startOffset += zOffset * this->SpanSliceIncrement;
+      startOffset += zOffset*this->SpanSliceIncrement;
     }
 
     if (stencilExtent[5] <= this->Extent[5])
@@ -220,13 +229,16 @@ void vtkImagePointDataIterator::Initialize(vtkImageData* image, const int extent
       this->Extent[5] = stencilExtent[5];
     }
 
-    if (this->Extent[2] <= this->Extent[3] && this->Extent[4] <= this->Extent[5])
+    if (this->Extent[2] <= this->Extent[3] &&
+        this->Extent[4] <= this->Extent[5])
     {
       this->SpanCountPointer =
-        vtkImageStencilIteratorFriendship::GetExtentListLengths(stencil) + startOffset;
+        vtkImageStencilIteratorFriendship::GetExtentListLengths(stencil) +
+        startOffset;
 
       this->SpanListPointer =
-        vtkImageStencilIteratorFriendship::GetExtentLists(stencil) + startOffset;
+        vtkImageStencilIteratorFriendship::GetExtentLists(stencil) +
+        startOffset;
 
       // Get the current position within the span list for the current row
       if (yOffset >= 0 && zOffset >= 0)
@@ -238,8 +250,8 @@ void vtkImagePointDataIterator::Initialize(vtkImageData* image, const int extent
     }
     else
     {
-      this->SpanCountPointer = nullptr;
-      this->SpanListPointer = nullptr;
+      this->SpanCountPointer = 0;
+      this->SpanListPointer = 0;
       this->InStencil = false;
     }
   }
@@ -250,8 +262,8 @@ void vtkImagePointDataIterator::Initialize(vtkImageData* image, const int extent
     this->SpanSliceEndIncrement = 0;
     this->SpanSliceIncrement = 0;
     this->SpanIndex = 0;
-    this->SpanCountPointer = nullptr;
-    this->SpanListPointer = nullptr;
+    this->SpanCountPointer = 0;
+    this->SpanListPointer = 0;
   }
 
   if (algorithm)
@@ -259,13 +271,13 @@ void vtkImagePointDataIterator::Initialize(vtkImageData* image, const int extent
     this->Algorithm = algorithm;
     vtkIdType maxCount = sliceSpan;
     maxCount *= volumeSpan;
-    this->Target = maxCount / 50 + 1;
-    this->Count = this->Target * 50 - (maxCount / this->Target) * this->Target + 1;
+    this->Target = maxCount/50 + 1;
+    this->Count = this->Target*50 - (maxCount/this->Target)*this->Target + 1;
     this->ThreadId = threadId;
   }
   else
   {
-    this->Algorithm = nullptr;
+    this->Algorithm = 0;
     this->Target = 0;
     this->Count = 0;
     this->ThreadId = 0;
@@ -277,7 +289,7 @@ void vtkImagePointDataIterator::SetSpanState(int idX)
 {
   // Find the span that includes idX
   bool inStencil = false;
-  int* spans = *this->SpanListPointer;
+  int *spans = *this->SpanListPointer;
   int n = *this->SpanCountPointer;
   int i;
   for (i = 0; i < n; i++)
@@ -301,7 +313,8 @@ void vtkImagePointDataIterator::SetSpanState(int idX)
   }
 
   // Compute the pointers for idX and endIdX
-  vtkIdType rowStart = this->RowEnd - (this->RowIncrement - this->RowEndIncrement);
+  vtkIdType rowStart =
+    this->RowEnd - (this->RowIncrement - this->RowEndIncrement);
 
   this->Id = rowStart + (idX - this->Extent[0]);
   this->SpanEnd = rowStart + (endIdX - this->Extent[0]);
@@ -327,7 +340,8 @@ void vtkImagePointDataIterator::NextSpan()
       // Move to the next slice
       this->Id = this->SliceEnd + this->SliceEndIncrement;
       this->SliceEnd += this->SliceIncrement;
-      this->RowEnd = this->Id + (this->RowIncrement - this->RowEndIncrement);
+      this->RowEnd = this->Id +
+        (this->RowIncrement - this->RowEndIncrement);
       this->SpanEnd = this->RowEnd;
       this->Index[1] = this->StartY;
       this->Index[2]++;
@@ -345,8 +359,10 @@ void vtkImagePointDataIterator::NextSpan()
 
     if (this->HasStencil)
     {
-      if ((this->Index[1] >= this->Extent[2]) && (this->Index[1] <= this->Extent[3]) &&
-        (this->Index[2] >= this->Extent[4]) && (this->Index[2] <= this->Extent[5]))
+      if ((this->Index[1] >= this->Extent[2]) &&
+          (this->Index[1] <= this->Extent[3]) &&
+          (this->Index[2] >= this->Extent[4]) &&
+          (this->Index[2] <= this->Extent[5]))
       {
         this->SpanCountPointer += spanIncr;
         this->SpanListPointer += spanIncr;
@@ -391,8 +407,9 @@ void vtkImagePointDataIterator::NextSpan()
     }
 
     // Compute the end of the span
-    this->SpanEnd =
-      this->RowEnd - (this->RowIncrement - this->RowEndIncrement) + (endIdX - this->Extent[0]);
+    this->SpanEnd = this->RowEnd -
+      (this->RowIncrement - this->RowEndIncrement) +
+      (endIdX - this->Extent[0]);
 
     // Flip the state
     this->InStencil = !this->InStencil;
@@ -400,20 +417,20 @@ void vtkImagePointDataIterator::NextSpan()
 }
 
 //----------------------------------------------------------------------------
-void* vtkImagePointDataIterator::GetVoidPointer(
-  vtkDataArray* array, vtkIdType i, int* pixelIncrement)
+void *vtkImagePointDataIterator::GetVoidPointer(
+  vtkDataArray *array, vtkIdType i, int *pixelIncrement)
 {
   int n = array->GetNumberOfComponents();
   if (pixelIncrement)
   {
     *pixelIncrement = n;
   }
-  return array->GetVoidPointer(i * n);
+  return array->GetVoidPointer(i*n);
 }
 
 //----------------------------------------------------------------------------
-void* vtkImagePointDataIterator::GetVoidPointer(
-  vtkImageData* image, vtkIdType i, int* pixelIncrement)
+void *vtkImagePointDataIterator::GetVoidPointer(
+  vtkImageData *image, vtkIdType i, int *pixelIncrement)
 {
   return vtkImagePointDataIterator::GetVoidPointer(
     image->GetPointData()->GetScalars(), i, pixelIncrement);
@@ -433,7 +450,7 @@ void vtkImagePointDataIterator::ReportProgress()
     }
     else if (this->ThreadId == 0)
     {
-      this->Algorithm->UpdateProgress(0.02 * (this->Count / this->Target));
+      this->Algorithm->UpdateProgress(0.02*(this->Count/this->Target));
     }
   }
   this->Count++;

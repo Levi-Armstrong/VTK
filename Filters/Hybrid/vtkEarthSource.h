@@ -20,8 +20,8 @@
  * of the major continents of the earth. The OnRatio determines
  * how much of the data is actually used. The radius defines the radius
  * of the sphere at which the continents are placed. Obtains data from
- * an embedded array of coordinates.
- */
+ * an imbedded array of coordinates.
+*/
 
 #ifndef vtkEarthSource_h
 #define vtkEarthSource_h
@@ -32,16 +32,16 @@
 class VTKFILTERSHYBRID_EXPORT vtkEarthSource : public vtkPolyDataAlgorithm
 {
 public:
-  static vtkEarthSource* New();
-  vtkTypeMacro(vtkEarthSource, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkEarthSource *New();
+  vtkTypeMacro(vtkEarthSource,vtkPolyDataAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
    * Set radius of earth.
    */
-  vtkSetClampMacro(Radius, double, 0.0, VTK_FLOAT_MAX);
-  vtkGetMacro(Radius, double);
+  vtkSetClampMacro(Radius,double,0.0,VTK_FLOAT_MAX);
+  vtkGetMacro(Radius,double);
   //@}
 
   //@{
@@ -50,8 +50,8 @@ public:
    * will have. The maximum ratio is sixteen. (The smaller OnRatio, the more
    * detail there is.)
    */
-  vtkSetClampMacro(OnRatio, int, 1, 16);
-  vtkGetMacro(OnRatio, int);
+  vtkSetClampMacro(OnRatio,int,1,16);
+  vtkGetMacro(OnRatio,int);
   //@}
 
   //@{
@@ -61,24 +61,33 @@ public:
    * filled polygons. Recommend you use OutlienOn (i.e., disable filled polygons)
    * for now.
    */
-  vtkSetMacro(Outline, vtkTypeBool);
-  vtkGetMacro(Outline, vtkTypeBool);
-  vtkBooleanMacro(Outline, vtkTypeBool);
+  vtkSetMacro(Outline,int);
+  vtkGetMacro(Outline,int);
+  vtkBooleanMacro(Outline,int);
   //@}
 
 protected:
   vtkEarthSource();
-  ~vtkEarthSource() override {}
+  ~vtkEarthSource() {}
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 
   double Radius;
   int OnRatio;
-  vtkTypeBool Outline;
-
+  int Outline;
 private:
-  vtkEarthSource(const vtkEarthSource&) = delete;
-  void operator=(const vtkEarthSource&) = delete;
+  vtkEarthSource(const vtkEarthSource&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkEarthSource&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+
+
+
+
+
+
+
+
+

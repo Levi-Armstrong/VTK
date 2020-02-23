@@ -22,59 +22,60 @@
  * @sa
  * vtkDataSetGhostGenerator, vtkPUniformGridGhostDataGenerator,
  * vtkPStructuredGridGhostDataGenerator, vtkPRectilinearGridGhostDataGenerator
- */
+*/
 
 #ifndef vtkPDataSetGhostGenerator_h
 #define vtkPDataSetGhostGenerator_h
 
-#include "vtkDataSetGhostGenerator.h"
 #include "vtkFiltersParallelGeometryModule.h" // For export macro
+#include "vtkDataSetGhostGenerator.h"
 
 class vtkMultiProcessController;
 class vtkMultiBlockDataSet;
 
-class VTKFILTERSPARALLELGEOMETRY_EXPORT vtkPDataSetGhostGenerator : public vtkDataSetGhostGenerator
+class VTKFILTERSPARALLELGEOMETRY_EXPORT vtkPDataSetGhostGenerator :
+  public vtkDataSetGhostGenerator
 {
 public:
-  vtkTypeMacro(vtkPDataSetGhostGenerator, vtkDataSetGhostGenerator);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+   vtkTypeMacro(vtkPDataSetGhostGenerator,vtkDataSetGhostGenerator);
+   void PrintSelf(ostream& os, vtkIndent indent);
 
-  //@{
-  /**
-   * Get/Set macro for the multi-process controller. If a controller is not
-   * supplied, then, the global controller is assumed.
-   */
-  vtkSetMacro(Controller, vtkMultiProcessController*);
-  vtkGetMacro(Controller, vtkMultiProcessController*);
-  //@}
+   //@{
+   /**
+    * Get/Set macro for the multi-process controller. If a controller is not
+    * supplied, then, the global controller is assumed.
+    */
+   vtkSetMacro(Controller, vtkMultiProcessController*);
+   vtkGetMacro(Controller, vtkMultiProcessController*);
+   //@}
 
-  /**
-   * Initializes
-   */
-  void Initialize();
+   /**
+    * Initializes
+    */
+   void Initialize();
 
-  /**
-   * Barrier synchronization
-   */
-  void Barrier();
+   /**
+    * Barrier synchronization
+    */
+   void Barrier();
 
 protected:
   vtkPDataSetGhostGenerator();
-  ~vtkPDataSetGhostGenerator() override;
+  virtual ~vtkPDataSetGhostGenerator();
 
   /**
    * Creates ghost layers. Implemented by concrete implementations.
    */
   virtual void GenerateGhostLayers(
-    vtkMultiBlockDataSet* in, vtkMultiBlockDataSet* out) override = 0;
+      vtkMultiBlockDataSet *in, vtkMultiBlockDataSet *out)=0;
 
   int Rank;
   bool Initialized;
-  vtkMultiProcessController* Controller;
+  vtkMultiProcessController *Controller;
 
 private:
-  vtkPDataSetGhostGenerator(const vtkPDataSetGhostGenerator&) = delete;
-  void operator=(const vtkPDataSetGhostGenerator&) = delete;
+  vtkPDataSetGhostGenerator(const vtkPDataSetGhostGenerator&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPDataSetGhostGenerator&) VTK_DELETE_FUNCTION;
 };
 
 #endif /* vtkPDataSetGhostGenerator_h */

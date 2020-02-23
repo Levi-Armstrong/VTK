@@ -24,14 +24,16 @@
 #include "vtkGraphMapper.h"
 #include "vtkMutableDirectedGraph.h"
 #include "vtkRegressionTestImage.h"
+#include "vtkRenderer.h"
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
-#include "vtkRenderer.h"
+#include "vtkSmartPointer.h"
 #include "vtkSmartPointer.h"
 
-#define VTK_CREATE(type, name) vtkSmartPointer<type> name = vtkSmartPointer<type>::New()
+#define VTK_CREATE(type, name) \
+  vtkSmartPointer<type> name = vtkSmartPointer<type>::New()
 
-int TestAssignCoordinates(int argc, char* argv[])
+int TestAssignCoordinates(int argc, char *argv[])
 {
   cerr << "Generating graph ..." << endl;
   VTK_CREATE(vtkMutableDirectedGraph, g);

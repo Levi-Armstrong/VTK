@@ -24,7 +24,7 @@
  *
  * @sa
  * vtkXMLPImageDataReader
- */
+*/
 
 #ifndef vtkXMLImageDataReader_h
 #define vtkXMLImageDataReader_h
@@ -37,46 +37,47 @@ class vtkImageData;
 class VTKIOXML_EXPORT vtkXMLImageDataReader : public vtkXMLStructuredDataReader
 {
 public:
-  vtkTypeMacro(vtkXMLImageDataReader, vtkXMLStructuredDataReader);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
-  static vtkXMLImageDataReader* New();
+  vtkTypeMacro(vtkXMLImageDataReader,vtkXMLStructuredDataReader);
+  void PrintSelf(ostream& os, vtkIndent indent);
+  static vtkXMLImageDataReader *New();
 
   //@{
   /**
    * Get the reader's output.
    */
-  vtkImageData* GetOutput();
-  vtkImageData* GetOutput(int idx);
+  vtkImageData *GetOutput();
+  vtkImageData *GetOutput(int idx);
   //@}
 
   /**
    * For the specified port, copy the information this reader sets up in
    * SetupOutputInformation to outInfo
    */
-  void CopyOutputInformation(vtkInformation* outInfo, int port) override;
+  virtual void CopyOutputInformation(vtkInformation *outInfo, int port);
 
 protected:
   vtkXMLImageDataReader();
-  ~vtkXMLImageDataReader() override;
+  ~vtkXMLImageDataReader();
 
   double Origin[3];
   double Spacing[3];
-  double Direction[9];
   int PieceExtent[6];
 
-  const char* GetDataSetName() override;
-  void SetOutputExtent(int* extent) override;
+  const char* GetDataSetName();
+  void SetOutputExtent(int* extent);
 
-  int ReadPrimaryElement(vtkXMLDataElement* ePrimary) override;
+  int ReadPrimaryElement(vtkXMLDataElement* ePrimary);
 
   // Setup the output's information.
-  void SetupOutputInformation(vtkInformation* outInfo) override;
+  void SetupOutputInformation(vtkInformation *outInfo);
 
-  int FillOutputPortInformation(int, vtkInformation*) override;
+  virtual int FillOutputPortInformation(int, vtkInformation*);
+
+
 
 private:
-  vtkXMLImageDataReader(const vtkXMLImageDataReader&) = delete;
-  void operator=(const vtkXMLImageDataReader&) = delete;
+  vtkXMLImageDataReader(const vtkXMLImageDataReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkXMLImageDataReader&) VTK_DELETE_FUNCTION;
 };
 
 #endif

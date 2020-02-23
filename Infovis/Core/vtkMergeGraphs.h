@@ -42,13 +42,13 @@
  * @warning
  * This filter is not "domain-aware". Pedigree ids are assumed to be globally
  * unique, regardless of their domain.
- */
+*/
 
 #ifndef vtkMergeGraphs_h
 #define vtkMergeGraphs_h
 
-#include "vtkGraphAlgorithm.h"
 #include "vtkInfovisCoreModule.h" // For export macro
+#include "vtkGraphAlgorithm.h"
 
 class vtkBitArray;
 class vtkMutableGraphHelper;
@@ -59,8 +59,8 @@ class VTKINFOVISCORE_EXPORT vtkMergeGraphs : public vtkGraphAlgorithm
 {
 public:
   static vtkMergeGraphs* New();
-  vtkTypeMacro(vtkMergeGraphs, vtkGraphAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkMergeGraphs,vtkGraphAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * This is the core functionality of the algorithm. Adds edges
@@ -99,19 +99,23 @@ public:
 
 protected:
   vtkMergeGraphs();
-  ~vtkMergeGraphs() override;
+  ~vtkMergeGraphs();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int RequestData(
+    vtkInformation*,
+    vtkInformationVector**,
+    vtkInformationVector*);
 
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  virtual int FillInputPortInformation(int port, vtkInformation *info);
 
   bool UseEdgeWindow;
   char* EdgeWindowArrayName;
   double EdgeWindow;
 
 private:
-  vtkMergeGraphs(const vtkMergeGraphs&) = delete;
-  void operator=(const vtkMergeGraphs&) = delete;
+  vtkMergeGraphs(const vtkMergeGraphs&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkMergeGraphs&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

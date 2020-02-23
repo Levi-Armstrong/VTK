@@ -57,7 +57,7 @@
  * @par Acknowledgments:
  * The work was supported by grants, contracts, and gifts from the
  * National Science Foundation, the Department of Energy and IBM.
- */
+*/
 
 #ifndef vtkUnstructuredGridQuadricDecimation_h
 #define vtkUnstructuredGridQuadricDecimation_h
@@ -65,13 +65,12 @@
 #include "vtkFiltersCoreModule.h" // For export macro
 #include "vtkUnstructuredGridAlgorithm.h"
 
-class VTKFILTERSCORE_EXPORT vtkUnstructuredGridQuadricDecimation
-  : public vtkUnstructuredGridAlgorithm
+class VTKFILTERSCORE_EXPORT vtkUnstructuredGridQuadricDecimation : public vtkUnstructuredGridAlgorithm
 {
 public:
   vtkTypeMacro(vtkUnstructuredGridQuadricDecimation, vtkUnstructuredGridAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
-  static vtkUnstructuredGridQuadricDecimation* New();
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  static vtkUnstructuredGridQuadricDecimation *New();
 
   // The following 3 parameters will control the process of simplification in
   // the priority:
@@ -91,7 +90,7 @@ public:
 
   //@{
   /**
-   * Set/Get the desired number of tetrahedra to be outputted
+   * Set/Get the desired number of tetrahedra to be outputed
    */
   vtkSetMacro(NumberOfTetsOutput, int);
   vtkGetMacro(NumberOfTetsOutput, int);
@@ -157,18 +156,18 @@ public:
 
   enum
   {
-    NO_ERROR = 0,
-    NON_TETRAHEDRA = 1,
-    NO_SCALARS = 2,
-    NO_CELLS = 3
+    NO_ERROR=0,
+    NON_TETRAHEDRA=1,
+    NO_SCALARS=2,
+    NO_CELLS=3
   };
 
 protected:
   vtkUnstructuredGridQuadricDecimation();
-  ~vtkUnstructuredGridQuadricDecimation() override;
+  ~vtkUnstructuredGridQuadricDecimation() VTK_OVERRIDE;
 
   void ReportError(int err);
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *) VTK_OVERRIDE;
 
   int NumberOfTetsOutput;
   int NumberOfEdgesToDecimate;
@@ -178,11 +177,12 @@ protected:
   double TargetReduction;
   double AutoAddCandidatesThreshold;
   double BoundaryWeight;
-  char* ScalarsName;
+  char *ScalarsName;
 
 private:
-  vtkUnstructuredGridQuadricDecimation(const vtkUnstructuredGridQuadricDecimation&) = delete;
-  void operator=(const vtkUnstructuredGridQuadricDecimation&) = delete;
+  vtkUnstructuredGridQuadricDecimation(const vtkUnstructuredGridQuadricDecimation&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkUnstructuredGridQuadricDecimation&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif

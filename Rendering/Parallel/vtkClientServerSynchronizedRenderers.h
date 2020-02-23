@@ -17,7 +17,7 @@
  *
  * vtkClientServerSynchronizedRenderers is a vtkSynchronizedRenderers subclass
  * designed to be used in 2 processes, client-server mode.
- */
+*/
 
 #ifndef vtkClientServerSynchronizedRenderers_h
 #define vtkClientServerSynchronizedRenderers_h
@@ -25,24 +25,25 @@
 #include "vtkRenderingParallelModule.h" // For export macro
 #include "vtkSynchronizedRenderers.h"
 
-class VTKRENDERINGPARALLEL_EXPORT vtkClientServerSynchronizedRenderers
-  : public vtkSynchronizedRenderers
+class VTKRENDERINGPARALLEL_EXPORT vtkClientServerSynchronizedRenderers :
+  public vtkSynchronizedRenderers
 {
 public:
   static vtkClientServerSynchronizedRenderers* New();
   vtkTypeMacro(vtkClientServerSynchronizedRenderers, vtkSynchronizedRenderers);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
 protected:
   vtkClientServerSynchronizedRenderers();
-  ~vtkClientServerSynchronizedRenderers() override;
+  ~vtkClientServerSynchronizedRenderers();
 
-  void MasterEndRender() override;
-  void SlaveEndRender() override;
+  virtual void MasterEndRender();
+  virtual void SlaveEndRender();
 
 private:
-  vtkClientServerSynchronizedRenderers(const vtkClientServerSynchronizedRenderers&) = delete;
-  void operator=(const vtkClientServerSynchronizedRenderers&) = delete;
+  vtkClientServerSynchronizedRenderers(const vtkClientServerSynchronizedRenderers&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkClientServerSynchronizedRenderers&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif

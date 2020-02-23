@@ -14,16 +14,18 @@
 =========================================================================*/
 #include "vtkRect.h"
 
-namespace
-{
+namespace {
 
 //----------------------------------------------------------------------------
-template <class T>
-int TestAddPoint(vtkRect<T>& expandRect, T x, T y, const vtkRect<T>& expected)
+template<class T>
+int TestAddPoint(vtkRect<T> & expandRect,
+                 T x, T y,
+                 const vtkRect<T> & expected)
 {
   int returnValue = 0;
 
-  std::cout << "Adding point (" << x << ", " << y << ") to rect " << expandRect << " ... ";
+  std::cout << "Adding point (" << x << ", " << y << ") to rect "
+            << expandRect << " ... ";
 
   expandRect.AddPoint(x, y);
 
@@ -53,7 +55,8 @@ int TestAddPoint(vtkRect<T>& expandRect, T x, T y, const vtkRect<T>& expected)
 
   if (returnValue != EXIT_SUCCESS)
   {
-    std::cout << "failed. Expected " << expected << ", got " << expandRect << "." << std::endl;
+    std::cout << "failed. Expected " << expected << ", got "
+              << expandRect << "." << std::endl;
   }
   else
   {
@@ -63,9 +66,12 @@ int TestAddPoint(vtkRect<T>& expandRect, T x, T y, const vtkRect<T>& expected)
   return returnValue;
 }
 
+
 //----------------------------------------------------------------------------
-template <class T>
-int TestAddRect(vtkRect<T>& expandRect, vtkRect<T>& addRect, const vtkRect<T>& expected)
+template<class T>
+int TestAddRect(vtkRect<T> & expandRect,
+                vtkRect<T> & addRect,
+                const vtkRect<T> & expected)
 {
   int returnValue = 0;
 
@@ -99,7 +105,8 @@ int TestAddRect(vtkRect<T>& expandRect, vtkRect<T>& addRect, const vtkRect<T>& e
 
   if (returnValue != EXIT_SUCCESS)
   {
-    std::cout << "failed. Expected " << expected << ", got " << expandRect << "." << std::endl;
+    std::cout << "failed. Expected " << expected << ", got "
+              << expandRect << "." << std::endl;
   }
   else
   {
@@ -112,7 +119,7 @@ int TestAddRect(vtkRect<T>& expandRect, vtkRect<T>& addRect, const vtkRect<T>& e
 } // end anonymous namespace
 
 //----------------------------------------------------------------------------
-int TestRect(int, char*[])
+int TestRect(int, char *[])
 {
   int result = 0;
 
@@ -193,30 +200,30 @@ int TestRect(int, char*[])
   vtkRectd addRect;
 
   // These five cases should exercise all the branches in vtkRect::AddRect().
-  expandRect = vtkRectd(0, 0, 4, 4);
-  addRect = vtkRectd(-1, 3, 2, 2);
+  expandRect   = vtkRectd(0, 0, 4, 4);
+  addRect      = vtkRectd(-1, 3, 2, 2);
   expectedRect = vtkRectd(-1, 0, 5, 5);
   result += TestAddRect(expandRect, addRect, expectedRect);
 
-  expandRect = vtkRectd(0, 0, 4, 4);
-  addRect = vtkRectd(3, 0, 2, 4);
+  expandRect   = vtkRectd(0, 0, 4, 4);
+  addRect      = vtkRectd(3, 0, 2, 4);
   expectedRect = vtkRectd(0, 0, 5, 4);
   result += TestAddRect(expandRect, addRect, expectedRect);
 
-  expandRect = vtkRectd(0, 0, 4, 4);
-  addRect = vtkRectd(0, -1, 4, 2);
+  expandRect   = vtkRectd(0, 0, 4, 4);
+  addRect      = vtkRectd(0, -1, 4, 2);
   expectedRect = vtkRectd(0, -1, 4, 5);
   result += TestAddRect(expandRect, addRect, expectedRect);
 
-  expandRect = vtkRectd(0, 0, 4, 4);
-  addRect = vtkRectd(1, 1, 2, 2);
+  expandRect   = vtkRectd(0, 0, 4, 4);
+  addRect      = vtkRectd(1, 1, 2, 2);
   expectedRect = vtkRectd(0, 0, 4, 4);
   result += TestAddRect(expandRect, addRect, expectedRect);
 
   // Test IntersectsWith() -----------------------------------------------------
   vtkRecti recti(2, 3, 2, 1);
   vtkRecti doesntIntersect(-1, -2, 3, 4);
-  if (recti.IntersectsWith(doesntIntersect) || recti.Intersect(doesntIntersect))
+  if (recti.IntersectsWith(doesntIntersect))
   {
     std::cout << "Should not have intersected\n";
     std::cout << "recti:\n";
@@ -234,28 +241,6 @@ int TestRect(int, char*[])
     std::cout << recti << "\n";
     std::cout << "intersect:\n";
     std::cout << intersects << "\n";
-    return EXIT_FAILURE;
-  }
-
-  vtkRecti rectiIntersected = recti;
-  if (!rectiIntersected.Intersect(intersects))
-  {
-    std::cout << "Should have intersected\n";
-    std::cout << "recti:\n";
-    std::cout << recti << "\n";
-    std::cout << "intersect:\n";
-    std::cout << intersects << "\n";
-    return EXIT_FAILURE;
-  }
-
-  if (rectiIntersected != vtkRecti(3, 3, 1, 1))
-  {
-    std::cout << "Incorrect intersection\n";
-    std::cout << "recti:       " << recti << "\n";
-    std::cout << "intersect:   " << intersects << "\n";
-    std::cout << "intersected: " << rectiIntersected << "\n";
-    std::cout << "expected:    " << vtkRecti(3, 3, 1, 1) << "\n";
-    return EXIT_FAILURE;
   }
 
   if (result != EXIT_SUCCESS)

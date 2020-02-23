@@ -40,21 +40,21 @@
  * useful when generating tensors, since it allows us to "map"
  * from an array with arbitrary contents to an index that can
  * be used as tensor coordinates.
- */
+*/
 
 #ifndef vtkGenerateIndexArray_h
 #define vtkGenerateIndexArray_h
 
-#include "vtkDataObjectAlgorithm.h"
 #include "vtkInfovisCoreModule.h" // For export macro
+#include "vtkDataObjectAlgorithm.h"
 
 class VTKINFOVISCORE_EXPORT vtkGenerateIndexArray : public vtkDataObjectAlgorithm
 {
 public:
-  static vtkGenerateIndexArray* New();
+  static vtkGenerateIndexArray *New();
 
   vtkTypeMacro(vtkGenerateIndexArray, vtkDataObjectAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -100,15 +100,22 @@ public:
 
 protected:
   vtkGenerateIndexArray();
-  ~vtkGenerateIndexArray() override;
+  ~vtkGenerateIndexArray();
 
-  vtkTypeBool ProcessRequest(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  virtual int ProcessRequest(
+    vtkInformation* request,
+    vtkInformationVector** inputVector,
+    vtkInformationVector* outputVector);
 
-  int RequestDataObject(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  virtual int RequestDataObject(
+    vtkInformation* request,
+    vtkInformationVector** inputVector,
+    vtkInformationVector* outputVector);
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(
+    vtkInformation*,
+    vtkInformationVector**,
+    vtkInformationVector*);
 
   char* ArrayName;
   int FieldType;
@@ -116,8 +123,9 @@ protected:
   int PedigreeID;
 
 private:
-  vtkGenerateIndexArray(const vtkGenerateIndexArray&) = delete;
-  void operator=(const vtkGenerateIndexArray&) = delete;
+  vtkGenerateIndexArray(const vtkGenerateIndexArray&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkGenerateIndexArray&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

@@ -14,8 +14,8 @@
 =========================================================================*/
 
 #include "PyVTKExtras.h"
-#include "PyVTKReference.h"
 #include "vtkPythonCompatibility.h"
+#include "PyVTKMutableObject.h"
 
 // Silence warning like
 // "dereferencing type-punned pointer will break strict-aliasing rules"
@@ -28,9 +28,9 @@
 // Helper function for the buffer_shared() check: get the pointer and
 // size (in bytes) of the buffer of the provided object.  A return
 // value of zero indicates that an exception was raised.
-static void* buffer_pointer_and_size(PyObject* o, Py_ssize_t* size)
+static void *buffer_pointer_and_size(PyObject *o, Py_ssize_t *size)
 {
-  void* ptr = nullptr;
+  void *ptr = NULL;
 
 #if PY_VERSION_HEX >= 0x02060000
   // New buffer protocol
@@ -44,7 +44,7 @@ static void* buffer_pointer_and_size(PyObject* o, Py_ssize_t* size)
       PyErr_Clear();
       if (PyObject_GetBuffer(o, &view, PyBUF_STRIDES) == -1)
       {
-        return nullptr;
+        return NULL;
       }
     }
 
@@ -62,10 +62,10 @@ static void* buffer_pointer_and_size(PyObject* o, Py_ssize_t* size)
 
 #ifndef VTK_PY3K
   // Old buffer protocol
-  PyBufferProcs* b = Py_TYPE(o)->tp_as_buffer;
+  PyBufferProcs *b = Py_TYPE(o)->tp_as_buffer;
   if (b && b->bf_getreadbuffer && b->bf_getsegcount)
   {
-    if (b->bf_getsegcount(o, nullptr) == 1)
+    if (b->bf_getsegcount(o, NULL) == 1)
     {
       *size = b->bf_getreadbuffer(o, 0, &ptr);
       if (ptr)
@@ -76,23 +76,24 @@ static void* buffer_pointer_and_size(PyObject* o, Py_ssize_t* size)
     else
     {
       PyErr_SetString(PyExc_TypeError, "buffer must be single-segment");
-      return nullptr;
+      return NULL;
     }
   }
 #endif
 
-  PyErr_SetString(PyExc_TypeError, "object does not have a readable buffer");
+  PyErr_SetString(PyExc_TypeError,
+    "object does not have a readable buffer");
 
-  return nullptr;
+  return NULL;
 }
 
 //--------------------------------------------------------------------
-static PyObject* PyVTKExtras_buffer_shared(PyObject*, PyObject* args)
+static PyObject *PyVTKExtras_buffer_shared(PyObject *, PyObject *args)
 {
-  PyObject* ob[2] = { nullptr, nullptr };
+  PyObject *ob[2] = { NULL, NULL };
   if (PyArg_UnpackTuple(args, "buffer_shared", 2, 2, &ob[0], &ob[1]))
   {
-    void* ptr[2] = { nullptr, nullptr };
+    void *ptr[2] = { NULL, NULL };
     Py_ssize_t size[2] = { 0, 0 };
     for (int i = 0; i < 2; i++)
     {
@@ -115,37 +116,36 @@ static PyObject* PyVTKExtras_buffer_shared(PyObject*, PyObject* args)
       }
     }
   }
-  return nullptr;
+  return NULL;
 }
 
 //--------------------------------------------------------------------
 static PyMethodDef PyVTKExtras_Methods[] = {
-  { "buffer_shared", PyVTKExtras_buffer_shared, METH_VARARGS,
-    "Check if two objects share the same buffer, meaning that they"
-    " point to the same block of memory.  An TypeError exception will"
-    " be raised if either of the objects does not provide a buffer." },
-  { nullptr, nullptr, 0, nullptr }
+  {"buffer_shared", PyVTKExtras_buffer_shared, METH_VARARGS,
+   "Check if two objects share the same buffer, meaning that they"
+   " point to the same block of memory.  An TypeError exception will"
+   " be raised if either of the objects does not provide a buffer."},
+  {NULL, NULL, 0, NULL}
 };
 
 //--------------------------------------------------------------------
 // Exported method called by vtkCommonCorePythonInit
-void PyVTKAddFile_PyVTKExtras(PyObject* dict)
+void PyVTKAddFile_PyVTKExtras(PyObject *dict)
 {
-  // It is necessary to call PyType_Ready() on all subclasses
-  PyType_Ready(&PyVTKNumberReference_Type);
-  PyType_Ready(&PyVTKStringReference_Type);
-  PyType_Ready(&PyVTKTupleReference_Type);
+  PyObject *o = (PyObject *)&PyVTKMutableObject_Type;
 
-  // Add the "mutable" object (used for C++ pass-by-reference)
-  PyObject* o = (PyObject*)&PyVTKReference_Type;
-  PyDict_SetItemString(dict, "reference", o); // new name (as of VTK 8.1)
-  PyDict_SetItemString(dict, "mutable", o);   // old name
+  if (o && PyDict_SetItemString(dict, "mutable", o) != 0)
+  {
+    Py_DECREF(o);
+  }
 
-  for (PyMethodDef* meth = PyVTKExtras_Methods; meth->ml_name != nullptr; meth++)
+  for (PyMethodDef *meth = PyVTKExtras_Methods;
+       meth->ml_name != NULL;
+       meth++)
   {
     // Third argument would be the module object, but all we have is
-    // the module's dict, and it's safe to set it to nullptr.
-    o = PyCFunction_NewEx(meth, nullptr, nullptr);
+    // the module's dict, and it's safe to set it to NULL.
+    o = PyCFunction_NewEx(meth, NULL, NULL);
     if (o && PyDict_SetItemString(dict, meth->ml_name, o) != 0)
     {
       Py_DECREF(o);

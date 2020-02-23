@@ -16,28 +16,27 @@
 #ifndef vtkPythonCommand_h
 #define vtkPythonCommand_h
 
-#include "vtkCommand.h"
-#include "vtkPython.h"
 #include "vtkWrappingPythonCoreModule.h" // For export macro
+#include "vtkPython.h"
+#include "vtkCommand.h"
 
 // To allow Python to use the vtkCommand features
 class VTKWRAPPINGPYTHONCORE_EXPORT vtkPythonCommand : public vtkCommand
 {
 public:
-  vtkTypeMacro(vtkPythonCommand, vtkCommand);
+  vtkTypeMacro(vtkPythonCommand,vtkCommand);
 
-  static vtkPythonCommand* New() { return new vtkPythonCommand; }
+  static vtkPythonCommand *New() { return new vtkPythonCommand; };
 
-  void SetObject(PyObject* o);
-  void SetThreadState(PyThreadState* ts);
-  void Execute(vtkObject* ptr, unsigned long eventtype, void* callData) override;
+  void SetObject(PyObject *o);
+  void SetThreadState(PyThreadState *ts);
+  void Execute(vtkObject *ptr, unsigned long eventtype, void *callData);
 
-  PyObject* obj;
-  PyThreadState* ThreadState;
-
+  PyObject *obj;
+  PyThreadState *ThreadState;
 protected:
   vtkPythonCommand();
-  ~vtkPythonCommand() override;
+  ~vtkPythonCommand();
 };
 
 #endif

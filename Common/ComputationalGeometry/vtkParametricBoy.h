@@ -28,7 +28,7 @@
  * Andrew Maclean andrew.amaclean@gmail.com for creating and contributing the
  * class.
  *
- */
+*/
 
 #ifndef vtkParametricBoy_h
 #define vtkParametricBoy_h
@@ -39,8 +39,9 @@
 class VTKCOMMONCOMPUTATIONALGEOMETRY_EXPORT vtkParametricBoy : public vtkParametricFunction
 {
 public:
-  vtkTypeMacro(vtkParametricBoy, vtkParametricFunction);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+
+  vtkTypeMacro(vtkParametricBoy,vtkParametricFunction);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Construct Boy's surface with the following parameters:
@@ -48,24 +49,24 @@ public:
    * MinimumV = 0, MaximumV = Pi,
    * JoinU = 1, JoinV = 1,
    * TwistU = 1, TwistV = 1;
-   * ClockwiseOrdering = 0,
+   * ClockwiseOrdering = 1,
    * DerivativesAvailable = 1,
    * ZScale = 0.125.
    */
-  static vtkParametricBoy* New();
+  static vtkParametricBoy *New();
 
   /**
    * Return the parametric dimension of the class.
    */
-  int GetDimension() override { return 2; }
+  int GetDimension() VTK_OVERRIDE {return 2;}
 
   //@{
   /**
    * Set/Get the scale factor for the z-coordinate.
    * Default is 1/8, giving a nice shape.
    */
-  vtkSetMacro(ZScale, double);
-  vtkGetMacro(ZScale, double);
+  vtkSetMacro(ZScale,double);
+  vtkGetMacro(ZScale,double);
   //@}
 
   /**
@@ -76,12 +77,12 @@ public:
    * \f$Pt = (x, y, z), Du = (dx/du, dy/du, dz/du), Dv = (dx/dv, dy/dv, dz/dv)\f$ .
    * Then the normal is \f$N = Du X Dv\f$ .
    */
-  void Evaluate(double uvw[3], double Pt[3], double Duvw[9]) override;
+  void Evaluate(double uvw[3], double Pt[3], double Duvw[9]) VTK_OVERRIDE;
 
   /**
    * Calculate a user defined scalar using one or all of uvw, Pt, Duvw.
 
-   * uvw are the parameters with Pt being the cartesian point,
+   * uvw are the parameters with Pt being the the cartesian point,
    * Duvw are the derivatives of this point with respect to u, v and w.
    * Pt, Duvw are obtained from Evaluate().
 
@@ -91,18 +92,18 @@ public:
    * If the user does not need to calculate a scalar, then the
    * instantiated function should return zero.
    */
-  double EvaluateScalar(double uvw[3], double Pt[3], double Duvw[9]) override;
+  double EvaluateScalar(double uvw[3], double Pt[3], double Duvw[9]) VTK_OVERRIDE;
 
 protected:
   vtkParametricBoy();
-  ~vtkParametricBoy() override;
+  ~vtkParametricBoy() VTK_OVERRIDE;
 
   // Variables
   double ZScale;
 
 private:
-  vtkParametricBoy(const vtkParametricBoy&) = delete;
-  void operator=(const vtkParametricBoy&) = delete;
+  vtkParametricBoy(const vtkParametricBoy&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkParametricBoy&) VTK_DELETE_FUNCTION;
 };
 
 #endif

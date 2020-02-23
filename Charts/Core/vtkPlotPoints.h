@@ -25,17 +25,17 @@
  *
  * @sa
  * vtkPlotLine
- */
+*/
 
 #ifndef vtkPlotPoints_h
 #define vtkPlotPoints_h
 
 #include "vtkChartsCoreModule.h" // For export macro
-#include "vtkNew.h"              // For ivars
 #include "vtkPlot.h"
+#include "vtkScalarsToColors.h" // For VTK_COLOR_MODE_DEFAULT and _MAP_SCALARS
+#include "vtkStdString.h"       // For color array name
+#include "vtkNew.h"             // For ivars
 #include "vtkRenderingCoreEnums.h" // For marker enum
-#include "vtkScalarsToColors.h"    // For VTK_COLOR_MODE_DEFAULT and _MAP_SCALARS
-#include "vtkStdString.h"          // For color array name
 
 class vtkCharArray;
 class vtkContext2D;
@@ -51,24 +51,24 @@ class VTKCHARTSCORE_EXPORT vtkPlotPoints : public vtkPlot
 {
 public:
   vtkTypeMacro(vtkPlotPoints, vtkPlot);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  virtual void PrintSelf(ostream &os, vtkIndent indent);
 
   /**
    * Creates a 2D Chart object.
    */
-  static vtkPlotPoints* New();
+  static vtkPlotPoints *New();
 
   /**
    * Perform any updates to the item that may be necessary before rendering.
    * The scene should take care of calling this on all items before their
    * Paint function is invoked.
    */
-  void Update() override;
+  virtual void Update();
 
   /**
    * Paint event for the XY plot, called whenever the chart needs to be drawn
    */
-  bool Paint(vtkContext2D* painter) override;
+  virtual bool Paint(vtkContext2D *painter);
 
   /**
    * Paint legend event for the XY plot, called whenever the legend needs the
@@ -76,24 +76,25 @@ public:
    * corner of the rect (elements 0 and 1) and with width x height (elements 2
    * and 3). The plot can choose how to fill the space supplied.
    */
-  bool PaintLegend(vtkContext2D* painter, const vtkRectf& rect, int legendIndex) override;
+  virtual bool PaintLegend(vtkContext2D *painter, const vtkRectf& rect,
+                           int legendIndex);
 
   /**
    * Get the bounds for this plot as (Xmin, Xmax, Ymin, Ymax).
    */
-  void GetBounds(double bounds[4]) override;
+  virtual void GetBounds(double bounds[4]);
 
   /**
    * Get the non-log-scaled bounds on chart inputs for this plot as (Xmin, Xmax, Ymin, Ymax).
    */
-  void GetUnscaledInputBounds(double bounds[4]) override;
+  virtual void GetUnscaledInputBounds(double bounds[4]);
 
   //@{
   /**
    * Specify a lookup table for the mapper to use.
    */
-  void SetLookupTable(vtkScalarsToColors* lut);
-  vtkScalarsToColors* GetLookupTable();
+  void SetLookupTable(vtkScalarsToColors *lut);
+  vtkScalarsToColors *GetLookupTable();
   //@}
 
   /**
@@ -106,9 +107,9 @@ public:
   /**
    * Turn on/off flag to control whether scalar data is used to color objects.
    */
-  vtkSetMacro(ScalarVisibility, vtkTypeBool);
-  vtkGetMacro(ScalarVisibility, vtkTypeBool);
-  vtkBooleanMacro(ScalarVisibility, vtkTypeBool);
+  vtkSetMacro(ScalarVisibility,int);
+  vtkGetMacro(ScalarVisibility,int);
+  vtkBooleanMacro(ScalarVisibility,int);
   //@}
 
   //@{
@@ -131,33 +132,24 @@ public:
    * Returns the index of the data series with which the point is associated or
    * -1.
    */
-  vtkIdType GetNearestPoint(const vtkVector2f& point, const vtkVector2f& tolerance,
-    vtkVector2f* location,
-#ifndef VTK_LEGACY_REMOVE
-    vtkIdType* segmentId) override;
-#else
-    vtkIdType* segmentId = nullptr) override;
-#endif // VTK_LEGACY_REMOVE
-
-#ifndef VTK_LEGACY_REMOVE
-  using vtkPlot::GetNearestPoint;
-#endif // VTK_LEGACY_REMOVE
+  virtual vtkIdType GetNearestPoint(const vtkVector2f& point,
+                                    const vtkVector2f& tolerance,
+                                    vtkVector2f* location);
 
   /**
    * Select all points in the specified rectangle.
    */
-  bool SelectPoints(const vtkVector2f& min, const vtkVector2f& max) override;
+  virtual bool SelectPoints(const vtkVector2f& min, const vtkVector2f& max);
 
   /**
    * Select all points in the specified polygon.
    */
-  bool SelectPointsInPolygon(const vtkContextPolygon& polygon) override;
+  virtual bool SelectPointsInPolygon(const vtkContextPolygon &polygon);
 
   /**
    * Enum containing various marker styles that can be used in a plot.
    */
-  enum
-  {
+  enum {
     NONE = VTK_MARKER_NONE,
     CROSS = VTK_MARKER_CROSS,
     PLUS = VTK_MARKER_PLUS,
@@ -188,23 +180,23 @@ public:
   /**
    * Get/set the valid point mask array name.
    */
-  vtkGetMacro(ValidPointMaskName, vtkStdString);
-  vtkSetMacro(ValidPointMaskName, vtkStdString);
+  vtkGetMacro(ValidPointMaskName, vtkStdString)
+  vtkSetMacro(ValidPointMaskName, vtkStdString)
   //@}
 
 protected:
   vtkPlotPoints();
-  ~vtkPlotPoints() override;
+  ~vtkPlotPoints();
 
   /**
    * Populate the data arrays ready to operate on input data.
    */
-  bool GetDataArrays(vtkTable* table, vtkDataArray* array[2]);
+  bool GetDataArrays(vtkTable *table, vtkDataArray *array[2]);
 
   /**
    * Update the table cache.
    */
-  bool UpdateTableCache(vtkTable* table);
+  bool UpdateTableCache(vtkTable *table);
 
   /**
    * Calculate the unscaled input bounds from the input arrays.
@@ -238,7 +230,7 @@ protected:
   /**
    * Store a well packed set of XY coordinates for this data series.
    */
-  vtkPoints2D* Points;
+  vtkPoints2D *Points;
   vtkNew<vtkFloatArray> SelectedPoints;
   //@}
 
@@ -257,7 +249,7 @@ protected:
   vtkIdTypeArray* BadPoints;
 
   /**
-   * Array which marks valid points in the array. If nullptr (the default), all
+   * Array which marks valid points in the array. If NULL (the default), all
    * points in the input array are considered valid.
    */
   vtkCharArray* ValidPointMask;
@@ -286,9 +278,9 @@ protected:
   /**
    * Lookup Table for coloring points by scalar value
    */
-  vtkScalarsToColors* LookupTable;
-  vtkUnsignedCharArray* Colors;
-  vtkTypeBool ScalarVisibility;
+  vtkScalarsToColors *LookupTable;
+  vtkUnsignedCharArray *Colors;
+  int ScalarVisibility;
   vtkStdString ColorArrayName;
   //@}
 
@@ -298,8 +290,12 @@ protected:
   double UnscaledInputBounds[4];
 
 private:
-  vtkPlotPoints(const vtkPlotPoints&) = delete;
-  void operator=(const vtkPlotPoints&) = delete;
+  vtkPlotPoints(const vtkPlotPoints &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPlotPoints &) VTK_DELETE_FUNCTION;
+
+// #define  VTK_COLOR_MODE_DEFAULT   0
+// #define  VTK_COLOR_MODE_MAP_SCALARS   1
+
 };
 
-#endif // vtkPlotPoints_h
+#endif //vtkPlotPoints_h

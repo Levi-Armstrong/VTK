@@ -14,9 +14,9 @@
 =========================================================================*/
 #include "vtkImageProperty.h"
 
-#include "vtkColorTransferFunction.h"
-#include "vtkLookupTable.h"
 #include "vtkObjectFactory.h"
+#include "vtkLookupTable.h"
+#include "vtkColorTransferFunction.h"
 
 vtkStandardNewMacro(vtkImageProperty);
 
@@ -29,7 +29,7 @@ vtkImageProperty::vtkImageProperty()
   this->ColorWindow = 255.0;
   this->ColorLevel = 127.5;
 
-  this->LookupTable = nullptr;
+  this->LookupTable = NULL;
   this->UseLookupTableScalarRange = 0;
 
   this->Opacity = 1.0;
@@ -56,14 +56,14 @@ vtkImageProperty::vtkImageProperty()
 // Destruct a vtkImageProperty
 vtkImageProperty::~vtkImageProperty()
 {
-  if (this->LookupTable != nullptr)
+  if (this->LookupTable != NULL)
   {
     this->LookupTable->Delete();
   }
 }
 
 //----------------------------------------------------------------------------
-const char* vtkImageProperty::GetInterpolationTypeAsString()
+const char *vtkImageProperty::GetInterpolationTypeAsString()
 {
   switch (this->InterpolationType)
   {
@@ -78,20 +78,20 @@ const char* vtkImageProperty::GetInterpolationTypeAsString()
 }
 
 //----------------------------------------------------------------------------
-void vtkImageProperty::DeepCopy(vtkImageProperty* p)
+void vtkImageProperty::DeepCopy(vtkImageProperty *p)
 {
-  if (p != nullptr)
+  if (p != NULL)
   {
     this->SetColorWindow(p->GetColorWindow());
     this->SetColorLevel(p->GetColorLevel());
-    vtkScalarsToColors* lut = p->GetLookupTable();
-    if (lut == nullptr)
+    vtkScalarsToColors *lut = p->GetLookupTable();
+    if (lut == NULL)
     {
-      this->SetLookupTable(nullptr);
+      this->SetLookupTable(NULL);
     }
     else
     {
-      vtkScalarsToColors* nlut = lut->NewInstance();
+      vtkScalarsToColors *nlut = lut->NewInstance();
       nlut->DeepCopy(lut);
       this->SetLookupTable(nlut);
       nlut->Delete();
@@ -125,24 +125,26 @@ vtkMTimeType vtkImageProperty::GetMTime()
 //----------------------------------------------------------------------------
 void vtkImageProperty::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 
   os << indent << "ColorWindow: " << this->ColorWindow << "\n";
   os << indent << "ColorLevel: " << this->ColorLevel << "\n";
-  os << indent
-     << "UseLookupTableScalarRange: " << (this->UseLookupTableScalarRange ? "On\n" : "Off\n");
+  os << indent << "UseLookupTableScalarRange: "
+     << (this->UseLookupTableScalarRange ? "On\n" : "Off\n");
   os << indent << "LookupTable: " << this->LookupTable << "\n";
   os << indent << "Opacity: " << this->Opacity << "\n";
   os << indent << "Ambient: " << this->Ambient << "\n";
   os << indent << "Diffuse: " << this->Diffuse << "\n";
-  os << indent << "InterpolationType: " << this->GetInterpolationTypeAsString() << "\n";
+  os << indent << "InterpolationType: "
+     << this->GetInterpolationTypeAsString() << "\n";
   os << indent << "LayerNumber: " << this->LayerNumber << "\n";
-  os << indent << "Checkerboard: " << (this->Checkerboard ? "On\n" : "Off\n");
-  os << indent << "CheckerboardSpacing: " << this->CheckerboardSpacing[0] << " "
-     << this->CheckerboardSpacing[1] << "\n";
-  os << indent << "CheckerboardOffset: " << this->CheckerboardOffset[0] << " "
-     << this->CheckerboardOffset[1] << "\n";
+  os << indent << "Checkerboard: "
+     << (this->Checkerboard ? "On\n" : "Off\n");
+  os << indent << "CheckerboardSpacing: " << this->CheckerboardSpacing[0]
+     << " " << this->CheckerboardSpacing[1] << "\n";
+  os << indent << "CheckerboardOffset: " << this->CheckerboardOffset[0]
+     << " " << this->CheckerboardOffset[1] << "\n";
   os << indent << "Backing: " << (this->Backing ? "On\n" : "Off\n");
-  os << indent << "BackingColor: " << this->BackingColor[0] << " " << this->BackingColor[1] << " "
-     << this->BackingColor[2] << "\n";
+  os << indent << "BackingColor: " << this->BackingColor[0] << " "
+     << this->BackingColor[1] << " " << this->BackingColor[2] << "\n";
 }

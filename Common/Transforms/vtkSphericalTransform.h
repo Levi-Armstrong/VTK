@@ -27,7 +27,7 @@
  * the z-axis)
  * @sa
  * vtkCylindricalTransform vtkGeneralTransform
- */
+*/
 
 #ifndef vtkSphericalTransform_h
 #define vtkSphericalTransform_h
@@ -38,46 +38,49 @@
 class VTKCOMMONTRANSFORMS_EXPORT vtkSphericalTransform : public vtkWarpTransform
 {
 public:
-  static vtkSphericalTransform* New();
-  vtkTypeMacro(vtkSphericalTransform, vtkWarpTransform);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkSphericalTransform *New();
+  vtkTypeMacro(vtkSphericalTransform,vtkWarpTransform);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Make another transform of the same type.
    */
-  vtkAbstractTransform* MakeTransform() override;
+  vtkAbstractTransform *MakeTransform() VTK_OVERRIDE;
 
 protected:
   vtkSphericalTransform();
-  ~vtkSphericalTransform() override;
+  ~vtkSphericalTransform() VTK_OVERRIDE;
 
   /**
    * Copy this transform from another of the same type.
    */
-  void InternalDeepCopy(vtkAbstractTransform* transform) override;
+  void InternalDeepCopy(vtkAbstractTransform *transform) VTK_OVERRIDE;
 
   //@{
   /**
    * Internal functions for calculating the transformation.
    */
-  void ForwardTransformPoint(const float in[3], float out[3]) override;
-  void ForwardTransformPoint(const double in[3], double out[3]) override;
+  void ForwardTransformPoint(const float in[3], float out[3]) VTK_OVERRIDE;
+  void ForwardTransformPoint(const double in[3], double out[3]) VTK_OVERRIDE;
   //@}
 
-  void ForwardTransformDerivative(const float in[3], float out[3], float derivative[3][3]) override;
-  void ForwardTransformDerivative(
-    const double in[3], double out[3], double derivative[3][3]) override;
+  void ForwardTransformDerivative(const float in[3], float out[3],
+                                  float derivative[3][3]) VTK_OVERRIDE;
+  void ForwardTransformDerivative(const double in[3], double out[3],
+                                  double derivative[3][3]) VTK_OVERRIDE;
 
-  void InverseTransformPoint(const float in[3], float out[3]) override;
-  void InverseTransformPoint(const double in[3], double out[3]) override;
+  void InverseTransformPoint(const float in[3], float out[3]) VTK_OVERRIDE;
+  void InverseTransformPoint(const double in[3], double out[3]) VTK_OVERRIDE;
 
-  void InverseTransformDerivative(const float in[3], float out[3], float derivative[3][3]) override;
-  void InverseTransformDerivative(
-    const double in[3], double out[3], double derivative[3][3]) override;
+  void InverseTransformDerivative(const float in[3], float out[3],
+                                  float derivative[3][3]) VTK_OVERRIDE;
+  void InverseTransformDerivative(const double in[3], double out[3],
+                                  double derivative[3][3]) VTK_OVERRIDE;
 
 private:
-  vtkSphericalTransform(const vtkSphericalTransform&) = delete;
-  void operator=(const vtkSphericalTransform&) = delete;
+  vtkSphericalTransform(const vtkSphericalTransform&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkSphericalTransform&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

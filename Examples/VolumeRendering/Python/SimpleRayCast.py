@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # This is a simple volume rendering example that uses a
-# vtkGPUVolumeRayCastMapper
+# vtkVolumeRayCast mapper
 
 import vtk
 from vtk.util.misc import vtkGetDataRoot
@@ -39,8 +39,9 @@ volumeProperty.ShadeOn()
 volumeProperty.SetInterpolationTypeToLinear()
 
 # The mapper / ray cast function know how to render the data
-volumeMapper = vtk.vtkGPUVolumeRayCastMapper()
-volumeMapper.SetBlendModeToComposite()
+compositeFunction = vtk.vtkVolumeRayCastCompositeFunction()
+volumeMapper = vtk.vtkVolumeRayCastMapper()
+volumeMapper.SetVolumeRayCastFunction(compositeFunction)
 volumeMapper.SetInputConnection(reader.GetOutputPort())
 
 # The volume holds the mapper and the property and

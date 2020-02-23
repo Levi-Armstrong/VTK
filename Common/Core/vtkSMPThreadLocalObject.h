@@ -1,15 +1,15 @@
-/*=========================================================================
+ /*=========================================================================
 
- Program:   Visualization Toolkit
- Module:    vtkSMPThreadLocalObject.h
+  Program:   Visualization Toolkit
+  Module:    vtkSMPThreadLocalObject.h
 
- Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
- All rights reserved.
- See Copyright.txt or http://www.kitware.com/Copyright.htm for details.
+  Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
+  All rights reserved.
+  See Copyright.txt or http://www.kitware.com/Copyright.htm for details.
 
-    This software is distributed WITHOUT ANY WARRANTY; without even
-    the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-    PURPOSE.  See the above copyright notice for more information.
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+     PURPOSE.  See the above copyright notice for more information.
 
 =========================================================================*/
 /**
@@ -69,7 +69,7 @@
  *
  * @sa
  * vtkSMPThreadLocal
- */
+*/
 
 #ifndef vtkSMPThreadLocalObject_h
 #define vtkSMPThreadLocalObject_h
@@ -91,15 +91,11 @@ public:
   /**
    * Default constructor.
    */
-  vtkSMPThreadLocalObject()
-    : Internal(nullptr)
-    , Exemplar(nullptr)
+  vtkSMPThreadLocalObject() : Internal(0), Exemplar(0)
   {
   }
 
-  vtkSMPThreadLocalObject(T* const& exemplar)
-    : Internal(0)
-    , Exemplar(exemplar)
+  vtkSMPThreadLocalObject(T* const& exemplar) : Internal(0), Exemplar(exemplar)
   {
   }
 
@@ -143,7 +139,10 @@ public:
   /**
    * Return the number of thread local objects that have been initialized
    */
-  size_t size() const { return this->Internal.size(); }
+  size_t size() const
+  {
+    return this->Internal.size();
+  }
 
   //@{
   /**
@@ -160,22 +159,34 @@ public:
       ++this->Iter;
       return *this;
     }
-    //@}
+  //@}
 
     iterator operator++(int)
     {
-      iterator copy = *this;
-      ++this->Iter;
-      return copy;
+        iterator copy = *this;
+        ++this->Iter;
+        return copy;
     }
 
-    bool operator==(const iterator& other) { return this->Iter == other.Iter; }
+    bool operator==(const iterator& other)
+    {
+      return this->Iter == other.Iter;
+    }
 
-    bool operator!=(const iterator& other) { return this->Iter != other.Iter; }
+    bool operator!=(const iterator& other)
+    {
+      return this->Iter != other.Iter;
+    }
 
-    T*& operator*() { return *this->Iter; }
+    T*& operator*()
+    {
+      return *this->Iter;
+    }
 
-    T** operator->() { return &*this->Iter; }
+    T** operator->()
+    {
+        return &*this->Iter;
+    }
 
   private:
     TLSIter Iter;
@@ -185,16 +196,16 @@ public:
 
   iterator begin()
   {
-    iterator iter;
-    iter.Iter = this->Internal.begin();
-    return iter;
+      iterator iter;
+      iter.Iter = this->Internal.begin();
+      return iter;
   };
 
   iterator end()
   {
-    iterator iter;
-    iter.Iter = this->Internal.end();
-    return iter;
+      iterator iter;
+      iter.Iter = this->Internal.end();
+      return iter;
   }
 
 private:

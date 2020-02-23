@@ -1,4 +1,4 @@
-vtk_add_test_cxx(vtkRenderingAnnotationCxxTests tests
+vtk_add_test_cxx(${vtk-module}CxxTests tests
   TestAxisActor.cxx
   TestAxisActor2D.cxx
   TestAxisActor3D.cxx
@@ -38,5 +38,5 @@ vtk_add_test_cxx(vtkRenderingAnnotationCxxTests tests
   TestXYPlotActor.cxx
   )
 
-vtk_test_cxx_executable(vtkRenderingAnnotationCxxTests tests
+vtk_test_cxx_executable(${vtk-module}CxxTests tests
   RENDERING_FACTORY)

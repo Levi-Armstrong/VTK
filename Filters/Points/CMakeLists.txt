@@ -1,42 +1,43 @@
-set(classes
-  vtkBoundedPointSource
-  vtkConnectedPointsFilter
-  vtkDensifyPointCloudFilter
-  vtkEllipsoidalGaussianKernel
-  vtkEuclideanClusterExtraction
-  vtkExtractEnclosedPoints
-  vtkExtractHierarchicalBins
-  vtkExtractPointCloudPiece
-  vtkExtractPoints
-  vtkExtractSurface
-  vtkFitImplicitFunction
-  vtkGaussianKernel
-  vtkGeneralizedKernel
-  vtkHierarchicalBinningFilter
-  vtkInterpolationKernel
-  vtkLinearKernel
-  vtkMaskPointsFilter
-  vtkPCACurvatureEstimation
-  vtkPCANormalEstimation
-  vtkPointCloudFilter
-  vtkPointDensityFilter
-  vtkPointInterpolator
-  vtkPointInterpolator2D
-  vtkPointOccupancyFilter
-  vtkProbabilisticVoronoiKernel
-  vtkRadiusOutlierRemoval
-  vtkSPHCubicKernel
-  vtkSPHInterpolator
-  vtkSPHKernel
-  vtkSPHQuarticKernel
-  vtkSPHQuinticKernel
-  vtkShepardKernel
-  vtkSignedDistance
-  vtkStatisticalOutlierRemoval
-  vtkUnsignedDistance
-  vtkVoronoiKernel
-  vtkVoxelGrid
-  vtkWendlandQuinticKernel)
+set(Module_SRCS
+  vtkBoundedPointSource.cxx
+  vtkEllipsoidalGaussianKernel.cxx
+  vtkEuclideanClusterExtraction.cxx
+  vtkExtractHierarchicalBins.cxx
+  vtkExtractPointCloudPiece.cxx
+  vtkExtractPoints.cxx
+  vtkExtractSurface.cxx
+  vtkFitImplicitFunction.cxx
+  vtkGaussianKernel.cxx
+  vtkGeneralizedKernel.cxx
+  vtkHierarchicalBinningFilter.cxx
+  vtkInterpolationKernel.cxx
+  vtkLinearKernel.cxx
+  vtkPCACurvatureEstimation.cxx
+  vtkPCANormalEstimation.cxx
+  vtkPointDensityFilter.cxx
+  vtkPointCloudFilter.cxx
+  vtkPointInterpolator.cxx
+  vtkPointInterpolator2D.cxx
+  vtkProbabilisticVoronoiKernel.cxx
+  vtkRadiusOutlierRemoval.cxx
+  vtkSPHInterpolator.cxx
+  vtkSPHCubicKernel.cxx
+  vtkSPHKernel.cxx
+  vtkSPHQuarticKernel.cxx
+  vtkSPHQuinticKernel.cxx
+  vtkShepardKernel.cxx
+  vtkSignedDistance.cxx
+  vtkStatisticalOutlierRemoval.cxx
+  vtkVoxelGrid.cxx
+  vtkVoronoiKernel.cxx
+  vtkWendlandQuinticKernel.cxx
+  )
 
-vtk_module_add_module(VTK::FiltersPoints
-  CLASSES ${classes})
+set_source_files_properties(
+  vtkGeneralizedKernel.cxx
+  vtkInterpolationKernel
+  vtkPointCloudFilter
+  ABSTRACT
+  )
+
+vtk_module_library(vtkFiltersPoints ${Module_SRCS})

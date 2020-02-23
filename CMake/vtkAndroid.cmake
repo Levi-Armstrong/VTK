@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.7 FATAL_ERROR)
 
 #
 # Instructions:
@@ -15,54 +15,41 @@ set(PREFIX_DIR ${CMAKE_BINARY_DIR}/CMakeExternals/Prefix)
 set(BUILD_DIR ${CMAKE_BINARY_DIR}/CMakeExternals/Build)
 set(INSTALL_DIR ${CMAKE_BINARY_DIR}/CMakeExternals/Install)
 
+set(OPENGL_ES_VERSION "2.0" CACHE STRING "OpenGL ES version (2.0 or 3.0)")
+set_property(CACHE OPENGL_ES_VERSION PROPERTY STRINGS 2.0 3.0)
+
 # Android options
-set (_ANDROID_NDK_DEFAULT "/opt/android-ndk")
+# Android options
 if (DEFINED ENV{ANDROID_NDK})
-  set (_ANDROID_NDK_DEFAULT "$ENV{ANDROID_NDK}")
-endif()
-set(ANDROID_NDK ${_ANDROID_NDK_DEFAULT} CACHE PATH
-  "Set to the absolute path of the Android NDK root directory.\
- A \$\{ANDROID_NDK\}/platforms directory must exist."
-  )
-if (NOT EXISTS "${ANDROID_NDK}/platforms")
-  message(FATAL_ERROR "Please set a valid ANDROID_NDK path")
+  set(ANDROID_NDK "$ENV{ANDROID_NDK}" CACHE PATH "Path to the Android NDK")
+else()
+  set(ANDROID_NDK "/opt/android-ndk" CACHE PATH "Path to the Android NDK")
 endif()
 set(ANDROID_NATIVE_API_LEVEL "21" CACHE STRING "Android Native API Level")
 set(ANDROID_ARCH_ABI "armeabi" CACHE STRING "Target Android architecture/abi")
 
 # find android
-set(example_flags)
-if (VTK_BUILD_EXAMPLES)
-  find_program(ANDROID_EXECUTABLE
-    NAMES android
-    DOC   "The android command-line tool")
-  if(NOT ANDROID_EXECUTABLE)
-    message(FATAL_ERROR "Can not find android command line tool: android")
-  endif()
-
-  #find ant
-  find_program(ANT_EXECUTABLE
-    NAMES ant
-    DOC   "The ant build tool")
-  if(NOT ANT_EXECUTABLE)
-    message(FATAL_ERROR "Can not find ant build tool: ant")
-  endif()
-
-  list(APPEND example_flags
-    -DANDROID_EXECUTABLE:FILE=${ANDROID_EXECUTABLE}
-    -DANT_EXECUTABLE:FILE=${ANT_EXECUTABLE}
-  )
+find_program(ANDROID_EXECUTABLE
+  NAMES android
+  DOC   "The android command-line tool")
+if(NOT ANDROID_EXECUTABLE)
+  message(FATAL_ERROR "Can not find android command line tool: android")
 endif()
+
+#find ant
+find_program(ANT_EXECUTABLE
+  NAMES ant
+  DOC   "The ant build tool")
+if(NOT ANT_EXECUTABLE)
+  message(FATAL_ERROR "Can not find ant build tool: ant")
+endif()
+
 
 # Fail if the install path is invalid
 if (NOT EXISTS ${CMAKE_INSTALL_PREFIX})
   message(FATAL_ERROR
     "Install path ${CMAKE_INSTALL_PREFIX} does not exist.")
 endif()
-
-# make sure we have a CTestCustom.cmake file
-configure_file("${vtk_cmake_dir}/CTestCustom.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/CTestCustom.cmake" @ONLY)
 
 # Compile a minimal VTK for its compile tools
 macro(compile_vtk_tools)
@@ -72,16 +59,16 @@ macro(compile_vtk_tools)
     PREFIX ${CMAKE_BINARY_DIR}/CompileTools
     BINARY_DIR ${CMAKE_BINARY_DIR}/CompileTools
     INSTALL_COMMAND ""
+    BUILD_COMMAND ${CMAKE_COMMAND} --build . --config $<CONFIGURATION> --target vtkCompileTools
     BUILD_ALWAYS 1
     CMAKE_CACHE_ARGS
-      -DVTK_BUILD_COMPILE_TOOLS_ONLY:BOOL=ON
       -DCMAKE_BUILD_TYPE:STRING=Release
       -DVTK_BUILD_ALL_MODULES:BOOL=OFF
+      -DVTK_Group_Rendering:BOOL=OFF
+      -DVTK_Group_StandAlone:BOOL=ON
       -DBUILD_SHARED_LIBS:BOOL=ON
-      -DVTK_BUILD_EXAMPLES:BOOL=OFF
-      -DVTK_BUILD_TESTING:BOOL=OFF
-      -DCMAKE_MAKE_PROGRAM:FILEPATH=${CMAKE_MAKE_PROGRAM}
-      -DVTK_ENABLE_LOGGING:BOOL=OFF
+      -DBUILD_EXAMPLES:BOOL=OFF
+      -DBUILD_TESTING:BOOL=OFF
   )
 endmacro()
 compile_vtk_tools()
@@ -92,38 +79,49 @@ mark_as_advanced(
   CMAKE_INSTALL_PREFIX
   CMAKE_OSX_ARCHITECTURES
   CMAKE_OSX_DEPLOYMENT_TARGET
+  VTK_RENDERING_BACKEND
 )
 
 # Now cross-compile VTK with the android toolchain
 set(android_cmake_flags
-  ${example_flags}
+  -DANDROID_EXECUTABLE:FILE=${ANDROID_EXECUTABLE}
+  -DANT_EXECUTABLE:FILE=${ANT_EXECUTABLE}
   -DBUILD_SHARED_LIBS:BOOL=OFF
-  -DVTK_BUILD_TESTING:STRING=OFF
-  -DVTK_BUILD_EXAMPLES:BOOL=${VTK_BUILD_EXAMPLES}
-  -DVTK_ENABLE_LOGGING:BOOL=OFF
-  -DVTK_GROUP_ENABLE_Rendering:STRING=DONT_WANT
-  -DVTK_GROUP_ENABLE_StandAlone:STRING=DONT_WANT
-  -DVTK_MODULE_ENABLE_VTK_FiltersCore:STRING=YES
-  -DVTK_MODULE_ENABLE_VTK_FiltersModeling:STRING=YES
-  -DVTK_MODULE_ENABLE_VTK_FiltersSources:STRING=YES
-  -DVTK_MODULE_ENABLE_VTK_FiltersGeometry:STRING=YES
-  -DVTK_MODULE_ENABLE_VTK_IOGeometry:STRING=YES
-  -DVTK_MODULE_ENABLE_VTK_IOLegacy:STRING=YES
-  -DVTK_MODULE_ENABLE_VTK_IOImage:STRING=YES
-  -DVTK_MODULE_ENABLE_VTK_IOPLY:STRING=YES
-  -DVTK_MODULE_ENABLE_VTK_IOInfovis:STRING=YES
-  -DVTK_MODULE_ENABLE_VTK_ImagingCore:STRING=YES
-  -DVTK_MODULE_ENABLE_VTK_InteractionStyle:STRING=YES
-  -DVTK_MODULE_ENABLE_VTK_ParallelCore:STRING=YES
-  -DVTK_MODULE_ENABLE_VTK_RenderingCore:STRING=YES
-  -DVTK_MODULE_ENABLE_VTK_RenderingFreeType:STRING=YES
-  -DVTK_MODULE_ENABLE_VTK_TestingCore:STRING=YES
-  -DVTK_MODULE_ENABLE_VTK_TestingRendering:STRING=YES
-  -DVTK_MODULE_ENABLE_VTK_RenderingVolumeOpenGL2:STRING=YES
+  -DBUILD_TESTING:BOOL=OFF
+  -DBUILD_EXAMPLES:BOOL=${BUILD_EXAMPLES}
+  -DVTK_RENDERING_BACKEND:STRING=OpenGL2
+  -DOPENGL_ES_VERSION:STRING=${OPENGL_ES_VERSION}
+  -DVTK_Group_Rendering:BOOL=OFF
+  -DVTK_Group_StandAlone:BOOL=OFF
+  -DVTK_Group_Imaging:BOOL=OFF
+  -DVTK_Group_MPI:BOOL=OFF
+  -DVTK_Group_Views:BOOL=OFF
+  -DVTK_Group_Qt:BOOL=OFF
+  -DVTK_Group_Tk:BOOL=OFF
+  -DVTK_Group_Web:BOOL=OFF
+  -DModule_vtkFiltersCore:BOOL=ON
+  -DModule_vtkFiltersModeling:BOOL=ON
+  -DModule_vtkFiltersSources:BOOL=ON
+  -DModule_vtkFiltersGeometry:BOOL=ON
+  -DModule_vtkIOGeometry:BOOL=ON
+  -DModule_vtkIOLegacy:BOOL=ON
+  -DModule_vtkIOImage:BOOL=OFF
+  -DModule_vtkIOPLY:BOOL=ON
+  -DModule_vtkIOInfovis:BOOL=ON
+  -DModule_vtkImagingCore:BOOL=ON
+  -DModule_vtkInteractionStyle:BOOL=ON
+  -DModule_vtkParallelCore:BOOL=ON
+  -DModule_vtkRenderingCore:BOOL=ON
+  -DModule_vtkRenderingFreeType:BOOL=ON
+  -DModule_vtkTestingCore:BOOL=ON
+  -DModule_vtkTestingRendering:BOOL=ON
 )
 
-if (VTK_LEGACY_REMOVE)
-  list(APPEND android_cmake_flags -DVTK_LEGACY_REMOVE:BOOL=ON)
+# add volume rendering for ES 3.0
+if (OPENGL_ES_VERSION STREQUAL "3.0")
+  set(android_cmake_flags ${android_cmake_flags}
+    -DModule_vtkRenderingVolumeOpenGL2:BOOL=ON
+    )
 endif()
 
 macro(crosscompile target api abi out_build_dir)
@@ -145,21 +143,16 @@ macro(crosscompile target api abi out_build_dir)
       -DCMAKE_INSTALL_PREFIX:PATH=${INSTALL_DIR}/${target}
       -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
       -DCMAKE_TOOLCHAIN_FILE:PATH=${_ANDROID_TOOLCHAIN}
-      -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
       -DVTKCompileTools_DIR:PATH=${CMAKE_BINARY_DIR}/CompileTools
-      -DCMAKE_MAKE_PROGRAM:FILEPATH=${CMAKE_MAKE_PROGRAM}
       ${android_cmake_flags}
   )
   set(${out_build_dir} "${BUILD_DIR}/${_ANDROID_DIR}")
 endmacro()
 crosscompile(vtk-android "${ANDROID_NATIVE_API_LEVEL}" "${ANDROID_ARCH_ABI}" vtk_android_build_dir)
 
-# Having issues getting the test to run after some
-# changes on the device we use for testing
-#
-# add_test(NAME AndroidNative
-#     WORKING_DIRECTORY ${vtk_android_build_dir}/Examples/Android/NativeVTK/bin
-#     COMMAND ${CMAKE_COMMAND}
-#     -DWORKINGDIR=${vtk_android_build_dir}/Examples/Android/NativeVTK/bin
-#     -P ${CMAKE_CURRENT_SOURCE_DIR}/Examples/Android/NativeVTK/runtest.cmake
-#   )
+add_test(NAME AndroidNative
+    WORKING_DIRECTORY ${vtk_android_build_dir}/Examples/Android/NativeVTK/bin
+    COMMAND ${CMAKE_COMMAND}
+    -DWORKINGDIR=${vtk_android_build_dir}/Examples/Android/NativeVTK/bin
+    -P ${CMAKE_CURRENT_SOURCE_DIR}/Examples/Android/NativeVTK/runtest.cmake
+  )

@@ -44,20 +44,20 @@
  *
  * @par Thanks:
  * Developed by Timothy M. Shead (tshead@sandia.gov) at Sandia National Laboratories.
- */
+*/
 
 #ifndef vtkTableToSparseArray_h
 #define vtkTableToSparseArray_h
 
-#include "vtkArrayDataAlgorithm.h"
 #include "vtkInfovisCoreModule.h" // For export macro
+#include "vtkArrayDataAlgorithm.h"
 
 class VTKINFOVISCORE_EXPORT vtkTableToSparseArray : public vtkArrayDataAlgorithm
 {
 public:
   static vtkTableToSparseArray* New();
   vtkTypeMacro(vtkTableToSparseArray, vtkArrayDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -86,18 +86,23 @@ public:
 
 protected:
   vtkTableToSparseArray();
-  ~vtkTableToSparseArray() override;
+  ~vtkTableToSparseArray();
 
-  int FillInputPortInformation(int, vtkInformation*) override;
+  int FillInputPortInformation(int, vtkInformation*);
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(
+    vtkInformation*,
+    vtkInformationVector**,
+    vtkInformationVector*);
 
 private:
-  vtkTableToSparseArray(const vtkTableToSparseArray&) = delete;
-  void operator=(const vtkTableToSparseArray&) = delete;
+  vtkTableToSparseArray(const vtkTableToSparseArray&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTableToSparseArray&) VTK_DELETE_FUNCTION;
 
   class implementation;
   implementation* const Implementation;
+
 };
 
 #endif
+

@@ -24,21 +24,20 @@
 #include "vtkNew.h"
 #include "vtkObjectFactory.h"
 
-vtkStandardNewMacro(vtkCountVertices);
+vtkStandardNewMacro(vtkCountVertices)
 
 //------------------------------------------------------------------------------
-void vtkCountVertices::PrintSelf(std::ostream& os, vtkIndent indent)
+void vtkCountVertices::PrintSelf(std::ostream &os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 
-  os << indent
-     << "OutputArrayName: " << (this->OutputArrayName ? this->OutputArrayName : "(nullptr)")
-     << "\n";
+  os << indent << "OutputArrayName: "
+     << (this->OutputArrayName ? this->OutputArrayName : "(NULL)") << "\n";
 }
 
 //------------------------------------------------------------------------------
 vtkCountVertices::vtkCountVertices()
-  : OutputArrayName(nullptr)
+  : OutputArrayName(NULL)
 {
   this->SetOutputArrayName("Vertex Count");
 }
@@ -46,20 +45,23 @@ vtkCountVertices::vtkCountVertices()
 //------------------------------------------------------------------------------
 vtkCountVertices::~vtkCountVertices()
 {
-  this->SetOutputArrayName(nullptr);
+  this->SetOutputArrayName(NULL);
 }
 
 //------------------------------------------------------------------------------
-int vtkCountVertices::RequestData(
-  vtkInformation*, vtkInformationVector** inInfoVec, vtkInformationVector* outInfoVec)
+int vtkCountVertices::RequestData(vtkInformation *,
+                                  vtkInformationVector **inInfoVec,
+                                  vtkInformationVector *outInfoVec)
 {
   // get the info objects
-  vtkInformation* inInfo = inInfoVec[0]->GetInformationObject(0);
-  vtkInformation* outInfo = outInfoVec->GetInformationObject(0);
+  vtkInformation *inInfo = inInfoVec[0]->GetInformationObject(0);
+  vtkInformation *outInfo = outInfoVec->GetInformationObject(0);
 
   // get the input and output
-  vtkDataSet* input = vtkDataSet::SafeDownCast(inInfo->Get(vtkDataObject::DATA_OBJECT()));
-  vtkDataSet* output = vtkDataSet::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
+  vtkDataSet *input = vtkDataSet::SafeDownCast(
+        inInfo->Get(vtkDataObject::DATA_OBJECT()));
+  vtkDataSet *output = vtkDataSet::SafeDownCast(
+        outInfo->Get(vtkDataObject::DATA_OBJECT()));
 
   assert(input && output);
 
@@ -68,9 +70,9 @@ int vtkCountVertices::RequestData(
   vtkNew<vtkIdTypeArray> vertCount;
   vertCount->Allocate(input->GetNumberOfCells());
   vertCount->SetName(this->OutputArrayName);
-  output->GetCellData()->AddArray(vertCount);
+  output->GetCellData()->AddArray(vertCount.Get());
 
-  vtkCellIterator* it = input->NewCellIterator();
+  vtkCellIterator *it = input->NewCellIterator();
   for (it->InitTraversal(); !it->IsDoneWithTraversal(); it->GoToNextCell())
   {
     vertCount->InsertNextValue(it->GetNumberOfPoints());
@@ -81,14 +83,14 @@ int vtkCountVertices::RequestData(
 }
 
 //------------------------------------------------------------------------------
-int vtkCountVertices::FillOutputPortInformation(int, vtkInformation* info)
+int vtkCountVertices::FillOutputPortInformation(int, vtkInformation *info)
 {
   info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkDataSet");
   return 1;
 }
 
 //------------------------------------------------------------------------------
-int vtkCountVertices::FillInputPortInformation(int, vtkInformation* info)
+int vtkCountVertices::FillInputPortInformation(int, vtkInformation *info)
 {
   info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkDataSet");
   return 1;

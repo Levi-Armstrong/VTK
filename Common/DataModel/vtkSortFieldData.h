@@ -39,7 +39,7 @@
  *
  * @sa
  * vtkSortDataArray
- */
+*/
 
 #ifndef vtkSortFieldData_h
 #define vtkSortFieldData_h
@@ -49,6 +49,7 @@
 
 class vtkFieldData;
 
+
 class VTKCOMMONDATAMODEL_EXPORT vtkSortFieldData : public vtkSortDataArray
 {
 public:
@@ -57,9 +58,9 @@ public:
    * Standard VTK methods for instantiating, managing type, and printing
    * information about this class.
    */
-  static vtkSortFieldData* New();
+  static vtkSortFieldData *New();
   vtkTypeMacro(vtkSortFieldData, vtkSortDataArray);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
   //@}
 
   /**
@@ -73,14 +74,13 @@ public:
    * it. Note that the indices are in sorted (ascending) order, and indicate
    * the final sorted position of the sort. So for example indices[0]=10
    * indicates that the original data in position 10 in the field, was moved
-   * to position 0 after the sort. By default, returnIndices=0. (Other notes:
+   * to postion 0 after the sort. By default, returnIndices=0. (Other notes:
    * if any array is not the same length as the sorting array, then it will
    * be skipped and not sorted.)
    */
-  static vtkIdType* Sort(vtkFieldData* fd, const char* arrayName, int k, int returnIndices)
-  {
-    return vtkSortFieldData::Sort(fd, arrayName, k, returnIndices, 0);
-  }
+  static vtkIdType* Sort( vtkFieldData *fd, const char *arrayName,
+                          int k, int returnIndices)
+    {return vtkSortFieldData::Sort(fd,arrayName,k,returnIndices,0);}
 
   /**
    * Given field data (and derived classes such as point data and cell data),
@@ -94,7 +94,7 @@ public:
    * the user takes ownership of the data and must delete it. Note that the
    * indices are always in sorted (ascending) order, and indicate the final
    * sorted position of the sort. So for example indices[0]=10 indicates that
-   * the original data in position 10 in the field, was moved to position 0
+   * the original data in position 10 in the field, was moved to postion 0
    * after the sort (i.e., position 0 is the smallest value). However, if
    * sort direction dir=1, the indices do not change but the final shuffle of
    * the data is in reverse order (note idx[n-1] for n keys is the largest
@@ -102,16 +102,16 @@ public:
    * the same length as the sorting array, then it will be skipped and not
    * sorted.)
    */
-  static vtkIdType* Sort(
-    vtkFieldData* fd, const char* arrayName, int k, int returnIndices, int dir);
+  static vtkIdType* Sort( vtkFieldData *fd, const char *arrayName,
+                          int k, int returnIndices, int dir);
 
 protected:
   vtkSortFieldData();
-  ~vtkSortFieldData() override;
+  ~vtkSortFieldData() VTK_OVERRIDE;
 
 private:
-  vtkSortFieldData(const vtkSortFieldData&) = delete;
-  void operator=(const vtkSortFieldData&) = delete;
+  vtkSortFieldData(const vtkSortFieldData &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkSortFieldData &) VTK_DELETE_FUNCTION;
 };
 
-#endif // vtkSortFieldData_h
+#endif //vtkSortFieldData_h

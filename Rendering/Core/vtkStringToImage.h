@@ -20,13 +20,13 @@
  *
  *
  *
- */
+*/
 
 #ifndef vtkStringToImage_h
 #define vtkStringToImage_h
 
-#include "vtkObject.h"
 #include "vtkRenderingCoreModule.h" // For export macro
+#include "vtkObject.h"
 
 class vtkStdString;
 class vtkUnicodeString;
@@ -38,7 +38,7 @@ class VTKRENDERINGCORE_EXPORT vtkStringToImage : public vtkObject
 {
 public:
   vtkTypeMacro(vtkStringToImage, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  virtual void PrintSelf(ostream &os, vtkIndent indent);
 
   //@{
   /**
@@ -54,9 +54,10 @@ public:
    * is valid (it may not if GetBoundingBox() failed or if the string
    * was empty).
    */
-  virtual vtkVector2i GetBounds(
-    vtkTextProperty* property, const vtkUnicodeString& string, int dpi) = 0;
-  virtual vtkVector2i GetBounds(vtkTextProperty* property, const vtkStdString& string, int dpi) = 0;
+  virtual vtkVector2i GetBounds(vtkTextProperty *property,
+                                const vtkUnicodeString& string, int dpi) = 0;
+  virtual vtkVector2i GetBounds(vtkTextProperty *property,
+                                const vtkStdString& string, int dpi) = 0;
   //@}
 
   //@{
@@ -67,10 +68,14 @@ public:
    * This is useful when ScaleToPowerOfTwo is true, and the image dimensions may
    * not match the dimensions of the rendered text.
    */
-  virtual int RenderString(vtkTextProperty* property, const vtkUnicodeString& string, int dpi,
-    vtkImageData* data, int textDims[2] = nullptr) = 0;
-  virtual int RenderString(vtkTextProperty* property, const vtkStdString& string, int dpi,
-    vtkImageData* data, int text_dims[2] = nullptr) = 0;
+  virtual int RenderString(vtkTextProperty *property,
+                           const vtkUnicodeString& string, int dpi,
+                           vtkImageData *data,
+                           int textDims[2] = NULL) = 0;
+  virtual int RenderString(vtkTextProperty *property,
+                           const vtkStdString& string, int dpi,
+                           vtkImageData *data,
+                           int text_dims[2] = NULL) = 0;
   //@}
 
   /**
@@ -78,18 +83,18 @@ public:
    * hardware easier. Default is false.
    */
   virtual void SetScaleToPowerOfTwo(bool scale);
-  vtkGetMacro(ScaleToPowerOfTwo, bool);
+  vtkGetMacro(ScaleToPowerOfTwo, bool)
 
 protected:
   vtkStringToImage();
-  ~vtkStringToImage() override;
+  ~vtkStringToImage();
 
   bool Antialias;
   bool ScaleToPowerOfTwo;
 
 private:
-  vtkStringToImage(const vtkStringToImage&) = delete;
-  void operator=(const vtkStringToImage&) = delete;
+  vtkStringToImage(const vtkStringToImage &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkStringToImage &) VTK_DELETE_FUNCTION;
 };
 
-#endif // vtkStringToImage_h
+#endif //vtkStringToImage_h

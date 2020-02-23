@@ -1,7 +1,7 @@
 /*=========================================================================
 
   Program:   Visualization Toolkit
-  Module:    vtkImageDataToPointSet.h
+  Module:    vtkRectilinearGridToTetrahedra.h
 
   Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
   All rights reserved.
@@ -28,7 +28,7 @@
  * @par Thanks:
  * This class was developed by Kenneth Moreland (kmorel@sandia.gov) from
  * Sandia National Laboratories.
- */
+*/
 
 #ifndef vtkImageDataToPointSet_h
 #define vtkImageDataToPointSet_h
@@ -43,22 +43,26 @@ class VTKFILTERSGENERAL_EXPORT vtkImageDataToPointSet : public vtkStructuredGrid
 {
 public:
   vtkTypeMacro(vtkImageDataToPointSet, vtkStructuredGridAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream &os, vtkIndent indent) VTK_OVERRIDE;
 
-  static vtkImageDataToPointSet* New();
+  static vtkImageDataToPointSet *New();
 
 protected:
   vtkImageDataToPointSet();
-  ~vtkImageDataToPointSet() override;
+  ~vtkImageDataToPointSet() VTK_OVERRIDE;
 
-  int RequestData(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  int RequestData(vtkInformation *request,
+                  vtkInformationVector **inputVector,
+                  vtkInformationVector *outputVector) VTK_OVERRIDE;
 
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  int FillInputPortInformation(int port, vtkInformation *info) VTK_OVERRIDE;
 
 private:
-  vtkImageDataToPointSet(const vtkImageDataToPointSet&) = delete;
-  void operator=(const vtkImageDataToPointSet&) = delete;
+  vtkImageDataToPointSet(const vtkImageDataToPointSet &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkImageDataToPointSet &) VTK_DELETE_FUNCTION;
+
+  int CopyStructure(vtkStructuredGrid *outData, vtkImageData *inData);
 };
 
-#endif // vtkImageDataToPointSet_h
+
+#endif //vtkImageDataToPointSet_h

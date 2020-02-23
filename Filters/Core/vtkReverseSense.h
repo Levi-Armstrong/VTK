@@ -26,7 +26,7 @@
  *
  * @warning
  * Normals can be operated on only if they are present in the data.
- */
+*/
 
 #ifndef vtkReverseSense_h
 #define vtkReverseSense_h
@@ -37,46 +37,46 @@
 class VTKFILTERSCORE_EXPORT vtkReverseSense : public vtkPolyDataAlgorithm
 {
 public:
-  vtkTypeMacro(vtkReverseSense, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkReverseSense,vtkPolyDataAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Construct object so that behavior is to reverse cell ordering and
    * leave normal orientation as is.
    */
-  static vtkReverseSense* New();
+  static vtkReverseSense *New();
 
   //@{
   /**
    * Flag controls whether to reverse cell ordering.
    */
-  vtkSetMacro(ReverseCells, vtkTypeBool);
-  vtkGetMacro(ReverseCells, vtkTypeBool);
-  vtkBooleanMacro(ReverseCells, vtkTypeBool);
+  vtkSetMacro(ReverseCells,int);
+  vtkGetMacro(ReverseCells,int);
+  vtkBooleanMacro(ReverseCells,int);
   //@}
 
   //@{
   /**
    * Flag controls whether to reverse normal orientation.
    */
-  vtkSetMacro(ReverseNormals, vtkTypeBool);
-  vtkGetMacro(ReverseNormals, vtkTypeBool);
-  vtkBooleanMacro(ReverseNormals, vtkTypeBool);
+  vtkSetMacro(ReverseNormals,int);
+  vtkGetMacro(ReverseNormals,int);
+  vtkBooleanMacro(ReverseNormals,int);
   //@}
+
 
 protected:
   vtkReverseSense();
-  ~vtkReverseSense() override {}
+  ~vtkReverseSense() VTK_OVERRIDE {}
 
   // Usual data generation method
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *) VTK_OVERRIDE;
 
-  vtkTypeBool ReverseCells;
-  vtkTypeBool ReverseNormals;
-
+  int ReverseCells;
+  int ReverseNormals;
 private:
-  vtkReverseSense(const vtkReverseSense&) = delete;
-  void operator=(const vtkReverseSense&) = delete;
+  vtkReverseSense(const vtkReverseSense&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkReverseSense&) VTK_DELETE_FUNCTION;
 };
 
 #endif

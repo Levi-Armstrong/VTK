@@ -51,13 +51,13 @@
  *
  * @sa
  * vtkActor vtkRenderer vtkLODProp3D
- */
+*/
 
 #ifndef vtkLODActor_h
 #define vtkLODActor_h
 
-#include "vtkActor.h"
 #include "vtkRenderingLODModule.h" // For export macro
+#include "vtkActor.h"
 
 class vtkMapper;
 class vtkMapperCollection;
@@ -71,7 +71,7 @@ class VTKRENDERINGLOD_EXPORT vtkLODActor : public vtkActor
 {
 public:
   vtkTypeMacro(vtkLODActor, vtkActor);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Creates a vtkLODActor with the following defaults: origin(0,0,0)
@@ -84,20 +84,20 @@ public:
    * This causes the actor to be rendered.
    * It, in turn, will render the actor's property and then mapper.
    */
-  void Render(vtkRenderer*, vtkMapper*) override;
+  virtual void Render(vtkRenderer *, vtkMapper *);
 
   /**
-   * This method is used internally by the rendering process. We override
+   * This method is used internally by the rendering process. We overide
    * the superclass method to properly set the estimated render time.
    */
-  int RenderOpaqueGeometry(vtkViewport* viewport) override;
+  int RenderOpaqueGeometry(vtkViewport* viewport);
 
   /**
    * Release any graphics resources that are being consumed by this actor.
    * The parameter window could be used to determine which graphic
    * resources to release.
    */
-  void ReleaseGraphicsResources(vtkWindow*) override;
+  void ReleaseGraphicsResources(vtkWindow*);
 
   /**
    * Add another level of detail.
@@ -136,16 +136,16 @@ public:
   /**
    * When this objects gets modified, this method also modifies the object.
    */
-  void Modified() override;
+  void Modified();
 
   /**
    * Shallow copy of an LOD actor. Overloads the virtual vtkProp method.
    */
-  void ShallowCopy(vtkProp* prop) override;
+  void ShallowCopy(vtkProp *prop);
 
 protected:
   vtkLODActor();
-  ~vtkLODActor() override;
+  ~vtkLODActor();
 
   vtkActor* Device;
   vtkMapperCollection* LODMappers;
@@ -165,8 +165,8 @@ protected:
   virtual void DeleteOwnLODs();
 
 private:
-  vtkLODActor(const vtkLODActor&) = delete;
-  void operator=(const vtkLODActor&) = delete;
+  vtkLODActor(const vtkLODActor&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkLODActor&) VTK_DELETE_FUNCTION;
 };
 
 #endif

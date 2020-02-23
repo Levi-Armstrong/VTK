@@ -21,10 +21,11 @@
  *
  * @sa
  * vtkImageAppendComponents
- */
+*/
 
 #ifndef vtkImageExtractComponents_h
 #define vtkImageExtractComponents_h
+
 
 #include "vtkImagingCoreModule.h" // For export macro
 #include "vtkThreadedImageAlgorithm.h"
@@ -32,9 +33,9 @@
 class VTKIMAGINGCORE_EXPORT vtkImageExtractComponents : public vtkThreadedImageAlgorithm
 {
 public:
-  static vtkImageExtractComponents* New();
-  vtkTypeMacro(vtkImageExtractComponents, vtkThreadedImageAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkImageExtractComponents *New();
+  vtkTypeMacro(vtkImageExtractComponents,vtkThreadedImageAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -43,7 +44,7 @@ public:
   void SetComponents(int c1);
   void SetComponents(int c1, int c2);
   void SetComponents(int c1, int c2, int c3);
-  vtkGetVector3Macro(Components, int);
+  vtkGetVector3Macro(Components,int);
   //@}
 
   //@{
@@ -51,23 +52,34 @@ public:
    * Get the number of components to extract. This is set implicitly by the
    * SetComponents() method.
    */
-  vtkGetMacro(NumberOfComponents, int);
+  vtkGetMacro(NumberOfComponents,int);
   //@}
 
 protected:
   vtkImageExtractComponents();
-  ~vtkImageExtractComponents() override {}
+  ~vtkImageExtractComponents() {}
 
   int NumberOfComponents;
   int Components[3];
 
-  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int RequestInformation (vtkInformation *, vtkInformationVector**,
+                                  vtkInformationVector *);
 
-  void ThreadedExecute(vtkImageData* inData, vtkImageData* outData, int ext[6], int id) override;
-
+  void ThreadedExecute (vtkImageData *inData, vtkImageData *outData,
+                       int ext[6], int id);
 private:
-  vtkImageExtractComponents(const vtkImageExtractComponents&) = delete;
-  void operator=(const vtkImageExtractComponents&) = delete;
+  vtkImageExtractComponents(const vtkImageExtractComponents&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkImageExtractComponents&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+
+
+
+
+
+
+
+
+

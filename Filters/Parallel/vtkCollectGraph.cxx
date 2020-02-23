@@ -43,20 +43,20 @@
 
 vtkStandardNewMacro(vtkCollectGraph);
 
-vtkCxxSetObjectMacro(vtkCollectGraph, Controller, vtkMultiProcessController);
-vtkCxxSetObjectMacro(vtkCollectGraph, SocketController, vtkSocketController);
+vtkCxxSetObjectMacro(vtkCollectGraph,Controller, vtkMultiProcessController);
+vtkCxxSetObjectMacro(vtkCollectGraph,SocketController, vtkSocketController);
 
 //----------------------------------------------------------------------------
 vtkCollectGraph::vtkCollectGraph()
 {
   this->PassThrough = 0;
-  this->SocketController = nullptr;
+  this->SocketController = NULL;
 
   // Default vertex id array.
   this->SetInputArrayToProcess(0, 0, 0, vtkDataObject::FIELD_ASSOCIATION_VERTICES, "id");
 
   // Controller keeps a reference to this object as well.
-  this->Controller = nullptr;
+  this->Controller = NULL;
   this->SetController(vtkMultiProcessController::GetGlobalController());
 
   this->OutputType = USE_INPUT_TYPE;
@@ -65,38 +65,42 @@ vtkCollectGraph::vtkCollectGraph()
 //----------------------------------------------------------------------------
 vtkCollectGraph::~vtkCollectGraph()
 {
-  this->SetController(nullptr);
-  this->SetSocketController(nullptr);
+  this->SetController(0);
+  this->SetSocketController(0);
 }
 
 //--------------------------------------------------------------------------
-int vtkCollectGraph::RequestUpdateExtent(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+int vtkCollectGraph::RequestUpdateExtent(
+  vtkInformation *vtkNotUsed(request),
+  vtkInformationVector **inputVector,
+  vtkInformationVector *outputVector)
 {
   // get the info objects
-  vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
-  vtkInformation* outInfo = outputVector->GetInformationObject(0);
+  vtkInformation *inInfo = inputVector[0]->GetInformationObject(0);
+  vtkInformation *outInfo = outputVector->GetInformationObject(0);
 
   inInfo->Set(vtkStreamingDemandDrivenPipeline::UPDATE_PIECE_NUMBER(),
-    outInfo->Get(vtkStreamingDemandDrivenPipeline::UPDATE_PIECE_NUMBER()));
+              outInfo->Get(vtkStreamingDemandDrivenPipeline::UPDATE_PIECE_NUMBER()));
   inInfo->Set(vtkStreamingDemandDrivenPipeline::UPDATE_NUMBER_OF_PIECES(),
-    outInfo->Get(vtkStreamingDemandDrivenPipeline::UPDATE_NUMBER_OF_PIECES()));
+              outInfo->Get(vtkStreamingDemandDrivenPipeline::UPDATE_NUMBER_OF_PIECES()));
   inInfo->Set(vtkStreamingDemandDrivenPipeline::UPDATE_NUMBER_OF_GHOST_LEVELS(),
-    outInfo->Get(vtkStreamingDemandDrivenPipeline::UPDATE_NUMBER_OF_GHOST_LEVELS()));
+              outInfo->Get(vtkStreamingDemandDrivenPipeline::UPDATE_NUMBER_OF_GHOST_LEVELS()));
 
   return 1;
 }
 
 //--------------------------------------------------------------------------
 int vtkCollectGraph::RequestDataObject(
-  vtkInformation* request, vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+  vtkInformation *request,
+  vtkInformationVector **inputVector,
+  vtkInformationVector *outputVector)
 {
   if (this->OutputType == USE_INPUT_TYPE)
   {
     return Superclass::RequestDataObject(request, inputVector, outputVector);
   }
 
-  vtkGraph* output = nullptr;
+  vtkGraph *output = 0;
   if (this->OutputType == DIRECTED_OUTPUT)
   {
     output = vtkDirectedGraph::New();
@@ -107,10 +111,10 @@ int vtkCollectGraph::RequestDataObject(
   }
   else
   {
-    vtkErrorMacro(<< "Invalid output type setting.");
+    vtkErrorMacro(<<"Invalid output type setting.");
     return 0;
   }
-  vtkInformation* info = outputVector->GetInformationObject(0);
+  vtkInformation *info = outputVector->GetInformationObject(0);
   info->Set(vtkDataObject::DATA_OBJECT(), output);
   output->Delete();
 
@@ -118,37 +122,41 @@ int vtkCollectGraph::RequestDataObject(
 }
 
 //----------------------------------------------------------------------------
-int vtkCollectGraph::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+int vtkCollectGraph::RequestData(
+  vtkInformation *vtkNotUsed(request),
+  vtkInformationVector **inputVector,
+  vtkInformationVector *outputVector)
 {
   // get the info objects
-  vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
-  vtkInformation* outInfo = outputVector->GetInformationObject(0);
+  vtkInformation *inInfo = inputVector[0]->GetInformationObject(0);
+  vtkInformation *outInfo = outputVector->GetInformationObject(0);
 
   // get the input and output
-  vtkGraph* input = vtkGraph::SafeDownCast(inInfo->Get(vtkDataObject::DATA_OBJECT()));
-  vtkGraph* output = vtkGraph::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
+  vtkGraph *input = vtkGraph::SafeDownCast(
+    inInfo->Get(vtkDataObject::DATA_OBJECT()));
+  vtkGraph *output = vtkGraph::SafeDownCast(
+    outInfo->Get(vtkDataObject::DATA_OBJECT()));
 
   int numProcs, myId;
   int idx;
 
-  if (this->Controller == nullptr && this->SocketController == nullptr)
+  if (this->Controller == NULL && this->SocketController == NULL)
   { // Running as a single process.
     output->ShallowCopy(input);
     return 1;
   }
 
-  if (this->Controller == nullptr && this->SocketController != nullptr)
+  if (this->Controller == NULL && this->SocketController != NULL)
   { // This is a client.  We assume no data on client for input.
-    if (!this->PassThrough)
+    if ( ! this->PassThrough)
     {
-      if (this->OutputType != DIRECTED_OUTPUT && this->OutputType != UNDIRECTED_OUTPUT)
+      if (this->OutputType != DIRECTED_OUTPUT &&
+          this->OutputType != UNDIRECTED_OUTPUT)
       {
-        vtkErrorMacro(
-          << "OutputType must be set to DIRECTED_OUTPUT or UNDIRECTED_OUTPUT on the client.");
+        vtkErrorMacro(<<"OutputType must be set to DIRECTED_OUTPUT or UNDIRECTED_OUTPUT on the client.");
         return 0;
       }
-      vtkGraph* g = nullptr;
+      vtkGraph *g = 0;
       if (this->OutputType == DIRECTED_OUTPUT)
       {
         g = vtkDirectedGraph::New();
@@ -160,7 +168,7 @@ int vtkCollectGraph::RequestData(vtkInformation* vtkNotUsed(request),
       this->SocketController->Receive(g, 1, 121767);
       output->ShallowCopy(g);
       g->Delete();
-      g = nullptr;
+      g = NULL;
       return 1;
     }
     // If not collected, output will be empty from initialization.
@@ -185,9 +193,9 @@ int vtkCollectGraph::RequestData(vtkInformation* vtkNotUsed(request),
     vtkSmartPointer<vtkMutableUndirectedGraph> undirBuilder =
       vtkSmartPointer<vtkMutableUndirectedGraph>::New();
 
-    bool directed = (vtkDirectedGraph::SafeDownCast(input) != nullptr);
+    bool directed = (vtkDirectedGraph::SafeDownCast(input) != 0);
 
-    vtkGraph* builder = nullptr;
+    vtkGraph *builder = 0;
     if (directed)
     {
       builder = dirBuilder;
@@ -197,14 +205,14 @@ int vtkCollectGraph::RequestData(vtkInformation* vtkNotUsed(request),
       builder = undirBuilder;
     }
 
-    vtkDataSetAttributes* wholePointData = builder->GetVertexData();
-    vtkPoints* wholePoints = builder->GetPoints();
+    vtkDataSetAttributes *wholePointData = builder->GetVertexData();
+    vtkPoints *wholePoints = builder->GetPoints();
     wholePointData->CopyAllocate(input->GetVertexData());
 
     // Get the name of the ID array.
     vtkAbstractArray* ids = this->GetInputAbstractArrayToProcess(0, inputVector);
 
-    if (ids == nullptr)
+    if (ids == NULL)
     {
       vtkErrorMacro("The ID array is undefined.");
       return 0;
@@ -212,12 +220,11 @@ int vtkCollectGraph::RequestData(vtkInformation* vtkNotUsed(request),
 
     if (!ids->IsA("vtkIntArray") && !ids->IsA("vtkStringArray"))
     {
-      vtkErrorMacro(
-        "The ID array must be an integer or string array but is a " << ids->GetClassName());
+      vtkErrorMacro("The ID array must be an integer or string array but is a " << ids->GetClassName());
       return 0;
     }
 
-    char* idFieldName = ids->GetName();
+    char *idFieldName = ids->GetName();
 
     // Map from global ids (owner, ownerId pairs) to wholeGraph ids.
     std::map<int, vtkIdType> globalIdMapInt;
@@ -227,7 +234,8 @@ int vtkCollectGraph::RequestData(vtkInformation* vtkNotUsed(request),
     std::vector<vtkIdType> localIdVec;
 
     // Edge iterator.
-    vtkSmartPointer<vtkEdgeListIterator> edges = vtkSmartPointer<vtkEdgeListIterator>::New();
+    vtkSmartPointer<vtkEdgeListIterator> edges =
+      vtkSmartPointer<vtkEdgeListIterator>::New();
 
     for (idx = 0; idx < numProcs; ++idx)
     {
@@ -249,21 +257,20 @@ int vtkCollectGraph::RequestData(vtkInformation* vtkNotUsed(request),
         this->Controller->Receive(curGraph, idx, 121767);
 
         // Resize the point data arrays to fit the new data.
-        vtkIdType numVertices =
-          directed ? dirBuilder->GetNumberOfVertices() : undirBuilder->GetNumberOfVertices();
+        vtkIdType numVertices = directed ? dirBuilder->GetNumberOfVertices() : undirBuilder->GetNumberOfVertices();
         vtkIdType newSize = numVertices + curGraph->GetNumberOfVertices();
         for (vtkIdType i = 0; i < wholePointData->GetNumberOfArrays(); i++)
         {
-          vtkAbstractArray* arr = wholePointData->GetAbstractArray(i);
+          vtkAbstractArray *arr = wholePointData->GetAbstractArray(i);
           arr->Resize(newSize);
         }
       }
 
-      vtkAbstractArray* idArr = curGraph->GetVertexData()->GetAbstractArray(idFieldName);
-      vtkStringArray* idArrStr = vtkArrayDownCast<vtkStringArray>(idArr);
-      vtkIntArray* idArrInt = vtkArrayDownCast<vtkIntArray>(idArr);
+      vtkAbstractArray *idArr = curGraph->GetVertexData()->GetAbstractArray(idFieldName);
+      vtkStringArray *idArrStr = vtkArrayDownCast<vtkStringArray>(idArr);
+      vtkIntArray *idArrInt = vtkArrayDownCast<vtkIntArray>(idArr);
 
-      vtkIntArray* ghostLevelsArr = vtkArrayDownCast<vtkIntArray>(
+      vtkIntArray *ghostLevelsArr = vtkArrayDownCast<vtkIntArray>(
         wholePointData->GetAbstractArray(vtkDataSetAttributes::GhostArrayName()));
 
       // Add new vertices
@@ -275,8 +282,8 @@ int vtkCollectGraph::RequestData(vtkInformation* vtkNotUsed(request),
         int globalIdInt = idArrInt ? idArrInt->GetValue(v) : 0;
 
         double pt[3];
-        if ((idArrInt && globalIdMapInt.count(globalIdInt) == 0) ||
-          (idArrStr && globalIdMapStr.count(globalIdStr) == 0))
+        if ((idArrInt && globalIdMapInt.count(globalIdInt) == 0)
+          || (idArrStr && globalIdMapStr.count(globalIdStr) == 0))
         {
           curGraph->GetPoint(v, pt);
           wholePoints->InsertNextPoint(pt);
@@ -292,7 +299,7 @@ int vtkCollectGraph::RequestData(vtkInformation* vtkNotUsed(request),
 
           // Cannot use CopyData because the arrays may switch order during network transfer.
           // Instead, look up the array name.  This assumes unique array names.
-          // wholePointData->CopyData(curGraph->GetPointData(), v, id);
+          //wholePointData->CopyData(curGraph->GetPointData(), v, id);
           for (vtkIdType arrIndex = 0; arrIndex < wholePointData->GetNumberOfArrays(); arrIndex++)
           {
             vtkAbstractArray* arr = wholePointData->GetAbstractArray(arrIndex);
@@ -339,7 +346,7 @@ int vtkCollectGraph::RequestData(vtkInformation* vtkNotUsed(request),
       while (edges->HasNext())
       {
         vtkEdgeType e = edges->Next();
-        if (edgeGhostLevelsArr == nullptr || edgeGhostLevelsArr->GetValue(e.Id) == 0)
+        if (edgeGhostLevelsArr == NULL || edgeGhostLevelsArr->GetValue(e.Id) == 0)
         {
           if (directed)
           {
@@ -381,7 +388,7 @@ int vtkCollectGraph::RequestData(vtkInformation* vtkNotUsed(request),
 //----------------------------------------------------------------------------
 void vtkCollectGraph::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 
   os << indent << "PassThough: " << this->PassThrough << endl;
   os << indent << "Controller: (" << this->Controller << ")\n";

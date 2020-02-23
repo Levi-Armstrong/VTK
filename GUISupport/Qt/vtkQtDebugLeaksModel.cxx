@@ -23,35 +23,42 @@
 #include <QTimer>
 
 //-----------------------------------------------------------------------------
-class vtkQtDebugLeaksModel::qObserver : public vtkDebugLeaksObserver
-{
+class vtkQtDebugLeaksModel::qObserver : public vtkDebugLeaksObserver {
 public:
-  qObserver(vtkQtDebugLeaksModel& model)
-    : Model(model)
+
+  qObserver(vtkQtDebugLeaksModel& model) : Model(model)
   {
     vtkDebugLeaks::SetDebugLeaksObserver(this);
   }
 
-  ~qObserver() override { vtkDebugLeaks::SetDebugLeaksObserver(nullptr); }
+  virtual ~qObserver()
+  {
+    vtkDebugLeaks::SetDebugLeaksObserver(0);
+  }
 
-  void ConstructingObject(vtkObjectBase* object) override { this->Model.addObject(object); }
+  virtual void ConstructingObject(vtkObjectBase* object)
+  {
+    this->Model.addObject(object);
+  }
 
-  void DestructingObject(vtkObjectBase* object) override { this->Model.removeObject(object); }
+  virtual void DestructingObject(vtkObjectBase* object)
+  {
+    this->Model.removeObject(object);
+  }
 
   vtkQtDebugLeaksModel& Model;
 
 private:
-  qObserver(const qObserver&) = delete;
-  void operator=(const qObserver&) = delete;
+
+  qObserver(const qObserver&) VTK_DELETE_FUNCTION;
+  void operator=(const qObserver&) VTK_DELETE_FUNCTION;
 };
 
+
 //-----------------------------------------------------------------------------
-class VTKClassInfo
-{
+class VTKClassInfo {
 public:
-  VTKClassInfo(const QString& className)
-    : Count(0)
-    , Name(className)
+  VTKClassInfo(const QString& className) : Count(0), Name(className)
   {
   }
   int Count;
@@ -59,14 +66,12 @@ public:
   QList<vtkObjectBase*> Objects;
 };
 
+
 //-----------------------------------------------------------------------------
 class vtkQtDebugLeaksModel::qInternal
 {
 public:
-  qInternal()
-    : ProcessPending(false)
-  {
-  }
+  qInternal() : ProcessPending(false) { }
 
   bool ProcessPending;
   QList<QString> Classes;
@@ -86,7 +91,8 @@ vtkQtDebugLeaksModel::vtkQtDebugLeaksModel(QObject* p)
   this->setHeaderData(0, Qt::Horizontal, QObject::tr("Class Name"));
   this->setHeaderData(1, Qt::Horizontal, QObject::tr("Class Count"));
 
-  this->connect(QCoreApplication::instance(), SIGNAL(aboutToQuit()), SLOT(onAboutToQuit()));
+  this->connect(QCoreApplication::instance(), SIGNAL(aboutToQuit()),
+                SLOT(onAboutToQuit()));
 }
 
 //-----------------------------------------------------------------------------
@@ -100,7 +106,7 @@ vtkQtDebugLeaksModel::~vtkQtDebugLeaksModel()
 void vtkQtDebugLeaksModel::onAboutToQuit()
 {
   delete this->Observer;
-  this->Observer = nullptr;
+  this->Observer = 0;
 }
 
 //----------------------------------------------------------------------------
@@ -118,7 +124,7 @@ void vtkQtDebugLeaksModel::addObject(vtkObjectBase* object)
 void vtkQtDebugLeaksModel::processPendingObjects()
 {
   this->Internal->ProcessPending = false;
-  foreach (vtkObjectBase* object, this->Internal->ObjectsToProcess)
+  foreach(vtkObjectBase* object, this->Internal->ObjectsToProcess)
   {
     this->registerObject(object);
   }
@@ -147,7 +153,7 @@ void vtkQtDebugLeaksModel::registerObject(vtkObjectBase* object)
   this->Internal->ObjectMap[object] = &classInfo;
   this->setData(this->index(indexOf, 1), classInfo.Count);
 
-  ReferenceCountModel* model = this->Internal->ReferenceModels.value(className, nullptr);
+  ReferenceCountModel* model = this->Internal->ReferenceModels.value(className, 0);
   if (model)
   {
     model->addObject(object);
@@ -177,11 +183,12 @@ void vtkQtDebugLeaksModel::removeObject(vtkObjectBase* object)
       this->setData(this->index(row, 1), classInfo->Count);
     }
 
-    ReferenceCountModel* model = this->Internal->ReferenceModels.value(className, nullptr);
+    ReferenceCountModel* model = this->Internal->ReferenceModels.value(className, 0);
     if (model)
     {
       model->removeObject(object);
     }
+
   }
   else
   {
@@ -199,14 +206,14 @@ QList<vtkObjectBase*> vtkQtDebugLeaksModel::getObjects(const QString& className)
     return QList<vtkObjectBase*>();
   }
 
-  VTKClassInfo& classInfo = this->Internal->ClassInfo[indexOf];
+  VTKClassInfo &classInfo = this->Internal->ClassInfo[indexOf];
   return classInfo.Objects;
 }
 
 //----------------------------------------------------------------------------
 QStandardItemModel* vtkQtDebugLeaksModel::referenceCountModel(const QString& className)
 {
-  ReferenceCountModel* model = this->Internal->ReferenceModels.value(className, nullptr);
+  ReferenceCountModel* model = this->Internal->ReferenceModels.value(className, 0);
   if (!model)
   {
     model = new ReferenceCountModel(this);
@@ -221,7 +228,7 @@ QStandardItemModel* vtkQtDebugLeaksModel::referenceCountModel(const QString& cla
 }
 
 //-----------------------------------------------------------------------------
-Qt::ItemFlags vtkQtDebugLeaksModel::flags(const QModelIndex& modelIndex) const
+Qt::ItemFlags vtkQtDebugLeaksModel::flags(const QModelIndex &modelIndex) const
 {
   Q_UNUSED(modelIndex);
   return Qt::ItemIsSelectable | Qt::ItemIsEnabled;
@@ -240,7 +247,9 @@ ReferenceCountModel::ReferenceCountModel(QObject* p)
 }
 
 //-----------------------------------------------------------------------------
-ReferenceCountModel::~ReferenceCountModel() {}
+ReferenceCountModel::~ReferenceCountModel()
+{
+}
 
 //-----------------------------------------------------------------------------
 QString ReferenceCountModel::pointerAsString(void* ptr)
@@ -290,7 +299,7 @@ void ReferenceCountModel::updateReferenceCounts()
 }
 
 //-----------------------------------------------------------------------------
-Qt::ItemFlags ReferenceCountModel::flags(const QModelIndex& modelIndex) const
+Qt::ItemFlags ReferenceCountModel::flags(const QModelIndex &modelIndex) const
 {
   Q_UNUSED(modelIndex);
   return Qt::ItemIsSelectable | Qt::ItemIsEnabled;

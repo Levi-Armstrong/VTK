@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import vtk
+from vtk.test import Testing
 from vtk.util.misc import vtkGetDataRoot
 VTK_DATA_ROOT = vtkGetDataRoot()
 
@@ -24,7 +25,7 @@ extract.SetVOI(32,32,0,63,0,92)
 atext = vtk.vtkTexture()
 atext.SetInputConnection(extract.GetOutputPort())
 atext.InterpolateOn()
-# generate plane to map texture on to
+# gnerate plane to map texture on to
 plane = vtk.vtkPlaneSource()
 plane.SetXResolution(1)
 plane.SetYResolution(1)

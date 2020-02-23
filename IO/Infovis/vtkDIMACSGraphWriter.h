@@ -42,22 +42,22 @@
  * @sa
  * vtkDIMACSGraphReader
  *
- */
+*/
 
 #ifndef vtkDIMACSGraphWriter_h
 #define vtkDIMACSGraphWriter_h
 
-#include "vtkDataWriter.h"
 #include "vtkIOInfovisModule.h" // For export macro
+#include "vtkDataWriter.h"
 
 class vtkGraph;
 
 class VTKIOINFOVIS_EXPORT vtkDIMACSGraphWriter : public vtkDataWriter
 {
 public:
-  static vtkDIMACSGraphWriter* New();
-  vtkTypeMacro(vtkDIMACSGraphWriter, vtkDataWriter);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkDIMACSGraphWriter *New();
+  vtkTypeMacro(vtkDIMACSGraphWriter,vtkDataWriter);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -69,15 +69,15 @@ public:
 
 protected:
   vtkDIMACSGraphWriter() {}
-  ~vtkDIMACSGraphWriter() override {}
+  ~vtkDIMACSGraphWriter() {}
 
-  void WriteData() override;
+  void WriteData();
 
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  virtual int FillInputPortInformation(int port, vtkInformation *info);
 
 private:
-  vtkDIMACSGraphWriter(const vtkDIMACSGraphWriter&) = delete;
-  void operator=(const vtkDIMACSGraphWriter&) = delete;
+  vtkDIMACSGraphWriter(const vtkDIMACSGraphWriter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkDIMACSGraphWriter&) VTK_DELETE_FUNCTION;
 };
 
 #endif

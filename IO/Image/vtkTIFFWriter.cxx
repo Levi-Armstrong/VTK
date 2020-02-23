@@ -21,19 +21,12 @@
 #include "vtkStreamingDemandDrivenPipeline.h"
 #include "vtk_tiff.h"
 
-#include <vector>
-
 vtkStandardNewMacro(vtkTIFFWriter);
 
 //----------------------------------------------------------------------------
 vtkTIFFWriter::vtkTIFFWriter()
-  : TIFFPtr(nullptr)
-  , Compression(PackBits)
-  , Width(0)
-  , Height(0)
-  , Pages(0)
-  , XResolution(-1.0)
-  , YResolution(-1.0)
+  : TIFFPtr(NULL), Compression(PackBits), Width(0), Height(0), Pages(0),
+    XResolution(-1.0), YResolution(-1.0)
 {
 }
 
@@ -44,14 +37,14 @@ void vtkTIFFWriter::Write()
   this->GetInputAlgorithm()->Update();
   this->SetErrorCode(vtkErrorCode::NoError);
   // Error checking
-  if (this->GetInput() == nullptr)
+  if (this->GetInput() == NULL)
   {
-    vtkErrorMacro(<< "Write: Please specify an input!");
+    vtkErrorMacro(<<"Write: Please specify an input!");
     return;
   }
   if (!this->FileName && !this->FilePattern)
   {
-    vtkErrorMacro(<< "Write: Please specify either a FileName or a file prefix and pattern");
+    vtkErrorMacro(<<"Write: Please specify either a FileName or a file prefix and pattern");
     this->SetErrorCode(vtkErrorCode::NoFileNameError);
     return;
   }
@@ -60,27 +53,28 @@ void vtkTIFFWriter::Write()
   // would be great to rewrite in more modern C++, but sticking with superclass
   // for now to maintain behavior without rewriting/translating code.
   size_t internalFileNameSize = (this->FileName ? strlen(this->FileName) : 1) +
-    (this->FilePrefix ? strlen(this->FilePrefix) : 1) +
-    (this->FilePattern ? strlen(this->FilePattern) : 1) + 256;
+            (this->FilePrefix ? strlen(this->FilePrefix) : 1) +
+            (this->FilePattern ? strlen(this->FilePattern) : 1) + 256;
   this->InternalFileName = new char[internalFileNameSize];
   this->InternalFileName[0] = 0;
   int bytesPrinted = 0;
   // determine the name
   if (this->FileName)
   {
-    bytesPrinted = snprintf(this->InternalFileName, internalFileNameSize, "%s", this->FileName);
+    bytesPrinted = snprintf(this->InternalFileName, internalFileNameSize,
+      "%s",this->FileName);
   }
   else
   {
     if (this->FilePrefix)
     {
-      bytesPrinted = snprintf(this->InternalFileName, internalFileNameSize, this->FilePattern,
-        this->FilePrefix, this->FileNumber);
+      bytesPrinted = snprintf(this->InternalFileName, internalFileNameSize,
+        this->FilePattern, this->FilePrefix, this->FileNumber);
     }
     else
     {
-      bytesPrinted =
-        snprintf(this->InternalFileName, internalFileNameSize, this->FilePattern, this->FileNumber);
+      bytesPrinted = snprintf(this->InternalFileName, internalFileNameSize,
+        this->FilePattern,this->FileNumber);
     }
   }
   if (static_cast<size_t>(bytesPrinted) >= internalFileNameSize)
@@ -92,34 +86,35 @@ void vtkTIFFWriter::Write()
 
   // Fill in image information.
   this->GetInputExecutive(0, 0)->UpdateInformation();
-  int* wExtent;
-  wExtent = vtkStreamingDemandDrivenPipeline::GetWholeExtent(this->GetInputInformation(0, 0));
+  int *wExtent;
+  wExtent = vtkStreamingDemandDrivenPipeline::GetWholeExtent(
+    this->GetInputInformation(0, 0));
   this->FilesDeleted = 0;
   this->UpdateProgress(0.0);
 
-  this->WriteFileHeader(nullptr, this->GetInput(), wExtent);
-  this->WriteFile(nullptr, this->GetInput(), wExtent, nullptr);
+  this->WriteFileHeader(0, this->GetInput(), wExtent);
+  this->WriteFile(0, this->GetInput(), wExtent, 0);
   if (this->ErrorCode == vtkErrorCode::OutOfDiskSpaceError)
   {
     this->DeleteFiles();
   }
   else
   {
-    this->WriteFileTrailer(nullptr, nullptr);
+    this->WriteFileTrailer(0, 0);
   }
 
-  delete[] this->InternalFileName;
-  this->InternalFileName = nullptr;
+  delete [] this->InternalFileName;
+  this->InternalFileName = NULL;
 }
 
 //----------------------------------------------------------------------------
-void vtkTIFFWriter::WriteFileHeader(ostream*, vtkImageData* data, int wExt[6])
+void vtkTIFFWriter::WriteFileHeader(ofstream *, vtkImageData *data, int wExt[6])
 {
   int dims[3];
   data->GetDimensions(dims);
   int scomponents = data->GetNumberOfScalarComponents();
   int stype = data->GetScalarType();
-  uint32 rowsperstrip = (uint32)-1;
+  uint32 rowsperstrip = (uint32) -1;
 
   int bps;
   switch (stype)
@@ -158,7 +153,7 @@ void vtkTIFFWriter::WriteFileHeader(ostream*, vtkImageData* data, int wExt[6])
 
   if (!tif)
   {
-    this->TIFFPtr = nullptr;
+    this->TIFFPtr = 0;
     return;
   }
   this->TIFFPtr = tif;
@@ -182,62 +177,57 @@ void vtkTIFFWriter::WriteFileHeader(ostream*, vtkImageData* data, int wExt[6])
     TIFFSetField(tif, TIFFTAG_SAMPLEFORMAT, SAMPLEFORMAT_IEEEFP);
   }
 
-  if (scomponents > 3)
+  if ( scomponents > 3 )
   {
     // if number of scalar components is greater than 3, that means we assume
     // there is alpha.
-    uint16 extra_samples = scomponents - 3;
-    std::vector<uint16> sample_info(scomponents - 3);
-    sample_info[0] = EXTRASAMPLE_ASSOCALPHA;
+    uint16 extra_samples = scomponents-3;
+    uint16 *sample_info = new uint16[scomponents-3];
+    sample_info[0]=EXTRASAMPLE_ASSOCALPHA;
     int cc;
-    for (cc = 1; cc < scomponents - 3; cc++)
+    for ( cc = 1; cc < scomponents-3; cc ++ )
     {
       sample_info[cc] = EXTRASAMPLE_UNSPECIFIED;
     }
-    TIFFSetField(tif, TIFFTAG_EXTRASAMPLES, extra_samples, sample_info.data());
+    TIFFSetField(tif,TIFFTAG_EXTRASAMPLES,extra_samples,
+      sample_info);
+    delete [] sample_info;
   }
 
   int compression;
-  switch (this->Compression)
+  switch ( this->Compression )
   {
-    case vtkTIFFWriter::PackBits:
-      compression = COMPRESSION_PACKBITS;
-      break;
-    case vtkTIFFWriter::JPEG:
-      compression = COMPRESSION_JPEG;
-      break;
-    case vtkTIFFWriter::Deflate:
-      compression = COMPRESSION_DEFLATE;
-      break;
-    case vtkTIFFWriter::LZW:
-      compression = COMPRESSION_LZW;
-      break;
-    default:
-      compression = COMPRESSION_NONE;
+    case vtkTIFFWriter::PackBits: compression = COMPRESSION_PACKBITS; break;
+    case vtkTIFFWriter::JPEG:     compression = COMPRESSION_JPEG; break;
+    case vtkTIFFWriter::Deflate:  compression = COMPRESSION_DEFLATE; break;
+    case vtkTIFFWriter::LZW:      compression = COMPRESSION_LZW; break;
+    default: compression = COMPRESSION_NONE;
   }
-  // compression = COMPRESSION_JPEG;
+  //compression = COMPRESSION_JPEG;
   TIFFSetField(tif, TIFFTAG_COMPRESSION, compression); // Fix for compression
-  uint16 photometric = (scomponents == 1 ? PHOTOMETRIC_MINISBLACK : PHOTOMETRIC_RGB);
-  if (compression == COMPRESSION_JPEG)
+  uint16 photometric =
+    (scomponents == 1 ? PHOTOMETRIC_MINISBLACK : PHOTOMETRIC_RGB);
+  if ( compression == COMPRESSION_JPEG )
   {
     TIFFSetField(tif, TIFFTAG_JPEGQUALITY, 75); // Parameter
     TIFFSetField(tif, TIFFTAG_JPEGCOLORMODE, JPEGCOLORMODE_RGB);
     photometric = PHOTOMETRIC_YCBCR;
   }
-  else if (compression == COMPRESSION_LZW)
+  else if ( compression == COMPRESSION_LZW )
   {
     predictor = 2;
     TIFFSetField(tif, TIFFTAG_PREDICTOR, predictor);
     vtkErrorMacro("LZW compression is patented outside US so it is disabled");
   }
-  else if (compression == COMPRESSION_DEFLATE)
+  else if ( compression == COMPRESSION_DEFLATE )
   {
     predictor = 2;
     TIFFSetField(tif, TIFFTAG_PREDICTOR, predictor);
   }
 
   TIFFSetField(tif, TIFFTAG_PHOTOMETRIC, photometric); // Fix for scomponents
-  TIFFSetField(tif, TIFFTAG_ROWSPERSTRIP, TIFFDefaultStripSize(tif, rowsperstrip));
+  TIFFSetField(tif, TIFFTAG_ROWSPERSTRIP,
+    TIFFDefaultStripSize(tif, rowsperstrip));
   if (this->XResolution > 0.0 && this->YResolution > 0.0)
   {
     TIFFSetField(tif, TIFFTAG_XRESOLUTION, this->XResolution);
@@ -247,7 +237,8 @@ void vtkTIFFWriter::WriteFileHeader(ostream*, vtkImageData* data, int wExt[6])
 }
 
 //----------------------------------------------------------------------------
-void vtkTIFFWriter::WriteFile(ostream*, vtkImageData* data, int extent[6], int*)
+void vtkTIFFWriter::WriteFile(ofstream *, vtkImageData *data,
+                              int extent[6], int*)
 {
   // Make sure we actually have data.
   if (!data->GetPointData()->GetScalars())
@@ -265,8 +256,9 @@ void vtkTIFFWriter::WriteFile(ostream*, vtkImageData* data, int extent[6], int*)
   }
 
   // take into consideration the scalar type
-  if (data->GetScalarType() != VTK_UNSIGNED_CHAR && data->GetScalarType() != VTK_UNSIGNED_SHORT &&
-    data->GetScalarType() != VTK_FLOAT)
+  if( data->GetScalarType() != VTK_UNSIGNED_CHAR
+   && data->GetScalarType() != VTK_UNSIGNED_SHORT
+   && data->GetScalarType() != VTK_FLOAT)
   {
     vtkErrorMacro("TIFFWriter only accepts unsigned char/short or float scalars!");
     return;
@@ -275,11 +267,11 @@ void vtkTIFFWriter::WriteFile(ostream*, vtkImageData* data, int extent[6], int*)
   if (this->Pages > 1)
   {
     // Call the correct templated function for the input
-    void* inPtr = data->GetScalarPointer();
+    void *inPtr = data->GetScalarPointer();
 
     switch (data->GetScalarType())
     {
-      vtkTemplateMacro(this->WriteVolume((VTK_TT*)(inPtr)));
+      vtkTemplateMacro(this->WriteVolume((VTK_TT *)(inPtr)));
       default:
         vtkErrorMacro("UpdateFromFile: Unknown data type");
     }
@@ -292,7 +284,7 @@ void vtkTIFFWriter::WriteFile(ostream*, vtkImageData* data, int extent[6], int*)
     {
       for (int idx1 = extent[3]; idx1 >= extent[2]; idx1--)
       {
-        void* ptr = data->GetScalarPointer(extent[0], idx1, idx2);
+        void *ptr = data->GetScalarPointer(extent[0], idx1, idx2);
         if (TIFFWriteScanline(tif, static_cast<unsigned char*>(ptr), row, 0) < 0)
         {
           this->SetErrorCode(vtkErrorCode::OutOfDiskSpaceError);
@@ -305,7 +297,7 @@ void vtkTIFFWriter::WriteFile(ostream*, vtkImageData* data, int extent[6], int*)
 }
 
 //----------------------------------------------------------------------------
-template <typename T>
+template<typename T>
 void vtkTIFFWriter::WriteVolume(T* buffer)
 {
   TIFF* tif = reinterpret_cast<TIFF*>(this->TIFFPtr);
@@ -336,7 +328,7 @@ void vtkTIFFWriter::WriteVolume(T* buffer)
     TIFFSetField(tif, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
 
     int compression;
-    switch (this->Compression)
+    switch ( this->Compression )
     {
       case vtkTIFFWriter::PackBits:
         compression = COMPRESSION_PACKBITS;
@@ -356,13 +348,13 @@ void vtkTIFFWriter::WriteVolume(T* buffer)
     TIFFSetField(tif, TIFFTAG_COMPRESSION, compression); // Fix for compression
     if (compression == COMPRESSION_LZW)
     {
-      TIFFSetField(tif, TIFFTAG_PREDICTOR, 2);
-      vtkErrorMacro("LZW compression is patented outside US so it is disabled");
+       TIFFSetField(tif, TIFFTAG_PREDICTOR, 2);
+       vtkErrorMacro("LZW compression is patented outside US so it is disabled");
     }
-    else if (compression == COMPRESSION_DEFLATE)
-    {
-      TIFFSetField(tif, TIFFTAG_PREDICTOR, 2);
-    }
+     else if (compression == COMPRESSION_DEFLATE)
+     {
+       TIFFSetField(tif, TIFFTAG_PREDICTOR, 2);
+     }
 
     if (bitsPerSample == 32)
     {
@@ -370,8 +362,9 @@ void vtkTIFFWriter::WriteVolume(T* buffer)
     }
 
     TIFFSetField(tif, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_MINISBLACK);
-    uint32 rowsperstrip = (uint32)-1;
-    TIFFSetField(tif, TIFFTAG_ROWSPERSTRIP, TIFFDefaultStripSize(tif, rowsperstrip));
+    uint32 rowsperstrip = (uint32) -1;
+    TIFFSetField(tif, TIFFTAG_ROWSPERSTRIP,
+      TIFFDefaultStripSize(tif, rowsperstrip));
     if (this->XResolution > 0.0 && this->YResolution > 0.0)
     {
       TIFFSetField(tif, TIFFTAG_XRESOLUTION, this->XResolution);
@@ -403,10 +396,10 @@ void vtkTIFFWriter::WriteVolume(T* buffer)
 }
 
 //----------------------------------------------------------------------------
-void vtkTIFFWriter::WriteFileTrailer(ostream*, vtkImageData*)
+void vtkTIFFWriter::WriteFileTrailer(ofstream *, vtkImageData *)
 {
   TIFF* tif = reinterpret_cast<TIFF*>(this->TIFFPtr);
-  if (tif)
+  if( tif)
   {
     TIFFClose(tif);
   }
@@ -416,32 +409,32 @@ void vtkTIFFWriter::WriteFileTrailer(ostream*, vtkImageData*)
     this->SetErrorCode(vtkErrorCode::FileFormatError);
   }
 
-  this->TIFFPtr = nullptr;
+  this->TIFFPtr = 0;
 }
 
 //----------------------------------------------------------------------------
 void vtkTIFFWriter::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 
   os << indent << "Compression: ";
-  if (this->Compression == vtkTIFFWriter::PackBits)
+  if ( this->Compression == vtkTIFFWriter::PackBits )
   {
     os << "Pack Bits\n";
   }
-  else if (this->Compression == vtkTIFFWriter::JPEG)
+  else if ( this->Compression == vtkTIFFWriter::JPEG )
   {
     os << "JPEG\n";
   }
-  else if (this->Compression == vtkTIFFWriter::Deflate)
+  else if ( this->Compression == vtkTIFFWriter::Deflate )
   {
     os << "Deflate\n";
   }
-  else if (this->Compression == vtkTIFFWriter::LZW)
+  else if ( this->Compression == vtkTIFFWriter::LZW )
   {
     os << "LZW\n";
   }
-  else // if ( this->Compression == vtkTIFFWriter::NoCompression )
+  else //if ( this->Compression == vtkTIFFWriter::NoCompression )
   {
     os << "No Compression\n";
   }

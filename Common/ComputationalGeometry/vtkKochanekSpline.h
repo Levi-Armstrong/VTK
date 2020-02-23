@@ -40,7 +40,7 @@
  *
  * @sa
  * vtkSpline vtkCardinalSpline
- */
+*/
 
 #ifndef vtkKochanekSpline_h
 #define vtkKochanekSpline_h
@@ -51,69 +51,70 @@
 class VTKCOMMONCOMPUTATIONALGEOMETRY_EXPORT vtkKochanekSpline : public vtkSpline
 {
 public:
-  vtkTypeMacro(vtkKochanekSpline, vtkSpline);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkKochanekSpline,vtkSpline);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Construct a KochanekSpline with the following defaults: DefaultBias = 0,
    * DefaultTension = 0, DefaultContinuity = 0.
    */
-  static vtkKochanekSpline* New();
+  static vtkKochanekSpline *New();
 
   /**
    * Compute Kochanek Spline coefficients.
    */
-  void Compute() override;
+  void Compute () VTK_OVERRIDE;
 
   /**
    * Evaluate a 1D Kochanek spline.
    */
-  double Evaluate(double t) override;
+  double Evaluate (double t) VTK_OVERRIDE;
 
   //@{
   /**
    * Set the bias for all points. Default is 0.
    */
-  vtkSetMacro(DefaultBias, double);
-  vtkGetMacro(DefaultBias, double);
+  vtkSetMacro(DefaultBias,double);
+  vtkGetMacro(DefaultBias,double);
   //@}
 
   //@{
   /**
    * Set the tension for all points. Default is 0.
    */
-  vtkSetMacro(DefaultTension, double);
-  vtkGetMacro(DefaultTension, double);
+  vtkSetMacro(DefaultTension,double);
+  vtkGetMacro(DefaultTension,double);
   //@}
 
   //@{
   /**
    * Set the continuity for all points. Default is 0.
    */
-  vtkSetMacro(DefaultContinuity, double);
-  vtkGetMacro(DefaultContinuity, double);
+  vtkSetMacro(DefaultContinuity,double);
+  vtkGetMacro(DefaultContinuity,double);
   //@}
 
   /**
    * Deep copy of cardinal spline data.
    */
-  void DeepCopy(vtkSpline* s) override;
+  void DeepCopy(vtkSpline *s) VTK_OVERRIDE;
 
 protected:
   vtkKochanekSpline();
-  ~vtkKochanekSpline() override {}
+  ~vtkKochanekSpline() VTK_OVERRIDE {}
 
-  void Fit1D(int n, double* x, double* y, double tension, double bias, double continuity,
-    double coefficients[][4], int leftConstraint, double leftValue, int rightConstraint,
-    double rightValue);
+  void Fit1D (int n, double *x, double *y, double tension, double bias,
+              double continuity, double coefficients[][4], int leftConstraint,
+              double leftValue, int rightConstraint, double rightValue);
 
   double DefaultBias;
   double DefaultTension;
   double DefaultContinuity;
 
 private:
-  vtkKochanekSpline(const vtkKochanekSpline&) = delete;
-  void operator=(const vtkKochanekSpline&) = delete;
+  vtkKochanekSpline(const vtkKochanekSpline&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkKochanekSpline&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

@@ -20,25 +20,27 @@
  * a uniform grid. It internally uses vtkProbeFilter to do the probing.
  * @sa
  * vtkProbeFilter
- */
+*/
 
 #ifndef vtkResampleToImage_h
 #define vtkResampleToImage_h
 
 #include "vtkAlgorithm.h"
 #include "vtkFiltersCoreModule.h" // For export macro
-#include "vtkNew.h"               // For vtkCompositeDataProbeFilter member variable
+#include "vtkNew.h" // For vtkCompositeDataProbeFilter member variable
+
 
 class vtkDataObject;
 class vtkImageData;
+class vtkCompositeDataProbeFilter;
 
 class VTKFILTERSCORE_EXPORT vtkResampleToImage : public vtkAlgorithm
 {
 public:
   vtkTypeMacro(vtkResampleToImage, vtkAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
-  static vtkResampleToImage* New();
+  static vtkResampleToImage *New();
 
   //@{
   /**
@@ -74,16 +76,19 @@ public:
 
 protected:
   vtkResampleToImage();
-  ~vtkResampleToImage() override;
+  ~vtkResampleToImage() VTK_OVERRIDE;
 
   // Usual data generation method
-  vtkTypeBool ProcessRequest(
-    vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  virtual int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
-  virtual int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
-  virtual int RequestUpdateExtent(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
-  int FillInputPortInformation(int, vtkInformation*) override;
-  int FillOutputPortInformation(int, vtkInformation*) override;
+  int ProcessRequest(vtkInformation*, vtkInformationVector**,
+                     vtkInformationVector*) VTK_OVERRIDE;
+  virtual int RequestData(vtkInformation *, vtkInformationVector **,
+                          vtkInformationVector *);
+  virtual int RequestInformation(vtkInformation *, vtkInformationVector **,
+                                 vtkInformationVector *);
+  virtual int RequestUpdateExtent(vtkInformation *, vtkInformationVector **,
+                                  vtkInformationVector *);
+  int FillInputPortInformation(int, vtkInformation *) VTK_OVERRIDE;
+  int FillOutputPortInformation(int, vtkInformation *) VTK_OVERRIDE;
 
   /**
    * Get the name of the valid-points mask array.
@@ -94,27 +99,30 @@ protected:
    * Resample input vtkDataObject to a vtkImageData with the specified bounds
    * and extent.
    */
-  void PerformResampling(vtkDataObject* input, const double samplingBounds[6],
-    bool computeProbingExtent, const double inputBounds[6], vtkImageData* output);
+  void PerformResampling(vtkDataObject *input, const double samplingBounds[6],
+                         bool computeProbingExtent, const double inputBounds[6],
+                         vtkImageData *output);
 
   /**
    * Mark invalid points and cells of vtkImageData as hidden
    */
-  void SetBlankPointsAndCells(vtkImageData* data);
+  void SetBlankPointsAndCells(vtkImageData *data);
 
   /**
    * Helper function to compute the bounds of the given vtkDataSet or
    * vtkCompositeDataSet
    */
-  static void ComputeDataBounds(vtkDataObject* data, double bounds[6]);
+  static void ComputeDataBounds(vtkDataObject *data, double bounds[6]);
+
 
   bool UseInputBounds;
   double SamplingBounds[6];
   int SamplingDimensions[3];
+  vtkNew<vtkCompositeDataProbeFilter> Prober;
 
 private:
-  vtkResampleToImage(const vtkResampleToImage&) = delete;
-  void operator=(const vtkResampleToImage&) = delete;
+  vtkResampleToImage(const vtkResampleToImage&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkResampleToImage&) VTK_DELETE_FUNCTION;
 };
 
 #endif

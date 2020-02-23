@@ -154,7 +154,7 @@ class financialField3(vtk.test.Testing.vtkTest):
 
         calc = vtk.vtkArrayCalculator()
         calc.SetInputConnection(rf.GetOutputPort())
-        calc.SetAttributeTypeToPointData()
+        calc.SetAttributeModeToUsePointData()
         calc.SetFunction("s / %f" % max)
         calc.AddScalarVariable("s", scalar, 0)
         calc.SetResultArrayName("resArray")
@@ -180,6 +180,7 @@ class financialField3(vtk.test.Testing.vtkTest):
         popMapper = vtk.vtkPolyDataMapper()
         popMapper.SetInputConnection(popSurface.GetOutputPort())
         popMapper.ScalarVisibilityOff()
+        popMapper.ImmediateModeRenderingOn()
         popActor = vtk.vtkActor()
         popActor.SetMapper(popMapper)
         popActor.GetProperty().SetOpacity(0.3)

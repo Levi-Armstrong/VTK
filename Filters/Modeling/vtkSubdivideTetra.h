@@ -17,7 +17,7 @@
  * @brief   subdivide one tetrahedron into twelve for every tetra
  *
  * This filter subdivides tetrahedra in an unstructured grid into twelve tetrahedra.
- */
+*/
 
 #ifndef vtkSubdivideTetra_h
 #define vtkSubdivideTetra_h
@@ -28,19 +28,22 @@
 class VTKFILTERSMODELING_EXPORT vtkSubdivideTetra : public vtkUnstructuredGridAlgorithm
 {
 public:
-  static vtkSubdivideTetra* New();
-  vtkTypeMacro(vtkSubdivideTetra, vtkUnstructuredGridAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkSubdivideTetra *New();
+  vtkTypeMacro(vtkSubdivideTetra,vtkUnstructuredGridAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
+
 
 protected:
   vtkSubdivideTetra();
-  ~vtkSubdivideTetra() override {}
+  ~vtkSubdivideTetra() {}
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 
 private:
-  vtkSubdivideTetra(const vtkSubdivideTetra&) = delete;
-  void operator=(const vtkSubdivideTetra&) = delete;
+  vtkSubdivideTetra(const vtkSubdivideTetra&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkSubdivideTetra&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+

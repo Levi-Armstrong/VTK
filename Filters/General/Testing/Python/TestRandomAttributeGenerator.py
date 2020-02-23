@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import vtk
+from vtk.test import Testing
 from vtk.util.misc import vtkGetDataRoot
 VTK_DATA_ROOT = vtkGetDataRoot()
 
@@ -35,8 +36,6 @@ ss.SetThetaResolution(32)
 tg = vtk.vtkTensorGlyph()
 tg.SetInputConnection(ag.GetOutputPort())
 tg.SetSourceConnection(ss.GetOutputPort())
-tg.SetInputArrayToProcess(1,0,0,0,"RandomPointArray")
-
 tg.SetScaleFactor(0.1)
 tg.SetMaxScaleFactor(10)
 tg.ClampScalingOn()

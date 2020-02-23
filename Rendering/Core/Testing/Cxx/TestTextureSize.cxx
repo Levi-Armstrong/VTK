@@ -21,33 +21,36 @@
 #include <vtkFloatArray.h>
 #include <vtkImageData.h>
 #include <vtkNew.h>
-#include <vtkPNGWriter.h>
 #include <vtkPointData.h>
 #include <vtkPoints.h>
 #include <vtkPolyData.h>
 #include <vtkPolyDataMapper2D.h>
-#include <vtkRenderWindow.h>
-#include <vtkRenderWindowInteractor.h>
-#include <vtkRenderer.h>
+#include <vtkPNGWriter.h>
 #include <vtkSmartPointer.h>
 #include <vtkTexture.h>
 #include <vtkTexturedActor2D.h>
+#include <vtkRenderWindow.h>
+#include <vtkRenderer.h>
+#include <vtkRenderWindowInteractor.h>
 
 vtkImageData* createTexture2D(int width, int height, int comp)
 {
-  void* data = malloc(width * height * comp * sizeof(unsigned char));
+  void* data = malloc(width*height*comp*sizeof(unsigned char));
   if (!data)
   {
-    return nullptr;
+    return 0;
   }
   free(data);
   vtkImageData* image = vtkImageData::New();
-  image->SetExtent(0, width - 1, 0, height - 1, 0, 0);
+  image->SetExtent(0, width - 1,
+                   0, height - 1,
+                   0, 0);
   image->AllocateScalars(VTK_UNSIGNED_CHAR, comp);
 
-  unsigned char* ptr = reinterpret_cast<unsigned char*>(image->GetScalarPointer(0, 0, 0));
+  unsigned char* ptr =
+    reinterpret_cast<unsigned char*>(image->GetScalarPointer(0,0,0));
   double value = 0.;
-  double valueIncr = 255. / (width * height > 1 ? width * height - 1 : 1);
+  double valueIncr = 255. / (width*height > 1 ? width*height-1 : 1);
   for (int y = 0; y < height; ++y)
   {
     for (int x = 0; x < width; ++x)
@@ -62,14 +65,14 @@ vtkImageData* createTexture2D(int width, int height, int comp)
   return image;
 }
 
-int TestTextureSize(int vtkNotUsed(argc), char* vtkNotUsed(argv)[])
+int TestTextureSize(int vtkNotUsed(argc), char *vtkNotUsed(argv)[])
 {
-  // Create a renderer, render window, and interactor
+  //Create a renderer, render window, and interactor
   vtkNew<vtkRenderer> renderer;
   vtkNew<vtkRenderWindow> renderWindow;
-  renderWindow->AddRenderer(renderer);
+  renderWindow->AddRenderer(renderer.GetPointer());
   vtkNew<vtkRenderWindowInteractor> interactor;
-  interactor->SetRenderWindow(renderWindow);
+  interactor->SetRenderWindow(renderWindow.GetPointer());
 
   vtkNew<vtkPoints> points;
   points->InsertPoint(0, 0., 0., 0.);
@@ -92,40 +95,42 @@ int TestTextureSize(int vtkNotUsed(argc), char* vtkNotUsed(argv)[])
   tcoords->InsertNextTuple2(0.f, 1.f);
 
   vtkNew<vtkPolyData> textureCoords;
-  textureCoords->SetPoints(points);
-  textureCoords->SetPolys(cells);
-  textureCoords->GetPointData()->SetTCoords(tcoords);
+  textureCoords->SetPoints(points.GetPointer());
+  textureCoords->SetPolys(cells.GetPointer());
+  textureCoords->GetPointData()->SetTCoords(tcoords.GetPointer());
 
   vtkNew<vtkPolyDataMapper2D> polyDataMapper;
-  polyDataMapper->SetInputData(textureCoords);
+  polyDataMapper->SetInputData( textureCoords.GetPointer() );
 
-  int textureSizes[23][2] = { { 1, 2 }, { 1, 3 }, { 1, 4 }, { 1, 5 }, { 1, 255 }, { 1, 256 },
-    { 257, 1 }, { 2, 1 }, { 3, 1 }, { 4, 1 }, { 5, 1 }, { 255, 1 }, { 256, 1 }, { 257, 1 },
-    { 1, 1 }, { 2, 2 }, { 3, 3 }, { 3, 3 }, { 255, 255 }, { 256, 256 }, { 257, 257 },
-    { 2047, 2047 }, { 4097, 4097 } };
-  int componentSizes[3] = { 1, 3, 4 };
+  int textureSizes[23][2] =
+    {{1,2}, {1,3}, {1,4}, {1,5}, {1,255}, {1,256}, {257,1},
+     {2,1}, {3,1}, {4,1}, {5,1}, {255,1}, {256,1}, {257,1},
+     {1,1}, {2,2}, {3,3}, {3,3}, {255,255}, {256,256}, {257,257},
+     {2047,2047}, {4097,4097}};
+  int componentSizes[3] = {1, 3, 4};
   for (int i = 0; i < 23; ++i)
   {
     for (int c = 0; c < 3; ++c)
     {
       int* size = textureSizes[i];
       vtkSmartPointer<vtkImageData> image =
-        vtkSmartPointer<vtkImageData>::Take(createTexture2D(size[0], size[1], componentSizes[c]));
-      if (image == nullptr)
+        vtkSmartPointer<vtkImageData>::Take(
+          createTexture2D(size[0], size[1], componentSizes[c]));
+      if (image.GetPointer() == 0)
       {
         return EXIT_SUCCESS;
       }
       vtkNew<vtkTexture> texture;
       texture->SetInputData(image);
       // You can play with the parameters
-      // texture->SetRepeat(false);
-      // texture->SetEdgeClamp(true);
-      // texture->SetInterpolate(true);
+      //texture->SetRepeat(false);
+      //texture->SetEdgeClamp(true);
+      //texture->SetInterpolate(true);
 
       vtkNew<vtkTexturedActor2D> textureActor;
-      textureActor->SetTexture(texture);
-      textureActor->SetMapper(polyDataMapper);
-      renderer->AddActor(textureActor);
+      textureActor->SetTexture(texture.GetPointer());
+      textureActor->SetMapper(polyDataMapper.GetPointer());
+      renderer->AddActor(textureActor.GetPointer());
 
       texture->SetRestrictPowerOf2ImageSmaller(false);
       renderWindow->Render();

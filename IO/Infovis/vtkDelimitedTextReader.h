@@ -18,6 +18,7 @@
   the U.S. Government retains certain rights in this software.
 -------------------------------------------------------------------------*/
 
+
 /**
  * @class   vtkDelimitedTextReader
  * @brief   reads in delimited ascii or unicode text files
@@ -58,22 +59,22 @@
  * This reader assumes that the first line in the file (whether that's
  * headers or the first document) contains at least as many fields as
  * any other line in the file.
- */
+*/
 
 #ifndef vtkDelimitedTextReader_h
 #define vtkDelimitedTextReader_h
 
 #include "vtkIOInfovisModule.h" // For export macro
-#include "vtkStdString.h"       // Needed for vtkStdString
 #include "vtkTableAlgorithm.h"
 #include "vtkUnicodeString.h" // Needed for vtkUnicodeString
+#include "vtkStdString.h" // Needed for vtkStdString
 
 class VTKIOINFOVIS_EXPORT vtkDelimitedTextReader : public vtkTableAlgorithm
 {
 public:
   static vtkDelimitedTextReader* New();
   vtkTypeMacro(vtkDelimitedTextReader, vtkTableAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -90,14 +91,12 @@ public:
    * of the string is made and stored. If this causes exceedingly large
    * memory consumption, consider using InputArray instead.
    */
-  void SetInputString(const char* in);
+  void SetInputString(const char *in);
   vtkGetStringMacro(InputString);
-  void SetInputString(const char* in, int len);
+  void SetInputString(const char *in, int len);
   vtkGetMacro(InputStringLength, int);
   void SetInputString(const vtkStdString& input)
-  {
-    this->SetInputString(input.c_str(), static_cast<int>(input.length()));
-  }
+    { this->SetInputString(input.c_str(), static_cast<int>(input.length())); }
   //@}
 
   //@{
@@ -105,9 +104,9 @@ public:
    * Enable reading from an InputString or InputArray instead of the default,
    * a file.
    */
-  vtkSetMacro(ReadFromInputString, vtkTypeBool);
-  vtkGetMacro(ReadFromInputString, vtkTypeBool);
-  vtkBooleanMacro(ReadFromInputString, vtkTypeBool);
+  vtkSetMacro(ReadFromInputString,int);
+  vtkGetMacro(ReadFromInputString,int);
+  vtkBooleanMacro(ReadFromInputString,int);
   //@}
 
   //@{
@@ -301,17 +300,6 @@ public:
   vtkBooleanMacro(OutputPedigreeIds, bool);
   //@}
 
-  //@{
-  /**
-   * If on, also add in the tab (i.e. '\t') character as a field delimiter.
-   * We add this specially since applications may have a more
-   * difficult time doing this. Defaults to off.
-   */
-  vtkSetMacro(AddTabFieldDelimiter, bool);
-  vtkGetMacro(AddTabFieldDelimiter, bool);
-  vtkBooleanMacro(AddTabFieldDelimiter, bool);
-  //@}
-
   /**
    * Returns a human-readable description of the most recent error, if any.
    * Otherwise, returns an empty string.  Note that the result is only valid
@@ -331,16 +319,16 @@ public:
 
 protected:
   vtkDelimitedTextReader();
-  ~vtkDelimitedTextReader() override;
+  ~vtkDelimitedTextReader();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-
-  // Read the content of the input file.
-  int ReadData(vtkTable* const output_table);
+  int RequestData(
+    vtkInformation*,
+    vtkInformationVector**,
+    vtkInformationVector*);
 
   char* FileName;
-  vtkTypeBool ReadFromInputString;
-  char* InputString;
+  int ReadFromInputString;
+  char *InputString;
   int InputStringLength;
   char* UnicodeCharacterSet;
   vtkIdType MaxRecords;
@@ -363,13 +351,14 @@ protected:
   char* PedigreeIdArrayName;
   bool GeneratePedigreeIds;
   bool OutputPedigreeIds;
-  bool AddTabFieldDelimiter;
   vtkStdString LastError;
   vtkTypeUInt32 ReplacementCharacter;
 
 private:
-  vtkDelimitedTextReader(const vtkDelimitedTextReader&) = delete;
-  void operator=(const vtkDelimitedTextReader&) = delete;
+  vtkDelimitedTextReader(const vtkDelimitedTextReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkDelimitedTextReader&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif
+

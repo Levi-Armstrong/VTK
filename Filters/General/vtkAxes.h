@@ -20,7 +20,7 @@
  * axes is user specified (0,0,0 is default), and the size is specified with
  * a scale factor. Three scalar values are generated for the three lines and
  * can be used (via color map) to indicate a particular coordinate axis.
- */
+*/
 
 #ifndef vtkAxes_h
 #define vtkAxes_h
@@ -31,62 +31,64 @@
 class VTKFILTERSGENERAL_EXPORT vtkAxes : public vtkPolyDataAlgorithm
 {
 public:
-  static vtkAxes* New();
+  static vtkAxes *New();
 
-  vtkTypeMacro(vtkAxes, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkAxes,vtkPolyDataAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   //@{
   /**
    * Set the origin of the axes.
    */
-  vtkSetVector3Macro(Origin, double);
-  vtkGetVectorMacro(Origin, double, 3);
+  vtkSetVector3Macro(Origin,double);
+  vtkGetVectorMacro(Origin,double,3);
   //@}
 
   //@{
   /**
    * Set the scale factor of the axes. Used to control size.
    */
-  vtkSetMacro(ScaleFactor, double);
-  vtkGetMacro(ScaleFactor, double);
+  vtkSetMacro(ScaleFactor,double);
+  vtkGetMacro(ScaleFactor,double);
   //@}
 
   //@{
   /**
-   * If Symmetric is on, the axis continue to negative values.
+   * If Symetric is on, the the axis continue to negative values.
    */
-  vtkSetMacro(Symmetric, vtkTypeBool);
-  vtkGetMacro(Symmetric, vtkTypeBool);
-  vtkBooleanMacro(Symmetric, vtkTypeBool);
+  vtkSetMacro(Symmetric,int);
+  vtkGetMacro(Symmetric,int);
+  vtkBooleanMacro(Symmetric,int);
   //@}
 
   //@{
   /**
    * Option for computing normals.  By default they are computed.
    */
-  vtkSetMacro(ComputeNormals, vtkTypeBool);
-  vtkGetMacro(ComputeNormals, vtkTypeBool);
-  vtkBooleanMacro(ComputeNormals, vtkTypeBool);
+  vtkSetMacro(ComputeNormals, int);
+  vtkGetMacro(ComputeNormals, int);
+  vtkBooleanMacro(ComputeNormals, int);
   //@}
 
 protected:
   vtkAxes();
-  ~vtkAxes() override {}
+  ~vtkAxes() VTK_OVERRIDE {}
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *) VTK_OVERRIDE;
   // This source does not know how to generate pieces yet.
-  int ComputeDivisionExtents(vtkDataObject* output, int idx, int numDivisions);
+  int ComputeDivisionExtents(vtkDataObject *output,
+                             int idx, int numDivisions);
 
   double Origin[3];
   double ScaleFactor;
 
-  vtkTypeBool Symmetric;
-  vtkTypeBool ComputeNormals;
-
+  int Symmetric;
+  int ComputeNormals;
 private:
-  vtkAxes(const vtkAxes&) = delete;
-  void operator=(const vtkAxes&) = delete;
+  vtkAxes(const vtkAxes&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkAxes&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+

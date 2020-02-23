@@ -18,8 +18,8 @@
 
 #include "metaFEMObject.h"
 
-#include <cctype>
-#include <cstdio>
+#include <stdio.h>
+#include <ctype.h>
 #include <string>
 
 #if (METAIO_USE_NAMESPACE)
@@ -168,7 +168,7 @@ MetaFEMObject::
   while(it_Node != m_NodeList.end())
     {
     FEMObjectNode* Node = *it_Node;
-    ++it_Node;
+    it_Node++;
     delete Node;
     }
   // Delete the list of pointers to Materials.
@@ -176,7 +176,7 @@ MetaFEMObject::
   while(it_Material != m_MaterialList.end())
     {
     FEMObjectMaterial* Material = *it_Material;
-    ++it_Material;
+    it_Material++;
     delete Material;
     }
 
@@ -185,7 +185,7 @@ MetaFEMObject::
   while(it_Element != m_ElementList.end())
     {
     FEMObjectElement* Element = *it_Element;
-    ++it_Element;
+    it_Element++;
     delete Element;
     }
 
@@ -194,7 +194,7 @@ MetaFEMObject::
   while(it_Load != m_LoadList.end())
     {
     FEMObjectLoad* Load = *it_Load;
-    ++it_Load;
+    it_Load++;
     delete Load;
     }
 
@@ -216,7 +216,7 @@ CopyInfo(const MetaObject * _object)
 
 /** Clear FEMObject information */
 void MetaFEMObject::
-Clear()
+Clear(void)
 {
   if(META_DEBUG)
     {
@@ -233,7 +233,7 @@ Clear()
   while(it_Node != m_NodeList.end())
     {
     FEMObjectNode* Node = *it_Node;
-    ++it_Node;
+    it_Node++;
     delete Node;
     }
 
@@ -242,7 +242,7 @@ Clear()
   while(it_Element != m_ElementList.end())
     {
     FEMObjectElement* Element = *it_Element;
-    ++it_Element;
+    it_Element++;
     delete Element;
     }
 
@@ -251,7 +251,7 @@ Clear()
   while(it_Load != m_LoadList.end())
     {
     FEMObjectLoad* Load = *it_Load;
-    ++it_Load;
+    it_Load++;
     delete Load;
     }
 
@@ -260,7 +260,7 @@ Clear()
   while(it_Material != m_MaterialList.end())
     {
     FEMObjectMaterial* Material = *it_Material;
-    ++it_Material;
+    it_Material++;
     delete Material;
     }
 
@@ -272,14 +272,14 @@ Clear()
 
 /** Destroy tube information */
 void MetaFEMObject::
-M_Destroy()
+M_Destroy(void)
 {
   MetaObject::M_Destroy();
 }
 
 /** Set Read fields */
 void MetaFEMObject::
-M_SetupReadFields()
+M_SetupReadFields(void)
 {
   if(META_DEBUG)
     {
@@ -299,7 +299,7 @@ M_SetupReadFields()
 }
 
 void MetaFEMObject::
-M_SetupWriteFields()
+M_SetupWriteFields(void)
 {
   strcpy(m_ObjectTypeName,"FEMObject");
   MetaObject::M_SetupWriteFields();
@@ -317,7 +317,7 @@ M_SetupWriteFields()
 
 
 bool MetaFEMObject::
-M_Read()
+M_Read(void)
 {
   if(META_DEBUG)
     {
@@ -387,11 +387,11 @@ M_Read()
     s = std::string(buf);
 
     // get rid of the whitespaces in front of and the back of token
-    b = s.find_first_not_of(MetaFEMObject::whitespaces);                               // end of
+    b = s.find_first_not_of(this->whitespaces);                               // end of
     // whitespaces
     // in the
     // beginning
-    if ( ( e = s.find_first_of(MetaFEMObject::whitespaces, b) ) == std::string::npos ) //
+    if ( ( e = s.find_first_of(this->whitespaces, b) ) == std::string::npos ) //
       // beginning
       // of
       // whitespaces
@@ -446,7 +446,7 @@ M_Read()
 }
 
 bool MetaFEMObject::
-M_Write()
+M_Write(void)
 {
   if(!MetaObject::M_Write())
     {
@@ -459,7 +459,7 @@ M_Write()
     {
     FEMObjectNode* Node = *it_Node;
     this->M_Write_Node(Node);
-    ++it_Node;
+    it_Node++;
     }
   *this->m_WriteStream << "\n<END>  % End of nodes\n\n";
 
@@ -468,7 +468,7 @@ M_Write()
     {
     FEMObjectMaterial* Material = *it_Material;
     this->M_Write_Material(Material);
-    ++it_Material;
+    it_Material++;
     }
   *this->m_WriteStream << "\n<END>  % End of material definition\n\n";
 
@@ -478,7 +478,7 @@ M_Write()
     {
     FEMObjectElement* Element = *it_Element;
     this->M_Write_Element(Element);
-    ++it_Element;
+    it_Element++;
     }
   *this->m_WriteStream << "\n<END>  % End of element definition\n\n";
 
@@ -487,7 +487,7 @@ M_Write()
     {
     FEMObjectLoad* Load = *it_Load;
     this->M_Write_Load(Load);
-    ++it_Load;
+    it_Load++;
     }
   *this->m_WriteStream << "\n<END>  % End of load definition\n\n";
 
@@ -698,7 +698,7 @@ bool MetaFEMObject::IsClassNamePresent(std::string c_string)
     {
     if((*it) == c_string)
       return true;
-    ++it;
+    it++;
     }
   return false;
 }

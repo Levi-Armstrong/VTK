@@ -41,7 +41,7 @@
  * @par Thanks:
  * Sid Sydoriak (sxs@lanl.gov) for adding boolean operations and
  * conditional expressions and for fixing a variety of bugs.
- */
+*/
 
 #ifndef vtkFunctionParser_h
 #define vtkFunctionParser_h
@@ -49,8 +49,8 @@
 #include "vtkCommonMiscModule.h" // For export macro
 #include "vtkObject.h"
 #include "vtkTuple.h" // needed for vtkTuple
-#include <string>     // needed for string.
-#include <vector>     // needed for vector
+#include <vector> // needed for vector
+#include <string> // needed for string.
 
 #define VTK_PARSER_IMMEDIATE 1
 #define VTK_PARSER_UNARY_MINUS 2
@@ -127,26 +127,26 @@
 // because they are used to look up variables numbered 1, 2, ...
 #define VTK_PARSER_BEGIN_VARIABLES 50
 
-// the value that is returned as a result if there is an error
+// the value that is retuned as a result if there is an error
 #define VTK_PARSER_ERROR_RESULT VTK_FLOAT_MAX
 
 class VTKCOMMONMISC_EXPORT vtkFunctionParser : public vtkObject
 {
 public:
-  static vtkFunctionParser* New();
+  static vtkFunctionParser *New();
   vtkTypeMacro(vtkFunctionParser, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Return parser's MTime
    */
-  vtkMTimeType GetMTime() override;
+  vtkMTimeType GetMTime() VTK_OVERRIDE;
 
   //@{
   /**
    * Set/Get input string to evaluate.
    */
-  void SetFunction(const char* function);
+  void SetFunction(const char *function);
   vtkGetStringMacro(Function);
   //@}
 
@@ -171,14 +171,10 @@ public:
   /**
    * Get a vector result from evaluating the input function.
    */
-  double* GetVectorResult() VTK_SIZEHINT(3);
-  void GetVectorResult(double result[3])
-  {
-    double* r = this->GetVectorResult();
-    result[0] = r[0];
-    result[1] = r[1];
-    result[2] = r[2];
-  }
+  double* GetVectorResult();
+  void GetVectorResult(double result[3]) {
+    double *r = this->GetVectorResult();
+    result[0] = r[0]; result[1] = r[1]; result[2] = r[2]; };
   //@}
 
   //@{
@@ -207,60 +203,42 @@ public:
    * already a variable with this name, variableName will be added to the
    * list of variables, and its value will be set to the new value.
    */
-  void SetVectorVariableValue(
-    const char* variableName, double xValue, double yValue, double zValue);
-  void SetVectorVariableValue(const char* variableName, const double values[3])
-  {
-    this->SetVectorVariableValue(variableName, values[0], values[1], values[2]);
-  }
-  void SetVectorVariableValue(int i, double xValue, double yValue, double zValue);
-  void SetVectorVariableValue(int i, const double values[3])
-  {
-    this->SetVectorVariableValue(i, values[0], values[1], values[2]);
-  }
+  void SetVectorVariableValue(const char* variableName, double xValue,
+                              double yValue, double zValue);
+  void SetVectorVariableValue(const char* variableName,
+                              const double values[3]) {
+    this->SetVectorVariableValue(variableName,values[0],values[1],values[2]);};
+  void SetVectorVariableValue(int i, double xValue, double yValue,
+                              double zValue);
+  void SetVectorVariableValue(int i, const double values[3]) {
+    this->SetVectorVariableValue(i,values[0],values[1],values[2]);};
   //@}
 
   //@{
   /**
    * Get the value of a vector variable.
    */
-  double* GetVectorVariableValue(const char* variableName) VTK_SIZEHINT(3);
-  void GetVectorVariableValue(const char* variableName, double value[3])
-  {
-    double* r = this->GetVectorVariableValue(variableName);
-    value[0] = r[0];
-    value[1] = r[1];
-    value[2] = r[2];
-  }
-  double* GetVectorVariableValue(int i) VTK_SIZEHINT(3);
-  void GetVectorVariableValue(int i, double value[3])
-  {
-    double* r = this->GetVectorVariableValue(i);
-    value[0] = r[0];
-    value[1] = r[1];
-    value[2] = r[2];
-  }
+  double* GetVectorVariableValue(const char* variableName);
+  void GetVectorVariableValue(const char* variableName, double value[3]) {
+    double *r = this->GetVectorVariableValue(variableName);
+    value[0] = r[0]; value[1] = r[1]; value[2] = r[2]; };
+  double* GetVectorVariableValue(int i);
+  void GetVectorVariableValue(int i, double value[3]) {
+    double *r = this->GetVectorVariableValue(i);
+    value[0] = r[0]; value[1] = r[1]; value[2] = r[2]; };
   //@}
 
   /**
    * Get the number of scalar variables.
    */
-  int GetNumberOfScalarVariables() { return static_cast<int>(this->ScalarVariableNames.size()); }
-
-  /**
-   * Get scalar variable index or -1 if not found
-   */
-  int GetScalarVariableIndex(const char* name);
+  int GetNumberOfScalarVariables()
+    { return static_cast<int>(this->ScalarVariableNames.size()); }
 
   /**
    * Get the number of vector variables.
    */
-  int GetNumberOfVectorVariables() { return static_cast<int>(this->VectorVariableNames.size()); }
-
-  /**
-   * Get scalar variable index or -1 if not found
-   */
-  int GetVectorVariableIndex(const char* name);
+  int GetNumberOfVectorVariables()
+    { return static_cast<int>(this->VectorVariableNames.size()); }
 
   /**
    * Get the ith scalar variable name.
@@ -314,17 +292,17 @@ public:
    * numbers) will be replaced by ReplacementValue. Otherwise an
    * error will be reported
    */
-  vtkSetMacro(ReplaceInvalidValues, vtkTypeBool);
-  vtkGetMacro(ReplaceInvalidValues, vtkTypeBool);
-  vtkBooleanMacro(ReplaceInvalidValues, vtkTypeBool);
-  vtkSetMacro(ReplacementValue, double);
-  vtkGetMacro(ReplacementValue, double);
+  vtkSetMacro(ReplaceInvalidValues,int);
+  vtkGetMacro(ReplaceInvalidValues,int);
+  vtkBooleanMacro(ReplaceInvalidValues,int);
+  vtkSetMacro(ReplacementValue,double);
+  vtkGetMacro(ReplacementValue,double);
   //@}
 
   /**
    * Check the validity of the function expression.
    */
-  void CheckExpression(int& pos, char** error);
+  void CheckExpression(int &pos, char **error);
 
   /**
    * Allow the user to force the function to be re-parsed
@@ -333,7 +311,7 @@ public:
 
 protected:
   vtkFunctionParser();
-  ~vtkFunctionParser() override;
+  ~vtkFunctionParser() VTK_OVERRIDE;
 
   int Parse();
 
@@ -344,7 +322,7 @@ protected:
 
   int CheckSyntax();
 
-  void CopyParseError(int& position, char** error);
+  void CopyParseError(int &position, char **error);
 
   void RemoveSpaces();
   char* RemoveSpacesFrom(const char* variableName);
@@ -352,7 +330,7 @@ protected:
 
   int BuildInternalFunctionStructure();
   void BuildInternalSubstringStructure(int beginIndex, int endIndex);
-  void AddInternalByte(unsigned int newByte);
+  void AddInternalByte(unsigned char newByte);
 
   int IsSubstringCompletelyEnclosed(int beginIndex, int endIndex);
   int FindEndOfMathFunction(int beginIndex);
@@ -362,12 +340,12 @@ protected:
   int IsElementaryOperator(int op);
 
   int GetMathFunctionNumber(int currentIndex);
-  int GetMathFunctionNumberByCheckingParenthesis(int currentIndex);
+  int GetMathFunctionNumberByCheckingParenthesis( int currentIndex );
   int GetMathFunctionStringLength(int mathFunctionNumber);
   int GetMathConstantNumber(int currentIndex);
   int GetMathConstantStringLength(int mathConstantNumber);
   unsigned char GetElementaryOperatorNumber(char op);
-  unsigned int GetOperandNumber(int currentIndex);
+  unsigned char GetOperandNumber(int currentIndex);
   int GetVariableNameLength(int variableNumber);
 
   int DisambiguateOperators();
@@ -389,15 +367,15 @@ protected:
   std::vector<std::string> ScalarVariableNames;
   std::vector<std::string> VectorVariableNames;
   std::vector<double> ScalarVariableValues;
-  std::vector<vtkTuple<double, 3> > VectorVariableValues;
+  std::vector<vtkTuple<double, 3> >  VectorVariableValues;
   std::vector<bool> ScalarVariableNeeded;
   std::vector<bool> VectorVariableNeeded;
 
-  std::vector<unsigned int> ByteCode;
+  unsigned char *ByteCode;
   int ByteCodeSize;
-  double* Immediates;
+  double *Immediates;
   int ImmediatesSize;
-  double* Stack;
+  double *Stack;
   int StackSize;
   int StackPointer;
 
@@ -407,15 +385,15 @@ protected:
   vtkTimeStamp EvaluateMTime;
   vtkTimeStamp CheckMTime;
 
-  vtkTypeBool ReplaceInvalidValues;
+  int ReplaceInvalidValues;
   double ReplacementValue;
 
-  int ParseErrorPositon;
+  int   ParseErrorPositon;
   char* ParseError;
 
 private:
-  vtkFunctionParser(const vtkFunctionParser&) = delete;
-  void operator=(const vtkFunctionParser&) = delete;
+  vtkFunctionParser(const vtkFunctionParser&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkFunctionParser&) VTK_DELETE_FUNCTION;
 };
 
 #endif

@@ -28,7 +28,7 @@
  * ghost cells properly (i.e. you might see seames between the pieces).
  * @sa
  * vtkAppendFilter
- */
+*/
 
 #ifndef vtkPolyDataStreamer_h
 #define vtkPolyDataStreamer_h
@@ -41,17 +41,20 @@ class vtkAppendPolyData;
 class VTKFILTERSGENERAL_EXPORT vtkPolyDataStreamer : public vtkStreamerBase
 {
 public:
-  static vtkPolyDataStreamer* New();
+  static vtkPolyDataStreamer *New();
 
-  vtkTypeMacro(vtkPolyDataStreamer, vtkStreamerBase);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkPolyDataStreamer,vtkStreamerBase);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   //@{
   /**
    * Set the number of pieces to divide the problem into.
    */
   void SetNumberOfStreamDivisions(int num);
-  int GetNumberOfStreamDivisions() { return this->NumberOfPasses; }
+  int GetNumberOfStreamDivisions()
+  {
+    return this->NumberOfPasses;
+  }
   //@}
 
   //@{
@@ -59,30 +62,32 @@ public:
    * By default, this option is off.  When it is on, cell scalars are generated
    * based on which piece they are in.
    */
-  vtkSetMacro(ColorByPiece, vtkTypeBool);
-  vtkGetMacro(ColorByPiece, vtkTypeBool);
-  vtkBooleanMacro(ColorByPiece, vtkTypeBool);
+  vtkSetMacro(ColorByPiece, int);
+  vtkGetMacro(ColorByPiece, int);
+  vtkBooleanMacro(ColorByPiece, int);
   //@}
+
 
 protected:
   vtkPolyDataStreamer();
-  ~vtkPolyDataStreamer() override;
+  ~vtkPolyDataStreamer() VTK_OVERRIDE;
 
   // see algorithm for more info
-  int FillOutputPortInformation(int port, vtkInformation* info) override;
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  int FillOutputPortInformation(int port, vtkInformation* info) VTK_OVERRIDE;
+  int FillInputPortInformation(int port, vtkInformation* info) VTK_OVERRIDE;
 
-  int RequestUpdateExtent(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestUpdateExtent(vtkInformation *, vtkInformationVector **, vtkInformationVector *) VTK_OVERRIDE;
 
-  int ExecutePass(vtkInformationVector** inputVector, vtkInformationVector* outputVector) override;
+  int ExecutePass(vtkInformationVector **inputVector,
+                  vtkInformationVector *outputVector) VTK_OVERRIDE;
 
-  int PostExecute(vtkInformationVector** inputVector, vtkInformationVector* outputVector) override;
+  int PostExecute(vtkInformationVector **inputVector,
+                  vtkInformationVector *outputVector) VTK_OVERRIDE;
 
-  vtkTypeBool ColorByPiece;
-
+  int ColorByPiece;
 private:
-  vtkPolyDataStreamer(const vtkPolyDataStreamer&) = delete;
-  void operator=(const vtkPolyDataStreamer&) = delete;
+  vtkPolyDataStreamer(const vtkPolyDataStreamer&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPolyDataStreamer&) VTK_DELETE_FUNCTION;
 
   vtkAppendPolyData* Append;
 };

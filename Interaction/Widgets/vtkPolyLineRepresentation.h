@@ -24,13 +24,13 @@
  * Based on vtkCurveRepresentation
  * @sa
  * vtkSplineRepresentation
- */
+*/
 
 #ifndef vtkPolyLineRepresentation_h
 #define vtkPolyLineRepresentation_h
 
-#include "vtkCurveRepresentation.h"
 #include "vtkInteractionWidgetsModule.h" // For export macro
+#include "vtkCurveRepresentation.h"
 
 class vtkPolyLineSource;
 class vtkPoints;
@@ -41,7 +41,7 @@ class VTKINTERACTIONWIDGETS_EXPORT vtkPolyLineRepresentation : public vtkCurveRe
 public:
   static vtkPolyLineRepresentation* New();
   vtkTypeMacro(vtkPolyLineRepresentation, vtkCurveRepresentation);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Grab the polydata (including points) that defines the poly line.
@@ -51,23 +51,23 @@ public:
    * provides the vtkPolyData and the points and polyline are added to
    * it.
    */
-  void GetPolyData(vtkPolyData* pd) override;
+  void GetPolyData(vtkPolyData *pd);
 
   /**
    * Set the number of handles for this widget.
    */
-  void SetNumberOfHandles(int npts) override;
+  virtual void SetNumberOfHandles(int npts);
 
   /**
    * Get the positions of the handles.
    */
-  vtkDoubleArray* GetHandlePositions() override;
+  virtual vtkDoubleArray* GetHandlePositions();
 
   /**
    * Get the true length of the poly line. Calculated as the summed
    * lengths of the individual straight line segments.
    */
-  double GetSummedLength() override;
+  double GetSummedLength();
 
   /**
    * Convenience method to allocate and set the handles from a
@@ -75,26 +75,27 @@ public:
    * the poly line sets Closed to on and disregards the last point,
    * otherwise Closed remains unchanged.
    */
-  void InitializeHandles(vtkPoints* points) override;
+  virtual void InitializeHandles(vtkPoints* points);
 
   /**
    * Build the representation for the poly line.
    */
-  void BuildRepresentation() override;
+  virtual void BuildRepresentation();
 
 protected:
   vtkPolyLineRepresentation();
-  ~vtkPolyLineRepresentation() override;
+  ~vtkPolyLineRepresentation();
 
   // The poly line source
-  vtkPolyLineSource* PolyLineSource;
+  vtkPolyLineSource *PolyLineSource;
 
   // Specialized method to insert a handle on the poly line.
-  int InsertHandleOnLine(double* pos) override;
+  virtual void InsertHandleOnLine(double* pos);
 
 private:
-  vtkPolyLineRepresentation(const vtkPolyLineRepresentation&) = delete;
-  void operator=(const vtkPolyLineRepresentation&) = delete;
+  vtkPolyLineRepresentation(const vtkPolyLineRepresentation&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPolyLineRepresentation&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif

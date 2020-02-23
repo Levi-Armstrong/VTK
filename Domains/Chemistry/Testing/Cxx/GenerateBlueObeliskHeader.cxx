@@ -17,12 +17,13 @@
 
 #include <fstream>
 
-int GenerateBlueObeliskHeader(int, char*[])
+int GenerateBlueObeliskHeader(int, char *[])
 {
-  vtksys::ifstream xml(VTK_BODR_DATA_PATH_BUILD "/elements.xml");
+  std::ifstream xml(VTK_BODR_DATA_PATH_BUILD "/elements.xml");
   if (!xml)
   {
-    std::cerr << "Error opening file " VTK_BODR_DATA_PATH_BUILD "/elements.xml.\n";
+    std::cerr << "Error opening file " VTK_BODR_DATA_PATH_BUILD
+                 "/elements.xml.\n";
     return EXIT_FAILURE;
   }
 

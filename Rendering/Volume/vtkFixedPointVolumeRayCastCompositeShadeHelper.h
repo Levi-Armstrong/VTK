@@ -25,36 +25,38 @@
  *
  * @sa
  * vtkFixedPointVolumeRayCastMapper
- */
+*/
 
 #ifndef vtkFixedPointVolumeRayCastCompositeShadeHelper_h
 #define vtkFixedPointVolumeRayCastCompositeShadeHelper_h
 
-#include "vtkFixedPointVolumeRayCastHelper.h"
 #include "vtkRenderingVolumeModule.h" // For export macro
+#include "vtkFixedPointVolumeRayCastHelper.h"
 
 class vtkFixedPointVolumeRayCastMapper;
 class vtkVolume;
 
-class VTKRENDERINGVOLUME_EXPORT vtkFixedPointVolumeRayCastCompositeShadeHelper
-  : public vtkFixedPointVolumeRayCastHelper
+class VTKRENDERINGVOLUME_EXPORT vtkFixedPointVolumeRayCastCompositeShadeHelper : public vtkFixedPointVolumeRayCastHelper
 {
 public:
-  static vtkFixedPointVolumeRayCastCompositeShadeHelper* New();
-  vtkTypeMacro(vtkFixedPointVolumeRayCastCompositeShadeHelper, vtkFixedPointVolumeRayCastHelper);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkFixedPointVolumeRayCastCompositeShadeHelper *New();
+  vtkTypeMacro(vtkFixedPointVolumeRayCastCompositeShadeHelper,vtkFixedPointVolumeRayCastHelper);
+  void PrintSelf( ostream& os, vtkIndent indent );
 
-  void GenerateImage(int threadID, int threadCount, vtkVolume* vol,
-    vtkFixedPointVolumeRayCastMapper* mapper) override;
+  virtual void  GenerateImage( int threadID,
+                               int threadCount,
+                               vtkVolume *vol,
+                               vtkFixedPointVolumeRayCastMapper *mapper);
 
 protected:
   vtkFixedPointVolumeRayCastCompositeShadeHelper();
-  ~vtkFixedPointVolumeRayCastCompositeShadeHelper() override;
+  ~vtkFixedPointVolumeRayCastCompositeShadeHelper();
 
 private:
-  vtkFixedPointVolumeRayCastCompositeShadeHelper(
-    const vtkFixedPointVolumeRayCastCompositeShadeHelper&) = delete;
-  void operator=(const vtkFixedPointVolumeRayCastCompositeShadeHelper&) = delete;
+  vtkFixedPointVolumeRayCastCompositeShadeHelper(const vtkFixedPointVolumeRayCastCompositeShadeHelper&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkFixedPointVolumeRayCastCompositeShadeHelper&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+

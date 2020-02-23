@@ -36,36 +36,41 @@
  *
  * The second output is the selection associated with the "current annotation"
  * normally representing the current interactive selection.
- */
+*/
 
 #ifndef vtkConvertSelectionDomain_h
 #define vtkConvertSelectionDomain_h
 
-#include "vtkPassInputTypeAlgorithm.h"
 #include "vtkViewsCoreModule.h" // For export macro
+#include "vtkPassInputTypeAlgorithm.h"
 
 class vtkAnnotation;
 
 class VTKVIEWSCORE_EXPORT vtkConvertSelectionDomain : public vtkPassInputTypeAlgorithm
 {
 public:
-  static vtkConvertSelectionDomain* New();
+  static vtkConvertSelectionDomain *New();
   vtkTypeMacro(vtkConvertSelectionDomain, vtkPassInputTypeAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
 protected:
   vtkConvertSelectionDomain();
-  ~vtkConvertSelectionDomain() override;
+  ~vtkConvertSelectionDomain();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int RequestData(
+    vtkInformation *,
+    vtkInformationVector **,
+    vtkInformationVector *);
 
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  virtual int FillInputPortInformation(
+    int port, vtkInformation* info);
 
-  int FillOutputPortInformation(int port, vtkInformation* info) override;
+  virtual int FillOutputPortInformation(
+    int port, vtkInformation* info);
 
 private:
-  vtkConvertSelectionDomain(const vtkConvertSelectionDomain&) = delete;
-  void operator=(const vtkConvertSelectionDomain&) = delete;
+  vtkConvertSelectionDomain(const vtkConvertSelectionDomain&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkConvertSelectionDomain&) VTK_DELETE_FUNCTION;
 };
 
 #endif

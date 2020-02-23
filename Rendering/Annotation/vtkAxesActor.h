@@ -43,13 +43,13 @@
  * @sa
  * vtkAnnotatedCubeActor vtkOrientationMarkerWidget vtkCaptionActor2D
  * vtkTextProperty
- */
+*/
 
 #ifndef vtkAxesActor_h
 #define vtkAxesActor_h
 
-#include "vtkProp3D.h"
 #include "vtkRenderingAnnotationModule.h" // For export macro
+#include "vtkProp3D.h"
 
 class vtkActor;
 class vtkCaptionActor2D;
@@ -65,42 +65,42 @@ class vtkSphereSource;
 class VTKRENDERINGANNOTATION_EXPORT vtkAxesActor : public vtkProp3D
 {
 public:
-  static vtkAxesActor* New();
-  vtkTypeMacro(vtkAxesActor, vtkProp3D);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkAxesActor *New();
+  vtkTypeMacro(vtkAxesActor,vtkProp3D);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * For some exporters and other other operations we must be
    * able to collect all the actors or volumes. These methods
    * are used in that process.
    */
-  void GetActors(vtkPropCollection*) override;
+  virtual void GetActors(vtkPropCollection *);
 
   //@{
   /**
    * Support the standard render methods.
    */
-  int RenderOpaqueGeometry(vtkViewport* viewport) override;
-  int RenderTranslucentPolygonalGeometry(vtkViewport* viewport) override;
-  int RenderOverlay(vtkViewport* viewport) override;
+  virtual int RenderOpaqueGeometry(vtkViewport *viewport);
+  virtual int RenderTranslucentPolygonalGeometry(vtkViewport *viewport);
+  virtual int RenderOverlay(vtkViewport *viewport);
   //@}
 
   /**
    * Does this prop have some translucent polygonal geometry?
    */
-  vtkTypeBool HasTranslucentPolygonalGeometry() override;
+  virtual int HasTranslucentPolygonalGeometry();
 
   /**
    * Shallow copy of an axes actor. Overloads the virtual vtkProp method.
    */
-  void ShallowCopy(vtkProp* prop) override;
+  void ShallowCopy(vtkProp *prop);
 
   /**
    * Release any graphics resources that are being consumed by this actor.
    * The parameter window could be used to determine which graphic
    * resources to release.
    */
-  void ReleaseGraphicsResources(vtkWindow*) override;
+  void ReleaseGraphicsResources(vtkWindow *);
 
   //@{
   /**
@@ -108,13 +108,13 @@ public:
    * method GetBounds(double bounds[6]) is available from the superclass.)
    */
   void GetBounds(double bounds[6]);
-  double* GetBounds() VTK_SIZEHINT(6) override;
+  double *GetBounds();
   //@}
 
   /**
    * Get the actors mtime plus consider its properties and texture if set.
    */
-  vtkMTimeType GetMTime() override;
+  vtkMTimeType GetMTime();
 
   /**
    * Return the mtime of anything that would cause the rendered image to
@@ -122,24 +122,26 @@ public:
    * prop plus anything else it depends on such as properties, textures
    * etc.
    */
-  vtkMTimeType GetRedrawMTime() override;
+  virtual vtkMTimeType GetRedrawMTime();
 
   //@{
   /**
    * Set the total length of the axes in 3 dimensions.
    */
-  void SetTotalLength(double v[3]) { this->SetTotalLength(v[0], v[1], v[2]); }
-  void SetTotalLength(double x, double y, double z);
-  vtkGetVectorMacro(TotalLength, double, 3);
+  void SetTotalLength( double v[3] )
+    { this->SetTotalLength( v[0], v[1], v[2] ); }
+  void SetTotalLength( double x, double y, double z );
+  vtkGetVectorMacro( TotalLength, double, 3 );
   //@}
 
   //@{
   /**
    * Set the normalized (0-1) length of the shaft.
    */
-  void SetNormalizedShaftLength(double v[3]) { this->SetNormalizedShaftLength(v[0], v[1], v[2]); }
-  void SetNormalizedShaftLength(double x, double y, double z);
-  vtkGetVectorMacro(NormalizedShaftLength, double, 3);
+  void SetNormalizedShaftLength( double v[3] )
+    { this->SetNormalizedShaftLength( v[0], v[1], v[2] ); }
+  void SetNormalizedShaftLength( double x, double y, double z );
+  vtkGetVectorMacro( NormalizedShaftLength, double, 3 );
   //@}
 
   //@{
@@ -147,9 +149,10 @@ public:
    * Set the normalized (0-1) length of the tip.  Normally, this would be
    * 1 - the normalized length of the shaft.
    */
-  void SetNormalizedTipLength(double v[3]) { this->SetNormalizedTipLength(v[0], v[1], v[2]); }
-  void SetNormalizedTipLength(double x, double y, double z);
-  vtkGetVectorMacro(NormalizedTipLength, double, 3);
+  void SetNormalizedTipLength( double v[3] )
+    { this->SetNormalizedTipLength( v[0], v[1], v[2] ); }
+  void SetNormalizedTipLength( double x, double y, double z );
+  vtkGetVectorMacro( NormalizedTipLength, double, 3 );
   //@}
 
   //@{
@@ -157,12 +160,10 @@ public:
    * Set the normalized (0-1) position of the label along the length of
    * the shaft.  A value > 1 is permissible.
    */
-  void SetNormalizedLabelPosition(double v[3])
-  {
-    this->SetNormalizedLabelPosition(v[0], v[1], v[2]);
-  }
-  void SetNormalizedLabelPosition(double x, double y, double z);
-  vtkGetVectorMacro(NormalizedLabelPosition, double, 3);
+  void SetNormalizedLabelPosition( double v[3] )
+    { this->SetNormalizedLabelPosition( v[0], v[1], v[2] ); }
+  void SetNormalizedLabelPosition( double x, double y, double z );
+  vtkGetVectorMacro( NormalizedLabelPosition, double, 3 );
   //@}
 
   //@{
@@ -193,10 +194,13 @@ public:
   /**
    * Set the type of the shaft to a cylinder, line, or user defined geometry.
    */
-  void SetShaftType(int type);
-  void SetShaftTypeToCylinder() { this->SetShaftType(vtkAxesActor::CYLINDER_SHAFT); }
-  void SetShaftTypeToLine() { this->SetShaftType(vtkAxesActor::LINE_SHAFT); }
-  void SetShaftTypeToUserDefined() { this->SetShaftType(vtkAxesActor::USER_DEFINED_SHAFT); }
+  void SetShaftType( int type );
+  void SetShaftTypeToCylinder()
+    { this->SetShaftType( vtkAxesActor::CYLINDER_SHAFT ); }
+  void SetShaftTypeToLine()
+    { this->SetShaftType( vtkAxesActor::LINE_SHAFT ); }
+  void SetShaftTypeToUserDefined()
+    { this->SetShaftType( vtkAxesActor::USER_DEFINED_SHAFT ); }
   vtkGetMacro(ShaftType, int);
   //@}
 
@@ -204,10 +208,13 @@ public:
   /**
    * Set the type of the tip to a cone, sphere, or user defined geometry.
    */
-  void SetTipType(int type);
-  void SetTipTypeToCone() { this->SetTipType(vtkAxesActor::CONE_TIP); }
-  void SetTipTypeToSphere() { this->SetTipType(vtkAxesActor::SPHERE_TIP); }
-  void SetTipTypeToUserDefined() { this->SetTipType(vtkAxesActor::USER_DEFINED_TIP); }
+  void SetTipType( int type );
+  void SetTipTypeToCone()
+    { this->SetTipType( vtkAxesActor::CONE_TIP ); }
+  void SetTipTypeToSphere()
+    { this->SetTipType( vtkAxesActor::SPHERE_TIP ); }
+  void SetTipTypeToUserDefined()
+    { this->SetTipType( vtkAxesActor::USER_DEFINED_TIP ); }
   vtkGetMacro(TipType, int);
   //@}
 
@@ -215,63 +222,66 @@ public:
   /**
    * Set the user defined tip polydata.
    */
-  void SetUserDefinedTip(vtkPolyData*);
-  vtkGetObjectMacro(UserDefinedTip, vtkPolyData);
+  void SetUserDefinedTip( vtkPolyData * );
+  vtkGetObjectMacro( UserDefinedTip, vtkPolyData );
   //@}
 
   //@{
   /**
    * Set the user defined shaft polydata.
    */
-  void SetUserDefinedShaft(vtkPolyData*);
-  vtkGetObjectMacro(UserDefinedShaft, vtkPolyData);
+  void SetUserDefinedShaft( vtkPolyData * );
+  vtkGetObjectMacro( UserDefinedShaft, vtkPolyData );
   //@}
 
   //@{
   /**
    * Get the tip properties.
    */
-  vtkProperty* GetXAxisTipProperty();
-  vtkProperty* GetYAxisTipProperty();
-  vtkProperty* GetZAxisTipProperty();
+  vtkProperty *GetXAxisTipProperty();
+  vtkProperty *GetYAxisTipProperty();
+  vtkProperty *GetZAxisTipProperty();
   //@}
 
   //@{
   /**
    * Get the shaft properties.
    */
-  vtkProperty* GetXAxisShaftProperty();
-  vtkProperty* GetYAxisShaftProperty();
-  vtkProperty* GetZAxisShaftProperty();
+  vtkProperty *GetXAxisShaftProperty();
+  vtkProperty *GetYAxisShaftProperty();
+  vtkProperty *GetZAxisShaftProperty();
   //@}
 
   /**
    * Retrieve handles to the X, Y and Z axis (so that you can set their text
    * properties for example)
    */
-  vtkCaptionActor2D* GetXAxisCaptionActor2D() { return this->XAxisLabel; }
-  vtkCaptionActor2D* GetYAxisCaptionActor2D() { return this->YAxisLabel; }
-  vtkCaptionActor2D* GetZAxisCaptionActor2D() { return this->ZAxisLabel; }
+  vtkCaptionActor2D *GetXAxisCaptionActor2D()
+    {return this->XAxisLabel;}
+  vtkCaptionActor2D *GetYAxisCaptionActor2D()
+    {return this->YAxisLabel;}
+  vtkCaptionActor2D *GetZAxisCaptionActor2D()
+    {return this->ZAxisLabel;}
 
   //@{
   /**
    * Set/get the label text.
    */
-  vtkSetStringMacro(XAxisLabelText);
-  vtkGetStringMacro(XAxisLabelText);
-  vtkSetStringMacro(YAxisLabelText);
-  vtkGetStringMacro(YAxisLabelText);
-  vtkSetStringMacro(ZAxisLabelText);
-  vtkGetStringMacro(ZAxisLabelText);
+  vtkSetStringMacro( XAxisLabelText );
+  vtkGetStringMacro( XAxisLabelText );
+  vtkSetStringMacro( YAxisLabelText );
+  vtkGetStringMacro( YAxisLabelText );
+  vtkSetStringMacro( ZAxisLabelText );
+  vtkGetStringMacro( ZAxisLabelText );
   //@}
 
   //@{
   /**
    * Enable/disable drawing the axis labels.
    */
-  vtkSetMacro(AxisLabels, vtkTypeBool);
-  vtkGetMacro(AxisLabels, vtkTypeBool);
-  vtkBooleanMacro(AxisLabels, vtkTypeBool);
+  vtkSetMacro(AxisLabels, int);
+  vtkGetMacro(AxisLabels, int);
+  vtkBooleanMacro(AxisLabels, int);
   //@}
 
   enum
@@ -290,55 +300,57 @@ public:
 
 protected:
   vtkAxesActor();
-  ~vtkAxesActor() override;
+  ~vtkAxesActor();
 
-  vtkCylinderSource* CylinderSource;
-  vtkLineSource* LineSource;
-  vtkConeSource* ConeSource;
-  vtkSphereSource* SphereSource;
+  vtkCylinderSource *CylinderSource;
+  vtkLineSource     *LineSource;
+  vtkConeSource     *ConeSource;
+  vtkSphereSource   *SphereSource;
 
-  vtkActor* XAxisShaft;
-  vtkActor* YAxisShaft;
-  vtkActor* ZAxisShaft;
+  vtkActor          *XAxisShaft;
+  vtkActor          *YAxisShaft;
+  vtkActor          *ZAxisShaft;
 
-  vtkActor* XAxisTip;
-  vtkActor* YAxisTip;
-  vtkActor* ZAxisTip;
+  vtkActor          *XAxisTip;
+  vtkActor          *YAxisTip;
+  vtkActor          *ZAxisTip;
 
-  void UpdateProps();
+  void               UpdateProps();
 
-  double TotalLength[3];
-  double NormalizedShaftLength[3];
-  double NormalizedTipLength[3];
-  double NormalizedLabelPosition[3];
+  double             TotalLength[3];
+  double             NormalizedShaftLength[3];
+  double             NormalizedTipLength[3];
+  double             NormalizedLabelPosition[3];
 
-  int ShaftType;
-  int TipType;
+  int                ShaftType;
+  int                TipType;
 
-  vtkPolyData* UserDefinedTip;
-  vtkPolyData* UserDefinedShaft;
+  vtkPolyData       *UserDefinedTip;
+  vtkPolyData       *UserDefinedShaft;
 
-  char* XAxisLabelText;
-  char* YAxisLabelText;
-  char* ZAxisLabelText;
+  char              *XAxisLabelText;
+  char              *YAxisLabelText;
+  char              *ZAxisLabelText;
 
-  vtkCaptionActor2D* XAxisLabel;
-  vtkCaptionActor2D* YAxisLabel;
-  vtkCaptionActor2D* ZAxisLabel;
+  vtkCaptionActor2D *XAxisLabel;
+  vtkCaptionActor2D *YAxisLabel;
+  vtkCaptionActor2D *ZAxisLabel;
 
-  vtkTypeBool AxisLabels;
+  int                AxisLabels;
 
-  int ConeResolution;
-  int SphereResolution;
-  int CylinderResolution;
 
-  double ConeRadius;
-  double SphereRadius;
-  double CylinderRadius;
+  int                ConeResolution;
+  int                SphereResolution;
+  int                CylinderResolution;
+
+  double             ConeRadius;
+  double             SphereRadius;
+  double             CylinderRadius;
 
 private:
-  vtkAxesActor(const vtkAxesActor&) = delete;
-  void operator=(const vtkAxesActor&) = delete;
+  vtkAxesActor(const vtkAxesActor&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkAxesActor&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

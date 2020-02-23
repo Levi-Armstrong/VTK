@@ -21,7 +21,7 @@
  *
  * @sa
  * vtkOverlappingAMR vtkMultiBlockDataSet
- */
+*/
 
 #ifndef vtkAMRToMultiBlockFilter_h
 #define vtkAMRToMultiBlockFilter_h
@@ -36,43 +36,46 @@ class vtkMultiProcessController;
 class vtkOverlappingAMR;
 class vtkMultiBlockDataSet;
 
-class VTKFILTERSAMR_EXPORT vtkAMRToMultiBlockFilter : public vtkMultiBlockDataSetAlgorithm
+class VTKFILTERSAMR_EXPORT vtkAMRToMultiBlockFilter :
+  public vtkMultiBlockDataSetAlgorithm
 {
 public:
   static vtkAMRToMultiBlockFilter* New();
-  vtkTypeMacro(vtkAMRToMultiBlockFilter, vtkMultiBlockDataSetAlgorithm);
-  void PrintSelf(ostream& oss, vtkIndent indent) override;
+  vtkTypeMacro(vtkAMRToMultiBlockFilter, vtkMultiBlockDataSetAlgorithm );
+  void PrintSelf(ostream &oss, vtkIndent indent );
 
   //@{
   /**
    * Set/Get a multiprocess controller for paralle processing.
-   * By default this parameter is set to nullptr by the constructor.
+   * By default this parameter is set to NULL by the constructor.
    */
-  vtkSetMacro(Controller, vtkMultiProcessController*);
-  vtkGetMacro(Controller, vtkMultiProcessController*);
+  vtkSetMacro( Controller, vtkMultiProcessController* );
+  vtkGetMacro( Controller, vtkMultiProcessController* );
   //@}
 
   // Standard pipeline routines
 
-  int FillInputPortInformation(int port, vtkInformation* info) override;
-  int FillOutputPortInformation(int port, vtkInformation* info) override;
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int FillInputPortInformation(int port, vtkInformation *info);
+  virtual int FillOutputPortInformation(int port, vtkInformation *info);
+  virtual int RequestData(
+      vtkInformation*, vtkInformationVector**, vtkInformationVector* );
 
 protected:
   vtkAMRToMultiBlockFilter();
-  ~vtkAMRToMultiBlockFilter() override;
+  virtual ~vtkAMRToMultiBlockFilter();
 
   //@{
   /**
    * Copies the AMR data to the output multi-block datastructure.
    */
-  void CopyAMRToMultiBlock(vtkOverlappingAMR* amr, vtkMultiBlockDataSet* mbds);
-  vtkMultiProcessController* Controller;
+  void CopyAMRToMultiBlock(
+      vtkOverlappingAMR *amr, vtkMultiBlockDataSet *mbds);
+  vtkMultiProcessController *Controller;
   //@}
 
 private:
-  vtkAMRToMultiBlockFilter(const vtkAMRToMultiBlockFilter&) = delete;
-  void operator=(const vtkAMRToMultiBlockFilter&) = delete;
+  vtkAMRToMultiBlockFilter(const vtkAMRToMultiBlockFilter& ) VTK_DELETE_FUNCTION;
+  void operator=(const vtkAMRToMultiBlockFilter& ) VTK_DELETE_FUNCTION;
 };
 
 #endif /* vtkAMRToMultiBlockFilter_h */

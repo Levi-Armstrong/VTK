@@ -1,16 +1,22 @@
-set(classes
-  vtkActorNode
-  vtkCameraNode
-  vtkLightNode
-  vtkMapperNode
-  vtkPolyDataMapperNode
-  vtkRendererNode
-  vtkViewNode
-  vtkViewNodeCollection
-  vtkViewNodeFactory
-  vtkVolumeMapperNode
-  vtkVolumeNode
-  vtkWindowNode)
+set(Module_SRCS
+  vtkActorNode.cxx
+  vtkVolumeNode.cxx
+  vtkCameraNode.cxx
+  vtkLightNode.cxx
+  vtkMapperNode.cxx
+  vtkPolyDataMapperNode.cxx
+  vtkVolumeMapperNode.cxx
+  vtkRendererNode.cxx
+  vtkViewNode.cxx
+  vtkViewNodeCollection.cxx
+  vtkViewNodeFactory.cxx
+  vtkWindowNode.cxx
+  )
 
-vtk_module_add_module(VTK::RenderingSceneGraph
-  CLASSES ${classes})
+
+set_source_files_properties(
+  vtkViewNode
+  ABSTRACT
+  )
+
+vtk_module_library(vtkRenderingSceneGraph ${Module_SRCS})

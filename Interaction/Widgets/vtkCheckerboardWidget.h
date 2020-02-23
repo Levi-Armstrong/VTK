@@ -41,16 +41,17 @@
  *
  * @sa
  * vtkImageCheckerboard vtkImageActor vtkSliderWidget vtkRectilinearWipeWidget
- */
+*/
 
 #ifndef vtkCheckerboardWidget_h
 #define vtkCheckerboardWidget_h
 
-#include "vtkAbstractWidget.h"
 #include "vtkInteractionWidgetsModule.h" // For export macro
+#include "vtkAbstractWidget.h"
 
 class vtkCheckerboardRepresentation;
 class vtkSliderWidget;
+
 
 class VTKINTERACTIONWIDGETS_EXPORT vtkCheckerboardWidget : public vtkAbstractWidget
 {
@@ -58,14 +59,14 @@ public:
   /**
    * Instantiate this class.
    */
-  static vtkCheckerboardWidget* New();
+  static vtkCheckerboardWidget *New();
 
   //@{
   /**
    * Standard methods for a VTK class.
    */
-  vtkTypeMacro(vtkCheckerboardWidget, vtkAbstractWidget);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkCheckerboardWidget,vtkAbstractWidget);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   /**
@@ -73,40 +74,36 @@ public:
    * must be overridden because it is a composite widget and does more than
    * its superclasses' vtkAbstractWidget::SetEnabled() method.
    */
-  void SetEnabled(int) override;
+  virtual void SetEnabled(int);
 
   /**
    * Specify an instance of vtkWidgetRepresentation used to represent this
    * widget in the scene. Note that the representation is a subclass of vtkProp
    * so it can be added to the renderer independent of the widget.
    */
-  void SetRepresentation(vtkCheckerboardRepresentation* r)
-  {
-    this->Superclass::SetWidgetRepresentation(reinterpret_cast<vtkWidgetRepresentation*>(r));
-  }
+  void SetRepresentation(vtkCheckerboardRepresentation *r)
+    {this->Superclass::SetWidgetRepresentation(reinterpret_cast<vtkWidgetRepresentation*>(r));}
 
   /**
    * Return the representation as a vtkCheckerboardRepresentation.
    */
-  vtkCheckerboardRepresentation* GetCheckerboardRepresentation()
-  {
-    return reinterpret_cast<vtkCheckerboardRepresentation*>(this->WidgetRep);
-  }
+  vtkCheckerboardRepresentation *GetCheckerboardRepresentation()
+    {return reinterpret_cast<vtkCheckerboardRepresentation*>(this->WidgetRep);}
 
   /**
    * Create the default widget representation if one is not set.
    */
-  void CreateDefaultRepresentation() override;
+  void CreateDefaultRepresentation();
 
 protected:
   vtkCheckerboardWidget();
-  ~vtkCheckerboardWidget() override;
+  ~vtkCheckerboardWidget();
 
   // The four slider widgets
-  vtkSliderWidget* TopSlider;
-  vtkSliderWidget* RightSlider;
-  vtkSliderWidget* BottomSlider;
-  vtkSliderWidget* LeftSlider;
+  vtkSliderWidget *TopSlider;
+  vtkSliderWidget *RightSlider;
+  vtkSliderWidget *BottomSlider;
+  vtkSliderWidget *LeftSlider;
 
   // Callback interface
   void StartCheckerboardInteraction();
@@ -116,8 +113,8 @@ protected:
   friend class vtkCWCallback;
 
 private:
-  vtkCheckerboardWidget(const vtkCheckerboardWidget&) = delete;
-  void operator=(const vtkCheckerboardWidget&) = delete;
+  vtkCheckerboardWidget(const vtkCheckerboardWidget&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkCheckerboardWidget&) VTK_DELETE_FUNCTION;
 };
 
 #endif

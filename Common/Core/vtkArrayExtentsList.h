@@ -39,14 +39,14 @@
  * @par Thanks:
  * Developed by Timothy M. Shead (tshead@sandia.gov) at Sandia National
  * Laboratories.
- */
+*/
 
 #ifndef vtkArrayExtentsList_h
 #define vtkArrayExtentsList_h
 
-#include "vtkArrayExtents.h"
 #include "vtkCommonCoreModule.h" // For export macro
-#include <vector>                // STL Header
+#include "vtkArrayExtents.h"
+#include <vector> // STL Header
 
 class VTKCOMMONCORE_EXPORT vtkArrayExtentsList
 {
@@ -74,8 +74,7 @@ public:
   /**
    * Creates a collection containing four slices.
    */
-  vtkArrayExtentsList(const vtkArrayExtents& i, const vtkArrayExtents& j, const vtkArrayExtents& k,
-    const vtkArrayExtents& l);
+  vtkArrayExtentsList(const vtkArrayExtents& i, const vtkArrayExtents& j, const vtkArrayExtents& k, const vtkArrayExtents& l);
 
   /**
    * Returns the number of slices stored in this collection.
@@ -89,6 +88,7 @@ public:
    */
   void SetCount(vtkIdType count);
 
+
   /**
    * Accesses the i-th slice.
    */
@@ -100,7 +100,9 @@ public:
   const vtkArrayExtents& operator[](vtkIdType i) const;
 
 private:
+
   std::vector<vtkArrayExtents> Storage;
+
 };
 
 #endif

@@ -24,7 +24,7 @@
  *
  * @sa
  * vtkXMLStructuredGridReader
- */
+*/
 
 #ifndef vtkXMLPStructuredGridReader_h
 #define vtkXMLPStructuredGridReader_h
@@ -37,14 +37,14 @@ class vtkStructuredGrid;
 class VTKIOXML_EXPORT vtkXMLPStructuredGridReader : public vtkXMLPStructuredDataReader
 {
 public:
-  vtkTypeMacro(vtkXMLPStructuredGridReader, vtkXMLPStructuredDataReader);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
-  static vtkXMLPStructuredGridReader* New();
+  vtkTypeMacro(vtkXMLPStructuredGridReader,vtkXMLPStructuredDataReader);
+  void PrintSelf(ostream& os, vtkIndent indent);
+  static vtkXMLPStructuredGridReader *New();
 
   /**
    * Get the reader's output.
    */
-  vtkStructuredGrid* GetOutput();
+  vtkStructuredGrid *GetOutput();
 
   /**
    * Needed for ParaView
@@ -53,26 +53,26 @@ public:
 
 protected:
   vtkXMLPStructuredGridReader();
-  ~vtkXMLPStructuredGridReader() override;
+  ~vtkXMLPStructuredGridReader();
 
   vtkStructuredGrid* GetPieceInput(int index);
 
-  void SetupEmptyOutput() override;
-  const char* GetDataSetName() override;
-  void SetOutputExtent(int* extent) override;
-  void GetPieceInputExtent(int index, int* extent) override;
-  int ReadPrimaryElement(vtkXMLDataElement* ePrimary) override;
-  void SetupOutputData() override;
-  int ReadPieceData() override;
-  vtkXMLDataReader* CreatePieceReader() override;
-  int FillOutputPortInformation(int, vtkInformation*) override;
+  void SetupEmptyOutput();
+  const char* GetDataSetName();
+  void SetOutputExtent(int* extent);
+  void GetPieceInputExtent(int index, int* extent);
+  int ReadPrimaryElement(vtkXMLDataElement* ePrimary);
+  void SetupOutputData();
+  int ReadPieceData();
+  vtkXMLDataReader* CreatePieceReader();
+  virtual int FillOutputPortInformation(int, vtkInformation*);
 
   // The PPoints element with point information.
   vtkXMLDataElement* PPointsElement;
 
 private:
-  vtkXMLPStructuredGridReader(const vtkXMLPStructuredGridReader&) = delete;
-  void operator=(const vtkXMLPStructuredGridReader&) = delete;
+  vtkXMLPStructuredGridReader(const vtkXMLPStructuredGridReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkXMLPStructuredGridReader&) VTK_DELETE_FUNCTION;
 };
 
 #endif

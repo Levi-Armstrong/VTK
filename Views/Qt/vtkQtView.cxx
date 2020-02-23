@@ -12,21 +12,28 @@
 
 #include "vtkQtView.h"
 
-#include "vtkObjectFactory.h"
 #include <QApplication>
 #include <QPixmap>
 #include <QWidget>
+#include "vtkObjectFactory.h"
+
 
 //----------------------------------------------------------------------------
-vtkQtView::vtkQtView() {}
+vtkQtView::vtkQtView()
+{
+
+}
 
 //----------------------------------------------------------------------------
-vtkQtView::~vtkQtView() {}
+vtkQtView::~vtkQtView()
+{
+
+}
 
 //----------------------------------------------------------------------------
 void vtkQtView::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 }
 
 //----------------------------------------------------------------------------
@@ -44,5 +51,10 @@ void vtkQtView::ProcessQtEventsNoUserInput()
 //----------------------------------------------------------------------------
 bool vtkQtView::SaveImage(const char* filename)
 {
-  return this->GetWidget() != nullptr ? this->GetWidget()->grab().save(filename) : false;
+#if QT_VERSION >= 0x050000
+  return this->GetWidget() != 0 ? this->GetWidget()->grab().save(filename) : false;
+#else
+  // This is ok even if this->GetWidget() returns null.
+  return QPixmap::grabWidget(this->GetWidget()).save(filename);
+#endif
 }

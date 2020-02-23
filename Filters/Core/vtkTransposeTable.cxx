@@ -27,8 +27,8 @@
 #include "vtkLongLongArray.h"
 #include "vtkNew.h"
 #include "vtkObjectFactory.h"
-#include "vtkShortArray.h"
 #include "vtkSignedCharArray.h"
+#include "vtkShortArray.h"
 #include "vtkSmartPointer.h"
 #include "vtkStringArray.h"
 #include "vtkTable.h"
@@ -46,17 +46,15 @@
 class vtkTransposeTableInternal
 {
 public:
-  vtkTransposeTableInternal(vtkTransposeTable* parent)
-    : Parent(parent)
-  {
-  }
+  vtkTransposeTableInternal(vtkTransposeTable* parent) : Parent(parent) {}
 
   bool TransposeTable(vtkTable* inTable, vtkTable* outTable);
 
 protected:
+
   bool InsertColumn(int, vtkAbstractArray*);
 
-  template <typename ArrayType, typename ValueType>
+  template<typename ArrayType, typename ValueType>
   bool TransposeColumn(int, bool);
 
   vtkTransposeTable* Parent;
@@ -66,7 +64,7 @@ protected:
 
 //----------------------------------------------------------------------------
 
-template <typename ArrayType, typename ValueType>
+template<typename ArrayType, typename ValueType>
 bool vtkTransposeTableInternal::TransposeColumn(int columnId, bool useVariant)
 {
   vtkAbstractArray* column = this->InTable->GetColumn(columnId);
@@ -83,7 +81,8 @@ bool vtkTransposeTableInternal::TransposeColumn(int columnId, bool useVariant)
     numberOfRowsInTransposedColumn--;
   }
 
-  for (int r = 0; r < column->GetNumberOfTuples() * column->GetNumberOfComponents(); ++r)
+  for (int r = 0; r < column->GetNumberOfTuples() *
+    column->GetNumberOfComponents(); ++r)
   {
     vtkSmartPointer<ArrayType> transposedColumn;
     if (columnId == 0)
@@ -114,10 +113,9 @@ bool vtkTransposeTableInternal::TransposeColumn(int columnId, bool useVariant)
 //----------------------------------------------------------------------------
 bool vtkTransposeTableInternal::InsertColumn(int pos, vtkAbstractArray* col)
 {
-  if (!col ||
-    ((this->OutTable->GetNumberOfRows() !=
-       col->GetNumberOfComponents() * col->GetNumberOfTuples()) &&
-      (this->OutTable->GetNumberOfRows() != 0)))
+  if (!col || ((this->OutTable->GetNumberOfRows() !=
+    col->GetNumberOfComponents() * col->GetNumberOfTuples()) &&
+    (this->OutTable->GetNumberOfRows() != 0)))
   {
     return false;
   }
@@ -139,13 +137,14 @@ bool vtkTransposeTableInternal::InsertColumn(int pos, vtkAbstractArray* col)
     updatedTable->AddColumn(col);
   }
 
-  this->OutTable->ShallowCopy(updatedTable);
+  this->OutTable->ShallowCopy(updatedTable.GetPointer());
 
   return true;
 }
 
 //----------------------------------------------------------------------------
-bool vtkTransposeTableInternal::TransposeTable(vtkTable* inTable, vtkTable* outTable)
+bool vtkTransposeTableInternal::TransposeTable(vtkTable* inTable,
+                                               vtkTable* outTable)
 {
   this->InTable = inTable;
   this->OutTable = outTable;
@@ -157,7 +156,8 @@ bool vtkTransposeTableInternal::TransposeTable(vtkTable* inTable, vtkTable* outT
   vtkAbstractArray* firstCol = this->InTable->GetColumn(idColOffset);
   for (int c = idColOffset; c < this->InTable->GetNumberOfColumns(); c++)
   {
-    if (strcmp(firstCol->GetClassName(), this->InTable->GetColumn(c)->GetClassName()) != 0)
+    if (strcmp(firstCol->GetClassName(),
+      this->InTable->GetColumn(c)->GetClassName()) != 0)
     {
       useVariant = true;
       break;
@@ -172,32 +172,48 @@ bool vtkTransposeTableInternal::TransposeTable(vtkTable* inTable, vtkTable* outT
     }
     if (!useVariant)
     {
-#define TransposeTypedColumn(_vt, _ta, _t)                                                         \
-  case _vt:                                                                                        \
-    if (!this->TransposeColumn<_ta, _t>(c, useVariant))                                            \
-    {                                                                                              \
-      vtkErrorWithObjectMacro(this->Parent, << "Unable to transpose column " << c);                \
-      return false;                                                                                \
-    }                                                                                              \
+#define TransposeTypedColumn(_vt, _ta, _t) \
+  case _vt:\
+    if (!this->TransposeColumn<_ta, _t>(c, useVariant))\
+    {\
+      vtkErrorWithObjectMacro(this->Parent, <<\
+        "Unable to transpose column " << c);\
+        return false;\
+    }\
     break;
 
       switch (column->GetDataType())
       {
-        TransposeTypedColumn(VTK_DOUBLE, vtkDoubleArray, double);
-        TransposeTypedColumn(VTK_FLOAT, vtkFloatArray, float);
-        TransposeTypedColumn(VTK_CHAR, vtkCharArray, char);
-        TransposeTypedColumn(VTK_SIGNED_CHAR, vtkSignedCharArray, signed char);
-        TransposeTypedColumn(VTK_SHORT, vtkShortArray, short);
-        TransposeTypedColumn(VTK_INT, vtkIntArray, int);
-        TransposeTypedColumn(VTK_LONG, vtkLongArray, long);
-        TransposeTypedColumn(VTK_LONG_LONG, vtkLongLongArray, long long);
-        TransposeTypedColumn(VTK_UNSIGNED_CHAR, vtkUnsignedCharArray, unsigned char);
-        TransposeTypedColumn(VTK_UNSIGNED_SHORT, vtkUnsignedShortArray, unsigned short);
-        TransposeTypedColumn(VTK_UNSIGNED_INT, vtkUnsignedIntArray, unsigned int);
-        TransposeTypedColumn(VTK_UNSIGNED_LONG, vtkUnsignedLongArray, unsigned long);
-        TransposeTypedColumn(VTK_UNSIGNED_LONG_LONG, vtkUnsignedLongLongArray, unsigned long long);
-        TransposeTypedColumn(VTK_ID_TYPE, vtkIdTypeArray, vtkIdType);
-        TransposeTypedColumn(VTK_STRING, vtkStringArray, vtkStdString);
+        TransposeTypedColumn(VTK_DOUBLE, vtkDoubleArray,
+          double);
+        TransposeTypedColumn(VTK_FLOAT, vtkFloatArray,
+          float);
+        TransposeTypedColumn(VTK_CHAR, vtkCharArray,
+          char);
+        TransposeTypedColumn(VTK_SIGNED_CHAR, vtkSignedCharArray,
+          signed char);
+        TransposeTypedColumn(VTK_SHORT, vtkShortArray,
+          short);
+        TransposeTypedColumn(VTK_INT, vtkIntArray,
+          int);
+        TransposeTypedColumn(VTK_LONG, vtkLongArray,
+          long);
+        TransposeTypedColumn(VTK_LONG_LONG, vtkLongLongArray,
+          long long);
+        TransposeTypedColumn(VTK_UNSIGNED_CHAR, vtkUnsignedCharArray,
+          unsigned char);
+        TransposeTypedColumn(VTK_UNSIGNED_SHORT, vtkUnsignedShortArray,
+          unsigned short);
+        TransposeTypedColumn(VTK_UNSIGNED_INT, vtkUnsignedIntArray,
+          unsigned int);
+        TransposeTypedColumn(VTK_UNSIGNED_LONG, vtkUnsignedLongArray,
+          unsigned long);
+        TransposeTypedColumn(VTK_UNSIGNED_LONG_LONG, vtkUnsignedLongLongArray,
+          unsigned long long);
+        TransposeTypedColumn(VTK_ID_TYPE, vtkIdTypeArray,
+          vtkIdType);
+        TransposeTypedColumn(VTK_STRING, vtkStringArray,
+          vtkStdString);
 #undef TransposeTypedColumn
         default:
           useVariant = true;
@@ -221,7 +237,8 @@ bool vtkTransposeTableInternal::TransposeTable(vtkTable* inTable, vtkTable* outT
 
   // Set id column on transposed table
   firstCol = this->InTable->GetColumn(0);
-  for (int r = 0; r < firstCol->GetNumberOfComponents() * firstCol->GetNumberOfTuples(); r++)
+  for (int r = 0; r < firstCol->GetNumberOfComponents() *
+    firstCol->GetNumberOfTuples(); r++)
   {
     vtkAbstractArray* destColumn = this->OutTable->GetColumn(r);
     if (this->Parent->GetUseIdColumn())
@@ -231,7 +248,7 @@ bool vtkTransposeTableInternal::TransposeTable(vtkTable* inTable, vtkTable* outT
     else
     {
       // Set the column name to the (padded) row id.
-      // We padd ids with 0 to avoid downstream dictionary sort issues.
+      // We padd ids with 0 to avoid downstream dictionnary sort issues.
       std::stringstream ss2;
       ss2 << std::setw(maxBLen) << std::setfill('0');
       ss2 << r;
@@ -243,14 +260,15 @@ bool vtkTransposeTableInternal::TransposeTable(vtkTable* inTable, vtkTable* outT
   if (this->Parent->GetAddIdColumn())
   {
     vtkNew<vtkStringArray> stringArray;
-    stringArray->SetName(this->Parent->GetUseIdColumn() ? this->InTable->GetColumn(0)->GetName()
-                                                        : this->Parent->GetIdColumnName());
-    stringArray->SetNumberOfValues(this->InTable->GetNumberOfColumns() - idColOffset);
+    stringArray->SetName(this->Parent->GetUseIdColumn() ?
+      this->InTable->GetColumn(0)->GetName() : this->Parent->GetIdColumnName());
+    stringArray->SetNumberOfValues(
+      this->InTable->GetNumberOfColumns() - idColOffset);
     for (int c = idColOffset; c < this->InTable->GetNumberOfColumns(); ++c)
     {
       stringArray->SetValue(c - idColOffset, this->InTable->GetColumn(c)->GetName());
     }
-    this->InsertColumn(0, stringArray);
+    this->InsertColumn(0, stringArray.GetPointer());
   }
 
   return true;
@@ -264,14 +282,14 @@ vtkTransposeTable::vtkTransposeTable()
 {
   this->AddIdColumn = true;
   this->UseIdColumn = false;
-  this->IdColumnName = nullptr;
+  this->IdColumnName = 0;
   this->SetIdColumnName("ColName");
 }
 
 //----------------------------------------------------------------------------
 vtkTransposeTable::~vtkTransposeTable()
 {
-  delete[] IdColumnName;
+  delete [] IdColumnName;
 }
 
 //----------------------------------------------------------------------------
@@ -281,15 +299,17 @@ void vtkTransposeTable::PrintSelf(ostream& os, vtkIndent indent)
 }
 
 //----------------------------------------------------------------------------
-int vtkTransposeTable::RequestData(
-  vtkInformation*, vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+int vtkTransposeTable::RequestData(vtkInformation*,
+                                   vtkInformationVector** inputVector,
+                                   vtkInformationVector* outputVector)
 {
   vtkTable* inTable = vtkTable::GetData(inputVector[0]);
   vtkTable* outTable = vtkTable::GetData(outputVector, 0);
 
   if (inTable->GetNumberOfColumns() == 0)
   {
-    vtkErrorMacro(<< "vtkTransposeTable requires vtkTable containing at least one column.");
+    vtkErrorMacro(<<
+      "vtkTransposeTable requires vtkTable containing at least one column.");
     return 0;
   }
 

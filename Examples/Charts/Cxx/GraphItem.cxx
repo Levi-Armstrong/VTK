@@ -14,29 +14,27 @@
 =========================================================================*/
 
 #include "vtkCommand.h"
-#include "vtkContextScene.h"
-#include "vtkContextView.h"
+#include "vtkRandomGraphSource.h"
 #include "vtkGraph.h"
 #include "vtkGraphItem.h"
-#include "vtkRandomGraphSource.h"
+#include "vtkVariant.h"
+#include "vtkRenderer.h"
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
-#include "vtkRenderer.h"
 #include "vtkSmartPointer.h"
-#include "vtkVariant.h"
+#include "vtkContextView.h"
+#include "vtkContextScene.h"
 
 #include "vtkObjectFactory.h"
 
-// NOTE: @hcwiley commented this out as its not being used, and causes builds
-// to fail with examples on but testing off. Why is this included?
-//#include "vtkRegressionTestImage.h"
+#include "vtkRegressionTestImage.h"
 
 class GraphAnimate : public vtkCommand
 {
 public:
-  static GraphAnimate* New() { return new GraphAnimate(); }
+  static GraphAnimate *New() { return new GraphAnimate(); }
   vtkTypeMacro(GraphAnimate, vtkCommand);
-  void Execute(vtkObject*, unsigned long, void*) override
+  virtual void Execute(vtkObject *, unsigned long, void *)
   {
     this->GraphItem->UpdatePositions();
     this->View->Render();
@@ -47,7 +45,7 @@ public:
 };
 
 //----------------------------------------------------------------------------
-int main(int, char*[])
+int main(int, char *[])
 {
   // Set up a 2D context view, context test object and add it to the scene
   vtkSmartPointer<vtkContextView> view = vtkSmartPointer<vtkContextView>::New();

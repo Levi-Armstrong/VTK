@@ -59,24 +59,23 @@
  *   vtkCommand::InteractionEvent (moving after selecting something)
  *   vtkCommand::PlacePointEvent (after point is positioned;
  *                                call data includes handle id (0,1))
- *   vtkCommand::DeletePointEvent (before point is deleted;
- *                                call data includes handle id (0,1))
  * </pre>
  *
  * @sa
- * vtkHandleWidget vtkSeedRepresentation
- */
+ * vtkHandleWidget vtkSeedReoresentation
+*/
 
 #ifndef vtkSeedWidget_h
 #define vtkSeedWidget_h
 
-#include "vtkAbstractWidget.h"
 #include "vtkInteractionWidgetsModule.h" // For export macro
+#include "vtkAbstractWidget.h"
 
 class vtkHandleRepresentation;
 class vtkHandleWidget;
 class vtkSeedList;
 class vtkSeedRepresentation;
+
 
 class VTKINTERACTIONWIDGETS_EXPORT vtkSeedWidget : public vtkAbstractWidget
 {
@@ -84,14 +83,14 @@ public:
   /**
    * Instantiate this class.
    */
-  static vtkSeedWidget* New();
+  static vtkSeedWidget *New();
 
   //@{
   /**
    * Standard methods for a VTK class.
    */
-  vtkTypeMacro(vtkSeedWidget, vtkAbstractWidget);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkSeedWidget,vtkAbstractWidget);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   /**
@@ -99,48 +98,47 @@ public:
    * must be overridden because it is a composite widget and does more than
    * its superclasses' vtkAbstractWidget::SetEnabled() method.
    */
-  void SetEnabled(int) override;
+  virtual void SetEnabled(int);
 
   /**
    * Set the current renderer. This method also propagates to all the child
    * handle widgets, if any exist
    */
-  void SetCurrentRenderer(vtkRenderer*) override;
+  virtual void SetCurrentRenderer( vtkRenderer * );
 
   /**
    * Set the interactor. This method also propagates to all the child
    * handle widgets, if any exist
    */
-  void SetInteractor(vtkRenderWindowInteractor*) override;
+  virtual void SetInteractor( vtkRenderWindowInteractor * );
 
   /**
    * Specify an instance of vtkWidgetRepresentation used to represent this
    * widget in the scene. Note that the representation is a subclass of vtkProp
    * so it can be added to the renderer independent of the widget.
    */
-  void SetRepresentation(vtkSeedRepresentation* rep)
+  void SetRepresentation( vtkSeedRepresentation *rep )
   {
-    this->Superclass::SetWidgetRepresentation(reinterpret_cast<vtkWidgetRepresentation*>(rep));
+    this->Superclass::SetWidgetRepresentation(
+      reinterpret_cast<vtkWidgetRepresentation*>(rep) );
   }
 
   /**
    * Return the representation as a vtkSeedRepresentation.
    */
-  vtkSeedRepresentation* GetSeedRepresentation()
-  {
-    return reinterpret_cast<vtkSeedRepresentation*>(this->WidgetRep);
-  }
+  vtkSeedRepresentation *GetSeedRepresentation()
+    {return reinterpret_cast<vtkSeedRepresentation*>(this->WidgetRep);}
 
   /**
    * Create the default widget representation if one is not set.
    */
-  void CreateDefaultRepresentation() override;
+  void CreateDefaultRepresentation();
 
   /**
    * Methods to change the whether the widget responds to interaction.
    * Overridden to pass the state to component widgets.
    */
-  void SetProcessEvents(vtkTypeBool) override;
+  virtual void SetProcessEvents(int);
 
   /**
    * Method to be called when the seed widget should stop responding to
@@ -166,7 +164,7 @@ public:
    * A valid seed representation must exist for the widget to create a new
    * handle.
    */
-  virtual vtkHandleWidget* CreateNewHandle();
+  virtual vtkHandleWidget * CreateNewHandle();
 
   /**
    * Delete the nth seed.
@@ -176,13 +174,13 @@ public:
   /**
    * Get the nth seed
    */
-  vtkHandleWidget* GetSeed(int n);
+  vtkHandleWidget * GetSeed( int n );
 
   //@{
   /**
    * Get the widget state.
    */
-  vtkGetMacro(WidgetState, int);
+  vtkGetMacro( WidgetState, int );
   //@}
 
   // The state of the widget
@@ -197,27 +195,28 @@ public:
 
 protected:
   vtkSeedWidget();
-  ~vtkSeedWidget() override;
+  ~vtkSeedWidget();
+
 
   int WidgetState;
 
   // Callback interface to capture events when
   // placing the widget.
-  static void AddPointAction(vtkAbstractWidget*);
-  static void CompletedAction(vtkAbstractWidget*);
-  static void MoveAction(vtkAbstractWidget*);
-  static void EndSelectAction(vtkAbstractWidget*);
-  static void DeleteAction(vtkAbstractWidget*);
+  static void AddPointAction( vtkAbstractWidget* );
+  static void CompletedAction( vtkAbstractWidget* );
+  static void MoveAction( vtkAbstractWidget* );
+  static void EndSelectAction( vtkAbstractWidget* );
+  static void DeleteAction( vtkAbstractWidget* );
 
   // The positioning handle widgets
-  vtkSeedList* Seeds;
+  vtkSeedList *Seeds;
 
   // Manipulating or defining ?
   int Defining;
 
 private:
-  vtkSeedWidget(const vtkSeedWidget&) = delete;
-  void operator=(const vtkSeedWidget&) = delete;
+  vtkSeedWidget(const vtkSeedWidget&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkSeedWidget&) VTK_DELETE_FUNCTION;
 };
 
 #endif

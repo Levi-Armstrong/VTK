@@ -19,12 +19,12 @@
 vtkStandardNewMacro(vtkActor2DCollection);
 
 // protected function to delete an element. Internal use only.
-void vtkActor2DCollection::DeleteElement(vtkCollectionElement* e)
+void vtkActor2DCollection::DeleteElement(vtkCollectionElement *e)
 {
   vtkCollection::DeleteElement(e);
 }
 
-// Destructor for the vtkActor2DCollection class. This removes all
+// Desctructor for the vtkActor2DCollection class. This removes all
 // objects from the collection.
 vtkActor2DCollection::~vtkActor2DCollection()
 {
@@ -39,7 +39,8 @@ void vtkActor2DCollection::RenderOverlay(vtkViewport* viewport)
     this->Sort();
     vtkActor2D* tempActor;
     vtkCollectionSimpleIterator adit;
-    for (this->InitTraversal(adit); (tempActor = this->GetNextActor2D(adit));)
+    for ( this->InitTraversal(adit);
+          (tempActor = this->GetNextActor2D(adit));)
     {
       // Make sure that the actor is visible before rendering
       if (tempActor->GetVisibility() == 1)
@@ -53,26 +54,28 @@ void vtkActor2DCollection::RenderOverlay(vtkViewport* viewport)
 // Add an actor to the list.  The new actor is
 // inserted in the list according to it's layer
 // number.
-void vtkActor2DCollection::AddItem(vtkActor2D* a)
+void vtkActor2DCollection::AddItem(vtkActor2D *a)
 {
   vtkCollectionElement* indexElem;
   vtkCollectionElement* elem = new vtkCollectionElement;
 
-  // Check if the top item is nullptr
-  if (this->Top == nullptr)
+  // Check if the top item is NULL
+  if (this->Top == NULL)
   {
-    vtkDebugMacro(<< "vtkActor2DCollection::AddItem - Adding item to top of the list");
+    vtkDebugMacro(<<"vtkActor2DCollection::AddItem - Adding item to top of the list");
 
     this->Top = elem;
     elem->Item = a;
-    elem->Next = nullptr;
+    elem->Next = NULL;
     this->Bottom = elem;
     this->NumberOfItems++;
     a->Register(this);
     return;
   }
 
-  for (indexElem = this->Top; indexElem != nullptr; indexElem = indexElem->Next)
+  for (indexElem = this->Top;
+         indexElem != NULL;
+           indexElem = indexElem->Next)
   {
 
     vtkActor2D* tempActor = static_cast<vtkActor2D*>(indexElem->Item);
@@ -80,7 +83,7 @@ void vtkActor2DCollection::AddItem(vtkActor2D* a)
     {
       // The indexElem item's layer number is larger, so swap
       // the new item and the indexElem item.
-      vtkDebugMacro(<< "vtkActor2DCollection::AddItem - Inserting item");
+      vtkDebugMacro(<<"vtkActor2DCollection::AddItem - Inserting item");
       elem->Item = indexElem->Item;
       elem->Next = indexElem->Next;
       indexElem->Item = a;
@@ -89,54 +92,57 @@ void vtkActor2DCollection::AddItem(vtkActor2D* a)
       a->Register(this);
       return;
     }
+
   }
 
-  // End of list found before a larger layer number
-  vtkDebugMacro(<< "vtkActor2DCollection::AddItem - Adding item to end of the list");
+  //End of list found before a larger layer number
+  vtkDebugMacro(<<"vtkActor2DCollection::AddItem - Adding item to end of the list");
   elem->Item = a;
-  elem->Next = nullptr;
+  elem->Next = NULL;
   this->Bottom->Next = elem;
   this->Bottom = elem;
   this->NumberOfItems++;
   a->Register(this);
+
 }
 
 // Sorts the vtkActor2DCollection by layer number.  Smaller layer
 // numbers are first.  Layer numbers can be any integer value.
 void vtkActor2DCollection::Sort()
 {
-  int index;
+   int index;
 
-  vtkDebugMacro(<< "vtkActor2DCollection::Sort");
+   vtkDebugMacro(<<"vtkActor2DCollection::Sort");
 
-  int numElems = this->GetNumberOfItems();
+   int numElems  = this->GetNumberOfItems();
 
-  // Create an array of pointers to actors
-  vtkActor2D** actorPtrArr = new vtkActor2D*[numElems];
+   // Create an array of pointers to actors
+   vtkActor2D** actorPtrArr = new vtkActor2D* [numElems];
 
-  vtkDebugMacro(<< "vtkActor2DCollection::Sort - Getting actors from collection");
+   vtkDebugMacro(<<"vtkActor2DCollection::Sort - Getting actors from collection");
 
-  // Start at the beginning of the collection
-  vtkCollectionSimpleIterator ait;
-  this->InitTraversal(ait);
+   // Start at the beginning of the collection
+   vtkCollectionSimpleIterator ait;
+   this->InitTraversal(ait);
 
-  // Fill the actor array with the items in the collection
-  for (index = 0; index < numElems; index++)
-  {
-    actorPtrArr[index] = this->GetNextActor2D(ait);
-  }
 
-  vtkDebugMacro(<< "vtkActor2DCollection::Sort - Starting selection sort");
-  // Start the sorting - selection sort
+   // Fill the actor array with the items in the collection
+   for (index = 0; index < numElems; index++)
+   {
+     actorPtrArr[index] = this->GetNextActor2D(ait);
+   }
+
+  vtkDebugMacro(<<"vtkActor2DCollection::Sort - Starting selection sort");
+   // Start the sorting - selection sort
   int i, j, min;
   vtkActor2D* t;
 
   for (i = 0; i < numElems - 1; i++)
   {
     min = i;
-    for (j = i + 1; j < numElems; j++)
+    for (j = i + 1; j < numElems ; j++)
     {
-      if (actorPtrArr[j]->GetLayerNumber() < actorPtrArr[min]->GetLayerNumber())
+      if(actorPtrArr[j]->GetLayerNumber() < actorPtrArr[min]->GetLayerNumber())
       {
         min = j;
       }
@@ -146,15 +152,15 @@ void vtkActor2DCollection::Sort()
     actorPtrArr[i] = t;
   }
 
-  vtkDebugMacro(<< "vtkActor2DCollection::Sort - Selection sort done.");
+   vtkDebugMacro(<<"vtkActor2DCollection::Sort - Selection sort done.");
 
-  for (index = 0; index < numElems; index++)
-  {
-    vtkDebugMacro(<< "vtkActor2DCollection::Sort - actorPtrArr[" << index
-                  << "] layer: " << actorPtrArr[index]->GetLayerNumber());
-  }
+   for (index = 0; index < numElems; index++)
+   {
+     vtkDebugMacro(<<"vtkActor2DCollection::Sort - actorPtrArr["<<index<<"] layer: " <<
+     actorPtrArr[index]->GetLayerNumber());
+   }
 
-  vtkDebugMacro(<< "vtkActor2DCollection::Sort - Rearraging the linked list.");
+  vtkDebugMacro(<<"vtkActor2DCollection::Sort - Rearraging the linked list.");
   // Now move the items around in the linked list -
   // keep the links the same, but swap around the items
 
@@ -169,3 +175,20 @@ void vtkActor2DCollection::Sort()
 
   delete[] actorPtrArr;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

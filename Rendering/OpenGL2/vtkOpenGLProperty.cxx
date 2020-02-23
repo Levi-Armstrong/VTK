@@ -12,13 +12,12 @@
      PURPOSE.  See the above copyright notice for more information.
 
 =========================================================================*/
-#include "vtkOpenGLProperty.h"
 #include "vtkOpenGLRenderer.h"
+#include "vtkOpenGLProperty.h"
 
 #include "vtkOpenGLHelper.h"
 
 #include "vtkObjectFactory.h"
-#include "vtkOpenGLState.h"
 #include "vtkOpenGLTexture.h"
 #include "vtkTexture.h"
 
@@ -28,29 +27,51 @@
 
 vtkStandardNewMacro(vtkOpenGLProperty);
 
-vtkOpenGLProperty::vtkOpenGLProperty() = default;
+vtkOpenGLProperty::vtkOpenGLProperty()
+{
+}
 
-vtkOpenGLProperty::~vtkOpenGLProperty() = default;
+vtkOpenGLProperty::~vtkOpenGLProperty()
+{
+}
+
 
 // ----------------------------------------------------------------------------
 // Implement base class method.
-void vtkOpenGLProperty::Render(vtkActor* anActor, vtkRenderer* ren)
+void vtkOpenGLProperty::Render(vtkActor *anActor, vtkRenderer *ren)
 {
-  // turn on/off backface culling
-  vtkOpenGLState* ostate = static_cast<vtkOpenGLRenderer*>(ren)->GetState();
-  if (!this->BackfaceCulling && !this->FrontfaceCulling)
+  // Set the LineStipple
+  if (this->LineStipplePattern != 0xFFFF)
   {
-    ostate->vtkglDisable(GL_CULL_FACE);
+    // glEnable(GL_LINE_STIPPLE);
+    // glLineStipple(this->LineStippleRepeatFactor,
+    //               static_cast<GLushort>(this->LineStipplePattern));
+    //vtkOpenGLGL2PSHelper::EnableStipple(); // must be called after glLineStipple
+  }
+  else
+  {
+    // still need to set this although we are disabling.  else the ATI X1600
+    // (for example) still manages to stipple under certain conditions.
+    // glLineStipple(this->LineStippleRepeatFactor,
+    //               static_cast<GLushort>(this->LineStipplePattern));
+    // glDisable(GL_LINE_STIPPLE);
+    //vtkOpenGLGL2PSHelper::DisableStipple();
+  }
+
+  // turn on/off backface culling
+  if (! this->BackfaceCulling && ! this->FrontfaceCulling)
+  {
+    glDisable (GL_CULL_FACE);
   }
   else if (this->BackfaceCulling)
   {
-    ostate->vtkglCullFace(GL_BACK);
-    ostate->vtkglEnable(GL_CULL_FACE);
+    glCullFace (GL_BACK);
+    glEnable (GL_CULL_FACE);
   }
-  else // if both front & back culling on, will fall into backface culling
-  {    // if you really want both front and back, use the Actor's visibility flag
-    ostate->vtkglCullFace(GL_FRONT);
-    ostate->vtkglEnable(GL_CULL_FACE);
+  else //if both front & back culling on, will fall into backface culling
+  { //if you really want both front and back, use the Actor's visibility flag
+    glCullFace (GL_FRONT);
+    glEnable (GL_CULL_FACE);
   }
 
   this->RenderTextures(anActor, ren);
@@ -61,33 +82,26 @@ void vtkOpenGLProperty::Render(vtkActor* anActor, vtkRenderer* ren)
 bool vtkOpenGLProperty::RenderTextures(vtkActor*, vtkRenderer* ren)
 {
   // render any textures.
-  auto textures = this->GetAllTextures();
-  for (auto ti : textures)
+  int numTextures = this->GetNumberOfTextures();
+  for (int t = 0; t < numTextures; t++)
   {
-    ti.second->Render(ren);
+    this->GetTextureAtIndex(t)->Render(ren);
   }
 
   vtkOpenGLCheckErrorMacro("failed after Render");
 
-  return (!textures.empty());
+  return (numTextures > 0);
 }
 
 //-----------------------------------------------------------------------------
-void vtkOpenGLProperty::PostRender(vtkActor* actor, vtkRenderer* renderer)
+void vtkOpenGLProperty::PostRender(vtkActor *actor, vtkRenderer *renderer)
 {
   vtkOpenGLClearErrorMacro();
 
   // Reset the face culling now we are done, leaking into text actor etc.
   if (this->BackfaceCulling || this->FrontfaceCulling)
   {
-    static_cast<vtkOpenGLRenderer*>(renderer)->GetState()->vtkglDisable(GL_CULL_FACE);
-  }
-
-  // deactivate any textures.
-  auto textures = this->GetAllTextures();
-  for (auto ti : textures)
-  {
-    ti.second->PostRender(renderer);
+    glDisable(GL_CULL_FACE);
   }
 
   this->Superclass::PostRender(actor, renderer);
@@ -97,18 +111,21 @@ void vtkOpenGLProperty::PostRender(vtkActor* actor, vtkRenderer* renderer)
 
 //-----------------------------------------------------------------------------
 // Implement base class method.
-void vtkOpenGLProperty::BackfaceRender(vtkActor* vtkNotUsed(anActor), vtkRenderer* vtkNotUsed(ren))
+void vtkOpenGLProperty::BackfaceRender(vtkActor *vtkNotUsed(anActor), vtkRenderer *vtkNotUsed(ren))
 {
 }
 
 //-----------------------------------------------------------------------------
-void vtkOpenGLProperty::ReleaseGraphicsResources(vtkWindow* win)
+void vtkOpenGLProperty::ReleaseGraphicsResources(vtkWindow *win)
 {
   // release any textures.
-  auto textures = this->GetAllTextures();
-  for (auto ti : textures)
+  int numTextures = this->GetNumberOfTextures();
+  if (numTextures > 0)
   {
-    ti.second->ReleaseGraphicsResources(win);
+    for (int i = 0; i < numTextures; i++)
+    {
+      this->GetTextureAtIndex(i)->ReleaseGraphicsResources(win);
+    }
   }
 
   this->Superclass::ReleaseGraphicsResources(win);
@@ -117,5 +134,6 @@ void vtkOpenGLProperty::ReleaseGraphicsResources(vtkWindow* win)
 //----------------------------------------------------------------------------
 void vtkOpenGLProperty::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
+
 }

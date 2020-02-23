@@ -21,15 +21,15 @@
  * @class   vtkRenderedRepresentation
  *
  *
- */
+*/
 
 #ifndef vtkRenderedRepresentation_h
 #define vtkRenderedRepresentation_h
 
-#include "vtkDataRepresentation.h"
-#include "vtkSmartPointer.h"       // for SP ivars
-#include "vtkUnicodeString.h"      // for string
 #include "vtkViewsInfovisModule.h" // For export macro
+#include "vtkDataRepresentation.h"
+#include "vtkSmartPointer.h" // for SP ivars
+#include "vtkUnicodeString.h" // for string
 
 class vtkApplyColors;
 class vtkProp;
@@ -44,7 +44,7 @@ class VTKVIEWSINFOVIS_EXPORT vtkRenderedRepresentation : public vtkDataRepresent
 public:
   static vtkRenderedRepresentation* New();
   vtkTypeMacro(vtkRenderedRepresentation, vtkDataRepresentation);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -59,7 +59,7 @@ public:
 
 protected:
   vtkRenderedRepresentation();
-  ~vtkRenderedRepresentation() override;
+  ~vtkRenderedRepresentation();
 
   //@{
   /**
@@ -82,7 +82,8 @@ protected:
   /**
    * Subclasses may override this method to generate the hover text.
    */
-  virtual vtkUnicodeString GetHoverTextInternal(vtkSelection*) { return vtkUnicodeString(); }
+  virtual vtkUnicodeString GetHoverTextInternal(vtkSelection*)
+    { return vtkUnicodeString(); }
 
   /**
    * The view will call this method before every render.
@@ -91,15 +92,15 @@ protected:
   virtual void PrepareForRendering(vtkRenderView* view);
 
   friend class vtkRenderView;
+  class Internals;
+  Internals* Implementation;
 
   int LabelRenderMode;
 
 private:
-  vtkRenderedRepresentation(const vtkRenderedRepresentation&) = delete;
-  void operator=(const vtkRenderedRepresentation&) = delete;
-
-  class Internals;
-  Internals* Implementation;
+  vtkRenderedRepresentation(const vtkRenderedRepresentation&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkRenderedRepresentation&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

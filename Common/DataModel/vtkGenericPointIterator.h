@@ -28,7 +28,7 @@
  *   x=it->GetPosition();
  *   }
  * </pre>
- */
+*/
 
 #ifndef vtkGenericPointIterator_h
 #define vtkGenericPointIterator_h
@@ -43,8 +43,8 @@ public:
   /**
    * Standard VTK construction and type macros.
    */
-  vtkTypeMacro(vtkGenericPointIterator, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkGenericPointIterator,vtkObject);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
   //@}
 
   /**
@@ -55,7 +55,7 @@ public:
   /**
    * Is the iterator at the end of traversal?
    */
-  virtual vtkTypeBool IsAtEnd() = 0;
+  virtual int IsAtEnd() = 0;
 
   /**
    * Move the iterator to the next position in the list.
@@ -68,7 +68,7 @@ public:
    * \pre not_off: !IsAtEnd()
    * \post result_exists: result!=0
    */
-  virtual double* GetPosition() = 0;
+  virtual double *GetPosition() = 0;
 
   /**
    * Get the coordinates of the point at the current iterator position.
@@ -89,12 +89,12 @@ protected:
    * Destructor.
    */
   vtkGenericPointIterator();
-  ~vtkGenericPointIterator() override;
+  ~vtkGenericPointIterator() VTK_OVERRIDE;
   //@}
 
 private:
-  vtkGenericPointIterator(const vtkGenericPointIterator&) = delete;
-  void operator=(const vtkGenericPointIterator&) = delete;
+  vtkGenericPointIterator(const vtkGenericPointIterator&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkGenericPointIterator&) VTK_DELETE_FUNCTION;
 };
 
 #endif

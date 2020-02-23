@@ -25,34 +25,36 @@
  * strictly correlate with interpolation order (e.g., vtkHexahedron has
  * non-linear interpolation functions (a product of three linear functions
  * in r-s-t) even thought vtkHexahedron is considered linear.)
- */
+*/
 
 #ifndef vtkNonLinearCell_h
 #define vtkNonLinearCell_h
 
-#include "vtkCell.h"
 #include "vtkCommonDataModelModule.h" // For export macro
+#include "vtkCell.h"
 
 class VTKCOMMONDATAMODEL_EXPORT vtkNonLinearCell : public vtkCell
 {
 public:
-  vtkTypeMacro(vtkNonLinearCell, vtkCell);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkNonLinearCell,vtkCell);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Non-linear cells require special treatment (tessellation) when
    * converting to graphics primitives (during mapping). The vtkCell
    * API IsLinear() is modified to indicate this requirement.
    */
-  int IsLinear() override { return 0; }
+  int IsLinear() VTK_OVERRIDE {return 0;}
 
 protected:
   vtkNonLinearCell();
-  ~vtkNonLinearCell() override {}
+  ~vtkNonLinearCell() VTK_OVERRIDE {}
 
 private:
-  vtkNonLinearCell(const vtkNonLinearCell&) = delete;
-  void operator=(const vtkNonLinearCell&) = delete;
+  vtkNonLinearCell(const vtkNonLinearCell&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkNonLinearCell&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+

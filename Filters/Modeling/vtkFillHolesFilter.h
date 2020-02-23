@@ -34,7 +34,7 @@
  * @warning
  * Note this filter only operates on polygons and triangle strips.
  * Vertices and polylines are passed through untouched.
- */
+*/
 
 #ifndef vtkFillHolesFilter_h
 #define vtkFillHolesFilter_h
@@ -51,9 +51,9 @@ public:
   /**
    * Standard methods for instantiation, type information and printing.
    */
-  static vtkFillHolesFilter* New();
-  vtkTypeMacro(vtkFillHolesFilter, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkFillHolesFilter *New();
+  vtkTypeMacro(vtkFillHolesFilter,vtkPolyDataAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   //@{
@@ -69,15 +69,15 @@ public:
 
 protected:
   vtkFillHolesFilter();
-  ~vtkFillHolesFilter() override;
+  ~vtkFillHolesFilter();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 
   double HoleSize;
 
 private:
-  vtkFillHolesFilter(const vtkFillHolesFilter&) = delete;
-  void operator=(const vtkFillHolesFilter&) = delete;
+  vtkFillHolesFilter(const vtkFillHolesFilter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkFillHolesFilter&) VTK_DELETE_FUNCTION;
 };
 
 #endif

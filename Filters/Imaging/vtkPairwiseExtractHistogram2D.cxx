@@ -22,6 +22,7 @@ PURPOSE.  See the above copyright notice for more information.
 //------------------------------------------------------------------------------
 #include "vtkArrayData.h"
 #include "vtkArrayIteratorIncludes.h"
+#include "vtkStatisticsAlgorithmPrivate.h"
 #include "vtkCollection.h"
 #include "vtkExtractHistogram2D.h"
 #include "vtkIdTypeArray.h"
@@ -31,28 +32,28 @@ PURPOSE.  See the above copyright notice for more information.
 #include "vtkMultiBlockDataSet.h"
 #include "vtkObjectFactory.h"
 #include "vtkPointData.h"
-#include "vtkStatisticsAlgorithmPrivate.h"
 #include "vtkStdString.h"
 #include "vtkTable.h"
 #include "vtkTimerLog.h"
 #include "vtkUnsignedIntArray.h"
 
-#define VTK_CREATE(type, name) vtkSmartPointer<type> name = vtkSmartPointer<type>::New()
+#define VTK_CREATE(type, name) \
+  vtkSmartPointer<type> name = vtkSmartPointer<type>::New()
 //------------------------------------------------------------------------------
 #include <algorithm>
-#include <map>
 #include <set>
-#include <string>
 #include <vector>
+#include <string>
+#include <map>
 //------------------------------------------------------------------------------
 vtkStandardNewMacro(vtkPairwiseExtractHistogram2D);
 //------------------------------------------------------------------------------
 class vtkPairwiseExtractHistogram2D::Internals
 {
 public:
-  std::vector<std::pair<vtkStdString, vtkStdString> > ColumnPairs;
-  std::map<std::string, bool> ColumnUsesCustomExtents;
-  std::map<std::string, std::vector<double> > ColumnExtents;
+  std::vector< std::pair< vtkStdString,vtkStdString > > ColumnPairs;
+  std::map< std::string,bool > ColumnUsesCustomExtents;
+  std::map< std::string,std::vector<double> > ColumnExtents;
 };
 //------------------------------------------------------------------------------
 vtkPairwiseExtractHistogram2D::vtkPairwiseExtractHistogram2D()
@@ -78,23 +79,24 @@ vtkPairwiseExtractHistogram2D::~vtkPairwiseExtractHistogram2D()
 //------------------------------------------------------------------------------
 void vtkPairwiseExtractHistogram2D::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
   os << "NumberOfBins: " << this->NumberOfBins[0] << ", " << this->NumberOfBins[1] << endl;
   os << "CustomColumnRangeIndex: " << this->CustomColumnRangeIndex << endl;
   os << "ScalarType: " << this->ScalarType << endl;
 }
 //------------------------------------------------------------------------------
-void vtkPairwiseExtractHistogram2D::Learn(
-  vtkTable* inData, vtkTable* vtkNotUsed(inParameters), vtkMultiBlockDataSet* outMeta)
+void vtkPairwiseExtractHistogram2D::Learn(vtkTable *inData,
+                                          vtkTable* vtkNotUsed(inParameters),
+                                          vtkMultiBlockDataSet *outMeta)
 {
-  if (!outMeta)
+  if ( ! outMeta )
   {
     return;
   }
 
   if (this->NumberOfBins[0] == 0 || this->NumberOfBins[1] == 0)
   {
-    vtkErrorMacro(<< "Error: histogram dimensions not set (use SetNumberOfBins).");
+    vtkErrorMacro(<<"Error: histogram dimensions not set (use SetNumberOfBins).");
     return;
   }
 
@@ -103,11 +105,11 @@ void vtkPairwiseExtractHistogram2D::Learn(
 
   // if the number of columns in the input has changed, we'll need to do
   // some reinitializing
-  int numHistograms = inData->GetNumberOfColumns() - 1;
+  int numHistograms = inData->GetNumberOfColumns()-1;
   if (numHistograms != this->HistogramFilters->GetNumberOfItems())
   {
     // clear out the list of histogram filters
-    for (int i = 0; i < this->HistogramFilters->GetNumberOfItems(); i++)
+    for (int i=0; i<this->HistogramFilters->GetNumberOfItems(); i++)
     {
       this->HistogramFilters->GetItemAsObject(i)->Delete();
     }
@@ -124,10 +126,10 @@ void vtkPairwiseExtractHistogram2D::Learn(
     inDataCopy->ShallowCopy(inData);
 
     // fill it up with new histogram filters
-    for (int i = 0; i < numHistograms; i++)
+    for (int i=0; i<numHistograms; i++)
     {
       vtkDataArray* col1 = vtkArrayDownCast<vtkDataArray>(inData->GetColumn(i));
-      vtkDataArray* col2 = vtkArrayDownCast<vtkDataArray>(inData->GetColumn(i + 1));
+      vtkDataArray* col2 = vtkArrayDownCast<vtkDataArray>(inData->GetColumn(i+1));
 
       if (!col1 || !col2)
       {
@@ -140,27 +142,26 @@ void vtkPairwiseExtractHistogram2D::Learn(
       f.TakeReference(this->NewHistogramFilter());
       f->SetInputData(inDataCopy);
       f->SetNumberOfBins(this->NumberOfBins);
-      std::pair<vtkStdString, vtkStdString> colpair(
-        inData->GetColumn(i)->GetName(), inData->GetColumn(i + 1)->GetName());
-      f->AddColumnPair(colpair.first.c_str(), colpair.second.c_str());
-      f->SetSwapColumns(strcmp(colpair.first.c_str(), colpair.second.c_str()) >= 0);
+      std::pair<vtkStdString,vtkStdString> colpair(inData->GetColumn(i)->GetName(),inData->GetColumn(i+1)->GetName());
+      f->AddColumnPair(colpair.first.c_str(),colpair.second.c_str());
+      f->SetSwapColumns(strcmp(colpair.first.c_str(),colpair.second.c_str())>=0);
       this->HistogramFilters->AddItem(f);
 
       // update the internals accordingly
       this->Implementation->ColumnPairs.push_back(colpair);
       this->Implementation->ColumnUsesCustomExtents[colpair.first.c_str()] = false;
 
-      // compute the range of the new columns, and update the internals
-      double r[2] = { 0, 0 };
+      // compute the range of the the new columns, and update the internals
+      double r[2] = {0,0};
       if (i == 0)
       {
-        col1->GetRange(r, 0);
+        col1->GetRange(r,0);
         this->Implementation->ColumnExtents[colpair.first.c_str()].clear();
         this->Implementation->ColumnExtents[colpair.first.c_str()].push_back(r[0]);
         this->Implementation->ColumnExtents[colpair.first.c_str()].push_back(r[1]);
       }
 
-      col2->GetRange(r, 0);
+      col2->GetRange(r,0);
       this->Implementation->ColumnExtents[colpair.second.c_str()].clear();
       this->Implementation->ColumnExtents[colpair.second.c_str()].push_back(r[0]);
       this->Implementation->ColumnExtents[colpair.second.c_str()].push_back(r[1]);
@@ -168,47 +169,45 @@ void vtkPairwiseExtractHistogram2D::Learn(
   }
 
   // check the filters one by one and update them if necessary
-  if (this->BuildTime < inData->GetMTime() || this->BuildTime < this->GetMTime())
+  if (this->BuildTime < inData->GetMTime() ||
+      this->BuildTime < this->GetMTime())
   {
-    for (int i = 0; i < numHistograms; i++)
+    for (int i=0; i<numHistograms; i++)
     {
 
       vtkExtractHistogram2D* f = this->GetHistogramFilter(i);
 
       // if the column names have changed, that means we need to update
-      std::pair<vtkStdString, vtkStdString> cols = this->Implementation->ColumnPairs[i];
+      std::pair<vtkStdString,vtkStdString> cols = this->Implementation->ColumnPairs[i];
       if (inData->GetColumn(i)->GetName() != cols.first ||
-        inData->GetColumn(i + 1)->GetName() != cols.second)
+          inData->GetColumn(i+1)->GetName() != cols.second)
       {
-        std::pair<vtkStdString, vtkStdString> newCols(
-          inData->GetColumn(i)->GetName(), inData->GetColumn(i + 1)->GetName());
+        std::pair<vtkStdString,vtkStdString> newCols(inData->GetColumn(i)->GetName(),inData->GetColumn(i+1)->GetName());
 
         f->ResetRequests();
-        f->AddColumnPair(newCols.first.c_str(), newCols.second.c_str());
-        f->SetSwapColumns(strcmp(newCols.first.c_str(), newCols.second.c_str()) >= 0);
+        f->AddColumnPair(newCols.first.c_str(),newCols.second.c_str());
+        f->SetSwapColumns(strcmp(newCols.first.c_str(),newCols.second.c_str()) >= 0);
         f->Modified();
 
         this->Implementation->ColumnPairs[i] = newCols;
       }
 
       // if the filter extents have changed, that means we need to update
-      std::pair<vtkStdString, vtkStdString> newCols(
-        inData->GetColumn(i)->GetName(), inData->GetColumn(i + 1)->GetName());
+      std::pair<vtkStdString,vtkStdString> newCols(inData->GetColumn(i)->GetName(),inData->GetColumn(i+1)->GetName());
       if (this->Implementation->ColumnUsesCustomExtents[newCols.first.c_str()] ||
-        this->Implementation->ColumnUsesCustomExtents[newCols.second.c_str()])
+          this->Implementation->ColumnUsesCustomExtents[newCols.second.c_str()])
       {
         f->UseCustomHistogramExtentsOn();
-        double* ext = f->GetCustomHistogramExtents();
+        double *ext = f->GetCustomHistogramExtents();
         if (ext[0] != this->Implementation->ColumnExtents[newCols.first.c_str()][0] ||
-          ext[1] != this->Implementation->ColumnExtents[newCols.first.c_str()][1] ||
-          ext[2] != this->Implementation->ColumnExtents[newCols.second.c_str()][0] ||
-          ext[3] != this->Implementation->ColumnExtents[newCols.second.c_str()][1])
+            ext[1] != this->Implementation->ColumnExtents[newCols.first.c_str()][1] ||
+            ext[2] != this->Implementation->ColumnExtents[newCols.second.c_str()][0] ||
+            ext[3] != this->Implementation->ColumnExtents[newCols.second.c_str()][1])
         {
-          f->SetCustomHistogramExtents(
-            this->Implementation->ColumnExtents[newCols.first.c_str()][0],
-            this->Implementation->ColumnExtents[newCols.first.c_str()][1],
-            this->Implementation->ColumnExtents[newCols.second.c_str()][0],
-            this->Implementation->ColumnExtents[newCols.second.c_str()][1]);
+          f->SetCustomHistogramExtents(this->Implementation->ColumnExtents[newCols.first.c_str()][0],
+                                       this->Implementation->ColumnExtents[newCols.first.c_str()][1],
+                                       this->Implementation->ColumnExtents[newCols.second.c_str()][0],
+                                       this->Implementation->ColumnExtents[newCols.second.c_str()][1]);
         }
       }
       else
@@ -218,7 +217,8 @@ void vtkPairwiseExtractHistogram2D::Learn(
 
       // if the number of bins has changed, that definitely means we need to update
       int* nbins = f->GetNumberOfBins();
-      if (nbins[0] != this->NumberOfBins[0] || nbins[1] != this->NumberOfBins[1])
+      if (nbins[0] != this->NumberOfBins[0] ||
+          nbins[1] != this->NumberOfBins[1])
       {
         f->SetNumberOfBins(this->NumberOfBins);
       }
@@ -226,12 +226,12 @@ void vtkPairwiseExtractHistogram2D::Learn(
   }
 
   // update the filters as necessary
-  for (int i = 0; i < numHistograms; i++)
+  for (int i=0; i<numHistograms; i++)
   {
     vtkExtractHistogram2D* f = this->GetHistogramFilter(i);
-    if (f &&
-      (f->GetMTime() > this->BuildTime || inData->GetColumn(i)->GetMTime() > this->BuildTime ||
-        inData->GetColumn(i + 1)->GetMTime() > this->BuildTime))
+    if (f && (f->GetMTime() > this->BuildTime ||
+              inData->GetColumn(i)->GetMTime() > this->BuildTime ||
+              inData->GetColumn(i+1)->GetMTime() > this->BuildTime))
     {
       f->Update();
     }
@@ -244,19 +244,19 @@ void vtkPairwiseExtractHistogram2D::Learn(
   if (outImages)
   {
     outImages->SetNumberOfBlocks(numHistograms);
-    for (int i = 0; i < numHistograms; i++)
+    for (int i=0; i<numHistograms; i++)
     {
       vtkExtractHistogram2D* f = this->GetHistogramFilter(i);
       if (f)
       {
-        outImages->SetBlock(i, f->GetOutputHistogramImage());
+        outImages->SetBlock(i,f->GetOutputHistogramImage());
       }
     }
   }
 
   // build the output table
   primaryTab->Initialize();
-  for (int i = 0; i < this->HistogramFilters->GetNumberOfItems(); i++)
+  for (int i=0; i<this->HistogramFilters->GetNumberOfItems(); i++)
   {
     vtkExtractHistogram2D* f = this->GetHistogramFilter(i);
     if (f)
@@ -268,10 +268,9 @@ void vtkPairwiseExtractHistogram2D::Learn(
   }
 
   // Finally set first block of output meta port to primary statistics table
-  outMeta->SetNumberOfBlocks(1);
-  outMeta->GetMetaData(static_cast<unsigned>(0))
-    ->Set(vtkCompositeDataSet::NAME(), "Primary Statistics");
-  outMeta->SetBlock(0, primaryTab);
+  outMeta->SetNumberOfBlocks( 1 );
+  outMeta->GetMetaData( static_cast<unsigned>( 0 ) )->Set( vtkCompositeDataSet::NAME(), "Primary Statistics" );
+  outMeta->SetBlock( 0, primaryTab );
 
   // Clean up
   primaryTab->Delete();
@@ -281,19 +280,19 @@ void vtkPairwiseExtractHistogram2D::Learn(
 //------------------------------------------------------------------------------
 void vtkPairwiseExtractHistogram2D::SetCustomColumnRangeByIndex(double rmin, double rmax)
 {
-  this->SetCustomColumnRange(this->CustomColumnRangeIndex, rmin, rmax);
+  this->SetCustomColumnRange(this->CustomColumnRangeIndex,rmin,rmax);
 }
 //------------------------------------------------------------------------------
 void vtkPairwiseExtractHistogram2D::SetCustomColumnRange(int column, double rmin, double rmax)
 {
-  vtkTable* t = vtkTable::SafeDownCast(this->GetInputDataObject(0, 0));
+  vtkTable* t = vtkTable::SafeDownCast(this->GetInputDataObject(0,0));
   if (t)
   {
     vtkAbstractArray* a = t->GetColumn(column);
     if (a)
     {
       this->Implementation->ColumnUsesCustomExtents[a->GetName()] = true;
-      if (this->Implementation->ColumnExtents[a->GetName()].empty())
+      if (this->Implementation->ColumnExtents[a->GetName()].size() == 0)
       {
         this->Implementation->ColumnExtents[a->GetName()].push_back(rmin);
         this->Implementation->ColumnExtents[a->GetName()].push_back(rmax);
@@ -310,16 +309,15 @@ void vtkPairwiseExtractHistogram2D::SetCustomColumnRange(int column, double rmin
 //------------------------------------------------------------------------------
 void vtkPairwiseExtractHistogram2D::SetCustomColumnRange(int column, double range[2])
 {
-  this->SetCustomColumnRange(column, range[0], range[1]);
+  this->SetCustomColumnRange(column,range[0],range[1]);
 }
 //------------------------------------------------------------------------------
-int vtkPairwiseExtractHistogram2D::GetBinRange(
-  int idx, vtkIdType binX, vtkIdType binY, double range[4])
+int vtkPairwiseExtractHistogram2D::GetBinRange(int idx, vtkIdType binX, vtkIdType binY, double range[4])
 {
   vtkExtractHistogram2D* f = this->GetHistogramFilter(idx);
   if (f)
   {
-    return f->GetBinRange(binX, binY, range);
+    return f->GetBinRange(binX,binY,range);
   }
   else
   {
@@ -332,7 +330,7 @@ int vtkPairwiseExtractHistogram2D::GetBinRange(int idx, vtkIdType bin, double ra
   vtkExtractHistogram2D* f = this->GetHistogramFilter(idx);
   if (f)
   {
-    return f->GetBinRange(bin, range);
+    return f->GetBinRange(bin,range);
   }
   else
   {
@@ -348,7 +346,7 @@ vtkExtractHistogram2D* vtkPairwiseExtractHistogram2D::GetHistogramFilter(int idx
 vtkImageData* vtkPairwiseExtractHistogram2D::GetOutputHistogramImage(int idx)
 {
   if (this->BuildTime < this->GetMTime() ||
-    this->BuildTime < this->GetInputDataObject(0, 0)->GetMTime())
+      this->BuildTime < this->GetInputDataObject(0,0)->GetMTime())
     this->Update();
 
   vtkMultiBlockDataSet* mbds = vtkMultiBlockDataSet::SafeDownCast(
@@ -358,10 +356,10 @@ vtkImageData* vtkPairwiseExtractHistogram2D::GetOutputHistogramImage(int idx)
   {
     return vtkImageData::SafeDownCast(mbds->GetBlock(idx));
   }
-  return nullptr;
+  return NULL;
 }
 //------------------------------------------------------------------------------
-void vtkPairwiseExtractHistogram2D::GetBinWidth(int idx, double bw[2])
+void vtkPairwiseExtractHistogram2D::GetBinWidth(int idx,double bw[2])
 {
   vtkExtractHistogram2D* f = this->GetHistogramFilter(idx);
   if (f)
@@ -379,7 +377,7 @@ double* vtkPairwiseExtractHistogram2D::GetHistogramExtents(int idx)
   }
   else
   {
-    return nullptr;
+    return NULL;
   }
 }
 //------------------------------------------------------------------------------
@@ -400,34 +398,35 @@ double vtkPairwiseExtractHistogram2D::GetMaximumBinCount(int idx)
 //------------------------------------------------------------------------------
 double vtkPairwiseExtractHistogram2D::GetMaximumBinCount()
 {
-  if (!this->GetInputDataObject(0, 0))
+  if( !this->GetInputDataObject(0,0) )
     return -1;
 
   if (this->BuildTime < this->GetMTime() ||
-    this->BuildTime < this->GetInputDataObject(0, 0)->GetMTime())
+      this->BuildTime < this->GetInputDataObject(0,0)->GetMTime())
     this->Update();
 
   double maxcount = -1;
-  for (int i = 0; i < this->HistogramFilters->GetNumberOfItems(); i++)
+  for (int i=0; i<this->HistogramFilters->GetNumberOfItems(); i++)
   {
     vtkExtractHistogram2D* f = this->GetHistogramFilter(i);
     if (f)
     {
-      maxcount = std::max(f->GetMaximumBinCount(), maxcount);
+      maxcount = std::max(f->GetMaximumBinCount(),maxcount);
     }
   }
   return maxcount;
 }
 //------------------------------------------------------------------------------
-int vtkPairwiseExtractHistogram2D::FillOutputPortInformation(int port, vtkInformation* info)
+int vtkPairwiseExtractHistogram2D::FillOutputPortInformation( int port, vtkInformation* info )
 {
-  if (port == vtkPairwiseExtractHistogram2D::HISTOGRAM_IMAGE)
+  if ( port == vtkPairwiseExtractHistogram2D::HISTOGRAM_IMAGE )
   {
-    info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkMultiBlockDataSet");
+    info->Set( vtkDataObject::DATA_TYPE_NAME(), "vtkMultiBlockDataSet" );
     return 1;
   }
   else
   {
-    return this->Superclass::FillOutputPortInformation(port, info);
+    return this->Superclass::FillOutputPortInformation(port,info);
   }
 }
+

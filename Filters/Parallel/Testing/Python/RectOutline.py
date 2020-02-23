@@ -2,11 +2,15 @@
 
 # create pipeline
 #
-reader = vtk.vtkXMLRectilinearGridReader()
-reader.SetFileName("" + str(VTK_DATA_ROOT) + "/Data/RectGrid2.vtr")
-
+reader = vtk.vtkDataSetReader()
+reader.SetFileName("" + str(VTK_DATA_ROOT) + "/Data/RectGrid2.vtk")
+reader.Update()
+# here to force exact extent
+elev = vtk.vtkElevationFilter()
+elev.SetInputConnection(reader.GetOutputPort())
+elev.Update()
 outline = vtk.vtkRectilinearGridOutlineFilter()
-outline.SetInputConnection(reader.GetOutputPort())
+outline.SetInputData(elev.GetRectilinearGridOutput())
 outlineMapper = vtk.vtkPolyDataMapper()
 outlineMapper.SetInputConnection(outline.GetOutputPort())
 outlineMapper.SetNumberOfPieces(2)

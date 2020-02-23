@@ -1,8 +1,7 @@
 package vtk.rendering.swt;
 
+import org.eclipse.swt.opengl.GLCanvas;
 import org.eclipse.swt.widgets.Composite;
-
-import com.jogamp.opengl.swt.GLCanvas;
 
 import vtk.vtkRenderWindow;
 import vtk.rendering.vtkAbstractComponent;
@@ -29,9 +28,6 @@ public class vtkSwtComponent extends vtkAbstractComponent<GLCanvas> {
     this.eventForwarder = new vtkSwtInteractorForwarderDecorator(this, this.eventForwarder);
     this.isWindowCreated = true;
     this.uiComponent = new vtkInternalSwtComponent(this, parentComposite);
-
-    renderWindow.AddObserver("StartEvent", this, "startEvent");
-    renderWindow.AddObserver("EndEvent", this, "endEvent");
   }
 
   /**
@@ -39,7 +35,6 @@ public class vtkSwtComponent extends vtkAbstractComponent<GLCanvas> {
    * @param x width
    * @param y height
    */
-  @Override
   public void setSize(int x, int y) {
     x = x < 1 ? 1 : x;
     y = y < 1 ? 1 : y;
@@ -53,7 +48,6 @@ public class vtkSwtComponent extends vtkAbstractComponent<GLCanvas> {
    * Render the VTK component. Should not be called externally.
    * Call update() to refresh the window content.
    */
-  @Override
   public void Render() {
     // Make sure we can render
     if (inRenderCall || renderer == null || renderWindow == null) {
@@ -86,12 +80,10 @@ public class vtkSwtComponent extends vtkAbstractComponent<GLCanvas> {
    * @return the encapsulated SWT component (a GLCanvas instance)
    * @see vtk.rendering.vtkAbstractComponent#getComponent()
    */
-  @Override
   public GLCanvas getComponent() {
     return this.uiComponent;
   }
 
-  @Override
   public void Delete() {
     this.lock.lock();
     // We prevent any further rendering
@@ -116,20 +108,5 @@ public class vtkSwtComponent extends vtkAbstractComponent<GLCanvas> {
    */
   protected void updateInRenderCall(boolean value) {
     this.inRenderCall = value;
-  }
-
-  /** This method is called by the VTK JNI code. Do not remove. */
-  void startEvent() {
-    if (!getComponent().getContext().isCurrent()) {
-      getComponent().getContext().makeCurrent();
-    }
-  }
-
-  /** This method is called by the VTK JNI code. Do not remove. */
-  void endEvent() {
-    if (getComponent().getContext().isCurrent()) {
-      getComponent().swapBuffers();
-      getComponent().getContext().release();
-    }
   }
 }

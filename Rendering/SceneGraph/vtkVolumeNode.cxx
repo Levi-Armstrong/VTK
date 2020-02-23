@@ -14,9 +14,10 @@
 =========================================================================*/
 #include "vtkVolumeNode.h"
 
-#include "vtkAbstractVolumeMapper.h"
+#include "vtkVolume.h"
 #include "vtkCellArray.h"
 #include "vtkMapper.h"
+#include "vtkAbstractVolumeMapper.h"
 #include "vtkMath.h"
 #include "vtkMatrix4x4.h"
 #include "vtkObjectFactory.h"
@@ -24,23 +25,27 @@
 #include "vtkPolyData.h"
 #include "vtkPolygon.h"
 #include "vtkProperty.h"
-#include "vtkVolume.h"
 
 //============================================================================
 vtkStandardNewMacro(vtkVolumeNode);
 
 //----------------------------------------------------------------------------
-vtkVolumeNode::vtkVolumeNode() {}
+vtkVolumeNode::vtkVolumeNode()
+{
+}
 
 //----------------------------------------------------------------------------
-vtkVolumeNode::~vtkVolumeNode() {}
+vtkVolumeNode::~vtkVolumeNode()
+{
+}
 
 //----------------------------------------------------------------------------
 void vtkVolumeNode::Build(bool prepass)
 {
   if (prepass)
   {
-    vtkVolume* mine = vtkVolume::SafeDownCast(this->GetRenderable());
+    vtkVolume *mine = vtkVolume::SafeDownCast
+      (this->GetRenderable());
     if (!mine)
     {
       return;

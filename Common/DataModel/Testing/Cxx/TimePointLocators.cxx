@@ -12,26 +12,27 @@
      PURPOSE.  See the above copyright notice for more information.
 
 =========================================================================*/
+#include "vtkPointLocator.h"
+#include "vtkStaticPointLocator.h"
 #include "vtkKdTree.h"
 #include "vtkKdTreePointLocator.h"
-#include "vtkMath.h"
 #include "vtkOctreePointLocator.h"
-#include "vtkPointLocator.h"
 #include "vtkPoints.h"
 #include "vtkPolyData.h"
-#include "vtkStaticPointLocator.h"
 #include "vtkTimerLog.h"
+#include "vtkMath.h"
 
-int TimePointLocators(int, char*[])
+
+int TimePointLocators(int , char *[])
 {
-  int nPts = 100000;
-  int nQ = nPts / 10;
+  int nPts = 1000000;
+  int nQ = nPts/10;
   int N = 10;
   double R = 0.01;
 
   vtkTimerLog* timer = vtkTimerLog::New();
   double buildTime[4], cpTime[4], cnpTime[4], crpTime[4];
-  for (int i = 0; i < 4; ++i)
+  for (int i=0; i<4; ++i)
   {
     buildTime[i] = cpTime[i] = cnpTime[i] = crpTime[i] = 0.0;
   }
@@ -42,9 +43,10 @@ int TimePointLocators(int, char*[])
   vtkPoints* points = vtkPoints::New();
   points->SetDataTypeToDouble();
   points->SetNumberOfPoints(nPts);
-  for (int i = 0; i < nPts; ++i)
+  for (int i=0; i<nPts; ++i)
   {
-    points->SetPoint(i, vtkMath::Random(-1, 1), vtkMath::Random(-1, 1), vtkMath::Random(-1, 1));
+    points->SetPoint(i, vtkMath::Random(-1,1), vtkMath::Random(-1,1),
+                     vtkMath::Random(-1,1));
   }
 
   vtkPolyData* polydata = vtkPolyData::New();
@@ -56,12 +58,13 @@ int TimePointLocators(int, char*[])
   qPoints->SetDataTypeToDouble();
   qPoints->SetNumberOfPoints(nQ);
   vtkMath::RandomSeed(314159);
-  for (int i = 0; i < nQ; ++i)
+  for (int i=0; i<nQ; ++i)
   {
-    qPoints->SetPoint(i, vtkMath::Random(-1, 1), vtkMath::Random(-1, 1), vtkMath::Random(-1, 1));
+    qPoints->SetPoint(i, vtkMath::Random(-1,1), vtkMath::Random(-1,1),
+                          vtkMath::Random(-1,1));
   }
 
-  vtkIdList* closest = vtkIdList::New();
+  vtkIdList *closest = vtkIdList::New();
 
   //---------------------------------------------------------------------------
   // The simple uniform binning point locator
@@ -77,7 +80,7 @@ int TimePointLocators(int, char*[])
   uniformLocator->SetDataSet(polydata);
   uniformLocator->BuildLocator();
   timer->StartTimer();
-  for (int i = 0; i < nQ; ++i)
+  for (int i=0; i<nQ; ++i)
   {
     uniformLocator->FindClosestPoint(qPoints->GetPoint(i));
   }
@@ -85,7 +88,7 @@ int TimePointLocators(int, char*[])
   cpTime[0] = timer->GetElapsedTime();
 
   timer->StartTimer();
-  for (int i = 0; i < nQ; ++i)
+  for (int i=0; i<nQ; ++i)
   {
     uniformLocator->FindClosestNPoints(N, qPoints->GetPoint(i), closest);
   }
@@ -93,7 +96,7 @@ int TimePointLocators(int, char*[])
   cnpTime[0] = timer->GetElapsedTime();
 
   timer->StartTimer();
-  for (int i = 0; i < nQ; ++i)
+  for (int i=0; i<nQ; ++i)
   {
     uniformLocator->FindPointsWithinRadius(R, qPoints->GetPoint(i), closest);
   }
@@ -116,7 +119,7 @@ int TimePointLocators(int, char*[])
   staticLocator->SetDataSet(polydata);
   staticLocator->BuildLocator();
   timer->StartTimer();
-  for (int i = 0; i < nQ; ++i)
+  for (int i=0; i<nQ; ++i)
   {
     staticLocator->FindClosestPoint(qPoints->GetPoint(i));
   }
@@ -124,7 +127,7 @@ int TimePointLocators(int, char*[])
   cpTime[1] = timer->GetElapsedTime();
 
   timer->StartTimer();
-  for (int i = 0; i < nQ; ++i)
+  for (int i=0; i<nQ; ++i)
   {
     staticLocator->FindClosestNPoints(N, qPoints->GetPoint(i), closest);
   }
@@ -132,7 +135,7 @@ int TimePointLocators(int, char*[])
   cnpTime[1] = timer->GetElapsedTime();
 
   timer->StartTimer();
-  for (int i = 0; i < nQ; ++i)
+  for (int i=0; i<nQ; ++i)
   {
     staticLocator->FindPointsWithinRadius(R, qPoints->GetPoint(i), closest);
   }
@@ -154,7 +157,7 @@ int TimePointLocators(int, char*[])
   kdTreeLocator->SetDataSet(polydata);
   kdTreeLocator->BuildLocator();
   timer->StartTimer();
-  for (int i = 0; i < nQ; ++i)
+  for (int i=0; i<nQ; ++i)
   {
     kdTreeLocator->FindClosestPoint(qPoints->GetPoint(i));
   }
@@ -162,7 +165,7 @@ int TimePointLocators(int, char*[])
   cpTime[2] = timer->GetElapsedTime();
 
   timer->StartTimer();
-  for (int i = 0; i < nQ; ++i)
+  for (int i=0; i<nQ; ++i)
   {
     kdTreeLocator->FindClosestNPoints(N, qPoints->GetPoint(i), closest);
   }
@@ -170,7 +173,7 @@ int TimePointLocators(int, char*[])
   cnpTime[2] = timer->GetElapsedTime();
 
   timer->StartTimer();
-  for (int i = 0; i < nQ; ++i)
+  for (int i=0; i<nQ; ++i)
   {
     kdTreeLocator->FindPointsWithinRadius(R, qPoints->GetPoint(i), closest);
   }
@@ -192,7 +195,7 @@ int TimePointLocators(int, char*[])
   octreeLocator->SetDataSet(polydata);
   octreeLocator->BuildLocator();
   timer->StartTimer();
-  for (int i = 0; i < nQ; ++i)
+  for (int i=0; i<nQ; ++i)
   {
     octreeLocator->FindClosestPoint(qPoints->GetPoint(i));
   }
@@ -200,7 +203,7 @@ int TimePointLocators(int, char*[])
   cpTime[3] = timer->GetElapsedTime();
 
   timer->StartTimer();
-  for (int i = 0; i < nQ; ++i)
+  for (int i=0; i<nQ; ++i)
   {
     octreeLocator->FindClosestNPoints(N, qPoints->GetPoint(i), closest);
   }
@@ -208,7 +211,7 @@ int TimePointLocators(int, char*[])
   cnpTime[3] = timer->GetElapsedTime();
 
   timer->StartTimer();
-  for (int i = 0; i < nQ; ++i)
+  for (int i=0; i<nQ; ++i)
   {
     octreeLocator->FindPointsWithinRadius(R, qPoints->GetPoint(i), closest);
   }

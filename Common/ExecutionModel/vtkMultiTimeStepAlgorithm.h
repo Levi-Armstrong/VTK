@@ -22,46 +22,50 @@
  * The child class uses UPDATE_TIME_STEPS to make the time requests and
  * use set of time-stamped data objects are stored in time order
  * in a vtkMultiBlockDataSet object.
- */
+*/
 
 #ifndef vtkMultiTimeStepAlgorithm_h
 #define vtkMultiTimeStepAlgorithm_h
 
-#include "vtkAlgorithm.h"
 #include "vtkCommonExecutionModelModule.h" // For export macro
-#include "vtkSmartPointer.h"               //needed for a private variable
+#include "vtkAlgorithm.h"
+#include "vtkSmartPointer.h" //needed for a private variable
 
+#include <vector> //needed for a private variable
 #include "vtkDataObject.h" // needed for the smart pointer
-#include <vector>          //needed for a private variable
 
 class vtkInformationDoubleVectorKey;
 class vtkMultiBlockDataSet;
 class VTKCOMMONEXECUTIONMODEL_EXPORT vtkMultiTimeStepAlgorithm : public vtkAlgorithm
 {
 public:
-  static vtkMultiTimeStepAlgorithm* New();
-  vtkTypeMacro(vtkMultiTimeStepAlgorithm, vtkAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkMultiTimeStepAlgorithm *New();
+  vtkTypeMacro(vtkMultiTimeStepAlgorithm,vtkAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+
 
 protected:
   vtkMultiTimeStepAlgorithm();
 
-  ~vtkMultiTimeStepAlgorithm() override {}
+  ~vtkMultiTimeStepAlgorithm() VTK_OVERRIDE
+  {
+  };
 
   /**
    * This is filled by the child class to request multiple time steps
    */
   static vtkInformationDoubleVectorKey* UPDATE_TIME_STEPS();
 
+
   //@{
   /**
    * This is called by the superclass.
    * This is the method you should override.
    */
-  virtual int RequestDataObject(vtkInformation*, vtkInformationVector**, vtkInformationVector*)
+  virtual int RequestDataObject(vtkInformation*, vtkInformationVector**,  vtkInformationVector*)
   {
     return 1;
-  }
+  };
   //@}
 
   //@{
@@ -72,7 +76,7 @@ protected:
   virtual int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*)
   {
     return 1;
-  }
+  };
   //@}
 
   /**
@@ -93,31 +97,29 @@ protected:
     return 1;
   }
 
-  vtkTypeBool ProcessRequest(
-    vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int ProcessRequest(vtkInformation*, vtkInformationVector**, vtkInformationVector*) VTK_OVERRIDE;
 
   bool CacheData;
   unsigned int NumberOfCacheEntries;
 
 private:
-  vtkMultiTimeStepAlgorithm(const vtkMultiTimeStepAlgorithm&) = delete;
-  void operator=(const vtkMultiTimeStepAlgorithm&) = delete;
+  vtkMultiTimeStepAlgorithm(const vtkMultiTimeStepAlgorithm&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkMultiTimeStepAlgorithm&) VTK_DELETE_FUNCTION;
 
-  vtkSmartPointer<vtkMultiBlockDataSet> MDataSet; // stores all the temporal data sets
-  int RequestUpdateIndex;                         // keep track of the time looping index
-  std::vector<double> UpdateTimeSteps;            // store the requested time steps
+
+  vtkSmartPointer<vtkMultiBlockDataSet> MDataSet; //stores all the temporal data sets
+  int RequestUpdateIndex; //keep track of the time looping index
+  std::vector<double> UpdateTimeSteps;  //store the requested time steps
 
   bool IsInCache(double time, size_t& idx);
 
   struct TimeCache
   {
-    TimeCache(double time, vtkDataObject* data)
-      : TimeValue(time)
-      , Data(data)
-    {
-    }
-    double TimeValue;
-    vtkSmartPointer<vtkDataObject> Data;
+  TimeCache(double time, vtkDataObject* data) : TimeValue(time), Data(data)
+  {
+  }
+  double TimeValue;
+  vtkSmartPointer<vtkDataObject> Data;
   };
 
   std::vector<TimeCache> Cache;

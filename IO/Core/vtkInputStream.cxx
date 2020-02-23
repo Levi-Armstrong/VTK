@@ -20,26 +20,26 @@ vtkStandardNewMacro(vtkInputStream);
 //----------------------------------------------------------------------------
 vtkInputStream::vtkInputStream()
 {
-  this->Stream = nullptr;
+  this->Stream = 0;
 }
 
 //----------------------------------------------------------------------------
 vtkInputStream::~vtkInputStream()
 {
-  this->SetStream(nullptr);
+  this->SetStream(0);
 }
 
 //----------------------------------------------------------------------------
 void vtkInputStream::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
-  os << indent << "Stream: " << (this->Stream ? "set" : "none") << "\n";
+  os << indent << "Stream: " << (this->Stream? "set" : "none") << "\n";
 }
 
 //----------------------------------------------------------------------------
 void vtkInputStream::StartReading()
 {
-  if (!this->Stream)
+  if(!this->Stream)
   {
     vtkErrorMacro("StartReading() called with no Stream set.");
     return;
@@ -48,13 +48,16 @@ void vtkInputStream::StartReading()
 }
 
 //----------------------------------------------------------------------------
-void vtkInputStream::EndReading() {}
+void vtkInputStream::EndReading()
+{
+}
 
 //----------------------------------------------------------------------------
 int vtkInputStream::Seek(vtkTypeInt64 offset)
 {
-  std::streamoff off = static_cast<std::streamoff>(this->StreamStartPosition + offset);
-  return (this->Stream->seekg(off, std::ios::beg) ? 1 : 0);
+  std::streamoff off =
+    static_cast<std::streamoff>(this->StreamStartPosition+offset);
+  return (this->Stream->seekg(off, std::ios::beg)? 1:0);
 }
 
 //----------------------------------------------------------------------------

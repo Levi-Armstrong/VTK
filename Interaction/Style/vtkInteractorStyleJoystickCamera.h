@@ -31,7 +31,7 @@
  * @sa
  * vtkInteractorStyleJoystickActor vtkInteractorStyleTrackballCamera
  * vtkInteractorStyleTrackballActor
- */
+*/
 
 #ifndef vtkInteractorStyleJoystickCamera_h
 #define vtkInteractorStyleJoystickCamera_h
@@ -42,44 +42,44 @@
 class VTKINTERACTIONSTYLE_EXPORT vtkInteractorStyleJoystickCamera : public vtkInteractorStyle
 {
 public:
-  static vtkInteractorStyleJoystickCamera* New();
-  vtkTypeMacro(vtkInteractorStyleJoystickCamera, vtkInteractorStyle);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkInteractorStyleJoystickCamera *New();
+  vtkTypeMacro(vtkInteractorStyleJoystickCamera,vtkInteractorStyle);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
    * Event bindings controlling the effects of pressing mouse buttons
    * or moving the mouse.
    */
-  void OnMouseMove() override;
-  void OnLeftButtonDown() override;
-  void OnLeftButtonUp() override;
-  void OnMiddleButtonDown() override;
-  void OnMiddleButtonUp() override;
-  void OnRightButtonDown() override;
-  void OnRightButtonUp() override;
-  void OnMouseWheelForward() override;
-  void OnMouseWheelBackward() override;
+  virtual void OnMouseMove();
+  virtual void OnLeftButtonDown();
+  virtual void OnLeftButtonUp();
+  virtual void OnMiddleButtonDown();
+  virtual void OnMiddleButtonUp();
+  virtual void OnRightButtonDown();
+  virtual void OnRightButtonUp();
+  virtual void OnMouseWheelForward();
+  virtual void OnMouseWheelBackward();
   //@}
 
   // These methods for the different interactions in different modes
   // are overridden in subclasses to perform the correct motion. Since
   // they are called by OnTimer, they do not have mouse coord parameters
   // (use interactor's GetEventPosition and GetLastEventPosition)
-  void Rotate() override;
-  void Spin() override;
-  void Pan() override;
-  void Dolly() override;
+  virtual void Rotate();
+  virtual void Spin();
+  virtual void Pan();
+  virtual void Dolly();
 
 protected:
   vtkInteractorStyleJoystickCamera();
-  ~vtkInteractorStyleJoystickCamera() override;
+  ~vtkInteractorStyleJoystickCamera();
 
   virtual void Dolly(double factor);
 
 private:
-  vtkInteractorStyleJoystickCamera(const vtkInteractorStyleJoystickCamera&) = delete;
-  void operator=(const vtkInteractorStyleJoystickCamera&) = delete;
+  vtkInteractorStyleJoystickCamera(const vtkInteractorStyleJoystickCamera&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkInteractorStyleJoystickCamera&) VTK_DELETE_FUNCTION;
 };
 
 #endif

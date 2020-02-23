@@ -19,13 +19,13 @@
  *
  *
  * This class implements an pie chart.
- */
+*/
 
 #ifndef vtkChartPie_h
 #define vtkChartPie_h
 
-#include "vtkChart.h"
 #include "vtkChartsCoreModule.h" // For export macro
+#include "vtkChart.h"
 
 class vtkChartLegend;
 class vtkTooltipItem;
@@ -35,99 +35,100 @@ class VTKCHARTSCORE_EXPORT vtkChartPie : public vtkChart
 {
 public:
   vtkTypeMacro(vtkChartPie, vtkChart);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  virtual void PrintSelf(ostream &os, vtkIndent indent);
 
   /**
    * Creates a 2D Chart object.
    */
-  static vtkChartPie* New();
+  static vtkChartPie *New();
 
   /**
    * Perform any updates to the item that may be necessary before rendering.
    * The scene should take care of calling this on all items before their
    * Paint function is invoked.
    */
-  void Update() override;
+  virtual void Update();
 
   /**
    * Paint event for the chart, called whenever the chart needs to be drawn
    */
-  bool Paint(vtkContext2D* painter) override;
+  virtual bool Paint(vtkContext2D *painter);
 
   /**
    * Add a plot to the chart.
    */
-  vtkPlot* AddPlot(int type) override;
+  virtual vtkPlot * AddPlot(int type);
 
   /**
    * Add a plot to the chart. Return the index of the plot, -1 if it failed.
    */
-  vtkIdType AddPlot(vtkPlot* plot) override { return Superclass::AddPlot(plot); }
+  virtual vtkIdType AddPlot(vtkPlot* plot)
+    { return Superclass::AddPlot(plot); }
 
   /**
    * Get the plot at the specified index, returns null if the index is invalid.
    */
-  vtkPlot* GetPlot(vtkIdType index) override;
+  virtual vtkPlot* GetPlot(vtkIdType index);
 
   /**
    * Get the number of plots the chart contains.
    */
-  vtkIdType GetNumberOfPlots() override;
+  virtual vtkIdType GetNumberOfPlots();
 
   /**
    * Set whether the chart should draw a legend.
    */
-  void SetShowLegend(bool visible) override;
+  virtual void SetShowLegend(bool visible);
 
   /**
-   * Get the legend for the chart, if available. Can return nullptr if there is no
+   * Get the legend for the chart, if available. Can return NULL if there is no
    * legend.
    */
-  vtkChartLegend* GetLegend() override;
+  virtual vtkChartLegend * GetLegend();
 
   /**
    * Set the vtkContextScene for the item, always set for an item in a scene.
    */
-  void SetScene(vtkContextScene* scene) override;
+  virtual void SetScene(vtkContextScene *scene);
 
   /**
    * Return true if the supplied x, y coordinate is inside the item.
    */
-  bool Hit(const vtkContextMouseEvent& mouse) override;
+  virtual bool Hit(const vtkContextMouseEvent &mouse);
 
   /**
    * Mouse enter event.
    */
-  bool MouseEnterEvent(const vtkContextMouseEvent& mouse) override;
+  virtual bool MouseEnterEvent(const vtkContextMouseEvent &mouse);
 
   /**
    * Mouse move event.
    */
-  bool MouseMoveEvent(const vtkContextMouseEvent& mouse) override;
+  virtual bool MouseMoveEvent(const vtkContextMouseEvent &mouse);
 
   /**
    * Mouse leave event.
    */
-  bool MouseLeaveEvent(const vtkContextMouseEvent& mouse) override;
+  virtual bool MouseLeaveEvent(const vtkContextMouseEvent &mouse);
 
   /**
    * Mouse button down event
    */
-  bool MouseButtonPressEvent(const vtkContextMouseEvent& mouse) override;
+  virtual bool MouseButtonPressEvent(const vtkContextMouseEvent &mouse);
 
   /**
    * Mouse button release event.
    */
-  bool MouseButtonReleaseEvent(const vtkContextMouseEvent& mouse) override;
+  virtual bool MouseButtonReleaseEvent(const vtkContextMouseEvent &mouse);
 
   /**
    * Mouse wheel event, positive delta indicates forward movement of the wheel.
    */
-  bool MouseWheelEvent(const vtkContextMouseEvent& mouse, int delta) override;
+  virtual bool MouseWheelEvent(const vtkContextMouseEvent &mouse, int delta);
 
 protected:
   vtkChartPie();
-  ~vtkChartPie() override;
+  ~vtkChartPie();
 
   /**
    * Recalculate the necessary transforms.
@@ -137,12 +138,12 @@ protected:
   /**
    * The legend for the chart.
    */
-  vtkChartLegend* Legend;
+  vtkChartLegend *Legend;
 
   /**
    * The tooltip item for the chart - can be used to display extra information.
    */
-  vtkTooltipItem* Tooltip;
+  vtkTooltipItem *Tooltip;
 
   /**
    * Does the plot area transform need to be recalculated?
@@ -150,18 +151,19 @@ protected:
   bool PlotTransformValid;
 
 private:
-  vtkChartPie(const vtkChartPie&) = delete;
-  void operator=(const vtkChartPie&) = delete;
+  vtkChartPie(const vtkChartPie &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkChartPie &) VTK_DELETE_FUNCTION;
 
   /**
    * Try to locate a point within the plots to display in a tooltip
    */
-  bool LocatePointInPlots(const vtkContextMouseEvent& mouse);
+  bool LocatePointInPlots(const vtkContextMouseEvent &mouse);
 
   /**
    * Private implementation details
    */
-  vtkChartPiePrivate* Private;
+  vtkChartPiePrivate *Private;
+
 };
 
-#endif // vtkChartPie_h
+#endif //vtkChartPie_h

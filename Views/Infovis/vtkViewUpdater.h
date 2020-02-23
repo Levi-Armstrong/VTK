@@ -26,13 +26,13 @@
  * annotation links, and updates all views when an annotation link fires an
  * annotation changed event. This is often needed when multiple views share
  * a selection with vtkAnnotationLink.
- */
+*/
 
 #ifndef vtkViewUpdater_h
 #define vtkViewUpdater_h
 
-#include "vtkObject.h"
 #include "vtkViewsInfovisModule.h" // For export macro
+#include "vtkObject.h"
 
 class vtkAnnotationLink;
 class vtkView;
@@ -40,9 +40,9 @@ class vtkView;
 class VTKVIEWSINFOVIS_EXPORT vtkViewUpdater : public vtkObject
 {
 public:
-  static vtkViewUpdater* New();
+  static vtkViewUpdater *New();
   vtkTypeMacro(vtkViewUpdater, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   void AddView(vtkView* view);
   void RemoveView(vtkView* view);
@@ -51,14 +51,15 @@ public:
 
 protected:
   vtkViewUpdater();
-  ~vtkViewUpdater() override;
+  ~vtkViewUpdater();
 
 private:
-  vtkViewUpdater(const vtkViewUpdater&) = delete;
-  void operator=(const vtkViewUpdater&) = delete;
+  vtkViewUpdater(const vtkViewUpdater&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkViewUpdater&) VTK_DELETE_FUNCTION;
 
   class vtkViewUpdaterInternals;
   vtkViewUpdaterInternals* Internals;
+
 };
 
 #endif

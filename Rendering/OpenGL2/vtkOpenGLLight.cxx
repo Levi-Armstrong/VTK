@@ -15,10 +15,11 @@
 
 #include "vtkObjectFactory.h"
 
+
 vtkStandardNewMacro(vtkOpenGLLight);
 
 // Implement base class method.
-void vtkOpenGLLight::Render(vtkRenderer* vtkNotUsed(ren), int vtkNotUsed(light_index))
+void vtkOpenGLLight::Render(vtkRenderer *vtkNotUsed(ren), int vtkNotUsed(light_index))
 {
   // all handled by the mappers
 }

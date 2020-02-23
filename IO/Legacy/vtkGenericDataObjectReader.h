@@ -30,13 +30,13 @@
  * vtkDataReader vtkGraphReader vtkPolyDataReader vtkRectilinearGridReader
  * vtkStructuredPointsReader vtkStructuredGridReader vtkTableReader
  * vtkTreeReader vtkUnstructuredGridReader
- */
+*/
 
 #ifndef vtkGenericDataObjectReader_h
 #define vtkGenericDataObjectReader_h
 
-#include "vtkDataReader.h"
 #include "vtkIOLegacyModule.h" // For export macro
+#include "vtkDataReader.h"
 
 class vtkDataObject;
 class vtkGraph;
@@ -52,35 +52,35 @@ class vtkUnstructuredGrid;
 class VTKIOLEGACY_EXPORT vtkGenericDataObjectReader : public vtkDataReader
 {
 public:
-  static vtkGenericDataObjectReader* New();
-  vtkTypeMacro(vtkGenericDataObjectReader, vtkDataReader);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkGenericDataObjectReader *New();
+  vtkTypeMacro(vtkGenericDataObjectReader,vtkDataReader);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
    * Get the output of this filter
    */
-  vtkDataObject* GetOutput();
-  vtkDataObject* GetOutput(int idx);
+  vtkDataObject *GetOutput();
+  vtkDataObject *GetOutput(int idx);
   //@}
 
   //@{
   /**
    * Get the output as various concrete types. This method is typically used
    * when you know exactly what type of data is being read.  Otherwise, use
-   * the general GetOutput() method. If the wrong type is used nullptr is
+   * the general GetOutput() method. If the wrong type is used NULL is
    * returned.  (You must also set the filename of the object prior to
    * getting the output.)
    */
-  vtkGraph* GetGraphOutput();
-  vtkMolecule* GetMoleculeOutput();
-  vtkPolyData* GetPolyDataOutput();
-  vtkRectilinearGrid* GetRectilinearGridOutput();
-  vtkStructuredGrid* GetStructuredGridOutput();
-  vtkStructuredPoints* GetStructuredPointsOutput();
-  vtkTable* GetTableOutput();
-  vtkTree* GetTreeOutput();
-  vtkUnstructuredGrid* GetUnstructuredGridOutput();
+  vtkGraph *GetGraphOutput();
+  vtkMolecule *GetMoleculeOutput();
+  vtkPolyData *GetPolyDataOutput();
+  vtkRectilinearGrid *GetRectilinearGridOutput();
+  vtkStructuredGrid *GetStructuredGridOutput();
+  vtkStructuredPoints *GetStructuredPointsOutput();
+  vtkTable *GetTableOutput();
+  vtkTree *GetTreeOutput();
+  vtkUnstructuredGrid *GetUnstructuredGridOutput();
   //@}
 
   /**
@@ -90,31 +90,32 @@ public:
   virtual int ReadOutputType();
 
   /**
-   * Read metadata from file.
+   * See vtkAlgorithm for information.
    */
-  int ReadMetaDataSimple(const std::string& fname, vtkInformation* metadata) override;
-
-  /**
-   * Actual reading happens here
-   */
-  int ReadMeshSimple(const std::string& fname, vtkDataObject* output) override;
+  virtual int ProcessRequest(vtkInformation *, vtkInformationVector **,
+                             vtkInformationVector *);
 
 protected:
   vtkGenericDataObjectReader();
-  ~vtkGenericDataObjectReader() override;
+  ~vtkGenericDataObjectReader();
 
-  vtkDataObject* CreateOutput(vtkDataObject* currentOutput) override;
-
-  int FillOutputPortInformation(int, vtkInformation*) override;
+  virtual int RequestData(vtkInformation *, vtkInformationVector **,
+                          vtkInformationVector *);
+  virtual int RequestDataObject(vtkInformation *, vtkInformationVector **,
+                                vtkInformationVector *);
+  virtual int FillOutputPortInformation(int, vtkInformation *);
+  virtual int RequestInformation(vtkInformation *, vtkInformationVector **,
+                                 vtkInformationVector *);
 
 private:
-  vtkGenericDataObjectReader(const vtkGenericDataObjectReader&) = delete;
-  void operator=(const vtkGenericDataObjectReader&) = delete;
+  vtkGenericDataObjectReader(const vtkGenericDataObjectReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkGenericDataObjectReader&) VTK_DELETE_FUNCTION;
 
-  template <typename ReaderT, typename DataT>
-  void ReadData(const char* fname, const char* dataClass, vtkDataObject* output);
+  template<typename ReaderT, typename DataT>
+    void ReadData(const char* dataClass, vtkDataObject* output);
 
   vtkSetStringMacro(Header);
+
 };
 
 #endif

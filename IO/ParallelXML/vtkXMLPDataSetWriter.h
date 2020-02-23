@@ -24,7 +24,7 @@
  * vtkXMLPImageDataWriter vtkXMLPStructuredGridWriter
  * vtkXMLPRectilinearGridWriter vtkXMLPPolyDataWriter
  * vtkXMLPUnstructuredGridWriter
- */
+*/
 
 #ifndef vtkXMLPDataSetWriter_h
 #define vtkXMLPDataSetWriter_h
@@ -35,8 +35,8 @@
 class VTKIOPARALLELXML_EXPORT vtkXMLPDataSetWriter : public vtkXMLPDataWriter
 {
 public:
-  vtkTypeMacro(vtkXMLPDataSetWriter, vtkXMLPDataWriter);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkXMLPDataSetWriter,vtkXMLPDataWriter);
+  void PrintSelf(ostream& os, vtkIndent indent);
   static vtkXMLPDataSetWriter* New();
 
   /**
@@ -46,22 +46,22 @@ public:
 
 protected:
   vtkXMLPDataSetWriter();
-  ~vtkXMLPDataSetWriter() override;
+  ~vtkXMLPDataSetWriter();
 
   // see algorithm for more info
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  virtual int FillInputPortInformation(int port, vtkInformation* info);
 
   // Override writing method from superclass.
-  int WriteInternal() override;
+  virtual int WriteInternal();
 
   // Dummies to satisfy pure virtuals from superclass.
-  const char* GetDataSetName() override;
-  const char* GetDefaultFileExtension() override;
-  vtkXMLWriter* CreatePieceWriter(int index) override;
+  const char* GetDataSetName();
+  const char* GetDefaultFileExtension();
+  vtkXMLWriter* CreatePieceWriter(int index);
 
 private:
-  vtkXMLPDataSetWriter(const vtkXMLPDataSetWriter&) = delete;
-  void operator=(const vtkXMLPDataSetWriter&) = delete;
+  vtkXMLPDataSetWriter(const vtkXMLPDataSetWriter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkXMLPDataSetWriter&) VTK_DELETE_FUNCTION;
 };
 
 #endif

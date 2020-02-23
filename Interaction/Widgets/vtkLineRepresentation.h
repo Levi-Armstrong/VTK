@@ -33,7 +33,7 @@
  *
  * @sa
  * vtkLineWidget2 vtkLineWidget
- */
+*/
 
 #ifndef vtkLineRepresentation_h
 #define vtkLineRepresentation_h
@@ -61,14 +61,14 @@ public:
   /**
    * Instantiate the class.
    */
-  static vtkLineRepresentation* New();
+  static vtkLineRepresentation *New();
 
   //@{
   /**
    * Standard methods for the class.
    */
-  vtkTypeMacro(vtkLineRepresentation, vtkWidgetRepresentation);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkLineRepresentation,vtkWidgetRepresentation);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   //@{
@@ -78,15 +78,15 @@ public:
    * display and world coordinates.
    */
   void GetPoint1WorldPosition(double pos[3]);
-  double* GetPoint1WorldPosition() VTK_SIZEHINT(3);
+  double* GetPoint1WorldPosition();
   void GetPoint1DisplayPosition(double pos[3]);
-  double* GetPoint1DisplayPosition() VTK_SIZEHINT(3);
+  double* GetPoint1DisplayPosition();
   void SetPoint1WorldPosition(double pos[3]);
   void SetPoint1DisplayPosition(double pos[3]);
   void GetPoint2DisplayPosition(double pos[3]);
-  double* GetPoint2DisplayPosition() VTK_SIZEHINT(3);
+  double* GetPoint2DisplayPosition();
   void GetPoint2WorldPosition(double pos[3]);
-  double* GetPoint2WorldPosition() VTK_SIZEHINT(3);
+  double* GetPoint2WorldPosition();
   void SetPoint2WorldPosition(double pos[3]);
   void SetPoint2DisplayPosition(double pos[3]);
   //@}
@@ -102,7 +102,7 @@ public:
    * the widget is enabled. (The method InstantiateHandleRepresentation()
    * is invoked by the vtkLineWidget2.)
    */
-  void SetHandleRepresentation(vtkPointHandleRepresentation3D* handle);
+  void SetHandleRepresentation(vtkPointHandleRepresentation3D *handle);
   void InstantiateHandleRepresentation();
   //@}
 
@@ -110,9 +110,9 @@ public:
   /**
    * Get the three handle representations used for the vtkLineWidget2.
    */
-  vtkGetObjectMacro(Point1Representation, vtkPointHandleRepresentation3D);
-  vtkGetObjectMacro(Point2Representation, vtkPointHandleRepresentation3D);
-  vtkGetObjectMacro(LineHandleRepresentation, vtkPointHandleRepresentation3D);
+  vtkGetObjectMacro(Point1Representation,vtkPointHandleRepresentation3D);
+  vtkGetObjectMacro(Point2Representation,vtkPointHandleRepresentation3D);
+  vtkGetObjectMacro(LineHandleRepresentation,vtkPointHandleRepresentation3D);
   //@}
 
   //@{
@@ -120,8 +120,8 @@ public:
    * Get the end-point (sphere) properties. The properties of the end-points
    * when selected and unselected can be manipulated.
    */
-  vtkGetObjectMacro(EndPointProperty, vtkProperty);
-  vtkGetObjectMacro(SelectedEndPointProperty, vtkProperty);
+  vtkGetObjectMacro(EndPointProperty,vtkProperty);
+  vtkGetObjectMacro(SelectedEndPointProperty,vtkProperty);
   //@}
 
   //@{
@@ -129,8 +129,8 @@ public:
    * Get the end-point (sphere) properties. The properties of the end-points
    * when selected and unselected can be manipulated.
    */
-  vtkGetObjectMacro(EndPoint2Property, vtkProperty);
-  vtkGetObjectMacro(SelectedEndPoint2Property, vtkProperty);
+  vtkGetObjectMacro(EndPoint2Property,vtkProperty);
+  vtkGetObjectMacro(SelectedEndPoint2Property,vtkProperty);
   //@}
 
   //@{
@@ -138,8 +138,8 @@ public:
    * Get the line properties. The properties of the line when selected
    * and unselected can be manipulated.
    */
-  vtkGetObjectMacro(LineProperty, vtkProperty);
-  vtkGetObjectMacro(SelectedLineProperty, vtkProperty);
+  vtkGetObjectMacro(LineProperty,vtkProperty);
+  vtkGetObjectMacro(SelectedLineProperty,vtkProperty);
   //@}
 
   //@{
@@ -148,8 +148,8 @@ public:
    * which the cursor is considered near enough to the line or end point
    * to be active.
    */
-  vtkSetClampMacro(Tolerance, int, 1, 100);
-  vtkGetMacro(Tolerance, int);
+  vtkSetClampMacro(Tolerance,int,1,100);
+  vtkGetMacro(Tolerance,int);
   //@}
 
   //@{
@@ -170,42 +170,33 @@ public:
    * provides the vtkPolyData as an input argument, and the points and
    * polyline are copied into it.
    */
-  void GetPolyData(vtkPolyData* pd);
+  void GetPolyData(vtkPolyData *pd);
 
   //@{
   /**
    * These are methods that satisfy vtkWidgetRepresentation's API.
    */
-  void PlaceWidget(double bounds[6]) override;
-  void BuildRepresentation() override;
-  int ComputeInteractionState(int X, int Y, int modify = 0) override;
-  void StartWidgetInteraction(double e[2]) override;
-  void WidgetInteraction(double e[2]) override;
-  double* GetBounds() VTK_SIZEHINT(6) override;
+  virtual void PlaceWidget(double bounds[6]);
+  virtual void BuildRepresentation();
+  virtual int ComputeInteractionState(int X, int Y, int modify=0);
+  virtual void StartWidgetInteraction(double e[2]);
+  virtual void WidgetInteraction(double e[2]);
+  virtual double *GetBounds();
   //@}
 
   //@{
   /**
    * Methods supporting the rendering process.
    */
-  void GetActors(vtkPropCollection* pc) override;
-  void ReleaseGraphicsResources(vtkWindow*) override;
-  int RenderOpaqueGeometry(vtkViewport*) override;
-  int RenderTranslucentPolygonalGeometry(vtkViewport*) override;
-  vtkTypeBool HasTranslucentPolygonalGeometry() override;
+  virtual void GetActors(vtkPropCollection *pc);
+  virtual void ReleaseGraphicsResources(vtkWindow*);
+  virtual int RenderOpaqueGeometry(vtkViewport*);
+  virtual int RenderTranslucentPolygonalGeometry(vtkViewport*);
+  virtual int HasTranslucentPolygonalGeometry();
   //@}
 
   // Manage the state of the widget
-  enum
-  {
-    Outside = 0,
-    OnP1,
-    OnP2,
-    TranslatingP1,
-    TranslatingP2,
-    OnLine,
-    Scaling
-  };
+  enum {Outside=0,OnP1,OnP2,TranslatingP1,TranslatingP2,OnLine,Scaling};
 
   //@{
   /**
@@ -217,7 +208,7 @@ public:
    * widget feature), then based on events, the widget may modify this
    * further.
    */
-  vtkSetClampMacro(InteractionState, int, Outside, Scaling);
+  vtkSetClampMacro(InteractionState,int,Outside,Scaling);
   //@}
 
   //@{
@@ -243,20 +234,20 @@ public:
    * Overload the superclasses' GetMTime() because internal classes
    * are used to keep the state of the representation.
    */
-  vtkMTimeType GetMTime() override;
+  virtual vtkMTimeType GetMTime();
 
   /**
    * Overridden to set the rendererer on the internal representations.
    */
-  void SetRenderer(vtkRenderer* ren) override;
+  virtual void SetRenderer(vtkRenderer *ren);
 
   //@{
   /**
    * Show the distance between the points.
    */
-  vtkSetMacro(DistanceAnnotationVisibility, vtkTypeBool);
-  vtkGetMacro(DistanceAnnotationVisibility, vtkTypeBool);
-  vtkBooleanMacro(DistanceAnnotationVisibility, vtkTypeBool);
+  vtkSetMacro( DistanceAnnotationVisibility, int );
+  vtkGetMacro( DistanceAnnotationVisibility, int );
+  vtkBooleanMacro( DistanceAnnotationVisibility, int );
   //@}
 
   //@{
@@ -281,14 +272,15 @@ public:
     scale[2] = z;
     this->SetDistanceAnnotationScale(scale);
   }
-  virtual void SetDistanceAnnotationScale(double scale[3]);
-  virtual double* GetDistanceAnnotationScale() VTK_SIZEHINT(3);
+  virtual void SetDistanceAnnotationScale( double scale[3] );
+  virtual double * GetDistanceAnnotationScale();
   //@}
 
   /**
    * Get the distance between the points.
    */
   double GetDistance();
+
 
   /**
    * Convenience method to set the line color.
@@ -299,7 +291,7 @@ public:
   /**
    * Get the distance annotation property
    */
-  virtual vtkProperty* GetDistanceAnnotationProperty();
+  virtual vtkProperty *GetDistanceAnnotationProperty();
 
   //@{
   /**
@@ -308,63 +300,57 @@ public:
   vtkGetObjectMacro(TextActor, vtkFollower);
   //@}
 
-  enum
-  {
-    RestrictNone = 0,
-    RestrictToX,
-    RestrictToY,
-    RestrictToZ
-  };
+  enum { RestrictNone = 0, RestrictToX, RestrictToY, RestrictToZ };
 
   /**
    * Set if translations should be restricted to one of the axes (disabled if
    * RestrictNone is specified).
    */
-  VTK_LEGACY(void SetRestrictFlag(int restrict_flag));
+  vtkSetClampMacro(RestrictFlag, int, RestrictNone, RestrictToZ);
 
 protected:
   vtkLineRepresentation();
-  ~vtkLineRepresentation() override;
+  ~vtkLineRepresentation();
 
   // The handle and the rep used to close the handles
-  vtkPointHandleRepresentation3D* HandleRepresentation;
-  vtkPointHandleRepresentation3D* Point1Representation;
-  vtkPointHandleRepresentation3D* Point2Representation;
-  vtkPointHandleRepresentation3D* LineHandleRepresentation;
+  vtkPointHandleRepresentation3D *HandleRepresentation;
+  vtkPointHandleRepresentation3D *Point1Representation;
+  vtkPointHandleRepresentation3D *Point2Representation;
+  vtkPointHandleRepresentation3D *LineHandleRepresentation;
 
   // Manage how the representation appears
   int RepresentationState;
   bool DirectionalLine;
 
   // the line
-  vtkActor* LineActor;
-  vtkPolyDataMapper* LineMapper;
-  vtkLineSource* LineSource;
+  vtkActor          *LineActor;
+  vtkPolyDataMapper *LineMapper;
+  vtkLineSource     *LineSource;
 
   // glyphs representing hot spots (e.g., handles)
-  vtkActor** Handle;
-  vtkPolyDataMapper** HandleMapper;
-  vtkPolyDataAlgorithm** HandleGeometry;
+  vtkActor              **Handle;
+  vtkPolyDataMapper     **HandleMapper;
+  vtkPolyDataAlgorithm  **HandleGeometry;
 
   // Properties used to control the appearance of selected objects and
   // the manipulator in general.
-  vtkProperty* EndPointProperty;
-  vtkProperty* SelectedEndPointProperty;
-  vtkProperty* EndPoint2Property;
-  vtkProperty* SelectedEndPoint2Property;
-  vtkProperty* LineProperty;
-  vtkProperty* SelectedLineProperty;
-  void CreateDefaultProperties();
+  vtkProperty *EndPointProperty;
+  vtkProperty *SelectedEndPointProperty;
+  vtkProperty *EndPoint2Property;
+  vtkProperty *SelectedEndPoint2Property;
+  vtkProperty *LineProperty;
+  vtkProperty *SelectedLineProperty;
+  void         CreateDefaultProperties();
 
   // Selection tolerance for the handles and the line
   int Tolerance;
 
   // Helper members
-  int ClampToBounds;
+  int  ClampToBounds;
   void ClampPosition(double x[3]);
   void HighlightPoint(int ptId, int highlight);
   void HighlightLine(int highlight);
-  int InBounds(double x[3]);
+  int  InBounds(double x[3]);
   void SizeHandles();
 
   // Ivars used during widget interaction to hold initial positions
@@ -375,7 +361,7 @@ protected:
   double LastEventPosition[3];
 
   // Support GetBounds() method
-  vtkBox* BoundingBox;
+  vtkBox *BoundingBox;
 
   // Need to keep track if we have successfully initialized the display position.
   // The widget tends to do stuff in world coordinates, put if the renderer has
@@ -384,20 +370,22 @@ protected:
   int InitializedDisplayPosition;
 
   // Format for the label
-  vtkTypeBool DistanceAnnotationVisibility;
-  char* DistanceAnnotationFormat;
+  int DistanceAnnotationVisibility;
+  char *DistanceAnnotationFormat;
 
-  vtkFollower* TextActor;
-  vtkPolyDataMapper* TextMapper;
-  vtkVectorText* TextInput;
-  double Distance;
-  bool AnnotationTextScaleInitialized;
+  vtkFollower       *TextActor;
+  vtkPolyDataMapper *TextMapper;
+  vtkVectorText     *TextInput;
+  double             Distance;
+  bool               AnnotationTextScaleInitialized;
 
-  vtkCellPicker* LinePicker;
+  vtkCellPicker     *LinePicker;
+
+  int RestrictFlag;
 
 private:
-  vtkLineRepresentation(const vtkLineRepresentation&) = delete;
-  void operator=(const vtkLineRepresentation&) = delete;
+  vtkLineRepresentation(const vtkLineRepresentation&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkLineRepresentation&) VTK_DELETE_FUNCTION;
 };
 
 #endif

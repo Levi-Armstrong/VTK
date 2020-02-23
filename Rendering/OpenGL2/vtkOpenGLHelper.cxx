@@ -20,10 +20,9 @@
 
 vtkOpenGLHelper::vtkOpenGLHelper()
 {
-  this->Program = nullptr;
+  this->Program = NULL;
   this->IBO = vtkOpenGLIndexBufferObject::New();
   this->VAO = vtkOpenGLVertexArrayObject::New();
-  this->ShaderChangeValue = 0;
 }
 
 vtkOpenGLHelper::~vtkOpenGLHelper()
@@ -32,9 +31,10 @@ vtkOpenGLHelper::~vtkOpenGLHelper()
   this->VAO->Delete();
 }
 
-void vtkOpenGLHelper::ReleaseGraphicsResources(vtkWindow* win)
+void vtkOpenGLHelper::ReleaseGraphicsResources(vtkWindow * win)
 {
-  vtkOpenGLRenderWindow* rwin = vtkOpenGLRenderWindow::SafeDownCast(win);
+  vtkOpenGLRenderWindow *rwin =
+   vtkOpenGLRenderWindow::SafeDownCast(win);
   if (rwin)
   {
     // Ensure that the context is current before releasing any
@@ -46,7 +46,7 @@ void vtkOpenGLHelper::ReleaseGraphicsResources(vtkWindow* win)
   {
     // Let ShaderCache release the graphics resources as it is
     // responsible for creation and deletion.
-    this->Program = nullptr;
+    this->Program = 0;
   }
   this->IBO->ReleaseGraphicsResources();
   this->VAO->ReleaseGraphicsResources();

@@ -30,15 +30,14 @@
 #include "vtkTextProperty.h"
 #include "vtkUnsignedCharArray.h"
 
-#include <algorithm>
 #include <sstream>
 #include <vector>
 
-namespace vtkTestBillboardTextActor3D
+namespace vtkTestBillboardTextActor3D {
+void setupBillboardTextActor3D(vtkBillboardTextActor3D *actor,
+                               vtkPolyData *anchor)
 {
-void setupBillboardTextActor3D(vtkBillboardTextActor3D* actor, vtkPolyData* anchor)
-{
-  vtkTextProperty* p = actor->GetTextProperty();
+  vtkTextProperty *p = actor->GetTextProperty();
   std::ostringstream label;
   label << "TProp Angle: " << p->GetOrientation() << "\n"
         << "HAlign: " << p->GetJustificationAsString() << "\n"
@@ -46,21 +45,22 @@ void setupBillboardTextActor3D(vtkBillboardTextActor3D* actor, vtkPolyData* anch
   actor->SetInput(label.str().c_str());
 
   // Add the anchor point:
-  double* pos = actor->GetPosition();
-  double* col = p->GetColor();
+  double *pos = actor->GetPosition();
+  double *col = p->GetColor();
   vtkIdType ptId = anchor->GetPoints()->InsertNextPoint(pos[0], pos[1], pos[2]);
   anchor->GetVerts()->InsertNextCell(1, &ptId);
-  anchor->GetCellData()->GetScalars()->InsertNextTuple4(
-    col[0] * 255, col[1] * 255, col[2] * 255, 255);
+  anchor->GetCellData()->GetScalars()->InsertNextTuple4(col[0] * 255,
+                                                        col[1] * 255,
+                                                        col[2] * 255, 255);
 }
 
-void setupGrid(vtkPolyData* grid)
+void setupGrid(vtkPolyData *grid)
 {
-  double marks[4] = { 0., 200., 400., 600. };
+  double marks[4] = {0., 200., 400., 600.};
   double thickness = 200.;
 
   vtkNew<vtkPoints> points;
-  grid->SetPoints(points);
+  grid->SetPoints(points.Get());
   for (int x_i = 0; x_i < 4; ++x_i)
   {
     for (int y_i = 0; y_i < 4; ++y_i)
@@ -86,63 +86,35 @@ void setupGrid(vtkPolyData* grid)
   }
 
   vtkNew<vtkCellArray> cellArray;
-  grid->SetPolys(cellArray);
+  grid->SetPolys(cellArray.Get());
   for (size_t i = 0; i < quads.size(); i += 4)
   {
     grid->InsertNextCell(VTK_QUAD, 4, &quads[i]);
   }
 }
-
-// Test for bug #17233: https://gitlab.kitware.com/vtk/vtk/issues/17233
-// The Bounds were not updated when the position changed. Ensure that we aren't
-// returning stale bounds after modifying the actor.
-bool RegressionTest_17233(vtkBillboardTextActor3D* actor)
-{
-  double* bounds = actor->GetBounds();
-  double origBounds[6] = { bounds[0], bounds[1], bounds[2], bounds[3], bounds[4], bounds[5] };
-
-  double pos[3];
-  actor->GetPosition(pos);
-  pos[0] += 50.;
-  pos[1] += 50.;
-  pos[2] += 50.;
-  actor->SetPosition(pos);
-
-  bounds = actor->GetBounds();
-  if (std::equal(bounds, bounds + 6, origBounds))
-  {
-    std::cerr << "Regression for bug #17233: Stale bounds used.\n";
-    return false;
-  }
-  return true;
-}
-
 } // end namespace vtkTestBillboardTextActor3D
 
 //----------------------------------------------------------------------------
-int TestBillboardTextActor3D(int, char*[])
+int TestBillboardTextActor3D(int, char *[])
 {
   using namespace vtkTestBillboardTextActor3D;
   vtkNew<vtkRenderer> ren;
   ren->UseDepthPeelingOn();
 
-  // use this to capture one of the text actors for later regression testing:
-  vtkBillboardTextActor3D* bbActor = nullptr;
-
   int width = 600;
   int height = 600;
-  int x[3] = { 100, 300, 500 };
-  int y[3] = { 100, 300, 500 };
+  int x[3] = {100, 300, 500};
+  int y[3] = {100, 300, 500};
 
   // Render the anchor points to check alignment:
   vtkNew<vtkPolyData> anchors;
   vtkNew<vtkPoints> points;
-  anchors->SetPoints(points);
+  anchors->SetPoints(points.GetPointer());
   vtkNew<vtkCellArray> verts;
-  anchors->SetVerts(verts);
+  anchors->SetVerts(verts.GetPointer());
   vtkNew<vtkUnsignedCharArray> colors;
   colors->SetNumberOfComponents(4);
-  anchors->GetCellData()->SetScalars(colors);
+  anchors->GetCellData()->SetScalars(colors.GetPointer());
 
   for (size_t row = 0; row < 3; ++row)
   {
@@ -176,61 +148,62 @@ int TestBillboardTextActor3D(int, char*[])
       actor->GetTextProperty()->SetFontSize(20);
       actor->GetTextProperty()->SetOrientation(45.0 * (3 * row + col));
       actor->GetTextProperty()->SetColor(0.75, .2 + col * .26, .2 + row * .26);
-      actor->GetTextProperty()->SetBackgroundColor(0., 1. - col * .26, 1. - row * .26);
+      actor->GetTextProperty()->SetBackgroundColor(0.,
+                                                   1. - col * .26,
+                                                   1. - row * .26);
       actor->GetTextProperty()->SetBackgroundOpacity(0.85);
       actor->SetPosition(x[col], y[row], 0.);
-      setupBillboardTextActor3D(actor, anchors);
-      ren->AddActor(actor);
-      bbActor = actor;
+      setupBillboardTextActor3D(actor.GetPointer(), anchors.GetPointer());
+      ren->AddActor(actor.GetPointer());
     }
   }
 
   vtkNew<vtkPolyDataMapper> anchorMapper;
-  anchorMapper->SetInputData(anchors);
+  anchorMapper->SetInputData(anchors.GetPointer());
   vtkNew<vtkActor> anchorActor;
-  anchorActor->SetMapper(anchorMapper);
+  anchorActor->SetMapper(anchorMapper.GetPointer());
   anchorActor->GetProperty()->SetPointSize(5);
-  ren->AddActor(anchorActor);
+  ren->AddActor(anchorActor.GetPointer());
 
   // Add some various 'empty' actors to make sure there are no surprises:
   vtkNew<vtkBillboardTextActor3D> nullInputActor;
-  nullInputActor->SetInput(nullptr);
-  ren->AddActor(nullInputActor);
+  nullInputActor->SetInput(NULL);
+  ren->AddActor(nullInputActor.GetPointer());
 
   vtkNew<vtkBillboardTextActor3D> emptyInputActor;
   emptyInputActor->SetInput("");
-  ren->AddActor(emptyInputActor);
+  ren->AddActor(emptyInputActor.GetPointer());
 
   vtkNew<vtkBillboardTextActor3D> spaceActor;
   spaceActor->SetInput(" ");
-  ren->AddActor(spaceActor);
+  ren->AddActor(spaceActor.GetPointer());
 
   vtkNew<vtkBillboardTextActor3D> tabActor;
   tabActor->SetInput("\t");
-  ren->AddActor(tabActor);
+  ren->AddActor(tabActor.GetPointer());
 
   vtkNew<vtkBillboardTextActor3D> newlineActor;
   newlineActor->SetInput("\n");
-  ren->AddActor(newlineActor);
+  ren->AddActor(newlineActor.GetPointer());
 
   vtkNew<vtkPolyData> grid;
-  setupGrid(grid);
+  setupGrid(grid.Get());
   vtkNew<vtkPolyDataMapper> gridMapper;
-  gridMapper->SetInputData(grid);
+  gridMapper->SetInputData(grid.Get());
   vtkNew<vtkActor> gridActor;
   gridActor->GetProperty()->SetRepresentationToSurface();
   gridActor->GetProperty()->SetColor(0.6, 0.6, 0.6);
-  gridActor->SetMapper(gridMapper);
-  ren->AddActor(gridActor);
+  gridActor->SetMapper(gridMapper.Get());
+  ren->AddActor(gridActor.Get());
 
   vtkNew<vtkRenderWindow> win;
-  win->AddRenderer(ren);
+  win->AddRenderer(ren.GetPointer());
   vtkNew<vtkRenderWindowInteractor> iren;
-  iren->SetRenderWindow(win);
+  iren->SetRenderWindow(win.GetPointer());
 
   ren->SetBackground(0.0, 0.0, 0.0);
-  ren->GetActiveCamera()->SetPosition(width / 2, height / 2, 1400);
-  ren->GetActiveCamera()->SetFocalPoint(width / 2, height / 2, 0);
+  ren->GetActiveCamera()->SetPosition(width/2, height/2, 1400);
+  ren->GetActiveCamera()->SetFocalPoint(width/2, height/2, 0);
   ren->GetActiveCamera()->SetViewUp(0, 1, 0);
   ren->GetActiveCamera()->Roll(45.);
   ren->GetActiveCamera()->Elevation(45.);
@@ -241,13 +214,6 @@ int TestBillboardTextActor3D(int, char*[])
   win->SetMultiSamples(0);
   win->GetInteractor()->Initialize();
   win->GetInteractor()->Start();
-
-  // Now that the image has been rendered, use one of the actors to do
-  // regression testing:
-  if (!RegressionTest_17233(bbActor))
-  {
-    return EXIT_FAILURE;
-  }
 
   return EXIT_SUCCESS;
 }

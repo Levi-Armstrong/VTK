@@ -14,8 +14,7 @@
 =========================================================================*/
 /**
  * @class   vtkExtractGeometry
- * @brief   extract cells that lie either entirely inside or outside of a specified implicit
- * function
+ * @brief   extract cells that lie either entirely inside or outside of a specified implicit function
  *
  *
  * vtkExtractGeometry extracts from its input dataset all cells that are either
@@ -24,7 +23,7 @@
  * unstructured grid.
  *
  * To use this filter you must specify an implicit function. You must also
- * specify whether to extract cells laying inside or outside of the implicit
+ * specify whethter to extract cells laying inside or outside of the implicit
  * function. (The inside of an implicit function is the negative values
  * region.) An option exists to extract cells that are neither inside or
  * outside (i.e., boundary).
@@ -34,7 +33,7 @@
  *
  * @sa
  * vtkExtractPolyDataGeometry vtkGeometryFilter vtkExtractVOI
- */
+*/
 
 #ifndef vtkExtractGeometry_h
 #define vtkExtractGeometry_h
@@ -47,25 +46,25 @@ class vtkImplicitFunction;
 class VTKFILTERSEXTRACTION_EXPORT vtkExtractGeometry : public vtkUnstructuredGridAlgorithm
 {
 public:
-  vtkTypeMacro(vtkExtractGeometry, vtkUnstructuredGridAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkExtractGeometry,vtkUnstructuredGridAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Construct object with ExtractInside turned on.
    */
-  static vtkExtractGeometry* New();
+  static vtkExtractGeometry *New();
 
   /**
    * Return the MTime taking into account changes to the implicit function
    */
-  vtkMTimeType GetMTime() override;
+  vtkMTimeType GetMTime();
 
   //@{
   /**
    * Specify the implicit function for inside/outside checks.
    */
   virtual void SetImplicitFunction(vtkImplicitFunction*);
-  vtkGetObjectMacro(ImplicitFunction, vtkImplicitFunction);
+  vtkGetObjectMacro(ImplicitFunction,vtkImplicitFunction);
   //@}
 
   //@{
@@ -74,9 +73,9 @@ public:
    * function (ExtractInside == 1) or outside of implicit function
    * (ExtractInside == 0).
    */
-  vtkSetMacro(ExtractInside, vtkTypeBool);
-  vtkGetMacro(ExtractInside, vtkTypeBool);
-  vtkBooleanMacro(ExtractInside, vtkTypeBool);
+  vtkSetMacro(ExtractInside,int);
+  vtkGetMacro(ExtractInside,int);
+  vtkBooleanMacro(ExtractInside,int);
   //@}
 
   //@{
@@ -84,31 +83,33 @@ public:
    * Boolean controls whether to extract cells that are partially inside.
    * By default, ExtractBoundaryCells is off.
    */
-  vtkSetMacro(ExtractBoundaryCells, vtkTypeBool);
-  vtkGetMacro(ExtractBoundaryCells, vtkTypeBool);
-  vtkBooleanMacro(ExtractBoundaryCells, vtkTypeBool);
-  vtkSetMacro(ExtractOnlyBoundaryCells, vtkTypeBool);
-  vtkGetMacro(ExtractOnlyBoundaryCells, vtkTypeBool);
-  vtkBooleanMacro(ExtractOnlyBoundaryCells, vtkTypeBool);
+  vtkSetMacro(ExtractBoundaryCells,int);
+  vtkGetMacro(ExtractBoundaryCells,int);
+  vtkBooleanMacro(ExtractBoundaryCells,int);
+  vtkSetMacro(ExtractOnlyBoundaryCells,int);
+  vtkGetMacro(ExtractOnlyBoundaryCells,int);
+  vtkBooleanMacro(ExtractOnlyBoundaryCells,int);
   //@}
 
 protected:
-  vtkExtractGeometry(vtkImplicitFunction* f = nullptr);
-  ~vtkExtractGeometry() override;
+  vtkExtractGeometry(vtkImplicitFunction *f=NULL);
+  ~vtkExtractGeometry();
 
   // Usual data generation method
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  virtual int FillInputPortInformation(int port, vtkInformation *info);
 
-  vtkImplicitFunction* ImplicitFunction;
-  vtkTypeBool ExtractInside;
-  vtkTypeBool ExtractBoundaryCells;
-  vtkTypeBool ExtractOnlyBoundaryCells;
+  vtkImplicitFunction *ImplicitFunction;
+  int ExtractInside;
+  int ExtractBoundaryCells;
+  int ExtractOnlyBoundaryCells;
 
 private:
-  vtkExtractGeometry(const vtkExtractGeometry&) = delete;
-  void operator=(const vtkExtractGeometry&) = delete;
+  vtkExtractGeometry(const vtkExtractGeometry&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkExtractGeometry&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+

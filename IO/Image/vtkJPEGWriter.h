@@ -22,7 +22,7 @@
  *
  * @sa
  * vtkJPEGReader
- */
+*/
 
 #ifndef vtkJPEGWriter_h
 #define vtkJPEGWriter_h
@@ -36,14 +36,14 @@ class vtkImageData;
 class VTKIOIMAGE_EXPORT vtkJPEGWriter : public vtkImageWriter
 {
 public:
-  static vtkJPEGWriter* New();
-  vtkTypeMacro(vtkJPEGWriter, vtkImageWriter);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkJPEGWriter *New();
+  vtkTypeMacro(vtkJPEGWriter,vtkImageWriter);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * The main interface which triggers the writer to start.
    */
-  void Write() override;
+  virtual void Write();
 
   //@{
   /**
@@ -57,23 +57,23 @@ public:
   /**
    * Progressive JPEG generation.
    */
-  vtkSetMacro(Progressive, vtkTypeUBool);
-  vtkGetMacro(Progressive, vtkTypeUBool);
-  vtkBooleanMacro(Progressive, vtkTypeUBool);
+  vtkSetMacro(Progressive, unsigned int);
+  vtkGetMacro(Progressive, unsigned int);
+  vtkBooleanMacro(Progressive, unsigned int);
   //@}
 
   //@{
   /**
    * Write the image to memory (a vtkUnsignedCharArray)
    */
-  vtkSetMacro(WriteToMemory, vtkTypeUBool);
-  vtkGetMacro(WriteToMemory, vtkTypeUBool);
-  vtkBooleanMacro(WriteToMemory, vtkTypeUBool);
+  vtkSetMacro(WriteToMemory, unsigned int);
+  vtkGetMacro(WriteToMemory, unsigned int);
+  vtkBooleanMacro(WriteToMemory, unsigned int);
   //@}
 
   //@{
   /**
-   * When writing to memory this is the result, it will be nullptr until the
+   * When writing to memory this is the result, it will be NULL until the
    * data is written the first time
    */
   virtual void SetResult(vtkUnsignedCharArray*);
@@ -82,19 +82,22 @@ public:
 
 protected:
   vtkJPEGWriter();
-  ~vtkJPEGWriter() override;
+  ~vtkJPEGWriter();
 
-  void WriteSlice(vtkImageData* data, int* uExtent);
+  void WriteSlice(vtkImageData *data, int* uExtent);
 
 private:
   int Quality;
-  vtkTypeUBool Progressive;
-  vtkUnsignedCharArray* Result;
-  FILE* TempFP;
+  unsigned int Progressive;
+  unsigned int WriteToMemory;
+  vtkUnsignedCharArray *Result;
+  FILE *TempFP;
 
 private:
-  vtkJPEGWriter(const vtkJPEGWriter&) = delete;
-  void operator=(const vtkJPEGWriter&) = delete;
+  vtkJPEGWriter(const vtkJPEGWriter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkJPEGWriter&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+

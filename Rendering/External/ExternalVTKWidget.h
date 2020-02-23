@@ -20,8 +20,8 @@
 #ifndef __ExternalVTKWidget_h
 #define __ExternalVTKWidget_h
 
-#include "vtkExternalOpenGLRenderWindow.h"
 #include "vtkExternalOpenGLRenderer.h"
+#include "vtkExternalOpenGLRenderWindow.h"
 #include "vtkObject.h"
 #include "vtkRenderingExternalModule.h" // For export macro
 
@@ -29,9 +29,9 @@
 class VTKRENDERINGEXTERNAL_EXPORT ExternalVTKWidget : public vtkObject
 {
 public:
-  static ExternalVTKWidget* New();
+  static ExternalVTKWidget *New();
   vtkTypeMacro(ExternalVTKWidget, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream &os, vtkIndent indent);
 
   // Set/Get an external render window for the ExternalVTKWidget.
   // Since this is a special environment, the methods are limited to use
@@ -49,13 +49,13 @@ public:
 
 protected:
   ExternalVTKWidget();
-  ~ExternalVTKWidget() override;
+  ~ExternalVTKWidget();
 
   vtkExternalOpenGLRenderWindow* RenderWindow;
 
 private:
-  ExternalVTKWidget(const ExternalVTKWidget&) = delete;
-  void operator=(const ExternalVTKWidget&) = delete;
+  ExternalVTKWidget(const ExternalVTKWidget&) VTK_DELETE_FUNCTION;
+  void operator=(const ExternalVTKWidget&) VTK_DELETE_FUNCTION;
 };
 
 #endif //__ExternalVTKWidget_h

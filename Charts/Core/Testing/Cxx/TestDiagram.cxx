@@ -13,20 +13,20 @@
 
 =========================================================================*/
 
-#include "vtkBrush.h"
-#include "vtkContext2D.h"
-#include "vtkContextActor.h"
-#include "vtkContextItem.h"
-#include "vtkContextScene.h"
-#include "vtkNew.h"
-#include "vtkObjectFactory.h"
-#include "vtkPen.h"
+#include "vtkRenderer.h"
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
-#include "vtkRenderer.h"
 #include "vtkSmartPointer.h"
-#include "vtkStdString.h"
+#include "vtkObjectFactory.h"
+#include "vtkContext2D.h"
+#include "vtkContextItem.h"
+#include "vtkContextActor.h"
+#include "vtkContextScene.h"
+#include "vtkPen.h"
+#include "vtkBrush.h"
 #include "vtkTextProperty.h"
+#include "vtkStdString.h"
+#include "vtkNew.h"
 
 #include "vtkRegressionTestImage.h"
 
@@ -34,28 +34,28 @@
 class APIDiagram : public vtkContextItem
 {
 public:
-  static APIDiagram* New();
+  static APIDiagram *New();
   vtkTypeMacro(APIDiagram, vtkContextItem);
   // Paint event for the chart, called whenever the chart needs to be drawn
-  bool Paint(vtkContext2D* painter) override;
+  bool Paint(vtkContext2D *painter) VTK_OVERRIDE;
 };
 
 //----------------------------------------------------------------------------
-int TestDiagram(int, char*[])
+int TestDiagram(int, char * [])
 {
   // Set up a 2D chart actor, APIDiagram object andn add them to the renderer
   vtkNew<vtkContextActor> actor;
   vtkNew<APIDiagram> diagram;
-  actor->GetScene()->AddItem(diagram);
+  actor->GetScene()->AddItem(diagram.GetPointer());
   vtkNew<vtkRenderer> renderer;
   renderer->SetBackground(1.0, 1.0, 1.0);
   vtkNew<vtkRenderWindow> renderWindow;
   renderWindow->SetSize(800, 600);
-  renderWindow->AddRenderer(renderer);
-  renderer->AddActor(actor);
+  renderWindow->AddRenderer(renderer.GetPointer());
+  renderer->AddActor(actor.GetPointer());
 
   vtkNew<vtkRenderWindowInteractor> interactor;
-  interactor->SetRenderWindow(renderWindow);
+  interactor->SetRenderWindow(renderWindow.GetPointer());
   renderWindow->SetMultiSamples(0);
   interactor->Initialize();
   interactor->Start();
@@ -65,7 +65,7 @@ int TestDiagram(int, char*[])
 // Make our new derived class to draw a diagram
 vtkStandardNewMacro(APIDiagram);
 // This function draws our API diagram
-bool APIDiagram::Paint(vtkContext2D* painter)
+bool APIDiagram::Paint(vtkContext2D *painter)
 {
   // Drawing a hard wired diagram 800x600 as a demonstration of the 2D API
   painter->GetTextProp()->SetVerticalJustificationToCentered();

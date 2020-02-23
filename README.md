@@ -26,7 +26,7 @@ Learning Resources
 
 * General information is available at the [VTK Homepage][].
 
-* Community discussion takes place on the [VTK Discourse][] forum.
+* Community discussion takes place on the [VTK Mailing Lists][].
 
 * Commercial [support][Kitware Support] and [training][Kitware Training]
   are available from [Kitware][].
@@ -34,12 +34,12 @@ Learning Resources
 * Doxygen-generated nightly reference documentation is
   available [online][Doxygen].
 
-[VTK Homepage]: https://www.vtk.org/
-[Doxygen]: https://www.vtk.org/doc/nightly/html
-[VTK Discourse]: https://discourse.vtk.org/
-[Kitware]: https://www.kitware.com/
-[Kitware Support]: https://www.kitware.com/what-we-offer/#support
-[Kitware Training]: https://www.kitware.com/what-we-offer/#training
+[VTK Homepage]: http://www.vtk.org
+[Doxygen]: http://www.vtk.org/doc/nightly/html
+[VTK Mailing Lists]: http://www.vtk.org/VTK/help/mailing.html
+[Kitware]: http://www.kitware.com/
+[Kitware Support]: http://www.kitware.com/products/support.html
+[Kitware Training]: http://www.kitware.com/products/protraining.php
 
 Reporting Bugs
 ==============
@@ -48,7 +48,7 @@ If you have found a bug:
 
 1. If you have a patch, please read the [CONTRIBUTING.md][] document.
 
-2. Otherwise, please join the [VTK Discourse][] forum and ask
+2. Otherwise, please join the one of the [VTK Mailing Lists][] and ask
    about the expected and observed behaviors to determine if it is
    really a bug.
 
@@ -62,16 +62,16 @@ Requirements
 
 In general VTK tries to be as portable as possible; the specific configurations below are known to work and tested.
 
-VTK supports the following C++11 compilers:
-1. Microsoft Visual Studio 2015 or newer
-2. gcc 4.8.3 or newer
-3. Clang 3.3 or newer
-4. Apple Clang 5.0 (from Xcode 5.0) or newer
-5. Intel 14.0 or newer
+VTK supports the following compilers:
+1. Microsoft Visual Studio 2008 (aka MSVC++ 9.0) or newer
+2. gcc 4.2 or newer
+3. Apple gcc 4.2 (from Xcode 3.1.4 or newer)
+4. Clang 3.0 or newer
+5. Apple Clang 3.0 (from Xcode 4.2) or newer
 
 VTK supports the following operating systems:
 1. Windows Vista or newer
-2. Mac OS X 10.7 or newer
+2. Mac OS X 10.6.8 or newer
 3. Linux (ex: Ubuntu 12.04 or newer, Debian 4 or newer)
 
 Contributing

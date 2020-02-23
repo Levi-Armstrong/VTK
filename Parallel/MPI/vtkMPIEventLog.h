@@ -28,18 +28,18 @@
  *
  * @sa
  * vtkTimerLog vtkMPIController vtkMPICommunicator
- */
+*/
 
 #ifndef vtkMPIEventLog_h
 #define vtkMPIEventLog_h
 
-#include "vtkObject.h"
 #include "vtkParallelMPIModule.h" // For export macro
+#include "vtkObject.h"
 
 class VTKPARALLELMPI_EXPORT vtkMPIEventLog : public vtkObject
 {
 public:
-  vtkTypeMacro(vtkMPIEventLog, vtkObject);
+  vtkTypeMacro(vtkMPIEventLog,vtkObject);
 
   /**
    * Construct a vtkMPIEventLog with the following initial state:
@@ -78,20 +78,24 @@ public:
   void StopLogging();
   //@}
 
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
 protected:
+
   vtkMPIEventLog();
-  ~vtkMPIEventLog() override;
+  ~vtkMPIEventLog();
 
   static int LastEventId;
   int Active;
   int BeginId;
   int EndId;
-
 private:
-  vtkMPIEventLog(const vtkMPIEventLog&) = delete;
-  void operator=(const vtkMPIEventLog&) = delete;
+  vtkMPIEventLog(const vtkMPIEventLog&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkMPIEventLog&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+
+
+

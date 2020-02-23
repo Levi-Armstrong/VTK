@@ -45,13 +45,13 @@
  * from the selection link when the view is updated.  The application is
  * responsible for linking representations as appropriate by setting the
  * same vtkAnnotationLink on each linked representation.
- */
+*/
 
 #ifndef vtkDataRepresentation_h
 #define vtkDataRepresentation_h
 
-#include "vtkPassInputTypeAlgorithm.h"
 #include "vtkViewsCoreModule.h" // For export macro
+#include "vtkPassInputTypeAlgorithm.h"
 
 class vtkAlgorithmOutput;
 class vtkAnnotationLayers;
@@ -66,44 +66,44 @@ class vtkViewTheme;
 class VTKVIEWSCORE_EXPORT vtkDataRepresentation : public vtkPassInputTypeAlgorithm
 {
 public:
-  static vtkDataRepresentation* New();
+  static vtkDataRepresentation *New();
   vtkTypeMacro(vtkDataRepresentation, vtkPassInputTypeAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Convenience override method for obtaining the input connection
    * without specifying the port or index.
    */
   vtkAlgorithmOutput* GetInputConnection(int port = 0, int index = 0)
-  {
-    return this->Superclass::GetInputConnection(port, index);
-  }
+    { return this->Superclass::GetInputConnection(port, index); }
 
   /**
    * The annotation link for this representation.
    * To link annotations, set the same vtkAnnotationLink object in
    * multiple representations.
    */
-  vtkAnnotationLink* GetAnnotationLink() { return this->AnnotationLinkInternal; }
+  vtkAnnotationLink* GetAnnotationLink()
+    { return this->AnnotationLinkInternal; }
   void SetAnnotationLink(vtkAnnotationLink* link);
 
   /**
    * Apply a theme to this representation.
    * Subclasses should override this method.
    */
-  virtual void ApplyViewTheme(vtkViewTheme* vtkNotUsed(theme)) {}
+  virtual void ApplyViewTheme(vtkViewTheme* vtkNotUsed(theme)) { }
 
   /**
    * The view calls this method when a selection occurs.
    * The representation takes this selection and converts it into
    * a selection on its data by calling ConvertSelection,
    * then calls UpdateSelection with the converted selection.
-   * Subclasses should not override this method, but should instead
+   * Subclasses should not overrride this method, but should instead
    * override ConvertSelection.
    * The optional third argument specifies whether the selection should be
    * added to the previous selection on this representation.
    */
-  void Select(vtkView* view, vtkSelection* selection) { this->Select(view, selection, false); }
+  void Select(vtkView* view, vtkSelection* selection)
+    { this->Select(view, selection, false); }
   void Select(vtkView* view, vtkSelection* selection, bool extend);
 
   /**
@@ -112,15 +112,13 @@ public:
    * creation of annotations). The representation takes the annotations
    * and converts them into a selection on its data by calling ConvertAnnotations,
    * then calls UpdateAnnotations with the converted selection.
-   * Subclasses should not override this method, but should instead
+   * Subclasses should not overrride this method, but should instead
    * override ConvertSelection.
    * The optional third argument specifies whether the selection should be
    * added to the previous selection on this representation.
    */
   void Annotate(vtkView* view, vtkAnnotationLayers* annotations)
-  {
-    this->Annotate(view, annotations, false);
-  }
+    { this->Annotate(view, annotations, false); }
   void Annotate(vtkView* view, vtkAnnotationLayers* annotations, bool extend);
 
   //@{
@@ -135,25 +133,24 @@ public:
 
   /**
    * Updates the selection in the selection link and fires a selection
-   * change event. Subclasses should not override this method,
+   * change event. Subclasses should not overrride this method,
    * but should instead override ConvertSelection.
    * The optional second argument specifies whether the selection should be
    * added to the previous selection on this representation.
    */
-  void UpdateSelection(vtkSelection* selection) { this->UpdateSelection(selection, false); }
+  void UpdateSelection(vtkSelection* selection)
+    { this->UpdateSelection(selection, false); }
   void UpdateSelection(vtkSelection* selection, bool extend);
 
   /**
    * Updates the selection in the selection link and fires a selection
-   * change event. Subclasses should not override this method,
+   * change event. Subclasses should not overrride this method,
    * but should instead override ConvertSelection.
    * The optional second argument specifies whether the selection should be
    * added to the previous selection on this representation.
    */
   void UpdateAnnotations(vtkAnnotationLayers* annotations)
-  {
-    this->UpdateAnnotations(annotations, false);
-  }
+    { this->UpdateAnnotations(annotations, false); }
   void UpdateAnnotations(vtkAnnotationLayers* annotations, bool extend);
 
   /**
@@ -162,13 +159,9 @@ public:
    * This should be used when connecting the internal pipelines.
    */
   virtual vtkAlgorithmOutput* GetInternalAnnotationOutputPort()
-  {
-    return this->GetInternalAnnotationOutputPort(0);
-  }
+    { return this->GetInternalAnnotationOutputPort(0); }
   virtual vtkAlgorithmOutput* GetInternalAnnotationOutputPort(int port)
-  {
-    return this->GetInternalAnnotationOutputPort(port, 0);
-  }
+    { return this->GetInternalAnnotationOutputPort(port, 0); }
   virtual vtkAlgorithmOutput* GetInternalAnnotationOutputPort(int port, int conn);
 
   /**
@@ -177,13 +170,9 @@ public:
    * This should be used when connecting the internal pipelines.
    */
   virtual vtkAlgorithmOutput* GetInternalSelectionOutputPort()
-  {
-    return this->GetInternalSelectionOutputPort(0);
-  }
+    { return this->GetInternalSelectionOutputPort(0); }
   virtual vtkAlgorithmOutput* GetInternalSelectionOutputPort(int port)
-  {
-    return this->GetInternalSelectionOutputPort(port, 0);
-  }
+    { return this->GetInternalSelectionOutputPort(port, 0); }
   virtual vtkAlgorithmOutput* GetInternalSelectionOutputPort(int port, int conn);
 
   /**
@@ -191,11 +180,10 @@ public:
    * and connection index. This may be connected to the representation's
    * internal pipeline.
    */
-  virtual vtkAlgorithmOutput* GetInternalOutputPort() { return this->GetInternalOutputPort(0); }
+  virtual vtkAlgorithmOutput* GetInternalOutputPort()
+    { return this->GetInternalOutputPort(0); }
   virtual vtkAlgorithmOutput* GetInternalOutputPort(int port)
-  {
-    return this->GetInternalOutputPort(port, 0);
-  }
+    { return this->GetInternalOutputPort(port, 0); }
   virtual vtkAlgorithmOutput* GetInternalOutputPort(int port, int conn);
 
   //@{
@@ -233,13 +221,13 @@ public:
    * For the superclass, we just return the same selection.
    * Subclasses may do something more fancy, like convert the selection
    * from a frustrum to a list of pedigree ids.  If the selection cannot
-   * be applied to this representation, return nullptr.
+   * be applied to this representation, return NULL.
    */
   virtual vtkSelection* ConvertSelection(vtkView* view, vtkSelection* selection);
 
 protected:
   vtkDataRepresentation();
-  ~vtkDataRepresentation() override;
+  ~vtkDataRepresentation();
 
   /**
    * Subclasses should override this to connect inputs to the internal pipeline
@@ -251,15 +239,16 @@ protected:
    * GetInternalSelectionOutputPort should be used to obtain a selection or
    * annotation port whose selections are localized for a particular input data object.
    */
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override
-  {
-    return 1;
-  }
+  virtual int RequestData(
+    vtkInformation*,
+    vtkInformationVector**,
+    vtkInformationVector*)
+    { return 1; }
 
   /**
    * Clear the input shallow copy caches if the algorithm is in "release data" mode.
    */
-  virtual void ProcessEvents(vtkObject* caller, unsigned long eventId, void* callData);
+  virtual void ProcessEvents(vtkObject *caller, unsigned long eventId, void *callData);
 
   //@{
   /**
@@ -269,7 +258,7 @@ protected:
   vtkAnnotationLink* AnnotationLinkInternal;
   //@}
 
-  // Whether its representation can handle a selection.
+  // Whether is represenation can handle a selection.
   bool Selectable;
 
   /**
@@ -309,7 +298,7 @@ protected:
   /**
    * Analogous to ConvertSelection(), allows subclasses to manipulate annotations
    * before passing them off to vtkAnnotationLink.  If the annotations cannot
-   * be applied to this representation, return nullptr.
+   * be applied to this representation, return NULL.
    */
   virtual vtkAnnotationLayers* ConvertAnnotations(vtkView* view, vtkAnnotationLayers* annotations);
 
@@ -317,11 +306,12 @@ protected:
   void SetInternalInput(int port, int conn, vtkTrivialProducer* producer);
 
 private:
-  vtkDataRepresentation(const vtkDataRepresentation&) = delete;
-  void operator=(const vtkDataRepresentation&) = delete;
+  vtkDataRepresentation(const vtkDataRepresentation&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkDataRepresentation&) VTK_DELETE_FUNCTION;
 
   class Internals;
   Internals* Implementation;
+
 };
 
 #endif

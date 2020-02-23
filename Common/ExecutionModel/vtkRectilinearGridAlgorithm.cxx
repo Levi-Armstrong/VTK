@@ -33,7 +33,9 @@ vtkRectilinearGridAlgorithm::vtkRectilinearGridAlgorithm()
 }
 
 //----------------------------------------------------------------------------
-vtkRectilinearGridAlgorithm::~vtkRectilinearGridAlgorithm() = default;
+vtkRectilinearGridAlgorithm::~vtkRectilinearGridAlgorithm()
+{
+}
 
 //----------------------------------------------------------------------------
 void vtkRectilinearGridAlgorithm::PrintSelf(ostream& os, vtkIndent indent)
@@ -78,22 +80,23 @@ vtkRectilinearGrid* vtkRectilinearGridAlgorithm::GetRectilinearGridInput(int por
 }
 
 //----------------------------------------------------------------------------
-vtkTypeBool vtkRectilinearGridAlgorithm::ProcessRequest(
-  vtkInformation* request, vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+int vtkRectilinearGridAlgorithm::ProcessRequest(vtkInformation* request,
+                                         vtkInformationVector** inputVector,
+                                         vtkInformationVector* outputVector)
 {
   // generate the data
-  if (request->Has(vtkDemandDrivenPipeline::REQUEST_DATA()))
+  if(request->Has(vtkDemandDrivenPipeline::REQUEST_DATA()))
   {
     return this->RequestData(request, inputVector, outputVector);
   }
 
-  if (request->Has(vtkStreamingDemandDrivenPipeline::REQUEST_UPDATE_EXTENT()))
+  if(request->Has(vtkStreamingDemandDrivenPipeline::REQUEST_UPDATE_EXTENT()))
   {
     return this->RequestUpdateExtent(request, inputVector, outputVector);
   }
 
   // execute information
-  if (request->Has(vtkDemandDrivenPipeline::REQUEST_INFORMATION()))
+  if(request->Has(vtkDemandDrivenPipeline::REQUEST_INFORMATION()))
   {
     return this->RequestInformation(request, inputVector, outputVector);
   }
@@ -119,8 +122,10 @@ int vtkRectilinearGridAlgorithm::FillInputPortInformation(
 }
 
 //----------------------------------------------------------------------------
-int vtkRectilinearGridAlgorithm::RequestInformation(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* vtkNotUsed(outputVector))
+int vtkRectilinearGridAlgorithm::RequestInformation(
+  vtkInformation* vtkNotUsed(request),
+  vtkInformationVector** vtkNotUsed(inputVector),
+  vtkInformationVector* vtkNotUsed(outputVector))
 {
   // do nothing let subclasses handle it
   return 1;
@@ -129,8 +134,10 @@ int vtkRectilinearGridAlgorithm::RequestInformation(vtkInformation* vtkNotUsed(r
 //----------------------------------------------------------------------------
 // This is the superclasses style of Execute method.  Convert it into
 // an imaging style Execute method.
-int vtkRectilinearGridAlgorithm::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* vtkNotUsed(outputVector))
+int vtkRectilinearGridAlgorithm::RequestData(
+  vtkInformation* vtkNotUsed( request ),
+  vtkInformationVector** vtkNotUsed( inputVector ),
+  vtkInformationVector* vtkNotUsed( outputVector ))
 {
   return 0;
 }
@@ -158,3 +165,4 @@ void vtkRectilinearGridAlgorithm::AddInputData(int index, vtkDataObject* input)
 {
   this->AddInputDataInternal(index, input);
 }
+

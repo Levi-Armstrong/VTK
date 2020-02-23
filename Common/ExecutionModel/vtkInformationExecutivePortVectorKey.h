@@ -19,7 +19,7 @@
  * vtkInformationExecutivePortVectorKey is used to represent keys in
  * vtkInformation for values that are vectors of vtkExecutive
  * instances paired with port numbers.
- */
+*/
 
 #ifndef vtkInformationExecutivePortVectorKey_h
 #define vtkInformationExecutivePortVectorKey_h
@@ -34,11 +34,11 @@ class vtkExecutive;
 class VTKCOMMONEXECUTIONMODEL_EXPORT vtkInformationExecutivePortVectorKey : public vtkInformationKey
 {
 public:
-  vtkTypeMacro(vtkInformationExecutivePortVectorKey, vtkInformationKey);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkInformationExecutivePortVectorKey,vtkInformationKey);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   vtkInformationExecutivePortVectorKey(const char* name, const char* location);
-  ~vtkInformationExecutivePortVectorKey() override;
+  ~vtkInformationExecutivePortVectorKey() VTK_OVERRIDE;
 
   /**
    * This method simply returns a new vtkInformationExecutivePortVectorKey,
@@ -69,24 +69,25 @@ public:
    * object to another.  If there is no entry in the first information
    * object for this key, the value is removed from the second.
    */
-  void ShallowCopy(vtkInformation* from, vtkInformation* to) override;
+  void ShallowCopy(vtkInformation* from, vtkInformation* to) VTK_OVERRIDE;
 
   /**
    * Remove this key from the given information object.
    */
-  void Remove(vtkInformation* info) override;
+  void Remove(vtkInformation* info) VTK_OVERRIDE;
 
   /**
    * Report a reference this key has in the given information object.
    */
-  void Report(vtkInformation* info, vtkGarbageCollector* collector) override;
+  void Report(vtkInformation* info, vtkGarbageCollector* collector) VTK_OVERRIDE;
 
   /**
    * Print the key's value in an information object to a stream.
    */
-  void Print(ostream& os, vtkInformation* info) override;
+  void Print(ostream& os, vtkInformation* info) VTK_OVERRIDE;
 
 protected:
+
   //@{
   /**
    * Get the address at which the actual value is stored.  This is
@@ -98,8 +99,8 @@ protected:
   //@}
 
 private:
-  vtkInformationExecutivePortVectorKey(const vtkInformationExecutivePortVectorKey&) = delete;
-  void operator=(const vtkInformationExecutivePortVectorKey&) = delete;
+  vtkInformationExecutivePortVectorKey(const vtkInformationExecutivePortVectorKey&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkInformationExecutivePortVectorKey&) VTK_DELETE_FUNCTION;
 };
 
 #endif

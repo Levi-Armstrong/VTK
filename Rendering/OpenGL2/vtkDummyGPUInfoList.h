@@ -21,26 +21,26 @@
  * GPUs to be zero. Useful when an OS specific implementation is not available.
  * @sa
  * vtkGPUInfo vtkGPUInfoList
- */
+*/
 
 #ifndef vtkDummyGPUInfoList_h
 #define vtkDummyGPUInfoList_h
 
-#include "vtkGPUInfoList.h"
 #include "vtkRenderingOpenGL2Module.h" // For export macro
+#include "vtkGPUInfoList.h"
 
 class VTKRENDERINGOPENGL2_EXPORT vtkDummyGPUInfoList : public vtkGPUInfoList
 {
 public:
   static vtkDummyGPUInfoList* New();
   vtkTypeMacro(vtkDummyGPUInfoList, vtkGPUInfoList);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Build the list of vtkInfoGPU if not done yet.
    * \post probed: IsProbed()
    */
-  void Probe() override;
+  virtual void Probe();
 
 protected:
   //@{
@@ -48,12 +48,12 @@ protected:
    * Default constructor.
    */
   vtkDummyGPUInfoList();
-  ~vtkDummyGPUInfoList() override;
+  virtual ~vtkDummyGPUInfoList();
   //@}
 
 private:
-  vtkDummyGPUInfoList(const vtkDummyGPUInfoList&) = delete;
-  void operator=(const vtkDummyGPUInfoList&) = delete;
+  vtkDummyGPUInfoList(const vtkDummyGPUInfoList&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkDummyGPUInfoList&) VTK_DELETE_FUNCTION;
 };
 
 #endif

@@ -14,24 +14,25 @@
 #include "vtkActor.h"
 #include "vtkAngularPeriodicFilter.h"
 #include "vtkCamera.h"
-#include "vtkCompositePolyDataMapper.h"
 #include "vtkGeometryFilter.h"
+#include "vtkCompositePolyDataMapper.h"
 #include "vtkLookupTable.h"
 #include "vtkMultiBlockDataSet.h"
 #include "vtkNew.h"
-#include "vtkPointData.h"
 #include "vtkPointSource.h"
+#include "vtkPointData.h"
 #include "vtkPolyDataMapper.h"
 #include "vtkProperty.h"
 #include "vtkRegressionTestImage.h"
+#include "vtkRenderer.h"
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
-#include "vtkRenderer.h"
 #include "vtkStreamTracer.h"
 #include "vtkTesting.h"
 #include "vtkTriangleFilter.h"
 #include "vtkUnstructuredGrid.h"
 #include "vtkXMLUnstructuredGridReader.h"
+
 
 int TestAngularPeriodicFilter(int argc, char* argv[])
 {
@@ -54,7 +55,7 @@ int TestAngularPeriodicFilter(int argc, char* argv[])
   mb->SetBlock(0, reader->GetOutput());
 
   vtkNew<vtkAngularPeriodicFilter> angularPeriodicFilter;
-  angularPeriodicFilter->SetInputData(mb);
+  angularPeriodicFilter->SetInputData(mb.Get());
   angularPeriodicFilter->AddIndex(1);
   angularPeriodicFilter->SetIterationModeToMax();
   angularPeriodicFilter->SetRotationModeToDirectAngle();
@@ -62,7 +63,7 @@ int TestAngularPeriodicFilter(int argc, char* argv[])
   angularPeriodicFilter->SetRotationAxisToZ();
 
   vtkNew<vtkGeometryFilter> geomFilter;
-  geomFilter->SetInputData(mb);
+  geomFilter->SetInputData(mb.Get());
 
   vtkNew<vtkTriangleFilter> triangleFilter;
   triangleFilter->SetInputConnection(geomFilter->GetOutputPort());
@@ -101,41 +102,40 @@ int TestAngularPeriodicFilter(int argc, char* argv[])
 
   vtkNew<vtkCompositePolyDataMapper> multiBlockMapper;
   multiBlockMapper->SetInputConnection(triangleFilter->GetOutputPort());
-  multiBlockMapper->SetLookupTable(hueLut);
+  multiBlockMapper->SetLookupTable(hueLut.Get());
   multiBlockMapper->SetScalarRange(131., 225.);
   multiBlockMapper->SetColorModeToMapScalars();
   multiBlockMapper->SetScalarModeToUsePointData();
 
   vtkNew<vtkPolyDataMapper> mapper;
   mapper->SetInputConnection(streamTracer->GetOutputPort());
-  mapper->SetLookupTable(hueLut);
+  mapper->SetLookupTable(hueLut.Get());
   mapper->SetScalarRange(131., 225.);
   mapper->SetColorModeToMapScalars();
   mapper->SetScalarModeToUsePointData();
 
   vtkNew<vtkActor> multiBlockActor;
-  multiBlockActor->SetMapper(multiBlockMapper);
+  multiBlockActor->SetMapper(multiBlockMapper.Get());
 
   vtkNew<vtkActor> actor;
-  actor->SetMapper(mapper);
+  actor->SetMapper(mapper.Get());
 
   vtkNew<vtkRenderer> renderer;
-  renderer->AddActor(multiBlockActor);
-  renderer->AddActor(actor);
-  renderer->GetActiveCamera()->SetPosition(
-    3.97282457351685, -0.0373859405517578, -59.3025624847687);
+  renderer->AddActor(multiBlockActor.GetPointer());
+  renderer->AddActor(actor.GetPointer());
+  renderer->GetActiveCamera()->SetPosition(3.97282457351685, -0.0373859405517578, -59.3025624847687);
   renderer->ResetCamera();
   renderer->SetBackground(1., 1., 1.);
 
   vtkNew<vtkRenderWindow> renWin;
-  renWin->AddRenderer(renderer);
+  renWin->AddRenderer(renderer.GetPointer());
   renWin->SetMultiSamples(0);
   renWin->SetSize(300, 300);
 
   vtkNew<vtkRenderWindowInteractor> iren;
-  iren->SetRenderWindow(renWin);
+  iren->SetRenderWindow(renWin.GetPointer());
 
-  int retVal = vtkRegressionTestImage(renWin);
+  int retVal = vtkRegressionTestImage(renWin.GetPointer());
   if (retVal == vtkRegressionTester::DO_INTERACTOR)
   {
     iren->Start();

@@ -59,13 +59,13 @@ POSSIBILITY OF SUCH DAMAGES.
  * @par Thanks:
  * Thanks to David Gobbi for writing this class and Atamai Inc. for
  * contributing it to VTK.
- */
+*/
 
 #ifndef vtkMNITransformWriter_h
 #define vtkMNITransformWriter_h
 
-#include "vtkAlgorithm.h"
 #include "vtkIOMINCModule.h" // For export macro
+#include "vtkAlgorithm.h"
 
 class vtkAbstractTransform;
 class vtkHomogeneousTransform;
@@ -76,10 +76,10 @@ class vtkCollection;
 class VTKIOMINC_EXPORT vtkMNITransformWriter : public vtkAlgorithm
 {
 public:
-  vtkTypeMacro(vtkMNITransformWriter, vtkAlgorithm);
+  vtkTypeMacro(vtkMNITransformWriter,vtkAlgorithm);
 
-  static vtkMNITransformWriter* New();
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkMNITransformWriter *New();
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   //@{
   /**
@@ -90,21 +90,24 @@ public:
   //@}
 
   /**
-   * Get the extension for this file format.
+   * Get the entension for this file format.
    */
-  virtual const char* GetFileExtensions() { return ".xfm"; }
+  virtual const char* GetFileExtensions() {
+    return ".xfm"; }
 
   /**
    * Get the name of this file format.
    */
-  virtual const char* GetDescriptiveName() { return "MNI Transform"; }
+  virtual const char* GetDescriptiveName() {
+    return "MNI Transform"; }
 
   //@{
   /**
    * Set the transform.
    */
-  virtual void SetTransform(vtkAbstractTransform* transform);
-  virtual vtkAbstractTransform* GetTransform() { return this->Transform; }
+  virtual void SetTransform(vtkAbstractTransform *transform);
+  virtual vtkAbstractTransform *GetTransform() {
+    return this->Transform; };
   //@}
 
   /**
@@ -112,7 +115,7 @@ public:
    * SetTransform is called, all added transforms will be
    * removed.
    */
-  virtual void AddTransform(vtkAbstractTransform* transform);
+  virtual void AddTransform(vtkAbstractTransform *transform);
 
   /**
    * Get the number of transforms that will be written.
@@ -134,27 +137,33 @@ public:
 
 protected:
   vtkMNITransformWriter();
-  ~vtkMNITransformWriter() override;
+  ~vtkMNITransformWriter();
 
-  char* FileName;
-  vtkAbstractTransform* Transform;
-  vtkCollection* Transforms;
-  char* Comments;
+  char *FileName;
+  vtkAbstractTransform *Transform;
+  vtkCollection *Transforms;
+  char *Comments;
 
-  int WriteLinearTransform(ostream& outfile, vtkHomogeneousTransform* transform);
-  int WriteThinPlateSplineTransform(ostream& outfile, vtkThinPlateSplineTransform* transform);
-  int WriteGridTransform(ostream& outfile, vtkGridTransform* transform);
+  int WriteLinearTransform(ostream &outfile,
+                           vtkHomogeneousTransform *transform);
+  int WriteThinPlateSplineTransform(ostream &outfile,
+                                    vtkThinPlateSplineTransform *transform);
+  int WriteGridTransform(ostream &outfile,
+                         vtkGridTransform *transform);
 
-  virtual int WriteTransform(ostream& outfile, vtkAbstractTransform* transform);
+  virtual int WriteTransform(ostream &outfile,
+                             vtkAbstractTransform *transform);
 
   virtual int WriteFile();
 
-  vtkTypeBool ProcessRequest(
-    vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo) override;
+  virtual int ProcessRequest(vtkInformation* request,
+                             vtkInformationVector** inInfo,
+                             vtkInformationVector* outInfo);
 
 private:
-  vtkMNITransformWriter(const vtkMNITransformWriter&) = delete;
-  void operator=(const vtkMNITransformWriter&) = delete;
+  vtkMNITransformWriter(const vtkMNITransformWriter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkMNITransformWriter&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif

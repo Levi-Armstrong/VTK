@@ -17,7 +17,7 @@
  * @brief   Iterate over cells of a dataset.
  * @sa
  * vtkBridgeCellIterator, vtkBridgeDataSet, vtkBridgeCellIteratorStrategy
- */
+*/
 
 #ifndef vtkBridgeCellIteratorOnDataSet_h
 #define vtkBridgeCellIteratorOnDataSet_h
@@ -29,23 +29,23 @@ class vtkBridgeDataSet;
 class vtkBridgeCell;
 class vtkIdList;
 
-class VTKTESTINGGENERICBRIDGE_EXPORT vtkBridgeCellIteratorOnDataSet
-  : public vtkBridgeCellIteratorStrategy
+class VTKTESTINGGENERICBRIDGE_EXPORT vtkBridgeCellIteratorOnDataSet : public vtkBridgeCellIteratorStrategy
 {
 public:
-  static vtkBridgeCellIteratorOnDataSet* New();
-  vtkTypeMacro(vtkBridgeCellIteratorOnDataSet, vtkBridgeCellIteratorStrategy);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkBridgeCellIteratorOnDataSet *New();
+  vtkTypeMacro(vtkBridgeCellIteratorOnDataSet,
+                       vtkBridgeCellIteratorStrategy);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Move iterator to first position if any (loop initialization).
    */
-  void Begin() override;
+  void Begin();
 
   /**
    * Is there no cell at iterator position? (exit condition).
    */
-  vtkTypeBool IsAtEnd() override;
+  int IsAtEnd();
 
   /**
    * Cell at current position
@@ -53,7 +53,7 @@ public:
    * \pre c_exists: c!=0
    * THREAD SAFE
    */
-  void GetCell(vtkGenericAdaptorCell* c) override;
+  void GetCell(vtkGenericAdaptorCell *c);
 
   /**
    * Cell at current position.
@@ -61,13 +61,13 @@ public:
    * \pre not_at_end: !IsAtEnd()
    * \post result_exits: result!=0
    */
-  vtkGenericAdaptorCell* GetCell() override;
+  vtkGenericAdaptorCell *GetCell();
 
   /**
    * Move iterator to next position. (loop progression).
    * \pre not_at_end: !IsAtEnd()
    */
-  void Next() override;
+  void Next();
 
   /**
    * Used internally by vtkBridgeDataSet.
@@ -75,22 +75,23 @@ public:
    * \pre ds_exists: ds!=0
    * \pre valid_dim_range: (dim>=-1) && (dim<=3)
    */
-  void InitWithDataSet(vtkBridgeDataSet* ds, int dim);
+  void InitWithDataSet(vtkBridgeDataSet *ds,
+                       int dim);
 
 protected:
   vtkBridgeCellIteratorOnDataSet();
-  ~vtkBridgeCellIteratorOnDataSet() override;
+  virtual ~vtkBridgeCellIteratorOnDataSet();
 
   int Dim; // Dimension of cells over which to iterate (-1 to 3)
 
-  vtkBridgeDataSet* DataSet; // the structure on which the object iterates.
-  vtkIdType Id;              // the id at current position.
-  vtkIdType Size;            // size of the structure.
-  vtkBridgeCell* Cell;       // cell at current position.
+  vtkBridgeDataSet *DataSet; // the structure on which the objet iterates.
+  vtkIdType Id; // the id at current position.
+  vtkIdType Size; // size of the structure.
+  vtkBridgeCell *Cell; // cell at current position.
 
 private:
-  vtkBridgeCellIteratorOnDataSet(const vtkBridgeCellIteratorOnDataSet&) = delete;
-  void operator=(const vtkBridgeCellIteratorOnDataSet&) = delete;
+  vtkBridgeCellIteratorOnDataSet(const vtkBridgeCellIteratorOnDataSet&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkBridgeCellIteratorOnDataSet&) VTK_DELETE_FUNCTION;
 };
 
 #endif

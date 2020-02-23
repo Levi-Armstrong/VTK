@@ -36,22 +36,22 @@
  * @par Thanks:
  * Thanks to the turtle with jets for feet, without you this class wouldn't
  * have been possible.
- */
+*/
 
 #ifndef vtkHierarchicalGraphView_h
 #define vtkHierarchicalGraphView_h
 
-#include "vtkGraphLayoutView.h"
 #include "vtkViewsInfovisModule.h" // For export macro
+#include "vtkGraphLayoutView.h"
 
 class vtkRenderedHierarchyRepresentation;
 
 class VTKVIEWSINFOVIS_EXPORT vtkHierarchicalGraphView : public vtkGraphLayoutView
 {
 public:
-  static vtkHierarchicalGraphView* New();
+  static vtkHierarchicalGraphView *New();
   vtkTypeMacro(vtkHierarchicalGraphView, vtkGraphLayoutView);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -129,21 +129,21 @@ public:
 
 protected:
   vtkHierarchicalGraphView();
-  ~vtkHierarchicalGraphView() override;
+  ~vtkHierarchicalGraphView();
 
   //@{
   /**
    * Overrides behavior in vtkGraphLayoutView to create a
    * vtkRenderedHierarchyRepresentation by default.
    */
-  vtkDataRepresentation* CreateDefaultRepresentation(vtkAlgorithmOutput* conn) override;
-  vtkRenderedGraphRepresentation* GetGraphRepresentation() override;
+  virtual vtkDataRepresentation* CreateDefaultRepresentation(vtkAlgorithmOutput* conn);
+  virtual vtkRenderedGraphRepresentation* GetGraphRepresentation();
   virtual vtkRenderedHierarchyRepresentation* GetHierarchyRepresentation();
   //@}
 
 private:
-  vtkHierarchicalGraphView(const vtkHierarchicalGraphView&) = delete;
-  void operator=(const vtkHierarchicalGraphView&) = delete;
+  vtkHierarchicalGraphView(const vtkHierarchicalGraphView&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkHierarchicalGraphView&) VTK_DELETE_FUNCTION;
 };
 
 #endif

@@ -13,6 +13,7 @@
 
 =========================================================================*/
 
+#include "vtkTreeHeatmapItem.h"
 #include "vtkDataSetAttributes.h"
 #include "vtkDendrogramItem.h"
 #include "vtkDoubleArray.h"
@@ -21,16 +22,15 @@
 #include "vtkStringArray.h"
 #include "vtkTable.h"
 #include "vtkTree.h"
-#include "vtkTreeHeatmapItem.h"
 
-#include "vtkContextActor.h"
+#include "vtkRenderer.h"
+#include "vtkRenderWindow.h"
+#include "vtkRenderWindowInteractor.h"
 #include "vtkContextInteractorStyle.h"
+#include "vtkContextActor.h"
 #include "vtkContextScene.h"
 #include "vtkContextTransform.h"
 #include "vtkNew.h"
-#include "vtkRenderWindow.h"
-#include "vtkRenderWindowInteractor.h"
-#include "vtkRenderer.h"
 
 #include "vtkRegressionTestImage.h"
 
@@ -54,7 +54,7 @@ int TestTreeHeatmapAutoCollapse(int argc, char* argv[])
   weights->SetValue(graph->GetEdgeId(internalOne, c), 3.0f);
 
   weights->SetName("weight");
-  graph->GetEdgeData()->AddArray(weights);
+  graph->GetEdgeData()->AddArray(weights.GetPointer());
 
   vtkNew<vtkStringArray> names;
   names->SetNumberOfTuples(6);
@@ -63,7 +63,7 @@ int TestTreeHeatmapAutoCollapse(int argc, char* argv[])
   names->SetValue(c, "c");
 
   names->SetName("node name");
-  graph->GetVertexData()->AddArray(names);
+  graph->GetVertexData()->AddArray(names.GetPointer());
 
   vtkNew<vtkDoubleArray> nodeWeights;
   nodeWeights->SetNumberOfTuples(6);
@@ -74,7 +74,7 @@ int TestTreeHeatmapAutoCollapse(int argc, char* argv[])
   nodeWeights->SetValue(b, 4.0f);
   nodeWeights->SetValue(c, 4.0f);
   nodeWeights->SetName("node weight");
-  graph->GetVertexData()->AddArray(nodeWeights);
+  graph->GetVertexData()->AddArray(nodeWeights.GetPointer());
 
   vtkNew<vtkTable> table;
   vtkNew<vtkStringArray> tableNames;
@@ -108,19 +108,19 @@ int TestTreeHeatmapAutoCollapse(int argc, char* argv[])
   m3->SetValue(1, 1.0f);
   m3->SetValue(2, 3.0f);
 
-  table->AddColumn(tableNames);
-  table->AddColumn(m1);
-  table->AddColumn(m2);
-  table->AddColumn(m3);
+  table->AddColumn(tableNames.GetPointer());
+  table->AddColumn(m1.GetPointer());
+  table->AddColumn(m2.GetPointer());
+  table->AddColumn(m3.GetPointer());
 
   vtkNew<vtkContextActor> actor;
 
   vtkNew<vtkTree> tree;
-  tree->ShallowCopy(graph);
+  tree->ShallowCopy(graph.GetPointer());
 
   vtkNew<vtkTreeHeatmapItem> treeItem;
-  treeItem->SetTree(tree);
-  treeItem->SetTable(table);
+  treeItem->SetTree(tree.GetPointer());
+  treeItem->SetTable(table.GetPointer());
   treeItem->GetDendrogram()->DisplayNumberOfCollapsedLeafNodesOff();
 
   vtkNew<vtkContextTransform> trans;
@@ -128,24 +128,24 @@ int TestTreeHeatmapAutoCollapse(int argc, char* argv[])
   // center the item within the render window
   trans->Translate(20, 30);
   trans->Scale(2.5, 2.5);
-  trans->AddItem(treeItem);
-  actor->GetScene()->AddItem(trans);
+  trans->AddItem(treeItem.GetPointer());
+  actor->GetScene()->AddItem(trans.GetPointer());
 
   vtkNew<vtkRenderer> renderer;
   renderer->SetBackground(1.0, 1.0, 1.0);
 
   vtkNew<vtkRenderWindow> renderWindow;
   renderWindow->SetSize(400, 200);
-  renderWindow->AddRenderer(renderer);
-  renderer->AddActor(actor);
-  actor->GetScene()->SetRenderer(renderer);
+  renderWindow->AddRenderer(renderer.GetPointer());
+  renderer->AddActor(actor.GetPointer());
+  actor->GetScene()->SetRenderer(renderer.GetPointer());
 
   vtkNew<vtkContextInteractorStyle> interactorStyle;
   interactorStyle->SetScene(actor->GetScene());
 
   vtkNew<vtkRenderWindowInteractor> interactor;
-  interactor->SetInteractorStyle(interactorStyle);
-  interactor->SetRenderWindow(renderWindow);
+  interactor->SetInteractorStyle(interactorStyle.GetPointer());
+  interactor->SetRenderWindow(renderWindow.GetPointer());
   renderWindow->SetMultiSamples(0);
   renderWindow->Render();
 
@@ -153,7 +153,7 @@ int TestTreeHeatmapAutoCollapse(int argc, char* argv[])
   // to the root.
   treeItem->CollapseToNumberOfLeafNodes(2);
 
-  int retVal = vtkRegressionTestImage(renderWindow);
+  int retVal = vtkRegressionTestImage(renderWindow.GetPointer());
   if (retVal == vtkRegressionTester::DO_INTERACTOR)
   {
     renderWindow->Render();

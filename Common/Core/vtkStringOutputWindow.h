@@ -19,14 +19,14 @@
  * Writes debug/warning/error output to a log file instead of the console.
  * To use this class, instantiate it and then call SetInstance(this).
  *
- */
+*/
 
 #ifndef vtkStringOutputWindow_h
 #define vtkStringOutputWindow_h
 
 #include "vtkCommonCoreModule.h" // For export macro
 #include "vtkOutputWindow.h"
-#include <sstream> // for ivar
+#include <sstream>  // for ivar
 
 class VTKCOMMONCORE_EXPORT vtkStringOutputWindow : public vtkOutputWindow
 {
@@ -35,29 +35,30 @@ public:
 
   static vtkStringOutputWindow* New();
 
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Put the text into the log file.
    * New lines are converted to carriage return new lines.
    */
-  void DisplayText(const char*) override;
+  void DisplayText(const char*) VTK_OVERRIDE;
 
   /**
    * Get the current output as a string
    */
-  std::string GetOutput() { return this->OStream.str(); }
+  std::string GetOutput() { return this->OStream.str(); };
 
 protected:
   vtkStringOutputWindow();
-  ~vtkStringOutputWindow() override;
+  ~vtkStringOutputWindow() VTK_OVERRIDE;
   void Initialize();
 
   std::ostringstream OStream;
 
 private:
-  vtkStringOutputWindow(const vtkStringOutputWindow&) = delete;
-  void operator=(const vtkStringOutputWindow&) = delete;
+  vtkStringOutputWindow(const vtkStringOutputWindow&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkStringOutputWindow&) VTK_DELETE_FUNCTION;
 };
+
 
 #endif

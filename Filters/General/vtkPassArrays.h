@@ -34,9 +34,6 @@
  * AddArray will be processed. If instead UseFieldTypes
  * is turned on, you explicitly set which field types to process with AddFieldType.
  *
- * By default, ghost arrays will be passed unless RemoveArrays is selected
- * and those arrays are specifically chosen to be removed.
- *
  * Example 1:
  *
  * <pre>
@@ -58,28 +55,20 @@
  * The point data would still contain the single array, but the cell data
  * would be cleared since you did not specify any arrays to pass. Field data would
  * still be untouched.
- *
- * @section Note
- *
- * vtkPassArrays has been replaced by `vtkPassSelectedArrays`. It is recommended
- * that newer code uses `vtkPassSelectedArrays` instead of this filter.
- * `vtkPassSelectedArrays` uses `vtkDataArraySelection` to select arrays and
- * hence provides a more typical API. `vtkPassArrays` may be deprecated in
- * future releases.
- */
+*/
 
 #ifndef vtkPassArrays_h
 #define vtkPassArrays_h
 
-#include "vtkDataObjectAlgorithm.h"
 #include "vtkFiltersGeneralModule.h" // For export macro
+#include "vtkDataObjectAlgorithm.h"
 
 class VTKFILTERSGENERAL_EXPORT vtkPassArrays : public vtkDataObjectAlgorithm
 {
 public:
   static vtkPassArrays* New();
-  vtkTypeMacro(vtkPassArrays, vtkDataObjectAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkPassArrays,vtkDataObjectAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Adds an array to pass through.
@@ -147,26 +136,31 @@ public:
   /**
    * This is required to capture REQUEST_DATA_OBJECT requests.
    */
-  vtkTypeBool ProcessRequest(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  int ProcessRequest(vtkInformation* request,
+                     vtkInformationVector** inputVector,
+                     vtkInformationVector* outputVector) VTK_OVERRIDE;
 
 protected:
   vtkPassArrays();
-  ~vtkPassArrays() override;
+  ~vtkPassArrays() VTK_OVERRIDE;
 
   /**
    * Override to limit types of supported input types to non-composite
    * datasets
    */
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  int FillInputPortInformation(int port, vtkInformation* info) VTK_OVERRIDE;
 
   /**
    * Creates the same output type as the input type.
    */
-  int RequestDataObject(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  int RequestDataObject(vtkInformation* request,
+                        vtkInformationVector** inputVector,
+                        vtkInformationVector* outputVector) VTK_OVERRIDE;
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(
+    vtkInformation*,
+    vtkInformationVector**,
+    vtkInformationVector*) VTK_OVERRIDE;
 
   bool RemoveArrays;
   bool UseFieldTypes;
@@ -175,8 +169,9 @@ protected:
   Internals* Implementation;
 
 private:
-  vtkPassArrays(const vtkPassArrays&) = delete;
-  void operator=(const vtkPassArrays&) = delete;
+  vtkPassArrays(const vtkPassArrays&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPassArrays&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

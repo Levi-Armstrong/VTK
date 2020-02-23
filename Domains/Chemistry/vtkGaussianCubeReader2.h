@@ -20,7 +20,7 @@
  *
  * @par Thanks:
  * Dr. Jean M. Favre who developed and contributed this class.
- */
+*/
 
 #ifndef vtkGaussianCubeReader2_h
 #define vtkGaussianCubeReader2_h
@@ -34,22 +34,22 @@ class vtkImageData;
 class VTKDOMAINSCHEMISTRY_EXPORT vtkGaussianCubeReader2 : public vtkMoleculeAlgorithm
 {
 public:
-  static vtkGaussianCubeReader2* New();
-  vtkTypeMacro(vtkGaussianCubeReader2, vtkMoleculeAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkGaussianCubeReader2 *New();
+  vtkTypeMacro(vtkGaussianCubeReader2,vtkMoleculeAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
    * Get/Set the output (vtkMolecule) that the reader will fill
    */
-  vtkMolecule* GetOutput();
-  void SetOutput(vtkMolecule*) override;
+  vtkMolecule *GetOutput();
+  void SetOutput(vtkMolecule *);
   //@}
 
   /**
    * Get/Set the output (vtkImageData) that the reader will fill
    */
-  vtkImageData* GetGridOutput();
+  vtkImageData *GetGridOutput();
 
   //@{
   /**
@@ -61,17 +61,18 @@ public:
 
 protected:
   vtkGaussianCubeReader2();
-  ~vtkGaussianCubeReader2() override;
+  ~vtkGaussianCubeReader2();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int FillOutputPortInformation(int, vtkInformation*) override;
+  int RequestData(vtkInformation *, vtkInformationVector **,
+                  vtkInformationVector *);
+  int RequestInformation(vtkInformation *, vtkInformationVector **,
+                  vtkInformationVector *);
+  int FillOutputPortInformation(int, vtkInformation*);
 
-  char* FileName;
-
+  char *FileName;
 private:
-  vtkGaussianCubeReader2(const vtkGaussianCubeReader2&) = delete;
-  void operator=(const vtkGaussianCubeReader2&) = delete;
+  vtkGaussianCubeReader2(const vtkGaussianCubeReader2&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkGaussianCubeReader2&) VTK_DELETE_FUNCTION;
 };
 
 #endif

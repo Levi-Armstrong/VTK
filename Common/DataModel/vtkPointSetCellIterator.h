@@ -16,48 +16,48 @@
  * @class   vtkPointSetCellIterator
  * @brief   Implementation of vtkCellIterator using
  * vtkPointSet API.
- */
+*/
 
 #ifndef vtkPointSetCellIterator_h
 #define vtkPointSetCellIterator_h
 
-#include "vtkCellIterator.h"
 #include "vtkCommonDataModelModule.h" // For export macro
-#include "vtkSmartPointer.h"          // For vtkSmartPointer
+#include "vtkCellIterator.h"
+#include "vtkSmartPointer.h" // For vtkSmartPointer
 
 class vtkPoints;
 class vtkPointSet;
 
-class VTKCOMMONDATAMODEL_EXPORT vtkPointSetCellIterator : public vtkCellIterator
+class VTKCOMMONDATAMODEL_EXPORT vtkPointSetCellIterator: public vtkCellIterator
 {
 public:
-  static vtkPointSetCellIterator* New();
-  vtkTypeMacro(vtkPointSetCellIterator, vtkCellIterator);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkPointSetCellIterator *New();
+  vtkTypeMacro(vtkPointSetCellIterator, vtkCellIterator)
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
-  bool IsDoneWithTraversal() override;
-  vtkIdType GetCellId() override;
+  bool IsDoneWithTraversal() VTK_OVERRIDE;
+  vtkIdType GetCellId() VTK_OVERRIDE;
 
 protected:
   vtkPointSetCellIterator();
-  ~vtkPointSetCellIterator() override;
+  ~vtkPointSetCellIterator() VTK_OVERRIDE;
 
-  void ResetToFirstCell() override;
-  void IncrementToNextCell() override;
-  void FetchCellType() override;
-  void FetchPointIds() override;
-  void FetchPoints() override;
+  void ResetToFirstCell() VTK_OVERRIDE;
+  void IncrementToNextCell() VTK_OVERRIDE;
+  void FetchCellType() VTK_OVERRIDE;
+  void FetchPointIds() VTK_OVERRIDE;
+  void FetchPoints() VTK_OVERRIDE;
 
   friend class vtkPointSet;
-  void SetPointSet(vtkPointSet* ds);
+  void SetPointSet(vtkPointSet *ds);
 
   vtkSmartPointer<vtkPointSet> PointSet;
   vtkSmartPointer<vtkPoints> PointSetPoints;
   vtkIdType CellId;
 
 private:
-  vtkPointSetCellIterator(const vtkPointSetCellIterator&) = delete;
-  void operator=(const vtkPointSetCellIterator&) = delete;
+  vtkPointSetCellIterator(const vtkPointSetCellIterator &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPointSetCellIterator &) VTK_DELETE_FUNCTION;
 };
 
-#endif // vtkPointSetCellIterator_h
+#endif //vtkPointSetCellIterator_h

@@ -24,7 +24,7 @@
  *
  * @sa
  * vtkXMLPRectilinearGridReader
- */
+*/
 
 #ifndef vtkXMLRectilinearGridReader_h
 #define vtkXMLRectilinearGridReader_h
@@ -37,40 +37,40 @@ class vtkRectilinearGrid;
 class VTKIOXML_EXPORT vtkXMLRectilinearGridReader : public vtkXMLStructuredDataReader
 {
 public:
-  vtkTypeMacro(vtkXMLRectilinearGridReader, vtkXMLStructuredDataReader);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
-  static vtkXMLRectilinearGridReader* New();
+  vtkTypeMacro(vtkXMLRectilinearGridReader,vtkXMLStructuredDataReader);
+  void PrintSelf(ostream& os, vtkIndent indent);
+  static vtkXMLRectilinearGridReader *New();
 
   //@{
   /**
    * Get the reader's output.
    */
-  vtkRectilinearGrid* GetOutput();
-  vtkRectilinearGrid* GetOutput(int idx);
+  vtkRectilinearGrid *GetOutput();
+  vtkRectilinearGrid *GetOutput(int idx);
   //@}
 
 protected:
   vtkXMLRectilinearGridReader();
-  ~vtkXMLRectilinearGridReader() override;
+  ~vtkXMLRectilinearGridReader();
 
-  const char* GetDataSetName() override;
-  void SetOutputExtent(int* extent) override;
+  const char* GetDataSetName();
+  void SetOutputExtent(int* extent);
 
-  void SetupPieces(int numPieces) override;
-  void DestroyPieces() override;
-  void SetupOutputData() override;
-  int ReadPiece(vtkXMLDataElement* ePiece) override;
-  int ReadPieceData() override;
-  int ReadSubCoordinates(
-    int* inBounds, int* outBounds, int* subBounds, vtkXMLDataElement* da, vtkDataArray* array);
-  int FillOutputPortInformation(int, vtkInformation*) override;
+  void SetupPieces(int numPieces);
+  void DestroyPieces();
+  void SetupOutputData();
+  int ReadPiece(vtkXMLDataElement* ePiece);
+  int ReadPieceData();
+  int ReadSubCoordinates(int* inBounds, int* outBounds, int* subBounds,
+                         vtkXMLDataElement* da, vtkDataArray* array);
+  virtual int FillOutputPortInformation(int, vtkInformation*);
 
   // The elements representing the coordinate arrays for each piece.
   vtkXMLDataElement** CoordinateElements;
 
 private:
-  vtkXMLRectilinearGridReader(const vtkXMLRectilinearGridReader&) = delete;
-  void operator=(const vtkXMLRectilinearGridReader&) = delete;
+  vtkXMLRectilinearGridReader(const vtkXMLRectilinearGridReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkXMLRectilinearGridReader&) VTK_DELETE_FUNCTION;
 };
 
 #endif

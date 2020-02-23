@@ -27,7 +27,7 @@
  * into a vtkTree datastructure.  Currently, this will convert the table into
  * a star, with each row of the table as a child of a new root node.
  * The columns of the table are passed as node fields of the tree.
- */
+*/
 
 #ifndef vtkTableToTreeFilter_h
 #define vtkTableToTreeFilter_h
@@ -39,21 +39,27 @@ class VTKINFOVISCORE_EXPORT vtkTableToTreeFilter : public vtkTreeAlgorithm
 {
 public:
   static vtkTableToTreeFilter* New();
-  vtkTypeMacro(vtkTableToTreeFilter, vtkTreeAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkTableToTreeFilter,vtkTreeAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
 protected:
   vtkTableToTreeFilter();
-  ~vtkTableToTreeFilter() override;
+  ~vtkTableToTreeFilter();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(
+    vtkInformation*,
+    vtkInformationVector**,
+    vtkInformationVector*);
 
-  int FillOutputPortInformation(int vtkNotUsed(port), vtkInformation* info) override;
-  int FillInputPortInformation(int vtkNotUsed(port), vtkInformation* info) override;
+  int FillOutputPortInformation(
+    int vtkNotUsed(port), vtkInformation* info);
+  int FillInputPortInformation(
+    int vtkNotUsed(port), vtkInformation* info);
 
 private:
-  vtkTableToTreeFilter(const vtkTableToTreeFilter&) = delete;
-  void operator=(const vtkTableToTreeFilter&) = delete;
+  vtkTableToTreeFilter(const vtkTableToTreeFilter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTableToTreeFilter&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

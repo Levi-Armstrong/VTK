@@ -23,13 +23,13 @@
  *
  * @sa
  * vtkAbstractMapper3D vtkMapper vtkPolyDataMapper vtkVolumeMapper
- */
+*/
 
 #ifndef vtkAbstractMapper_h
 #define vtkAbstractMapper_h
 
-#include "vtkAlgorithm.h"
 #include "vtkRenderingCoreModule.h" // For export macro
+#include "vtkAlgorithm.h"
 
 #define VTK_SCALAR_MODE_DEFAULT 0
 #define VTK_SCALAR_MODE_USE_POINT_DATA 1
@@ -53,25 +53,25 @@ class VTKRENDERINGCORE_EXPORT vtkAbstractMapper : public vtkAlgorithm
 {
 public:
   vtkTypeMacro(vtkAbstractMapper, vtkAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Override Modifiedtime as we have added Clipping planes
    */
-  vtkMTimeType GetMTime() override;
+  virtual vtkMTimeType GetMTime();
 
   /**
    * Release any graphics resources that are being consumed by this mapper.
    * The parameter window could be used to determine which graphic
    * resources to release.
    */
-  virtual void ReleaseGraphicsResources(vtkWindow*) {}
+  virtual void ReleaseGraphicsResources(vtkWindow *) {}
 
   //@{
   /**
    * Get the time required to draw the geometry last time it was rendered
    */
-  vtkGetMacro(TimeToDraw, double);
+  vtkGetMacro( TimeToDraw, double );
   //@}
 
   //@{
@@ -79,8 +79,8 @@ public:
    * Specify clipping planes to be applied when the data is mapped
    * (at most 6 clipping planes can be specified).
    */
-  void AddClippingPlane(vtkPlane* plane);
-  void RemoveClippingPlane(vtkPlane* plane);
+  void AddClippingPlane(vtkPlane *plane);
+  void RemoveClippingPlane(vtkPlane *plane);
   void RemoveAllClippingPlanes();
   //@}
 
@@ -97,12 +97,12 @@ public:
    * An alternative way to set clipping planes: use up to six planes found
    * in the supplied instance of the implicit function vtkPlanes.
    */
-  void SetClippingPlanes(vtkPlanes* planes);
+  void SetClippingPlanes(vtkPlanes *planes);
 
   /**
    * Make a shallow copy of this mapper.
    */
-  virtual void ShallowCopy(vtkAbstractMapper* m);
+  void ShallowCopy(vtkAbstractMapper *m);
 
   /**
    * Internal helper function for getting the active scalars. The scalar
@@ -112,8 +112,9 @@ public:
    * The arrayAccessMode is used to indicate how to retrieve the scalars from
    * field data, per id or per name (if the scalarMode indicates that).
    */
-  static vtkDataArray* GetScalars(vtkDataSet* input, int scalarMode, int arrayAccessMode,
-    int arrayId, const char* arrayName, int& cellFlag);
+  static vtkDataArray *GetScalars(vtkDataSet *input, int scalarMode,
+                                  int arrayAccessMode, int arrayId,
+                                  const char *arrayName, int& cellFlag);
 
   /**
    * Internal helper function for getting the active scalars as an
@@ -124,26 +125,22 @@ public:
    * indicate how to retrieve the scalars from field data, per id or
    * per name (if the scalarMode indicates that).
    */
-  static vtkAbstractArray* GetAbstractScalars(vtkDataSet* input, int scalarMode,
-    int arrayAccessMode, int arrayId, const char* arrayName, int& cellFlag);
-
-  /**
-   * Get the number of clipping planes.
-   */
-  int GetNumberOfClippingPlanes();
+  static vtkAbstractArray *GetAbstractScalars(vtkDataSet *input, int scalarMode,
+                                              int arrayAccessMode, int arrayId,
+                                              const char *arrayName, int& cellFlag);
 
 protected:
   vtkAbstractMapper();
-  ~vtkAbstractMapper() override;
+  ~vtkAbstractMapper();
 
-  vtkTimerLog* Timer;
+  vtkTimerLog *Timer;
   double TimeToDraw;
-  vtkWindow* LastWindow; // Window used for the previous render
-  vtkPlaneCollection* ClippingPlanes;
+  vtkWindow *LastWindow;   // Window used for the previous render
+  vtkPlaneCollection *ClippingPlanes;
 
 private:
-  vtkAbstractMapper(const vtkAbstractMapper&) = delete;
-  void operator=(const vtkAbstractMapper&) = delete;
+  vtkAbstractMapper(const vtkAbstractMapper&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkAbstractMapper&) VTK_DELETE_FUNCTION;
 };
 
 #endif

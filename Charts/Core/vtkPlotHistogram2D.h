@@ -19,15 +19,15 @@
  *
  *
  *
- */
+*/
 
 #ifndef vtkPlotHistogram2D_h
 #define vtkPlotHistogram2D_h
 
 #include "vtkChartsCoreModule.h" // For export macro
 #include "vtkPlot.h"
-#include "vtkRect.h"         // Needed for vtkRectf
-#include "vtkSmartPointer.h" // Needed for SP ivars
+#include "vtkSmartPointer.h"  // Needed for SP ivars
+#include "vtkRect.h"          // Needed for vtkRectf
 
 class vtkImageData;
 class vtkScalarsToColors;
@@ -36,51 +36,51 @@ class VTKCHARTSCORE_EXPORT vtkPlotHistogram2D : public vtkPlot
 {
 public:
   vtkTypeMacro(vtkPlotHistogram2D, vtkPlot);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  virtual void PrintSelf(ostream &os, vtkIndent indent);
 
   /**
    * Creates a new object.
    */
-  static vtkPlotHistogram2D* New();
+  static vtkPlotHistogram2D *New();
 
   /**
    * Perform any updates to the item that may be necessary before rendering.
    * The scene should take care of calling this on all items before their
    * Paint function is invoked.
    */
-  void Update() override;
+  virtual void Update();
 
   /**
    * Paint event for the item, called whenever it needs to be drawn.
    */
-  bool Paint(vtkContext2D* painter) override;
+  virtual bool Paint(vtkContext2D *painter);
 
   /**
    * Set the input, we are expecting a vtkImageData with just one component,
    * this would normally be a float or a double. It will be passed to the other
    * functions as a double to generate a color.
    */
-  virtual void SetInputData(vtkImageData* data, vtkIdType z = 0);
-  void SetInputData(vtkTable*) override {}
-  void SetInputData(vtkTable*, const vtkStdString&, const vtkStdString&) override {}
+  virtual void SetInputData(vtkImageData *data, vtkIdType z = 0);
+  virtual void SetInputData(vtkTable*) { }
+  virtual void SetInputData(vtkTable*, const vtkStdString&, const vtkStdString&) { }
 
   /**
    * Get the input table used by the plot.
    */
-  vtkImageData* GetInputImageData();
+  vtkImageData * GetInputImageData();
 
   /**
    * Set the color transfer function that will be used to generate the 2D
    * histogram.
    */
-  void SetTransferFunction(vtkScalarsToColors* transfer);
+  void SetTransferFunction(vtkScalarsToColors *transfer);
 
   /**
    * Get the color transfer function that is used to generate the histogram.
    */
-  vtkScalarsToColors* GetTransferFunction();
+  vtkScalarsToColors * GetTransferFunction();
 
-  void GetBounds(double bounds[4]) override;
+  virtual void GetBounds(double bounds[4]);
 
   virtual void SetPosition(const vtkRectf& pos);
   virtual vtkRectf GetPosition();
@@ -103,8 +103,9 @@ public:
    * Any other characters or unrecognized format tags are printed in the
    * tooltip label verbatim.
    */
-  vtkStdString GetTooltipLabel(
-    const vtkVector2d& plotPos, vtkIdType seriesIndex, vtkIdType segmentIndex) override;
+  virtual vtkStdString GetTooltipLabel(const vtkVector2d &plotPos,
+                                       vtkIdType seriesIndex,
+                                       vtkIdType segmentIndex);
 
   /**
    * Function to query a plot for the nearest point to the specified coordinate.
@@ -114,21 +115,13 @@ public:
    * The referent of "location" is set to the x and y integer indices of the
    * histogram cell.
    */
-  vtkIdType GetNearestPoint(const vtkVector2f& point, const vtkVector2f& tolerance,
-    vtkVector2f* location,
-#ifndef VTK_LEGACY_REMOVE
-    vtkIdType* segmentId) override;
-#else
-    vtkIdType* segmentId = nullptr) override;
-#endif // VTK_LEGACY_REMOVE
-
-#ifndef VTK_LEGACY_REMOVE
-  using vtkPlot::GetNearestPoint;
-#endif // VTK_LEGACY_REMOVE
+  virtual vtkIdType GetNearestPoint(const vtkVector2f& point,
+                                    const vtkVector2f& tolerance,
+                                    vtkVector2f* location);
 
 protected:
   vtkPlotHistogram2D();
-  ~vtkPlotHistogram2D() override;
+  ~vtkPlotHistogram2D();
 
   /**
    * Where all the magic happens...
@@ -141,8 +134,9 @@ protected:
   vtkRectf Position;
 
 private:
-  vtkPlotHistogram2D(const vtkPlotHistogram2D&) = delete;
-  void operator=(const vtkPlotHistogram2D&) = delete;
+  vtkPlotHistogram2D(const vtkPlotHistogram2D &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPlotHistogram2D &) VTK_DELETE_FUNCTION;
+
 };
 
-#endif // vtkPlotHistogram2D_h
+#endif //vtkPlotHistogram2D_h

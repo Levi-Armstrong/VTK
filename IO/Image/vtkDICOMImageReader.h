@@ -32,7 +32,7 @@
  *
  * @sa
  * vtkBMPReader vtkPNMReader vtkTIFFReader
- */
+*/
 
 #ifndef vtkDICOMImageReader_h
 #define vtkDICOMImageReader_h
@@ -46,31 +46,31 @@ class DICOMAppHelper;
 
 class VTKIOIMAGE_EXPORT vtkDICOMImageReader : public vtkImageReader2
 {
-public:
+ public:
   //@{
   /**
    * Static method for construction.
    */
-  static vtkDICOMImageReader* New();
-  vtkTypeMacro(vtkDICOMImageReader, vtkImageReader2);
+  static vtkDICOMImageReader *New();
+  vtkTypeMacro(vtkDICOMImageReader,vtkImageReader2);
   //@}
 
   /**
    * Prints the ivars.
    */
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
    * Set the filename for the file to read. If this method is used,
    * the reader will only read a single file.
    */
-  void SetFileName(const char* fn) override
+  void SetFileName(const char* fn)
   {
-    delete[] this->DirectoryName;
-    delete[] this->FileName;
-    this->DirectoryName = nullptr;
-    this->FileName = nullptr;
+    delete [] this->DirectoryName;
+    delete [] this->FileName;
+    this->DirectoryName = NULL;
+    this->FileName = NULL;
     this->vtkImageReader2::SetFileName(fn);
   }
   //@}
@@ -99,7 +99,7 @@ public:
    * thickness. If there is more than one slice, it is set to the distance
    * between the first two slices.
    */
-  double* GetPixelSpacing() VTK_SIZEHINT(3);
+  double* GetPixelSpacing();
 
   /**
    * Returns the image width.
@@ -116,14 +116,14 @@ public:
    * image (upper left hand corner) of the last image processed by the
    * DICOMParser
    */
-  float* GetImagePositionPatient() VTK_SIZEHINT(3);
+  float* GetImagePositionPatient();
 
   /**
    * Get the (DICOM) directions cosines. It consist of the components
    * of the first two vectors. The third vector needs to be computed
    * to form an orthonormal basis.
    */
-  float* GetImageOrientationPatient() VTK_SIZEHINT(6);
+  float* GetImageOrientationPatient();
 
   /**
    * Get the number of bits allocated for each pixel in the file.
@@ -181,17 +181,23 @@ public:
   //
   // Can I read the file?
   //
-  int CanReadFile(const char* fname) override;
+  virtual int CanReadFile(const char* fname);
 
   //
   // What file extensions are supported?
   //
-  const char* GetFileExtensions() override { return ".dcm"; }
+  virtual const char* GetFileExtensions()
+  {
+    return ".dcm";
+  }
 
   /**
    * Return a descriptive name for the file format that might be useful in a GUI.
    */
-  const char* GetDescriptiveName() override { return "DICOM"; }
+  virtual const char* GetDescriptiveName()
+  {
+    return "DICOM";
+  }
 
 protected:
   //
@@ -199,8 +205,8 @@ protected:
   //
   void SetupOutputInformation(int num_slices);
 
-  void ExecuteInformation() override;
-  void ExecuteDataWithInformation(vtkDataObject* out, vtkInformation* outInfo) override;
+  virtual void ExecuteInformation();
+  virtual void ExecuteDataWithInformation(vtkDataObject *out, vtkInformation *outInfo);
 
   //
   // Constructor
@@ -210,7 +216,7 @@ protected:
   //
   // Destructor
   //
-  ~vtkDICOMImageReader() override;
+  virtual ~vtkDICOMImageReader();
 
   //
   // Instance of the parser used to parse the file.
@@ -236,10 +242,10 @@ protected:
   // DICOMFileNames accessor methods for subclasses:
   int GetNumberOfDICOMFileNames();
   const char* GetDICOMFileName(int index);
-
 private:
-  vtkDICOMImageReader(const vtkDICOMImageReader&) = delete;
-  void operator=(const vtkDICOMImageReader&) = delete;
+  vtkDICOMImageReader(const vtkDICOMImageReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkDICOMImageReader&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif

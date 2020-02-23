@@ -13,8 +13,8 @@
 
 =========================================================================*/
 #include "vtkParametricPseudosphere.h"
-#include "vtkMath.h"
 #include "vtkObjectFactory.h"
+#include "vtkMath.h"
 
 vtkStandardNewMacro(vtkParametricPseudosphere);
 //----------------------------------------------------------------------------//
@@ -22,20 +22,22 @@ vtkParametricPseudosphere::vtkParametricPseudosphere()
 {
   // Preset triangulation parameters
   this->MinimumU = -5.0;
-  this->MaximumU = 5.0;
   this->MinimumV = -vtkMath::Pi();
+  this->MaximumU = 5.0;
   this->MaximumV = vtkMath::Pi();
 
   this->JoinU = 0;
   this->JoinV = 1;
   this->TwistU = 0;
   this->TwistV = 0;
-  this->ClockwiseOrdering = 0;
+  this->ClockwiseOrdering = 1;
   this->DerivativesAvailable = 1;
 }
 
 //----------------------------------------------------------------------------//
-vtkParametricPseudosphere::~vtkParametricPseudosphere() = default;
+vtkParametricPseudosphere::~vtkParametricPseudosphere()
+{
+}
 
 //----------------------------------------------------------------------------//
 void vtkParametricPseudosphere::Evaluate(double uvw[3], double Pt[3], double Duvw[9])
@@ -46,35 +48,35 @@ void vtkParametricPseudosphere::Evaluate(double uvw[3], double Pt[3], double Duv
 
   // We're only going to need the u and v partial derivatives.
   // The w partial derivatives are not needed.
-  double* Du = Duvw;
-  double* Dv = Duvw + 3;
+  double *Du = Duvw;
+  double *Dv = Duvw + 3;
 
   // Instead of a bunch of calls to the trig library,
   // just call it once and store the results.
-  double cosv = cos(v);
-  double sinv = sin(v);
-  double sechu = 1. / cosh(u);
-  double tanhu = tanh(u);
+  double cosv   = cos(v);
+  double sinv   = sin(v);
+  double sechu  = 1./cosh(u);
+  double tanhu  = tanh(u);
 
   // Location of the point. This parametrization was taken from:
   // http://mathworld.wolfram.com/Pseudosphere.html
-  Pt[0] = sechu * cosv;
-  Pt[1] = sechu * sinv;
+  Pt[0] = sechu*cosv;
+  Pt[1] = sechu*sinv;
   Pt[2] = u - tanhu;
 
   // The derivative with respect to u:
-  Du[0] = -sechu * tanhu * cosv;
-  Du[1] = -sechu * tanhu * sinv;
-  Du[2] = 1. - sechu * sechu;
+  Du[0] = -sechu*tanhu*cosv;
+  Du[1] = -sechu*tanhu*sinv;
+  Du[2] = 1. - sechu*sechu;
 
   // The derivative with respect to v:
-  Dv[0] = -sechu * sinv;
-  Dv[1] = sechu * cosv;
+  Dv[0] = -sechu*sinv;
+  Dv[1] = sechu*cosv;
   Dv[2] = 0.;
 }
 
 //----------------------------------------------------------------------------//
-double vtkParametricPseudosphere::EvaluateScalar(double*, double*, double*)
+double vtkParametricPseudosphere::EvaluateScalar(double *, double *, double *)
 {
   return 0;
 }
@@ -82,5 +84,5 @@ double vtkParametricPseudosphere::EvaluateScalar(double*, double*, double*)
 //----------------------------------------------------------------------------//
 void vtkParametricPseudosphere::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 }

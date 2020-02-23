@@ -13,23 +13,23 @@
 
 =========================================================================*/
 
-#include "vtkColorTransferControlPointsItem.h"
 #include "vtkBrush.h"
 #include "vtkCallbackCommand.h"
-#include "vtkColorTransferFunction.h"
 #include "vtkContext2D.h"
-#include "vtkContextScene.h"
 #include "vtkIdTypeArray.h"
+#include "vtkColorTransferFunction.h"
+#include "vtkColorTransferControlPointsItem.h"
 #include "vtkObjectFactory.h"
 #include "vtkPen.h"
 #include "vtkPoints2D.h"
+#include "vtkContextScene.h"
 
 // to handle mouse.GetButton
 #include "vtkContextMouseEvent.h"
 
-#include <algorithm>
 #include <cassert>
 #include <limits>
+#include <algorithm>
 
 //-----------------------------------------------------------------------------
 vtkStandardNewMacro(vtkColorTransferControlPointsItem);
@@ -37,7 +37,7 @@ vtkStandardNewMacro(vtkColorTransferControlPointsItem);
 //-----------------------------------------------------------------------------
 vtkColorTransferControlPointsItem::vtkColorTransferControlPointsItem()
 {
-  this->ColorTransferFunction = nullptr;
+  this->ColorTransferFunction = 0;
   this->ColorFill = false;
 }
 
@@ -48,12 +48,12 @@ vtkColorTransferControlPointsItem::~vtkColorTransferControlPointsItem()
   {
     this->ColorTransferFunction->RemoveObserver(this->Callback);
     this->ColorTransferFunction->Delete();
-    this->ColorTransferFunction = nullptr;
+    this->ColorTransferFunction = 0;
   }
 }
 
 //-----------------------------------------------------------------------------
-void vtkColorTransferControlPointsItem::PrintSelf(ostream& os, vtkIndent indent)
+void vtkColorTransferControlPointsItem::PrintSelf(ostream &os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
   os << indent << "ColorTransferFunction: ";
@@ -123,19 +123,18 @@ void vtkColorTransferControlPointsItem::DrawPoint(vtkContext2D* painter, vtkIdTy
 }
 
 //-----------------------------------------------------------------------------
-vtkIdType vtkColorTransferControlPointsItem::GetNumberOfPoints() const
+vtkIdType vtkColorTransferControlPointsItem::GetNumberOfPoints()const
 {
-  return this->ColorTransferFunction
-    ? static_cast<vtkIdType>(this->ColorTransferFunction->GetSize())
-    : 0;
+  return this->ColorTransferFunction ?
+    static_cast<vtkIdType>(this->ColorTransferFunction->GetSize()) : 0;
 }
 
 //-----------------------------------------------------------------------------
-void vtkColorTransferControlPointsItem::GetControlPoint(vtkIdType index, double* pos) const
+void vtkColorTransferControlPointsItem::GetControlPoint(vtkIdType index, double* pos)const
 {
   double xrgbms[6];
-  vtkColorTransferFunction* thisTF =
-    const_cast<vtkColorTransferFunction*>(this->ColorTransferFunction);
+  vtkColorTransferFunction* thisTF = const_cast<vtkColorTransferFunction*>(
+    this->ColorTransferFunction);
 
   if (thisTF)
   {
@@ -152,7 +151,9 @@ void vtkColorTransferControlPointsItem::SetControlPoint(vtkIdType index, double*
 {
   double xrgbms[6];
   this->ColorTransferFunction->GetNodeValue(index, xrgbms);
-  if (newPos[0] != xrgbms[0] || newPos[2] != xrgbms[1] || newPos[3] != xrgbms[2])
+  if (newPos[0] != xrgbms[0] ||
+      newPos[2] != xrgbms[1] ||
+      newPos[3] != xrgbms[2])
   {
     xrgbms[0] = newPos[0];
     xrgbms[4] = newPos[2];
@@ -200,9 +201,10 @@ vtkIdType vtkColorTransferControlPointsItem::AddPoint(double* newPos)
   this->StartChanges();
 
   double posX = newPos[0];
-  double rgb[3] = { 0., 0., 0. };
+  double rgb[3] = {0., 0., 0.};
   this->ColorTransferFunction->GetColor(posX, rgb);
-  vtkIdType addedPoint = this->ColorTransferFunction->AddRGBPoint(posX, rgb[0], rgb[1], rgb[2]);
+  vtkIdType addedPoint =
+    this->ColorTransferFunction->AddRGBPoint(posX, rgb[0], rgb[1], rgb[2]);
   this->vtkControlPointsItem::AddPointId(addedPoint);
 
   this->EndChanges();
@@ -212,8 +214,8 @@ vtkIdType vtkColorTransferControlPointsItem::AddPoint(double* newPos)
 //-----------------------------------------------------------------------------
 vtkIdType vtkColorTransferControlPointsItem::RemovePoint(double* currentPoint)
 {
-  if (!this->ColorTransferFunction ||
-    !this->IsPointRemovable(this->GetControlPointId(currentPoint)))
+  if (!this->ColorTransferFunction || !this->IsPointRemovable(
+    this->GetControlPointId(currentPoint)))
   {
     return -1;
   }
@@ -224,7 +226,8 @@ vtkIdType vtkColorTransferControlPointsItem::RemovePoint(double* currentPoint)
   vtkIdType expectedPoint =
 #endif
     this->vtkControlPointsItem::RemovePoint(currentPoint);
-  vtkIdType removedPoint = this->ColorTransferFunction->RemovePoint(currentPoint[0]);
+  vtkIdType removedPoint =
+    this->ColorTransferFunction->RemovePoint(currentPoint[0]);
   assert(removedPoint == expectedPoint);
 
   this->EndChanges();
@@ -236,15 +239,21 @@ void vtkColorTransferControlPointsItem::ComputeBounds(double* bounds)
 {
   if (this->ColorTransferFunction)
   {
-    this->ColorTransferFunction->GetRange(bounds);
+    const double* range = this->ColorTransferFunction->GetRange();
+    bounds[0] = range[0];
+    bounds[1] = range[1];
     bounds[2] = 0.5;
     bounds[3] = 0.5;
-
-    this->TransformDataToScreen(bounds[0], bounds[2], bounds[0], bounds[2]);
-    this->TransformDataToScreen(bounds[1], bounds[3], bounds[1], bounds[3]);
   }
   else
   {
     this->Superclass::ComputeBounds(bounds);
   }
+}
+
+//-----------------------------------------------------------------------------
+bool vtkColorTransferControlPointsItem::UsingLogScale()
+{
+  return (this->ColorTransferFunction?
+    (this->ColorTransferFunction->UsingLogScale() != 0) : false);
 }

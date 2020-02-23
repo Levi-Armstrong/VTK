@@ -7,18 +7,25 @@
  * statement of authorship are reproduced on all copies.
  */
 // QT includes
-#include "StatsView.h"
 #include <QApplication>
+#if QT_VERSION < 0x050000
+#include <QCleanlooksStyle>
+#endif
+#include "StatsView.h"
 
 extern int qInitResources_icons();
 
-int main(int argc, char** argv)
+int main( int argc, char** argv )
 {
 
   // QT Stuff
-  QApplication app(argc, argv);
+  QApplication app( argc, argv );
 
+#if QT_VERSION >= 0x050000
   QApplication::setStyle("fusion");
+#else
+  QApplication::setStyle(new QCleanlooksStyle);
+#endif
 
   qInitResources_icons();
 

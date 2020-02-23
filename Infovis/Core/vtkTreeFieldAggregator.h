@@ -30,7 +30,7 @@
  * you may tell the filter to create a new array, assuming that the size
  * of each leaf vertex is 1.  You may optionally set a flag to first take the
  * log of all leaf values before aggregating.
- */
+*/
 
 #ifndef vtkTreeFieldAggregator_h
 #define vtkTreeFieldAggregator_h
@@ -44,10 +44,10 @@ class vtkTree;
 class VTKINFOVISCORE_EXPORT vtkTreeFieldAggregator : public vtkTreeAlgorithm
 {
 public:
-  static vtkTreeFieldAggregator* New();
+  static vtkTreeFieldAggregator *New();
 
-  vtkTypeMacro(vtkTreeFieldAggregator, vtkTreeAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkTreeFieldAggregator,vtkTreeAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -86,17 +86,17 @@ public:
 
 protected:
   vtkTreeFieldAggregator();
-  ~vtkTreeFieldAggregator() override;
+  ~vtkTreeFieldAggregator();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 
 private:
   char* Field;
   bool LeafVertexUnitSize;
   bool LogScale;
   double MinValue;
-  vtkTreeFieldAggregator(const vtkTreeFieldAggregator&) = delete;
-  void operator=(const vtkTreeFieldAggregator&) = delete;
+  vtkTreeFieldAggregator(const vtkTreeFieldAggregator&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTreeFieldAggregator&) VTK_DELETE_FUNCTION;
   double GetDoubleValue(vtkAbstractArray* arr, vtkIdType id);
   static void SetDoubleValue(vtkAbstractArray* arr, vtkIdType id, double value);
 };

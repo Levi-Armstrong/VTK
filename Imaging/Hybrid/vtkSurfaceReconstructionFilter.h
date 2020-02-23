@@ -23,19 +23,19 @@
  * neighborhood size and sample spacing should give reasonable results for
  * most uses but can be set if desired. This procedure is based on the PhD
  * work of Hugues Hoppe: http://www.research.microsoft.com/~hoppe
- */
+*/
 
 #ifndef vtkSurfaceReconstructionFilter_h
 #define vtkSurfaceReconstructionFilter_h
 
-#include "vtkImageAlgorithm.h"
 #include "vtkImagingHybridModule.h" // For export macro
+#include "vtkImageAlgorithm.h"
 
 class VTKIMAGINGHYBRID_EXPORT vtkSurfaceReconstructionFilter : public vtkImageAlgorithm
 {
 public:
-  vtkTypeMacro(vtkSurfaceReconstructionFilter, vtkImageAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkSurfaceReconstructionFilter,vtkImageAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Construct with NeighborhoodSize=20.
@@ -51,8 +51,8 @@ public:
    * some surfaces. Higher values cause the algorithm to take longer. Higher
    * values will cause errors on sharp boundaries.
    */
-  vtkGetMacro(NeighborhoodSize, int);
-  vtkSetMacro(NeighborhoodSize, int);
+  vtkGetMacro(NeighborhoodSize,int);
+  vtkSetMacro(NeighborhoodSize,int);
   //@}
 
   //@{
@@ -60,25 +60,30 @@ public:
    * Specify the spacing of the 3D sampling grid. If not set, a
    * reasonable guess will be made.
    */
-  vtkGetMacro(SampleSpacing, double);
-  vtkSetMacro(SampleSpacing, double);
+  vtkGetMacro(SampleSpacing,double);
+  vtkSetMacro(SampleSpacing,double);
   //@}
 
 protected:
   vtkSurfaceReconstructionFilter();
-  ~vtkSurfaceReconstructionFilter() override {}
+  ~vtkSurfaceReconstructionFilter() {}
 
-  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int RequestInformation (vtkInformation *,
+                                  vtkInformationVector **,
+                                  vtkInformationVector *);
+  virtual int RequestData (vtkInformation *,
+                           vtkInformationVector **,
+                           vtkInformationVector *);
 
   int NeighborhoodSize;
   double SampleSpacing;
 
-  int FillInputPortInformation(int, vtkInformation*) override;
+  virtual int FillInputPortInformation(int, vtkInformation*);
 
 private:
-  vtkSurfaceReconstructionFilter(const vtkSurfaceReconstructionFilter&) = delete;
-  void operator=(const vtkSurfaceReconstructionFilter&) = delete;
+  vtkSurfaceReconstructionFilter(const vtkSurfaceReconstructionFilter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkSurfaceReconstructionFilter&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

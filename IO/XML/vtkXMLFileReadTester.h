@@ -19,7 +19,7 @@
  * vtkXMLFileReadTester reads the smallest part of a file necessary to
  * determine whether it is a VTK XML file.  If so, it extracts the
  * file type and version number.
- */
+*/
 
 #ifndef vtkXMLFileReadTester_h
 #define vtkXMLFileReadTester_h
@@ -27,11 +27,11 @@
 #include "vtkIOXMLModule.h" // For export macro
 #include "vtkXMLParser.h"
 
-class VTKIOXML_EXPORT vtkXMLFileReadTester : public vtkXMLParser
+class VTKIOXML_EXPORT vtkXMLFileReadTester: public vtkXMLParser
 {
 public:
-  vtkTypeMacro(vtkXMLFileReadTester, vtkXMLParser);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkXMLFileReadTester,vtkXMLParser);
+  void PrintSelf(ostream& os, vtkIndent indent);
   static vtkXMLFileReadTester* New();
 
   /**
@@ -42,8 +42,16 @@ public:
 
   //@{
   /**
+   * Get/Set the name of the file tested by TestReadFile().
+   */
+  vtkSetStringMacro(FileName);
+  vtkGetStringMacro(FileName);
+  //@}
+
+  //@{
+  /**
    * Get the data type of the XML file tested.  If the file could not
-   * be read, returns nullptr.
+   * be read, returns NULL.
    */
   vtkGetStringMacro(FileDataType);
   //@}
@@ -51,23 +59,24 @@ public:
   //@{
   /**
    * Get the file version of the XML file tested.  If the file could not
-   * be read, returns nullptr.
+   * be read, returns NULL.
    */
   vtkGetStringMacro(FileVersion);
   //@}
 
 protected:
   vtkXMLFileReadTester();
-  ~vtkXMLFileReadTester() override;
+  ~vtkXMLFileReadTester();
 
-  void StartElement(const char* name, const char** atts) override;
-  int ParsingComplete() override;
-  void ReportStrayAttribute(const char*, const char*, const char*) override {}
-  void ReportMissingAttribute(const char*, const char*) override {}
-  void ReportBadAttribute(const char*, const char*, const char*) override {}
-  void ReportUnknownElement(const char*) override {}
-  void ReportXmlParseError() override {}
+  void StartElement(const char* name, const char** atts);
+  int ParsingComplete();
+  void ReportStrayAttribute(const char*, const char*, const char*) {}
+  void ReportMissingAttribute(const char*, const char*) {}
+  void ReportBadAttribute(const char*, const char*, const char*) {}
+  void ReportUnknownElement(const char*) {}
+  void ReportXmlParseError() {}
 
+  char* FileName;
   char* FileDataType;
   char* FileVersion;
   int Done;
@@ -76,8 +85,8 @@ protected:
   vtkSetStringMacro(FileVersion);
 
 private:
-  vtkXMLFileReadTester(const vtkXMLFileReadTester&) = delete;
-  void operator=(const vtkXMLFileReadTester&) = delete;
+  vtkXMLFileReadTester(const vtkXMLFileReadTester&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkXMLFileReadTester&) VTK_DELETE_FUNCTION;
 };
 
 #endif

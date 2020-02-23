@@ -31,14 +31,13 @@
 
 vtkStandardNewMacro(vtkThresholdTable);
 
-vtkThresholdTable::vtkThresholdTable()
-  : MinValue(0)
-  , MaxValue(VTK_INT_MAX)
-  , Mode(0)
+vtkThresholdTable::vtkThresholdTable() : MinValue(0), MaxValue(VTK_INT_MAX), Mode(0)
 {
 }
 
-vtkThresholdTable::~vtkThresholdTable() = default;
+vtkThresholdTable::~vtkThresholdTable()
+{
+}
 
 void vtkThresholdTable::PrintSelf(ostream& os, vtkIndent indent)
 {
@@ -73,8 +72,7 @@ static bool vtkThresholdTableCompare(vtkVariant a, vtkVariant b)
 }
 
 template <typename iterT>
-void vtkThresholdTableThresholdRows(
-  iterT* it, vtkTable* input, vtkTable* output, vtkVariant min, vtkVariant max, int mode)
+void vtkThresholdTableThresholdRows(iterT* it, vtkTable* input, vtkTable* output, vtkVariant min, vtkVariant max, int mode)
 {
   vtkIdType maxInd = it->GetNumberOfValues();
   for (vtkIdType i = 0; i < maxInd; i++)
@@ -107,8 +105,8 @@ void vtkThresholdTableThresholdRows(
 
 void vtkThresholdTable::ThresholdBetween(vtkVariant lower, vtkVariant upper)
 {
-  if (this->MinValue != lower || this->MaxValue != upper ||
-    this->Mode != vtkThresholdTable::ACCEPT_BETWEEN)
+  if ( this->MinValue != lower || this->MaxValue != upper ||
+       this->Mode != vtkThresholdTable::ACCEPT_BETWEEN)
   {
     this->MinValue = lower;
     this->MaxValue = upper;
@@ -118,10 +116,12 @@ void vtkThresholdTable::ThresholdBetween(vtkVariant lower, vtkVariant upper)
 }
 
 int vtkThresholdTable::RequestData(
-  vtkInformation*, vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+  vtkInformation*,
+  vtkInformationVector** inputVector,
+  vtkInformationVector* outputVector)
 {
   vtkAbstractArray* arr = this->GetInputAbstractArrayToProcess(0, inputVector);
-  if (arr == nullptr)
+  if (arr == NULL)
   {
     vtkErrorMacro("An input array must be specified.");
     return 0;
@@ -143,10 +143,13 @@ int vtkThresholdTable::RequestData(
   vtkArrayIterator* iter = arr->NewIterator();
   switch (arr->GetDataType())
   {
-    vtkArrayIteratorTemplateMacro(vtkThresholdTableThresholdRows(
-      static_cast<VTK_TT*>(iter), input, output, this->MinValue, this->MaxValue, this->Mode));
+    vtkArrayIteratorTemplateMacro(
+      vtkThresholdTableThresholdRows(static_cast<VTK_TT*>(iter), input, output,
+        this->MinValue, this->MaxValue, this->Mode));
   }
   iter->Delete();
 
   return 1;
 }
+
+

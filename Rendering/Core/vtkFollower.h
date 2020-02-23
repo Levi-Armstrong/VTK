@@ -27,26 +27,26 @@
  *
  * @sa
  * vtkActor vtkCamera vtkAxisFollower vtkProp3DFollower
- */
+*/
 
 #ifndef vtkFollower_h
 #define vtkFollower_h
 
-#include "vtkActor.h"
 #include "vtkRenderingCoreModule.h" // For export macro
+#include "vtkActor.h"
 
 class vtkCamera;
 
 class VTKRENDERINGCORE_EXPORT vtkFollower : public vtkActor
 {
-public:
-  vtkTypeMacro(vtkFollower, vtkActor);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+ public:
+  vtkTypeMacro(vtkFollower,vtkActor);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Creates a follower with no camera set
    */
-  static vtkFollower* New();
+  static vtkFollower *New();
 
   //@{
   /**
@@ -63,48 +63,48 @@ public:
    * property, texture map and then mapper. If a property hasn't been
    * assigned, then the actor will create one automatically.
    */
-  int RenderOpaqueGeometry(vtkViewport* viewport) override;
-  int RenderTranslucentPolygonalGeometry(vtkViewport* viewport) override;
-  virtual void Render(vtkRenderer* ren);
+  virtual int RenderOpaqueGeometry(vtkViewport *viewport);
+  virtual int RenderTranslucentPolygonalGeometry(vtkViewport *viewport);
+  virtual void Render(vtkRenderer *ren);
   //@}
 
   /**
    * Does this prop have some translucent polygonal geometry?
    */
-  vtkTypeBool HasTranslucentPolygonalGeometry() override;
+  virtual int HasTranslucentPolygonalGeometry();
 
   /**
    * Release any graphics resources associated with this vtkProp3DFollower.
    */
-  void ReleaseGraphicsResources(vtkWindow*) override;
+  virtual void ReleaseGraphicsResources(vtkWindow*);
 
   /**
    * Generate the matrix based on ivars. This method overloads its superclasses
    * ComputeMatrix() method due to the special vtkFollower matrix operations.
    */
-  void ComputeMatrix() override;
+  virtual void ComputeMatrix();
 
   /**
    * Shallow copy of a follower. Overloads the virtual vtkProp method.
    */
-  void ShallowCopy(vtkProp* prop) override;
+  void ShallowCopy(vtkProp *prop);
 
 protected:
   vtkFollower();
-  ~vtkFollower() override;
+  ~vtkFollower();
 
-  vtkCamera* Camera;
-  vtkActor* Device;
-
-  // Internal matrices to avoid New/Delete for performance reasons
-  vtkMatrix4x4* InternalMatrix;
+  vtkCamera *Camera;
+  vtkActor  *Device;
 
 private:
-  vtkFollower(const vtkFollower&) = delete;
-  void operator=(const vtkFollower&) = delete;
+  vtkFollower(const vtkFollower&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkFollower&) VTK_DELETE_FUNCTION;
 
   // hide the two parameter Render() method from the user and the compiler.
-  void Render(vtkRenderer*, vtkMapper*) override {}
+  virtual void Render(vtkRenderer *, vtkMapper *) {}
+
+  //Internal matrices to avoid New/Delete for performance reasons
+  vtkMatrix4x4 *InternalMatrix;
 };
 
 #endif

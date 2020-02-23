@@ -34,16 +34,23 @@
  * Companion", ISBN 0-201-50868, 1989 for details on writing shaders.
  * vtkRIBProperty specifies the declarations and parameter settings for
  * custom shaders.
+ * Tcl Example: generate a rib file for the current rendering.
+ * vtkRIBExporter myRIB
+ *   myRIB SetInput $renWin
+ *   myRIB SetFilePrefix mine
+ *   myRIB Write
+ * This will create a file mine.rib. After running this file through
+ * a Renderman renderer a file mine.tif will contain the rendered image.
  *
  * @sa
  * vtkExporter vtkRIBProperty vtkRIBLight
- */
+*/
 
 #ifndef vtkRIBExporter_h
 #define vtkRIBExporter_h
 
-#include "vtkExporter.h"
 #include "vtkIOExportModule.h" // For export macro
+#include "vtkExporter.h"
 
 class vtkActor;
 class vtkCamera;
@@ -57,25 +64,25 @@ class vtkUnsignedCharArray;
 class VTKIOEXPORT_EXPORT vtkRIBExporter : public vtkExporter
 {
 public:
-  static vtkRIBExporter* New();
-  vtkTypeMacro(vtkRIBExporter, vtkExporter);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkRIBExporter *New();
+  vtkTypeMacro(vtkRIBExporter,vtkExporter);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
    * Specify the size of the image for RenderMan. If none is specified, the
    * size of the render window will be used.
    */
-  vtkSetVector2Macro(Size, int);
-  vtkGetVectorMacro(Size, int, 2);
+  vtkSetVector2Macro(Size,int);
+  vtkGetVectorMacro(Size,int,2);
   //@}
 
   //@{
   /**
    * Specify the sampling rate for the rendering. Default is 2 2.
    */
-  vtkSetVector2Macro(PixelSamples, int);
-  vtkGetVectorMacro(PixelSamples, int, 2);
+  vtkSetVector2Macro(PixelSamples,int);
+  vtkGetVectorMacro(PixelSamples,int,2);
   //@}
 
   //@{
@@ -113,9 +120,9 @@ public:
    * off. Otherwise, try setting BackGroundOn and see if you get the
    * desired results.
    */
-  vtkSetMacro(Background, vtkTypeBool);
-  vtkGetMacro(Background, vtkTypeBool);
-  vtkBooleanMacro(Background, vtkTypeBool);
+  vtkSetMacro(Background,int);
+  vtkGetMacro(Background,int);
+  vtkBooleanMacro(Background,int);
   //@}
 
   //@{
@@ -124,42 +131,44 @@ public:
    * all point data, field data, and cell data arrays will get
    * exported together with polygons. Default is Off (0).
    */
-  vtkSetClampMacro(ExportArrays, vtkTypeBool, 0, 1);
-  vtkBooleanMacro(ExportArrays, vtkTypeBool);
-  vtkGetMacro(ExportArrays, vtkTypeBool);
+  vtkSetClampMacro(ExportArrays, int, 0, 1);
+  vtkBooleanMacro(ExportArrays, int);
+  vtkGetMacro(ExportArrays, int);
   //@}
 
 protected:
   vtkRIBExporter();
-  ~vtkRIBExporter() override;
+  ~vtkRIBExporter();
 
-  vtkTypeBool Background;
+  int Background;
   int Size[2];
   int PixelSamples[2];
 
   /**
    * This variable defines whether the arrays are exported or not.
    */
-  vtkTypeBool ExportArrays;
+  int ExportArrays;
 
   //@{
   /**
    * Write the RIB header.
    */
-  void WriteHeader(vtkRenderer* aRen);
-  void WriteTrailer();
-  void WriteTexture(vtkTexture* aTexture);
-  void WriteViewport(vtkRenderer* aRenderer, int size[2]);
-  void WriteCamera(vtkCamera* aCamera);
-  void WriteLight(vtkLight* aLight, int count);
-  void WriteAmbientLight(int count);
-  void WriteProperty(vtkProperty* aProperty, vtkTexture* aTexture);
-  void WritePolygons(vtkPolyData* pd, vtkUnsignedCharArray* colors, vtkProperty* aProperty);
-  void WriteStrips(vtkPolyData* pd, vtkUnsignedCharArray* colors, vtkProperty* aProperty);
+  void WriteHeader (vtkRenderer *aRen);
+  void WriteTrailer ();
+  void WriteTexture (vtkTexture *aTexture);
+  void WriteViewport (vtkRenderer *aRenderer, int size[2]);
+  void WriteCamera (vtkCamera *aCamera);
+  void WriteLight (vtkLight *aLight, int count);
+  void WriteAmbientLight (int count);
+  void WriteProperty (vtkProperty *aProperty, vtkTexture *aTexture);
+  void WritePolygons (vtkPolyData *pd, vtkUnsignedCharArray *colors,
+                      vtkProperty *aProperty);
+  void WriteStrips (vtkPolyData *pd, vtkUnsignedCharArray *colors,
+                    vtkProperty *aProperty);
   //@}
 
-  void WriteData() override;
-  void WriteActor(vtkActor* anActor);
+  void WriteData();
+  void WriteActor(vtkActor *anActor);
 
   /**
    * Since additional variables are sent to the shader as
@@ -167,17 +176,17 @@ protected:
    * names have to follow C naming convention. This method
    * modifies array name so that you can use it in shader.
    */
-  void ModifyArrayName(char* newname, const char* name);
+  void ModifyArrayName(char *newname, const char* name);
 
-  char* GetTextureName(vtkTexture* aTexture);
-  char* GetTIFFName(vtkTexture* aTexture);
-  char* FilePrefix;
-  FILE* FilePtr;
-  char* TexturePrefix;
-
+  char *GetTextureName (vtkTexture *aTexture);
+  char *GetTIFFName (vtkTexture *aTexture);
+  char *FilePrefix;
+  FILE *FilePtr;
+  char *TexturePrefix;
 private:
-  vtkRIBExporter(const vtkRIBExporter&) = delete;
-  void operator=(const vtkRIBExporter&) = delete;
+  vtkRIBExporter(const vtkRIBExporter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkRIBExporter&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

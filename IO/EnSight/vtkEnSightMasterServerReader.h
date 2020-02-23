@@ -14,14 +14,14 @@
 =========================================================================*/
 /**
  * @class   vtkEnSightMasterServerReader
- * @brief   reader for compound EnSight files
- */
+ * @brief   reader for compund EnSight files
+*/
 
 #ifndef vtkEnSightMasterServerReader_h
 #define vtkEnSightMasterServerReader_h
 
-#include "vtkGenericEnSightReader.h"
 #include "vtkIOEnSightModule.h" // For export macro
+#include "vtkGenericEnSightReader.h"
 
 class vtkCollection;
 
@@ -29,7 +29,7 @@ class VTKIOENSIGHT_EXPORT vtkEnSightMasterServerReader : public vtkGenericEnSigh
 {
 public:
   vtkTypeMacro(vtkEnSightMasterServerReader, vtkGenericEnSightReader);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   static vtkEnSightMasterServerReader* New();
 
@@ -53,14 +53,16 @@ public:
   vtkGetMacro(CurrentPiece, int);
   //@}
 
-  int CanReadFile(const char* fname) override;
+  int CanReadFile(const char *fname);
 
 protected:
   vtkEnSightMasterServerReader();
-  ~vtkEnSightMasterServerReader() override;
+  ~vtkEnSightMasterServerReader();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int RequestData(vtkInformation *, vtkInformationVector **,
+                          vtkInformationVector *);
+  virtual int RequestInformation(vtkInformation *, vtkInformationVector **,
+                                 vtkInformationVector *);
 
   vtkSetStringMacro(PieceCaseFileName);
   char* PieceCaseFileName;
@@ -68,8 +70,8 @@ protected:
   int CurrentPiece;
 
 private:
-  vtkEnSightMasterServerReader(const vtkEnSightMasterServerReader&) = delete;
-  void operator=(const vtkEnSightMasterServerReader&) = delete;
+  vtkEnSightMasterServerReader(const vtkEnSightMasterServerReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkEnSightMasterServerReader&) VTK_DELETE_FUNCTION;
 };
 
 #endif

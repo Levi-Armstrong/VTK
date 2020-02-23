@@ -24,7 +24,7 @@
  * @sa
  * vtkInteractorStyleJoystickActor vtkInteractorStyleJoystickCamera
  * vtkInteractorStyleTrackballActor vtkInteractorStyleTrackballCamera
- */
+*/
 
 #ifndef vtkInteractorStyleSwitch_h
 #define vtkInteractorStyleSwitch_h
@@ -32,11 +32,11 @@
 #include "vtkInteractionStyleModule.h" // For export macro
 #include "vtkInteractorStyleSwitchBase.h"
 
-#define VTKIS_JOYSTICK 0
+#define VTKIS_JOYSTICK  0
 #define VTKIS_TRACKBALL 1
 
-#define VTKIS_CAMERA 0
-#define VTKIS_ACTOR 1
+#define VTKIS_CAMERA    0
+#define VTKIS_ACTOR     1
 
 class vtkInteractorStyleJoystickActor;
 class vtkInteractorStyleJoystickCamera;
@@ -44,23 +44,24 @@ class vtkInteractorStyleTrackballActor;
 class vtkInteractorStyleTrackballCamera;
 class vtkInteractorStyleMultiTouchCamera;
 
-class VTKINTERACTIONSTYLE_EXPORT vtkInteractorStyleSwitch : public vtkInteractorStyleSwitchBase
+class VTKINTERACTIONSTYLE_EXPORT vtkInteractorStyleSwitch
+  : public vtkInteractorStyleSwitchBase
 {
 public:
-  static vtkInteractorStyleSwitch* New();
+  static vtkInteractorStyleSwitch *New();
   vtkTypeMacro(vtkInteractorStyleSwitch, vtkInteractorStyleSwitchBase);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * The sub styles need the interactor too.
    */
-  void SetInteractor(vtkRenderWindowInteractor* iren) override;
+  void SetInteractor(vtkRenderWindowInteractor *iren);
 
   /**
    * We must override this method in order to pass the setting down to
    * the underlying styles
    */
-  void SetAutoAdjustCameraClippingRange(vtkTypeBool value) override;
+  void SetAutoAdjustCameraClippingRange( int value );
 
   //@{
   /**
@@ -78,28 +79,28 @@ public:
    * Only care about the char event, which is used to switch between
    * different styles.
    */
-  void OnChar() override;
+  virtual void OnChar();
 
   //@{
   /**
    * Overridden from vtkInteractorObserver because the interactor styles
    * used by this class must also be updated.
    */
-  void SetDefaultRenderer(vtkRenderer*) override;
-  void SetCurrentRenderer(vtkRenderer*) override;
+  virtual void SetDefaultRenderer(vtkRenderer*);
+  virtual void SetCurrentRenderer(vtkRenderer*);
   //@}
 
 protected:
   vtkInteractorStyleSwitch();
-  ~vtkInteractorStyleSwitch() override;
+  ~vtkInteractorStyleSwitch();
 
   void SetCurrentStyle();
 
-  vtkInteractorStyleJoystickActor* JoystickActor;
-  vtkInteractorStyleJoystickCamera* JoystickCamera;
-  vtkInteractorStyleTrackballActor* TrackballActor;
-  vtkInteractorStyleTrackballCamera* TrackballCamera;
-  vtkInteractorStyleMultiTouchCamera* MultiTouchCamera;
+  vtkInteractorStyleJoystickActor *JoystickActor;
+  vtkInteractorStyleJoystickCamera *JoystickCamera;
+  vtkInteractorStyleTrackballActor *TrackballActor;
+  vtkInteractorStyleTrackballCamera *TrackballCamera;
+  vtkInteractorStyleMultiTouchCamera *MultiTouchCamera;
   vtkInteractorStyle* CurrentStyle;
 
   int JoystickOrTrackball;
@@ -107,8 +108,8 @@ protected:
   bool MultiTouch;
 
 private:
-  vtkInteractorStyleSwitch(const vtkInteractorStyleSwitch&) = delete;
-  void operator=(const vtkInteractorStyleSwitch&) = delete;
+  vtkInteractorStyleSwitch(const vtkInteractorStyleSwitch&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkInteractorStyleSwitch&) VTK_DELETE_FUNCTION;
 };
 
 #endif

@@ -23,7 +23,7 @@
  * determines the actual geometry of the widget.)
  *
  * To use this widget, you generally pair it with a vtkImplicitPlaneRepresentation
- * (or a subclass). Various options are available for controlling how the
+ * (or a subclass). Variuos options are available for controlling how the
  * representation appears, and how the widget functions.
  *
  * @par Event Bindings:
@@ -87,13 +87,13 @@
  * @sa
  * vtk3DWidget vtkBoxWidget vtkPlaneWidget vtkLineWidget vtkPointWidget
  * vtkSphereWidget vtkImagePlaneWidget vtkImplicitCylinderWidget
- */
+*/
 
 #ifndef vtkImplicitPlaneWidget2_h
 #define vtkImplicitPlaneWidget2_h
 
-#include "vtkAbstractWidget.h"
 #include "vtkInteractionWidgetsModule.h" // For export macro
+#include "vtkAbstractWidget.h"
 
 class vtkImplicitPlaneRepresentation;
 class vtkInteractionCallback;
@@ -106,14 +106,14 @@ public:
   /**
    * Instantiate the object.
    */
-  static vtkImplicitPlaneWidget2* New();
+  static vtkImplicitPlaneWidget2 *New();
 
   //@{
   /**
    * Standard vtkObject methods
    */
-  vtkTypeMacro(vtkImplicitPlaneWidget2, vtkAbstractWidget);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkImplicitPlaneWidget2,vtkAbstractWidget);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   /**
@@ -121,12 +121,12 @@ public:
    * widget in the scene. Note that the representation is a subclass of vtkProp
    * so it can be added to the renderer independent of the widget.
    */
-  void SetRepresentation(vtkImplicitPlaneRepresentation* rep);
+  void SetRepresentation( vtkImplicitPlaneRepresentation *rep );
 
-  // Description:
+  // Descritpion:
   // Disable/Enable the widget if needed.
   // Unobserved the camera if the widget is disabled.
-  void SetEnabled(int enabling) override;
+  void SetEnabled(int enabling);
 
   /**
    * Observe/Unobserve the camera if the widget is locked/unlocked to update the
@@ -137,27 +137,21 @@ public:
   /**
    * Return the representation as a vtkImplicitPlaneRepresentation.
    */
-  vtkImplicitPlaneRepresentation* GetImplicitPlaneRepresentation()
-  {
-    return reinterpret_cast<vtkImplicitPlaneRepresentation*>(this->WidgetRep);
-  }
+  vtkImplicitPlaneRepresentation *GetImplicitPlaneRepresentation()
+    {return reinterpret_cast<vtkImplicitPlaneRepresentation*>(this->WidgetRep);}
 
   /**
    * Create the default widget representation if one is not set.
    */
-  void CreateDefaultRepresentation() override;
+  void CreateDefaultRepresentation();
 
 protected:
   vtkImplicitPlaneWidget2();
-  ~vtkImplicitPlaneWidget2() override;
+  ~vtkImplicitPlaneWidget2();
 
   // Manage the state of the widget
   int WidgetState;
-  enum _WidgetState
-  {
-    Start = 0,
-    Active
-  };
+  enum _WidgetState {Start=0,Active};
 
   // These methods handle events
   static void SelectAction(vtkAbstractWidget*);
@@ -166,29 +160,24 @@ protected:
   static void EndSelectAction(vtkAbstractWidget*);
   static void MoveAction(vtkAbstractWidget*);
   static void MovePlaneAction(vtkAbstractWidget*);
-  static void SelectAction3D(vtkAbstractWidget*);
-  static void EndSelectAction3D(vtkAbstractWidget*);
-  static void MoveAction3D(vtkAbstractWidget*);
-  static void TranslationAxisLock(vtkAbstractWidget*);
-  static void TranslationAxisUnLock(vtkAbstractWidget*);
 
   /**
    * Update the cursor shape based on the interaction state. Returns 1
    * if the cursor shape requested is different from the existing one.
    */
-  int UpdateCursorShape(int interactionState);
+  int UpdateCursorShape( int interactionState );
 
   //@{
   /**
    * Handle the interaction callback that may come from the representation.
    */
-  vtkInteractionCallback* InteractionCallback;
+  vtkInteractionCallback *InteractionCallback;
   void InvokeInteractionCallback();
   //@}
 
 private:
-  vtkImplicitPlaneWidget2(const vtkImplicitPlaneWidget2&) = delete;
-  void operator=(const vtkImplicitPlaneWidget2&) = delete;
+  vtkImplicitPlaneWidget2(const vtkImplicitPlaneWidget2&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkImplicitPlaneWidget2&) VTK_DELETE_FUNCTION;
 };
 
 #endif

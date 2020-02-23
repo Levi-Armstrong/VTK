@@ -19,20 +19,20 @@
  * vtkDataSetWriter is an abstract class for mapper objects that write their
  * data to disk (or into a communications port). The input to this object is
  * a dataset of any type.
- */
+*/
 
 #ifndef vtkDataSetWriter_h
 #define vtkDataSetWriter_h
 
-#include "vtkDataWriter.h"
 #include "vtkIOLegacyModule.h" // For export macro
+#include "vtkDataWriter.h"
 
 class VTKIOLEGACY_EXPORT vtkDataSetWriter : public vtkDataWriter
 {
 public:
-  static vtkDataSetWriter* New();
-  vtkTypeMacro(vtkDataSetWriter, vtkDataWriter);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkDataSetWriter *New();
+  vtkTypeMacro(vtkDataSetWriter,vtkDataWriter);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -44,15 +44,15 @@ public:
 
 protected:
   vtkDataSetWriter() {}
-  ~vtkDataSetWriter() override {}
+  ~vtkDataSetWriter() {}
 
-  void WriteData() override;
+  void WriteData();
 
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  virtual int FillInputPortInformation(int port, vtkInformation *info);
 
 private:
-  vtkDataSetWriter(const vtkDataSetWriter&) = delete;
-  void operator=(const vtkDataSetWriter&) = delete;
+  vtkDataSetWriter(const vtkDataSetWriter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkDataSetWriter&) VTK_DELETE_FUNCTION;
 };
 
 #endif

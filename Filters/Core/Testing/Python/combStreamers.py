@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import vtk
+from vtk.test import Testing
 from vtk.util.misc import vtkGetDataRoot
 VTK_DATA_ROOT = vtkGetDataRoot()
 
@@ -74,5 +75,4 @@ renWin.Render()
 # prevent the tk window from showing up then start the event loop
 # for testing
 threshold = 15
-iren.Start()
 # --- end of script --

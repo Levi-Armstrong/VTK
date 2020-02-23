@@ -24,7 +24,7 @@
  *
  * @sa
  * vtkXMLPPolyDataReader
- */
+*/
 
 #ifndef vtkXMLPolyDataReader_h
 #define vtkXMLPolyDataReader_h
@@ -37,16 +37,16 @@ class vtkPolyData;
 class VTKIOXML_EXPORT vtkXMLPolyDataReader : public vtkXMLUnstructuredDataReader
 {
 public:
-  vtkTypeMacro(vtkXMLPolyDataReader, vtkXMLUnstructuredDataReader);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
-  static vtkXMLPolyDataReader* New();
+  vtkTypeMacro(vtkXMLPolyDataReader,vtkXMLUnstructuredDataReader);
+  void PrintSelf(ostream& os, vtkIndent indent);
+  static vtkXMLPolyDataReader *New();
 
   //@{
   /**
    * Get the reader's output.
    */
-  vtkPolyData* GetOutput();
-  vtkPolyData* GetOutput(int idx);
+  vtkPolyData *GetOutput();
+  vtkPolyData *GetOutput(int idx);
   //@}
 
   //@{
@@ -61,27 +61,28 @@ public:
 
 protected:
   vtkXMLPolyDataReader();
-  ~vtkXMLPolyDataReader() override;
+  ~vtkXMLPolyDataReader();
 
-  const char* GetDataSetName() override;
-  void GetOutputUpdateExtent(int& piece, int& numberOfPieces, int& ghostLevel) override;
-  void SetupOutputTotals() override;
-  void SetupNextPiece() override;
-  void SetupPieces(int numPieces) override;
-  void DestroyPieces() override;
+  const char* GetDataSetName();
+  void GetOutputUpdateExtent(int& piece, int& numberOfPieces, int& ghostLevel);
+  void SetupOutputTotals();
+  void SetupNextPiece();
+  void SetupPieces(int numPieces);
+  void DestroyPieces();
 
-  void SetupOutputData() override;
-  int ReadPiece(vtkXMLDataElement* ePiece) override;
-  int ReadPieceData() override;
+  void SetupOutputData();
+  int ReadPiece(vtkXMLDataElement* ePiece);
+  int ReadPieceData();
 
   // Read a data array whose tuples coorrespond to cells.
-  int ReadArrayForCells(vtkXMLDataElement* da, vtkAbstractArray* outArray) override;
+  virtual int ReadArrayForCells(vtkXMLDataElement* da,
+    vtkAbstractArray* outArray);
 
   // Get the number of cells in the given piece.  Valid after
   // UpdateInformation.
-  vtkIdType GetNumberOfCellsInPiece(int piece) override;
+  virtual vtkIdType GetNumberOfCellsInPiece(int piece);
 
-  int FillOutputPortInformation(int, vtkInformation*) override;
+  virtual int FillOutputPortInformation(int, vtkInformation*);
 
   // The size of the UpdatePiece.
   int TotalNumberOfVerts;
@@ -114,8 +115,8 @@ protected:
   unsigned long PolysOffset;
 
 private:
-  vtkXMLPolyDataReader(const vtkXMLPolyDataReader&) = delete;
-  void operator=(const vtkXMLPolyDataReader&) = delete;
+  vtkXMLPolyDataReader(const vtkXMLPolyDataReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkXMLPolyDataReader&) VTK_DELETE_FUNCTION;
 };
 
 #endif

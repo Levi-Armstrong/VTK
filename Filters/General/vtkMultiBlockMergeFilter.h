@@ -22,7 +22,7 @@
  * datasets inside it. In actuality if the inputs have M blocks, this will
  * produce M blocks, each of which has N datasets. Inside the merged group,
  * the i'th data set comes from the i'th data set in the i'th input.
- */
+*/
 
 #ifndef vtkMultiBlockMergeFilter_h
 #define vtkMultiBlockMergeFilter_h
@@ -30,17 +30,18 @@
 #include "vtkFiltersGeneralModule.h" // For export macro
 #include "vtkMultiBlockDataSetAlgorithm.h"
 
-class VTKFILTERSGENERAL_EXPORT vtkMultiBlockMergeFilter : public vtkMultiBlockDataSetAlgorithm
+class VTKFILTERSGENERAL_EXPORT vtkMultiBlockMergeFilter
+: public vtkMultiBlockDataSetAlgorithm
 {
 public:
-  vtkTypeMacro(vtkMultiBlockMergeFilter, vtkMultiBlockDataSetAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkMultiBlockMergeFilter,vtkMultiBlockDataSetAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Construct object with PointIds and CellIds on; and ids being generated
    * as scalars.
    */
-  static vtkMultiBlockMergeFilter* New();
+  static vtkMultiBlockMergeFilter *New();
 
   //@{
   /**
@@ -48,26 +49,30 @@ public:
    * establish a pipeline connection. Use AddInputConnection() to
    * setup a pipeline connection.
    */
-  void AddInputData(vtkDataObject*);
+  void AddInputData(vtkDataObject *);
   void AddInputData(int, vtkDataObject*);
   //@}
 
 protected:
   vtkMultiBlockMergeFilter();
-  ~vtkMultiBlockMergeFilter() override;
+  ~vtkMultiBlockMergeFilter() VTK_OVERRIDE;
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *,
+                  vtkInformationVector **,
+                  vtkInformationVector *) VTK_OVERRIDE;
 
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  int FillInputPortInformation(int port, vtkInformation *info) VTK_OVERRIDE;
 
   int IsMultiPiece(vtkMultiBlockDataSet*);
 
-  int Merge(unsigned int numPieces, unsigned int pieceNo, vtkMultiBlockDataSet* output,
+  int Merge(unsigned int numPieces, unsigned int pieceNo,
+    vtkMultiBlockDataSet* output,
     vtkMultiBlockDataSet* input);
-
 private:
-  vtkMultiBlockMergeFilter(const vtkMultiBlockMergeFilter&) = delete;
-  void operator=(const vtkMultiBlockMergeFilter&) = delete;
+  vtkMultiBlockMergeFilter(const vtkMultiBlockMergeFilter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkMultiBlockMergeFilter&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+

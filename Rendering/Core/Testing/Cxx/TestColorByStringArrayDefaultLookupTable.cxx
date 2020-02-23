@@ -13,20 +13,21 @@
 
 =========================================================================*/
 
-#include "vtkRegressionTestImage.h"
 #include "vtkTestUtilities.h"
+#include "vtkRegressionTestImage.h"
 
 #include <vtkActor.h>
 #include <vtkCellData.h>
 #include <vtkNew.h>
 #include <vtkPolyData.h>
 #include <vtkPolyDataMapper.h>
+#include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
-#include <vtkRenderer.h>
 #include <vtkSphereSource.h>
 #include <vtkStdString.h>
 #include <vtkStringArray.h>
+
 
 int TestColorByStringArrayDefaultLookupTable(int argc, char* argv[])
 {
@@ -57,10 +58,10 @@ int TestColorByStringArrayDefaultLookupTable(int argc, char* argv[])
   }
 
   vtkCellData* cd = polydata->GetCellData();
-  cd->AddArray(sArray);
+  cd->AddArray(sArray.Get());
 
   vtkNew<vtkPolyDataMapper> mapper;
-  mapper->SetInputDataObject(polydata);
+  mapper->SetInputDataObject(polydata.Get());
   mapper->ScalarVisibilityOn();
   mapper->SetScalarModeToUseCellFieldData();
   mapper->SelectColorArray(arrayName);
@@ -71,20 +72,20 @@ int TestColorByStringArrayDefaultLookupTable(int argc, char* argv[])
   mapper->SetColorModeToDirectScalars();
 
   vtkNew<vtkActor> actor;
-  actor->SetMapper(mapper);
+  actor->SetMapper(mapper.Get());
 
   vtkNew<vtkRenderer> renderer;
-  renderer->AddActor(actor);
+  renderer->AddActor(actor.Get());
 
   vtkNew<vtkRenderWindow> renderWindow;
-  renderWindow->AddRenderer(renderer);
+  renderWindow->AddRenderer(renderer.Get());
 
   vtkNew<vtkRenderWindowInteractor> iren;
-  iren->SetRenderWindow(renderWindow);
+  iren->SetRenderWindow(renderWindow.Get());
 
   renderWindow->Render();
 
-  int retVal = vtkRegressionTestImage(renderWindow);
+  int retVal = vtkRegressionTestImage(renderWindow.Get());
   if (retVal == vtkRegressionTester::DO_INTERACTOR)
   {
     iren->Start();

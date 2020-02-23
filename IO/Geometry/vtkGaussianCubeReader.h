@@ -22,7 +22,7 @@
  *
  * @par Thanks:
  * Dr. Jean M. Favre who developed and contributed this class.
- */
+*/
 
 #ifndef vtkGaussianCubeReader_h
 #define vtkGaussianCubeReader_h
@@ -36,29 +36,31 @@ class vtkTransform;
 class VTKIOGEOMETRY_EXPORT vtkGaussianCubeReader : public vtkMoleculeReaderBase
 {
 public:
-  static vtkGaussianCubeReader* New();
-  vtkTypeMacro(vtkGaussianCubeReader, vtkMoleculeReaderBase);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkGaussianCubeReader *New();
+  vtkTypeMacro(vtkGaussianCubeReader,vtkMoleculeReaderBase);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
-  vtkGetObjectMacro(Transform, vtkTransform);
-  vtkImageData* GetGridOutput();
+  vtkGetObjectMacro(Transform,vtkTransform);
+  vtkSetStringMacro(FileName);
+  vtkGetStringMacro(FileName);
+  vtkImageData *GetGridOutput();
 
 protected:
   vtkGaussianCubeReader();
-  ~vtkGaussianCubeReader() override;
+  ~vtkGaussianCubeReader();
 
-  vtkTransform* Transform;
+  char *FileName;
+  vtkTransform *Transform;
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
+  virtual int RequestInformation(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 
-  void ReadSpecificMolecule(FILE* fp) override;
+  void ReadSpecificMolecule(FILE* fp);
 
-  int FillOutputPortInformation(int, vtkInformation*) override;
-
+  virtual int FillOutputPortInformation(int, vtkInformation*);
 private:
-  vtkGaussianCubeReader(const vtkGaussianCubeReader&) = delete;
-  void operator=(const vtkGaussianCubeReader&) = delete;
+  vtkGaussianCubeReader(const vtkGaussianCubeReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkGaussianCubeReader&) VTK_DELETE_FUNCTION;
 };
 
 #endif

@@ -16,14 +16,14 @@
 
 #include "vtkByteSwap.h"
 #include "vtkCellArray.h"
+#include "vtkTree.h"
 #include "vtkInformation.h"
 #include "vtkObjectFactory.h"
-#include "vtkTree.h"
 
 #if !defined(_WIN32) || defined(__CYGWIN__)
-#include <unistd.h> /* unlink */
+# include <unistd.h> /* unlink */
 #else
-#include <io.h> /* unlink */
+# include <io.h> /* unlink */
 #endif
 
 vtkStandardNewMacro(vtkTreeWriter);
@@ -40,18 +40,19 @@ void vtkTreeWriter::WriteEdges(ostream& Stream, vtkTree* Tree)
 
 void vtkTreeWriter::WriteData()
 {
-  ostream* fp;
+  ostream *fp;
   vtkTree* const input = this->GetInput();
 
-  vtkDebugMacro(<< "Writing vtk tree data...");
+  vtkDebugMacro(<<"Writing vtk tree data...");
 
-  if (!(fp = this->OpenVTKFile()) || !this->WriteHeader(fp))
+  if ( !(fp=this->OpenVTKFile()) || !this->WriteHeader(fp) )
   {
     if (fp)
     {
-      if (this->FileName)
+      if(this->FileName)
       {
-        vtkErrorMacro("Ran out of disk space; deleting file: " << this->FileName);
+        vtkErrorMacro("Ran out of disk space; deleting file: "
+                      << this->FileName);
         this->CloseVTKFile(fp);
         unlink(this->FileName);
       }
@@ -66,9 +67,9 @@ void vtkTreeWriter::WriteData()
 
   *fp << "DATASET TREE\n";
 
-  bool error_occurred = 0;
+  int error_occurred = 0;
 
-  if (!this->WriteFieldData(fp, input->GetFieldData()))
+  if(!error_occurred && !this->WriteFieldData(fp, input->GetFieldData()))
   {
     error_occurred = 1;
   }
@@ -76,7 +77,7 @@ void vtkTreeWriter::WriteData()
   {
     error_occurred = 1;
   }
-  if (!error_occurred)
+  if(!error_occurred)
   {
     const vtkIdType edge_count = input->GetNumberOfEdges();
     *fp << "EDGES " << edge_count << "\n";
@@ -91,9 +92,9 @@ void vtkTreeWriter::WriteData()
     error_occurred = 1;
   }
 
-  if (error_occurred)
+  if(error_occurred)
   {
-    if (this->FileName)
+    if(this->FileName)
     {
       vtkErrorMacro("Ran out of disk space; deleting file: " << this->FileName);
       this->CloseVTKFile(fp);
@@ -109,7 +110,7 @@ void vtkTreeWriter::WriteData()
   this->CloseVTKFile(fp);
 }
 
-int vtkTreeWriter::FillInputPortInformation(int, vtkInformation* info)
+int vtkTreeWriter::FillInputPortInformation(int, vtkInformation *info)
 {
   info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkTree");
   return 1;
@@ -127,5 +128,5 @@ vtkTree* vtkTreeWriter::GetInput(int port)
 
 void vtkTreeWriter::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 }

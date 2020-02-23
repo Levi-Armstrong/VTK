@@ -49,7 +49,7 @@
  * If the input table is missing a field specified by AddField(), it is an error.
  * If no fields are specified, no splitting is performed.
  * If the delimiter for a field is an empty string, no splitting is performed on that field.
- */
+*/
 
 #ifndef vtkBoostSplitTableField_h
 #define vtkBoostSplitTableField_h
@@ -64,25 +64,29 @@ class VTKINFOVISBOOSTGRAPHALGORITHMS_EXPORT vtkBoostSplitTableField : public vtk
 public:
   static vtkBoostSplitTableField* New();
   vtkTypeMacro(vtkBoostSplitTableField, vtkTableAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   void ClearFields();
   void AddField(const char* field, const char* delimiters);
 
 protected:
   vtkBoostSplitTableField();
-  ~vtkBoostSplitTableField() override;
+  ~vtkBoostSplitTableField();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(
+    vtkInformation*,
+    vtkInformationVector**,
+    vtkInformationVector*);
 
   vtkStringArray* Fields;
   vtkStringArray* Delimiters;
 
 private:
+
   class implementation;
 
-  vtkBoostSplitTableField(const vtkBoostSplitTableField&) = delete;
-  void operator=(const vtkBoostSplitTableField&) = delete;
+  vtkBoostSplitTableField(const vtkBoostSplitTableField&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkBoostSplitTableField&) VTK_DELETE_FUNCTION;
 };
 
 #endif

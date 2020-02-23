@@ -24,7 +24,7 @@
  * the output of the filter.
  * @sa
  * vtkPerspectiveTransform vtkMatrix4x4 vtkMatrixToLinearTransform
- */
+*/
 
 #ifndef vtkMatrixToHomogeneousTransform_h
 #define vtkMatrixToHomogeneousTransform_h
@@ -36,45 +36,44 @@ class vtkMatrix4x4;
 
 class VTKCOMMONTRANSFORMS_EXPORT vtkMatrixToHomogeneousTransform : public vtkHomogeneousTransform
 {
-public:
-  static vtkMatrixToHomogeneousTransform* New();
-  vtkTypeMacro(vtkMatrixToHomogeneousTransform, vtkHomogeneousTransform);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+ public:
+  static vtkMatrixToHomogeneousTransform *New();
+  vtkTypeMacro(vtkMatrixToHomogeneousTransform,vtkHomogeneousTransform);
+  void PrintSelf (ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   // Set the input matrix.  Any modifications to the matrix will be
   // reflected in the transformation.
   virtual void SetInput(vtkMatrix4x4*);
-  vtkGetObjectMacro(Input, vtkMatrix4x4);
+  vtkGetObjectMacro(Input,vtkMatrix4x4);
 
   /**
    * The input matrix is left as-is, but the transformation matrix
    * is inverted.
    */
-  void Inverse() override;
+  void Inverse() VTK_OVERRIDE;
 
   /**
    * Get the MTime: this is the bit of magic that makes everything work.
    */
-  vtkMTimeType GetMTime() override;
+  vtkMTimeType GetMTime() VTK_OVERRIDE;
 
   /**
    * Make a new transform of the same type.
    */
-  vtkAbstractTransform* MakeTransform() override;
+  vtkAbstractTransform *MakeTransform() VTK_OVERRIDE;
 
 protected:
   vtkMatrixToHomogeneousTransform();
-  ~vtkMatrixToHomogeneousTransform() override;
+  ~vtkMatrixToHomogeneousTransform() VTK_OVERRIDE;
 
-  void InternalUpdate() override;
-  void InternalDeepCopy(vtkAbstractTransform* transform) override;
+  void InternalUpdate() VTK_OVERRIDE;
+  void InternalDeepCopy(vtkAbstractTransform *transform) VTK_OVERRIDE;
 
   int InverseFlag;
-  vtkMatrix4x4* Input;
-
+  vtkMatrix4x4 *Input;
 private:
-  vtkMatrixToHomogeneousTransform(const vtkMatrixToHomogeneousTransform&) = delete;
-  void operator=(const vtkMatrixToHomogeneousTransform&) = delete;
+  vtkMatrixToHomogeneousTransform(const vtkMatrixToHomogeneousTransform&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkMatrixToHomogeneousTransform&) VTK_DELETE_FUNCTION;
 };
 
 #endif

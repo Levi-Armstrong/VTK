@@ -25,21 +25,21 @@
 #include "vtkMultiBlockDataSet.h"
 #include "vtkNew.h"
 #include "vtkPointData.h"
-#include "vtkRTAnalyticSource.h"
 #include "vtkRegressionTestImage.h"
+#include "vtkRenderer.h"
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
-#include "vtkRenderer.h"
+#include "vtkRTAnalyticSource.h"
 #include "vtkSphere.h"
 #include "vtkTableBasedClipDataSet.h"
 #include "vtkTransform.h"
 #include "vtkTransformFilter.h"
 
-namespace
-{
 
-void CreateInputDataSet(
-  vtkMultiBlockDataSet* dataset, int rank, int numberOfProcs, int blocksPerProc)
+namespace {
+
+void CreateInputDataSet(vtkMultiBlockDataSet* dataset, int rank, int numberOfProcs,
+                        int blocksPerProc)
 {
   int numPieces = blocksPerProc * numberOfProcs;
   dataset->SetNumberOfBlocks(numPieces);
@@ -58,7 +58,7 @@ void CreateInputDataSet(
   cylinder->SetRadius(15);
   cylinder->SetAxis(0, 1, 0);
   vtkNew<vtkTableBasedClipDataSet> clipCyl;
-  clipCyl->SetClipFunction(cylinder);
+  clipCyl->SetClipFunction(cylinder.GetPointer());
   clipCyl->InsideOutOn();
 
   vtkNew<vtkSphere> sphere;
@@ -66,13 +66,13 @@ void CreateInputDataSet(
   sphere->SetRadius(12);
   vtkNew<vtkTableBasedClipDataSet> clipSphr;
   clipSphr->SetInputConnection(clipCyl->GetOutputPort());
-  clipSphr->SetClipFunction(sphere);
+  clipSphr->SetClipFunction(sphere.GetPointer());
 
   vtkNew<vtkTransform> transform;
   transform->RotateZ(45);
   vtkNew<vtkTransformFilter> transFilter;
   transFilter->SetInputConnection(clipSphr->GetOutputPort());
-  transFilter->SetTransform(transform);
+  transFilter->SetTransform(transform.GetPointer());
 
   for (int i = 0; i < blocksPerProc; ++i)
   {
@@ -87,15 +87,15 @@ void CreateInputDataSet(
     clipCyl->SetInputData(wavelet->GetOutputDataObject(0));
     transFilter->Update();
 
-    vtkDataObject* block = transFilter->GetOutputDataObject(0)->NewInstance();
+    vtkDataObject *block = transFilter->GetOutputDataObject(0)->NewInstance();
     block->DeepCopy(transFilter->GetOutputDataObject(0));
     dataset->SetBlock(piece, block);
     block->Delete();
   }
 }
 
-void CreateSourceDataSet(
-  vtkMultiBlockDataSet* dataset, int rank, int numberOfProcs, int blocksPerProc)
+void CreateSourceDataSet(vtkMultiBlockDataSet* dataset, int rank, int numberOfProcs,
+                        int blocksPerProc)
 {
   int numPieces = blocksPerProc * numberOfProcs;
   dataset->SetNumberOfBlocks(numPieces);
@@ -120,7 +120,7 @@ void CreateSourceDataSet(
 
     wavelet->UpdateExtent(blockExtent);
 
-    vtkDataObject* block = wavelet->GetOutputDataObject(0)->NewInstance();
+    vtkDataObject *block = wavelet->GetOutputDataObject(0)->NewInstance();
     block->DeepCopy(wavelet->GetOutputDataObject(0));
     dataset->SetBlock(piece, block);
     block->Delete();
@@ -129,7 +129,8 @@ void CreateSourceDataSet(
 
 } // anonymous namespace
 
-int TestPResampleWithDataSet(int argc, char* argv[])
+
+int TestPResampleWithDataSet(int argc, char *argv[])
 {
   vtkNew<vtkMPIController> controller;
   controller->Initialize(&argc, &argv);
@@ -139,15 +140,15 @@ int TestPResampleWithDataSet(int argc, char* argv[])
 
   // create input dataset
   vtkNew<vtkMultiBlockDataSet> input;
-  CreateInputDataSet(input, rank, numProcs, 3);
+  CreateInputDataSet(input.GetPointer(), rank, numProcs, 3);
 
   vtkNew<vtkMultiBlockDataSet> source;
-  CreateSourceDataSet(source, rank, numProcs, 5);
+  CreateSourceDataSet(source.GetPointer(), rank, numProcs, 5);
 
   vtkNew<vtkPResampleWithDataSet> resample;
-  resample->SetController(controller);
-  resample->SetInputData(input);
-  resample->SetSourceData(source);
+  resample->SetController(controller.GetPointer());
+  resample->SetInputData(input.GetPointer());
+  resample->SetSourceData(source.GetPointer());
   resample->Update();
 
   // Render
@@ -162,24 +163,26 @@ int TestPResampleWithDataSet(int argc, char* argv[])
   mapper->SetInputConnection(toPoly->GetOutputPort());
   mapper->SetScalarRange(range);
 
+
   // Setup parallel rendering
   vtkNew<vtkCompositeRenderManager> prm;
-  vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::Take(prm->MakeRenderer());
+  vtkSmartPointer<vtkRenderer> renderer =
+    vtkSmartPointer<vtkRenderer>::Take(prm->MakeRenderer());
   vtkSmartPointer<vtkRenderWindow> renWin =
     vtkSmartPointer<vtkRenderWindow>::Take(prm->MakeRenderWindow());
-  renWin->AddRenderer(renderer);
+  renWin->AddRenderer(renderer.GetPointer());
   renWin->DoubleBufferOn();
   renWin->SetMultiSamples(0);
 
   vtkNew<vtkRenderWindowInteractor> iren;
-  iren->SetRenderWindow(renWin);
+  iren->SetRenderWindow(renWin.GetPointer());
 
-  prm->SetRenderWindow(renWin);
-  prm->SetController(controller);
+  prm->SetRenderWindow(renWin.GetPointer());
+  prm->SetController(controller.GetPointer());
 
   vtkNew<vtkActor> actor;
-  actor->SetMapper(mapper);
-  renderer->AddActor(actor);
+  actor->SetMapper(mapper.GetPointer());
+  renderer->AddActor(actor.GetPointer());
 
   int r1 = vtkTesting::PASSED;
   if (rank == 0)
@@ -188,7 +191,7 @@ int TestPResampleWithDataSet(int argc, char* argv[])
 
     std::cout << "Test with RegularPartition" << std::endl;
     renWin->Render();
-    r1 = vtkRegressionTester::Test(argc, argv, renWin, 10);
+    r1 = vtkRegressionTester::Test(argc, argv, renWin.GetPointer(), 10);
     if (!r1)
     {
       std::cout << "Test with RegularPartition failed" << std::endl;
@@ -213,7 +216,7 @@ int TestPResampleWithDataSet(int argc, char* argv[])
 
     std::cout << "Test with BalancedPartition" << std::endl;
     renWin->Render();
-    r2 = vtkRegressionTester::Test(argc, argv, renWin, 10);
+    r2 = vtkRegressionTester::Test(argc, argv, renWin.GetPointer(), 10);
     if (!r2)
     {
       std::cout << "Test with BalancedPartition failed" << std::endl;

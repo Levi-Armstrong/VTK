@@ -20,9 +20,13 @@
 
 vtkStandardNewMacro(vtkTestNewVar);
 
-vtkTestNewVar::vtkTestNewVar() = default;
+vtkTestNewVar::vtkTestNewVar()
+{
+}
 
-vtkTestNewVar::~vtkTestNewVar() = default;
+vtkTestNewVar::~vtkTestNewVar()
+{
+}
 
 vtkIdType vtkTestNewVar::GetPointsRefCount()
 {
@@ -31,14 +35,9 @@ vtkIdType vtkTestNewVar::GetPointsRefCount()
   return this->Points->GetReferenceCount();
 }
 
-vtkObject* vtkTestNewVar::GetPoints()
+vtkObject * vtkTestNewVar::GetPoints()
 {
   return this->Points.GetPointer();
-}
-
-vtkObject* vtkTestNewVar::GetPoints2()
-{
-  return this->Points;
 }
 
 void vtkTestNewVar::PrintSelf(ostream& os, vtkIndent indent)

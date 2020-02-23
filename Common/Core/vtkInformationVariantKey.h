@@ -18,7 +18,7 @@
  *
  * vtkInformationVariantKey is used to represent keys for variant values
  * in vtkInformation.
- */
+*/
 
 #ifndef vtkInformationVariantKey_h
 #define vtkInformationVariantKey_h
@@ -33,11 +33,11 @@ class vtkVariant;
 class VTKCOMMONCORE_EXPORT vtkInformationVariantKey : public vtkInformationKey
 {
 public:
-  vtkTypeMacro(vtkInformationVariantKey, vtkInformationKey);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkInformationVariantKey,vtkInformationKey);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   vtkInformationVariantKey(const char* name, const char* location);
-  ~vtkInformationVariantKey() override;
+  ~vtkInformationVariantKey() VTK_OVERRIDE;
 
   /**
    * This method simply returns a new vtkInformationVariantKey, given a
@@ -63,12 +63,12 @@ public:
    * object to another.  If there is no entry in the first information
    * object for this key, the value is removed from the second.
    */
-  void ShallowCopy(vtkInformation* from, vtkInformation* to) override;
+  void ShallowCopy(vtkInformation* from, vtkInformation* to) VTK_OVERRIDE;
 
   /**
    * Print the key's value in an information object to a stream.
    */
-  void Print(ostream& os, vtkInformation* info) override;
+  void Print(ostream& os, vtkInformation* info) VTK_OVERRIDE;
 
 protected:
   /**
@@ -79,8 +79,8 @@ protected:
   vtkVariant* GetWatchAddress(vtkInformation* info);
 
 private:
-  vtkInformationVariantKey(const vtkInformationVariantKey&) = delete;
-  void operator=(const vtkInformationVariantKey&) = delete;
+  vtkInformationVariantKey(const vtkInformationVariantKey&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkInformationVariantKey&) VTK_DELETE_FUNCTION;
 };
 
 #endif

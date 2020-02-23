@@ -23,13 +23,13 @@
  *
  * Parallel edges are drawn as arcs, and self-loops are drawn as ovals.
  * When only one edge connects two vertices it is drawn as a straight line.
- */
+*/
 
 #ifndef vtkArcParallelEdgeStrategy_h
 #define vtkArcParallelEdgeStrategy_h
 
-#include "vtkEdgeLayoutStrategy.h"
 #include "vtkInfovisLayoutModule.h" // For export macro
+#include "vtkEdgeLayoutStrategy.h"
 
 class vtkGraph;
 
@@ -37,14 +37,14 @@ class VTKINFOVISLAYOUT_EXPORT vtkArcParallelEdgeStrategy : public vtkEdgeLayoutS
 {
 public:
   static vtkArcParallelEdgeStrategy* New();
-  vtkTypeMacro(vtkArcParallelEdgeStrategy, vtkEdgeLayoutStrategy);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkArcParallelEdgeStrategy,vtkEdgeLayoutStrategy);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * This is the layout method where the graph that was
    * set in SetGraph() is laid out.
    */
-  void Layout() override;
+  virtual void Layout();
 
   //@{
   /**
@@ -56,13 +56,14 @@ public:
 
 protected:
   vtkArcParallelEdgeStrategy();
-  ~vtkArcParallelEdgeStrategy() override;
+  ~vtkArcParallelEdgeStrategy();
 
   int NumberOfSubdivisions;
 
 private:
-  vtkArcParallelEdgeStrategy(const vtkArcParallelEdgeStrategy&) = delete;
-  void operator=(const vtkArcParallelEdgeStrategy&) = delete;
+  vtkArcParallelEdgeStrategy(const vtkArcParallelEdgeStrategy&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkArcParallelEdgeStrategy&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

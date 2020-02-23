@@ -37,13 +37,13 @@
  *
  * @sa
  * vtkGenericProbeFilter vtkProbeFilter vtkGenericDataSet
- */
+*/
 
 #ifndef vtkGenericProbeFilter_h
 #define vtkGenericProbeFilter_h
 
-#include "vtkDataSetAlgorithm.h"
 #include "vtkFiltersGenericModule.h" // For export macro
+#include "vtkDataSetAlgorithm.h"
 
 class vtkIdTypeArray;
 class vtkGenericDataSet;
@@ -51,17 +51,17 @@ class vtkGenericDataSet;
 class VTKFILTERSGENERIC_EXPORT vtkGenericProbeFilter : public vtkDataSetAlgorithm
 {
 public:
-  static vtkGenericProbeFilter* New();
-  vtkTypeMacro(vtkGenericProbeFilter, vtkDataSetAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkGenericProbeFilter *New();
+  vtkTypeMacro(vtkGenericProbeFilter,vtkDataSetAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
    * Specify the point locations used to probe input. A generic dataset
    * type is assumed.
    */
-  void SetSourceData(vtkGenericDataSet* source);
-  vtkGenericDataSet* GetSource();
+  void SetSourceData(vtkGenericDataSet *source);
+  vtkGenericDataSet *GetSource();
   //@}
 
   //@{
@@ -74,18 +74,18 @@ public:
 
 protected:
   vtkGenericProbeFilter();
-  ~vtkGenericProbeFilter() override;
+  ~vtkGenericProbeFilter();
 
-  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestInformation(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 
-  int FillInputPortInformation(int, vtkInformation*) override;
+  int FillInputPortInformation(int, vtkInformation*);
 
-  vtkIdTypeArray* ValidPoints;
+  vtkIdTypeArray *ValidPoints;
 
 private:
-  vtkGenericProbeFilter(const vtkGenericProbeFilter&) = delete;
-  void operator=(const vtkGenericProbeFilter&) = delete;
+  vtkGenericProbeFilter(const vtkGenericProbeFilter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkGenericProbeFilter&) VTK_DELETE_FUNCTION;
 };
 
 #endif

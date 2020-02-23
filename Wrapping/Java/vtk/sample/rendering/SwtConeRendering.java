@@ -1,7 +1,5 @@
 package vtk.sample.rendering;
 
-import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
@@ -27,7 +25,7 @@ public class SwtConeRendering {
 
   public static void main(String[] args) {
 
-    Display display = new Display();
+    Display display = new Display ();
     Shell shell = new Shell(display);
 
     // build VTK Pipeline
@@ -44,29 +42,11 @@ public class SwtConeRendering {
     vtkSwtComponent swtWidget = new vtkSwtComponent(shell);
     swtWidget.getRenderer().AddActor(coneActor);
 
-    shell.addControlListener(new ControlListener() {
-
-      @Override
-      public void controlResized(ControlEvent e) {
-        if (e.widget instanceof Shell) {
-          Shell s = (Shell) e.widget;
-          swtWidget.setSize(s.getClientArea().width, s.getClientArea().height);
-        }
-      }
-
-      @Override
-      public void controlMoved(ControlEvent e) {
-        // TODO Auto-generated method stub
-
-      }
-    });
-
     shell.pack();
-    shell.open();
-    while (!shell.isDisposed()) {
-      if (!display.readAndDispatch())
-        display.sleep();
+    shell.open ();
+    while (!shell.isDisposed ()) {
+      if (!display.readAndDispatch ()) display.sleep ();
     }
-    display.dispose();
+    display.dispose ();
   }
 }

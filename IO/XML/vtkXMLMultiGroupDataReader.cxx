@@ -18,13 +18,18 @@
 
 vtkStandardNewMacro(vtkXMLMultiGroupDataReader);
 //----------------------------------------------------------------------------
-vtkXMLMultiGroupDataReader::vtkXMLMultiGroupDataReader() = default;
+vtkXMLMultiGroupDataReader::vtkXMLMultiGroupDataReader()
+{
+}
 
 //----------------------------------------------------------------------------
-vtkXMLMultiGroupDataReader::~vtkXMLMultiGroupDataReader() = default;
+vtkXMLMultiGroupDataReader::~vtkXMLMultiGroupDataReader()
+{
+}
 
 //----------------------------------------------------------------------------
 void vtkXMLMultiGroupDataReader::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 }
+

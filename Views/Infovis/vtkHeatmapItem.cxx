@@ -41,18 +41,17 @@
 vtkStandardNewMacro(vtkHeatmapItem);
 
 //-----------------------------------------------------------------------------
-vtkHeatmapItem::vtkHeatmapItem()
-  : PositionVector(0, 0)
+vtkHeatmapItem::vtkHeatmapItem() : PositionVector(0, 0)
 {
   this->Position = this->PositionVector.GetData();
   this->Interactive = true;
   this->HeatmapBuildTime = 0;
   this->Table = vtkSmartPointer<vtkTable>::New();
   this->NameColumn = "name";
-  this->RowNames = nullptr;
+  this->RowNames = NULL;
 
-  this->CollapsedRowsArray = nullptr;
-  this->CollapsedColumnsArray = nullptr;
+  this->CollapsedRowsArray = NULL;
+  this->CollapsedColumnsArray = NULL;
 
   /* initialize bounds so that the mouse cursor is never considered
    * "inside" the heatmap */
@@ -69,24 +68,26 @@ vtkHeatmapItem::vtkHeatmapItem()
 
   this->CategoryLegend->SetVisible(false);
   this->CategoryLegend->CacheBoundsOff();
-  this->AddItem(this->CategoryLegend);
+  this->AddItem(this->CategoryLegend.GetPointer());
 
   this->ColorLegend->SetVisible(false);
   this->ColorLegend->DrawBorderOn();
   this->ColorLegend->CacheBoundsOff();
-  this->AddItem(this->ColorLegend);
+  this->AddItem(this->ColorLegend.GetPointer());
 
   this->LegendPositionSet = false;
 
   this->Tooltip->SetVisible(false);
-  this->AddItem(this->Tooltip);
+  this->AddItem(this->Tooltip.GetPointer());
 }
 
 //-----------------------------------------------------------------------------
-vtkHeatmapItem::~vtkHeatmapItem() = default;
+vtkHeatmapItem::~vtkHeatmapItem()
+{
+}
 
 //-----------------------------------------------------------------------------
-void vtkHeatmapItem::SetPosition(const vtkVector2f& pos)
+void vtkHeatmapItem::SetPosition(const vtkVector2f &pos)
 {
   this->PositionVector = pos;
 }
@@ -98,9 +99,9 @@ vtkVector2f vtkHeatmapItem::GetPositionVector()
 }
 
 //-----------------------------------------------------------------------------
-void vtkHeatmapItem::SetTable(vtkTable* table)
+void vtkHeatmapItem::SetTable(vtkTable *table)
 {
-  if (table == nullptr || table->GetNumberOfRows() == 0)
+  if (table == NULL || table->GetNumberOfRows() == 0)
   {
     this->Table = vtkSmartPointer<vtkTable>::New();
     return;
@@ -108,17 +109,18 @@ void vtkHeatmapItem::SetTable(vtkTable* table)
   this->Table = table;
 
   // get the row names for this table
-  vtkStringArray* rowNames =
-    vtkArrayDownCast<vtkStringArray>(this->Table->GetColumnByName(this->NameColumn));
-  if (rowNames == nullptr)
+  vtkStringArray *rowNames = vtkArrayDownCast<vtkStringArray>(
+    this->Table->GetColumnByName(this->NameColumn));
+  if (rowNames == NULL)
   {
-    rowNames = vtkArrayDownCast<vtkStringArray>(this->Table->GetColumn(0));
+    rowNames = vtkArrayDownCast<vtkStringArray>(
+      this->Table->GetColumn(0));
   }
-  if (rowNames == nullptr)
+  if (rowNames == NULL)
   {
     vtkWarningMacro("Could not determine row name column."
-                    "Try calling vtkHeatmapItem::SetNameColumn(vtkStdString)");
-    this->RowNames = nullptr;
+      "Try calling vtkHeatmapItem::SetNameColumn(vtkStdString)");
+    this->RowNames = NULL;
   }
   else
   {
@@ -127,19 +129,19 @@ void vtkHeatmapItem::SetTable(vtkTable* table)
 }
 
 //-----------------------------------------------------------------------------
-vtkTable* vtkHeatmapItem::GetTable()
+vtkTable * vtkHeatmapItem::GetTable()
 {
   return this->Table;
 }
 
 //-----------------------------------------------------------------------------
-vtkStringArray* vtkHeatmapItem::GetRowNames()
+vtkStringArray * vtkHeatmapItem::GetRowNames()
 {
   return this->RowNames;
 }
 
 //-----------------------------------------------------------------------------
-bool vtkHeatmapItem::Paint(vtkContext2D* painter)
+bool vtkHeatmapItem::Paint(vtkContext2D *painter)
 {
   if (this->Table->GetNumberOfRows() == 0)
   {
@@ -180,10 +182,10 @@ void vtkHeatmapItem::RebuildBuffers()
 
   this->InitializeLookupTables();
 
-  this->CollapsedRowsArray =
-    vtkArrayDownCast<vtkBitArray>(this->Table->GetFieldData()->GetArray("collapsed rows"));
-  this->CollapsedColumnsArray =
-    vtkArrayDownCast<vtkBitArray>(this->Table->GetFieldData()->GetArray("collapsed columns"));
+  this->CollapsedRowsArray = vtkArrayDownCast<vtkBitArray>(
+    this->Table->GetFieldData()->GetArray("collapsed rows"));
+  this->CollapsedColumnsArray = vtkArrayDownCast<vtkBitArray>(
+    this->Table->GetFieldData()->GetArray("collapsed columns"));
 
   this->HeatmapBuildTime = this->Table->GetMTime();
 }
@@ -194,7 +196,8 @@ void vtkHeatmapItem::InitializeLookupTables()
   this->ColumnRanges.clear();
   this->CategoricalDataValues->Reset();
 
-  for (vtkIdType column = 0; column < this->Table->GetNumberOfColumns(); ++column)
+  for (vtkIdType column = 0; column < this->Table->GetNumberOfColumns();
+       ++column)
   {
     if (this->Table->GetColumn(column) == this->GetRowNames())
     {
@@ -241,28 +244,31 @@ void vtkHeatmapItem::GenerateContinuousDataLookupTable()
     this->ContinuousDataLookupTable->SetTableValue(i, f, 0, 0);
   }
 
-  // red to yellow
+ // red to yellow
   for (int i = 0; i < 85; ++i)
   {
     float f = static_cast<float>(i) / 84.0;
     this->ContinuousDataLookupTable->SetTableValue(85 + i, 1.0, f, 0);
   }
 
-  // yellow to white
+ // yellow to white
   for (int i = 0; i < 85; ++i)
   {
     float f = static_cast<float>(i) / 84.0;
     this->ContinuousDataLookupTable->SetTableValue(170 + i, 1.0, 1.0, f);
   }
 
-  this->ColorLegendLookupTable->DeepCopy(this->ContinuousDataLookupTable);
-  this->ColorLegend->SetTransferFunction(this->ColorLegendLookupTable);
+  this->ColorLegendLookupTable->DeepCopy(
+    this->ContinuousDataLookupTable.GetPointer());
+  this->ColorLegend->SetTransferFunction(
+    this->ColorLegendLookupTable.GetPointer());
 }
 
 //-----------------------------------------------------------------------------
 void vtkHeatmapItem::AccumulateProminentCategoricalDataValues(vtkIdType column)
 {
-  vtkStringArray* stringColumn = vtkArrayDownCast<vtkStringArray>(this->Table->GetColumn(column));
+  vtkStringArray *stringColumn = vtkArrayDownCast<vtkStringArray>(
+    this->Table->GetColumn(column));
 
   // search for values that occur more than once
   vtkNew<vtkStringArray> repeatedValues;
@@ -302,18 +308,20 @@ void vtkHeatmapItem::GenerateCategoricalDataLookupTable()
   for (int i = 0; i < this->CategoricalDataValues->GetNumberOfTuples(); ++i)
   {
     this->CategoricalDataLookupTable->SetAnnotation(
-      this->CategoricalDataValues->GetValue(i), this->CategoricalDataValues->GetValue(i));
+      this->CategoricalDataValues->GetValue(i),
+      this->CategoricalDataValues->GetValue(i));
   }
 
   vtkNew<vtkColorSeries> colorSeries;
   colorSeries->SetColorScheme(vtkColorSeries::BREWER_QUALITATIVE_SET3);
-  colorSeries->BuildLookupTable(this->CategoricalDataLookupTable);
+  colorSeries->BuildLookupTable(this->CategoricalDataLookupTable.GetPointer());
 
-  this->CategoryLegend->SetScalarsToColors(this->CategoricalDataLookupTable);
+  this->CategoryLegend->SetScalarsToColors(
+    this->CategoricalDataLookupTable.GetPointer());
 }
 
 //-----------------------------------------------------------------------------
-void vtkHeatmapItem::PaintBuffers(vtkContext2D* painter)
+void vtkHeatmapItem::PaintBuffers(vtkContext2D *painter)
 {
   // Calculate the extent of the data that is visible within the window.
   this->UpdateVisibleSceneExtent(painter);
@@ -340,7 +348,8 @@ void vtkHeatmapItem::PaintBuffers(vtkContext2D* painter)
   this->SceneRowToTableRowMap.clear();
   this->SceneRowToTableRowMap.assign(this->Table->GetNumberOfRows(), -1);
   this->SceneColumnToTableColumnMap.clear();
-  this->SceneColumnToTableColumnMap.assign(this->Table->GetNumberOfColumns(), -1);
+  this->SceneColumnToTableColumnMap.assign(
+    this->Table->GetNumberOfColumns(), -1);
 
   // Setup text property & calculate an appropriate font size for this zoom
   // level.  "Igq" was selected for the range of height of its characters.
@@ -348,9 +357,10 @@ void vtkHeatmapItem::PaintBuffers(vtkContext2D* painter)
   painter->GetTextProp()->SetVerticalJustificationToCentered();
   painter->GetTextProp()->SetJustificationToLeft();
   painter->GetTextProp()->SetOrientation(0.0);
-  int fontSize = painter->ComputeFontSizeForBoundedString("Igq", VTK_FLOAT_MAX, this->CellHeight);
+  int fontSize = painter->ComputeFontSizeForBoundedString("Igq", VTK_FLOAT_MAX,
+                                                          this->CellHeight);
 
-  // canDrawText is set to false if we're too zoomed out to draw legible text.
+  //canDrawText is set to false if we're too zoomed out to draw legible text.
   bool canDrawText = true;
   if (fontSize < 8)
   {
@@ -368,12 +378,12 @@ void vtkHeatmapItem::PaintBuffers(vtkContext2D* painter)
     {
       case vtkHeatmapItem::DOWN_TO_UP:
         if (this->SceneBottomLeft[1] > this->MaxY + spacing ||
-          this->SceneTopRight[1] < this->MaxY + spacing)
+            this->SceneTopRight[1] < this->MaxY + spacing)
         {
           drawRowLabels = false;
         }
         if (this->SceneBottomLeft[0] > this->MaxX + spacing ||
-          this->SceneTopRight[0] < this->MaxX + spacing)
+            this->SceneTopRight[0] < this->MaxX + spacing)
         {
           drawColumnLabels = false;
         }
@@ -381,7 +391,7 @@ void vtkHeatmapItem::PaintBuffers(vtkContext2D* painter)
 
       case vtkHeatmapItem::RIGHT_TO_LEFT:
         if (this->SceneBottomLeft[0] > this->MinX - spacing ||
-          this->SceneTopRight[0] < this->MinX - spacing)
+            this->SceneTopRight[0] < this->MinX - spacing)
         {
           drawRowLabels = false;
         }
@@ -390,7 +400,7 @@ void vtkHeatmapItem::PaintBuffers(vtkContext2D* painter)
           painter->GetTextProp()->SetJustificationToRight();
         }
         if (this->SceneBottomLeft[1] > this->MaxY + spacing &&
-          this->SceneTopRight[1] < this->MaxY + spacing)
+            this->SceneTopRight[1] < this->MaxY + spacing)
         {
           drawColumnLabels = false;
         }
@@ -398,7 +408,7 @@ void vtkHeatmapItem::PaintBuffers(vtkContext2D* painter)
 
       case vtkHeatmapItem::UP_TO_DOWN:
         if (this->SceneBottomLeft[1] > this->MinY - spacing ||
-          this->SceneTopRight[1] < this->MinY - spacing)
+            this->SceneTopRight[1] < this->MinY - spacing)
         {
           drawRowLabels = false;
         }
@@ -407,7 +417,7 @@ void vtkHeatmapItem::PaintBuffers(vtkContext2D* painter)
           painter->GetTextProp()->SetJustificationToRight();
         }
         if (this->SceneBottomLeft[0] > this->MaxX + spacing ||
-          this->SceneTopRight[0] < this->MaxX + spacing)
+            this->SceneTopRight[0] < this->MaxX + spacing)
         {
           drawColumnLabels = false;
         }
@@ -416,12 +426,12 @@ void vtkHeatmapItem::PaintBuffers(vtkContext2D* painter)
       case vtkHeatmapItem::LEFT_TO_RIGHT:
       default:
         if (this->SceneBottomLeft[0] > this->MaxX + spacing ||
-          this->SceneTopRight[0] < this->MaxX + spacing)
+            this->SceneTopRight[0] < this->MaxX + spacing)
         {
           drawRowLabels = false;
         }
         if (this->SceneBottomLeft[1] > this->MaxY + spacing &&
-          this->SceneTopRight[1] < this->MaxY + spacing)
+            this->SceneTopRight[1] < this->MaxY + spacing)
         {
           drawColumnLabels = false;
         }
@@ -432,7 +442,8 @@ void vtkHeatmapItem::PaintBuffers(vtkContext2D* painter)
   // set the orientation of our text property to draw row names
   if (drawRowLabels)
   {
-    painter->GetTextProp()->SetOrientation(this->GetTextAngleForOrientation(orientation));
+    painter->GetTextProp()->SetOrientation(
+      this->GetTextAngleForOrientation(orientation));
   }
 
   // keep track of what row & column we're drawing next
@@ -458,7 +469,7 @@ void vtkHeatmapItem::PaintBuffers(vtkContext2D* painter)
     currentlyCollapsingRows = false;
 
     // get the name of this row
-    std::string name;
+    std::string name = "";
     if (this->RowNames)
     {
       name = this->RowNames->GetValue(row);
@@ -468,7 +479,8 @@ void vtkHeatmapItem::PaintBuffers(vtkContext2D* painter)
     if (this->BlankRows.find(name) == this->BlankRows.end())
     {
       columnToDraw = 0;
-      for (vtkIdType column = 0; column < this->Table->GetNumberOfColumns(); ++column)
+      for (vtkIdType column = 0; column < this->Table->GetNumberOfColumns();
+           ++column)
       {
         // don't draw the name column as part of the heatmap
         // (it's used later to label the rows instead)
@@ -478,7 +490,8 @@ void vtkHeatmapItem::PaintBuffers(vtkContext2D* painter)
         }
 
         // check if this column has been collapsed or not
-        if (this->CollapsedColumnsArray && this->CollapsedColumnsArray->GetValue(column) == 1)
+        if (this->CollapsedColumnsArray &&
+            this->CollapsedColumnsArray->GetValue(column) == 1)
         {
           // a contiguous block of collapsed columns is represented as a single blank
           // column by this item.
@@ -503,7 +516,8 @@ void vtkHeatmapItem::PaintBuffers(vtkContext2D* painter)
         {
           // set the range on our continuous lookup table for this column
           this->ContinuousDataLookupTable->SetRange(
-            this->ColumnRanges[column].first, this->ColumnRanges[column].second);
+            this->ColumnRanges[column].first,
+            this->ColumnRanges[column].second);
 
           // get the color for this value
           this->ContinuousDataLookupTable->GetColor(value.ToDouble(), color);
@@ -513,7 +527,7 @@ void vtkHeatmapItem::PaintBuffers(vtkContext2D* painter)
         // draw this cell of the table
         double w = 0.0;
         double h = 0.0;
-        switch (orientation)
+        switch(orientation)
         {
           case vtkHeatmapItem::DOWN_TO_UP:
             cellStartX = this->Position[0] + this->CellHeight * rowToDraw;
@@ -545,10 +559,11 @@ void vtkHeatmapItem::PaintBuffers(vtkContext2D* painter)
             break;
         }
 
-        if (this->LineIsVisible(cellStartX, cellStartY, cellStartX + this->CellWidth,
-              cellStartY + this->CellHeight) ||
-          this->LineIsVisible(
-            cellStartX, cellStartY + this->CellHeight, cellStartX + this->CellWidth, cellStartY))
+        if (this->LineIsVisible(cellStartX, cellStartY,
+                                cellStartX + this->CellWidth,
+                                cellStartY + this->CellHeight) ||
+            this->LineIsVisible(cellStartX, cellStartY + this->CellHeight,
+                                cellStartX + this->CellWidth, cellStartY))
         {
           painter->DrawRect(cellStartX, cellStartY, w, h);
         }
@@ -593,9 +608,11 @@ void vtkHeatmapItem::PaintBuffers(vtkContext2D* painter)
         break;
     }
 
-    if (!name.empty() && this->SceneBottomLeft[0] < labelStartX &&
-      this->SceneTopRight[0] > labelStartX && this->SceneBottomLeft[1] < labelStartY &&
-      this->SceneTopRight[1] > labelStartY)
+    if (name != "" &&
+        this->SceneBottomLeft[0] < labelStartX &&
+        this->SceneTopRight[0] > labelStartX   &&
+        this->SceneBottomLeft[1] < labelStartY &&
+        this->SceneTopRight[1] > labelStartY)
     {
       painter->DrawString(labelStartX, labelStartY, name);
     }
@@ -635,7 +652,8 @@ void vtkHeatmapItem::PaintBuffers(vtkContext2D* painter)
   painter->GetTextProp()->SetJustificationToLeft();
 
   columnToDraw = 1;
-  for (vtkIdType column = 0; column < this->Table->GetNumberOfColumns(); ++column)
+  for (vtkIdType column = 0; column < this->Table->GetNumberOfColumns();
+       ++column)
   {
     // don't draw the name column as part of the heatmap
     // (it's used later to label the rows instead)
@@ -645,7 +663,8 @@ void vtkHeatmapItem::PaintBuffers(vtkContext2D* painter)
     }
 
     // check if this column has been collapsed or not
-    if (this->CollapsedColumnsArray && this->CollapsedColumnsArray->GetValue(column) == 1)
+    if (this->CollapsedColumnsArray &&
+        this->CollapsedColumnsArray->GetValue(column) == 1)
     {
       // a contiguous block of collapsed columns is represented as a single blank
       // column by this item.
@@ -658,25 +677,29 @@ void vtkHeatmapItem::PaintBuffers(vtkContext2D* painter)
     }
     currentlyCollapsingColumns = false;
 
-    switch (orientation)
+    switch(orientation)
     {
       case vtkHeatmapItem::DOWN_TO_UP:
       case vtkHeatmapItem::UP_TO_DOWN:
         labelStartX = this->MaxX + spacing;
-        labelStartY = this->MinY + this->CellWidth * columnToDraw - this->CellWidth / 2;
+        labelStartY =
+          this->MinY + this->CellWidth * columnToDraw - this->CellWidth / 2;
         break;
 
       case vtkHeatmapItem::RIGHT_TO_LEFT:
       case vtkHeatmapItem::LEFT_TO_RIGHT:
       default:
-        labelStartX = this->MinX + this->CellWidth * columnToDraw - this->CellWidth / 2;
+        labelStartX =
+          this->MinX + this->CellWidth * columnToDraw - this->CellWidth / 2;
         labelStartY = this->MaxY + spacing;
         break;
     }
 
     std::string columnName = this->Table->GetColumn(column)->GetName();
-    if (this->SceneBottomLeft[0] < labelStartX && this->SceneTopRight[0] > labelStartX &&
-      this->SceneBottomLeft[1] < labelStartY && this->SceneTopRight[1] > labelStartY)
+    if (this->SceneBottomLeft[0] < labelStartX &&
+        this->SceneTopRight[0] > labelStartX &&
+        this->SceneBottomLeft[1] < labelStartY &&
+        this->SceneTopRight[1] > labelStartY)
     {
       painter->DrawString(labelStartX, labelStartY, columnName);
     }
@@ -688,7 +711,7 @@ void vtkHeatmapItem::PaintBuffers(vtkContext2D* painter)
 }
 
 //-----------------------------------------------------------------------------
-void vtkHeatmapItem::UpdateVisibleSceneExtent(vtkContext2D* painter)
+void vtkHeatmapItem::UpdateVisibleSceneExtent(vtkContext2D *painter)
 {
   float position[2];
   painter->GetTransform()->GetPosition(position);
@@ -696,19 +719,22 @@ void vtkHeatmapItem::UpdateVisibleSceneExtent(vtkContext2D* painter)
   this->SceneBottomLeft[1] = -position[1];
   this->SceneBottomLeft[2] = 0.0;
 
-  this->SceneTopRight[0] = static_cast<double>(this->GetScene()->GetSceneWidth() - position[0]);
-  this->SceneTopRight[1] = static_cast<double>(this->GetScene()->GetSceneHeight() - position[1]);
+  this->SceneTopRight[0] =
+    static_cast<double>(this->GetScene()->GetSceneWidth() - position[0]);
+  this->SceneTopRight[1] =
+    static_cast<double>(this->GetScene()->GetSceneHeight() - position[1]);
   this->SceneTopRight[2] = 0.0;
   vtkNew<vtkMatrix3x3> inverse;
-  painter->GetTransform()->GetInverse(inverse);
+  painter->GetTransform()->GetInverse(inverse.GetPointer());
   inverse->MultiplyPoint(this->SceneBottomLeft, this->SceneBottomLeft);
   inverse->MultiplyPoint(this->SceneTopRight, this->SceneTopRight);
 }
 
 //-----------------------------------------------------------------------------
-bool vtkHeatmapItem::LineIsVisible(double x0, double y0, double x1, double y1)
+bool vtkHeatmapItem::LineIsVisible(double x0, double y0,
+                                        double x1, double y1)
 {
-  // use local variables to improve readability
+  // use local variables to improve readibility
   double xMinScene = this->SceneBottomLeft[0];
   double yMinScene = this->SceneBottomLeft[1];
   double xMaxScene = this->SceneTopRight[0];
@@ -716,8 +742,10 @@ bool vtkHeatmapItem::LineIsVisible(double x0, double y0, double x1, double y1)
 
   // if either end point of the line segment falls within the screen,
   // then the line segment is visible.
-  if ((xMinScene <= x0 && xMaxScene >= x0 && yMinScene <= y0 && yMaxScene >= y0) ||
-    (xMinScene <= x1 && xMaxScene >= x1 && yMinScene <= y1 && yMaxScene >= y1))
+  if ( (xMinScene <= x0 && xMaxScene >= x0 &&
+        yMinScene <= y0 && yMaxScene >= y0) ||
+       (xMinScene <= x1 && xMaxScene >= x1 &&
+        yMinScene <= y1 && yMaxScene >= y1) )
   {
     return true;
   }
@@ -747,16 +775,18 @@ bool vtkHeatmapItem::LineIsVisible(double x0, double y0, double x1, double y1)
 
   // case where the Y range of the line falls within the visible scene
   // and the X range of the line contains the entire visible scene
-  if (yMinScene <= yMinLine && yMaxScene >= yMinLine && yMinScene <= yMaxLine &&
-    yMaxScene >= yMaxLine && xMinLine <= xMinScene && xMaxLine >= xMaxScene)
+  if (yMinScene <= yMinLine && yMaxScene >= yMinLine &&
+      yMinScene <= yMaxLine && yMaxScene >= yMaxLine &&
+      xMinLine <= xMinScene && xMaxLine >= xMaxScene)
   {
     return true;
   }
 
   // case where the X range of the line falls within the visible scene
   // and the Y range of the line contains the entire visible scene
-  if (xMinScene <= xMinLine && xMaxScene >= xMinLine && xMinScene <= xMaxLine &&
-    xMaxScene >= xMaxLine && yMinLine <= yMinScene && yMaxLine >= yMaxScene)
+  if (xMinScene <= xMinLine && xMaxScene >= xMinLine &&
+      xMinScene <= xMaxLine && xMaxScene >= xMaxLine &&
+      yMinLine <= yMinScene && yMaxLine >= yMaxScene)
   {
     return true;
   }
@@ -765,7 +795,7 @@ bool vtkHeatmapItem::LineIsVisible(double x0, double y0, double x1, double y1)
 }
 
 //-----------------------------------------------------------------------------
-bool vtkHeatmapItem::MouseMoveEvent(const vtkContextMouseEvent& event)
+bool vtkHeatmapItem::MouseMoveEvent(const vtkContextMouseEvent &event)
 {
   if (event.GetButton() == vtkContextMouseEvent::NO_BUTTON)
   {
@@ -774,10 +804,10 @@ bool vtkHeatmapItem::MouseMoveEvent(const vtkContextMouseEvent& event)
     pos[0] = event.GetPos().GetX();
     pos[1] = event.GetPos().GetY();
     pos[2] = 0;
-    this->GetScene()->GetTransform()->GetInverse(inverse);
+    this->GetScene()->GetTransform()->GetInverse(inverse.GetPointer());
     inverse->MultiplyPoint(pos, pos);
-    if (pos[0] <= this->MaxX && pos[0] >= this->MinX && pos[1] <= this->MaxY &&
-      pos[1] >= this->MinY)
+    if (pos[0] <= this->MaxX && pos[0] >= this->MinX &&
+        pos[1] <= this->MaxY && pos[1] >= this->MinY)
     {
       this->Tooltip->SetPosition(pos[0], pos[1]);
 
@@ -806,7 +836,8 @@ std::string vtkHeatmapItem::GetTooltipText(float x, float y)
   int sceneRow = 0;
   int sceneColumn = 0;
   int orientation = this->GetOrientation();
-  if (orientation == vtkHeatmapItem::UP_TO_DOWN || orientation == vtkHeatmapItem::DOWN_TO_UP)
+  if (orientation == vtkHeatmapItem::UP_TO_DOWN ||
+      orientation == vtkHeatmapItem::DOWN_TO_UP)
   {
     sceneRow = static_cast<int>(floor(fabs(x - this->Position[0]) / this->CellHeight));
     sceneColumn = static_cast<int>(floor((y - this->MinY) / this->CellWidth));
@@ -823,7 +854,8 @@ std::string vtkHeatmapItem::GetTooltipText(float x, float y)
     row = this->SceneRowToTableRowMap[sceneRow];
   }
   vtkIdType column = -1;
-  if (static_cast<unsigned int>(sceneColumn) < this->SceneColumnToTableColumnMap.size())
+  if (static_cast<unsigned int>(sceneColumn) <
+      this->SceneColumnToTableColumnMap.size())
   {
     column = this->SceneColumnToTableColumnMap[sceneColumn];
   }
@@ -863,30 +895,31 @@ std::string vtkHeatmapItem::GetTooltipText(float x, float y)
 //-----------------------------------------------------------------------------
 void vtkHeatmapItem::SetOrientation(int orientation)
 {
-  vtkIntArray* existingArray =
-    vtkArrayDownCast<vtkIntArray>(this->Table->GetFieldData()->GetArray("orientation"));
+  vtkIntArray *existingArray = vtkArrayDownCast<vtkIntArray>(
+    this->Table->GetFieldData()->GetArray("orientation"));
   if (existingArray)
   {
     existingArray->SetValue(0, orientation);
   }
   else
   {
-    vtkSmartPointer<vtkIntArray> orientationArray = vtkSmartPointer<vtkIntArray>::New();
+    vtkSmartPointer<vtkIntArray> orientationArray =
+      vtkSmartPointer<vtkIntArray>::New();
     orientationArray->SetNumberOfComponents(1);
     orientationArray->SetName("orientation");
     orientationArray->InsertNextValue(orientation);
     this->Table->GetFieldData()->AddArray(orientationArray);
   }
 
-  // reposition the legends
+  //reposition the legends
   this->PositionLegends(orientation);
 }
 
 //-----------------------------------------------------------------------------
 int vtkHeatmapItem::GetOrientation()
 {
-  vtkIntArray* orientationArray =
-    vtkArrayDownCast<vtkIntArray>(this->Table->GetFieldData()->GetArray("orientation"));
+  vtkIntArray *orientationArray = vtkArrayDownCast<vtkIntArray>(
+    this->Table->GetFieldData()->GetArray("orientation"));
   if (orientationArray)
   {
     return orientationArray->GetValue(0);
@@ -897,7 +930,7 @@ int vtkHeatmapItem::GetOrientation()
 //-----------------------------------------------------------------------------
 double vtkHeatmapItem::GetTextAngleForOrientation(int orientation)
 {
-  switch (orientation)
+  switch(orientation)
   {
     case vtkHeatmapItem::DOWN_TO_UP:
       return 90.0;
@@ -915,12 +948,13 @@ double vtkHeatmapItem::GetTextAngleForOrientation(int orientation)
 }
 
 //-----------------------------------------------------------------------------
-void vtkHeatmapItem::ComputeLabelWidth(vtkContext2D* painter)
+void vtkHeatmapItem::ComputeLabelWidth(vtkContext2D *painter)
 {
   this->RowLabelWidth = 0.0;
   this->ColumnLabelWidth = 0.0;
 
-  int fontSize = painter->ComputeFontSizeForBoundedString("Igq", VTK_FLOAT_MAX, this->CellHeight);
+  int fontSize = painter->ComputeFontSizeForBoundedString("Igq", VTK_FLOAT_MAX,
+                                                          this->CellHeight);
   if (fontSize < 8)
   {
     return;
@@ -937,7 +971,8 @@ void vtkHeatmapItem::ComputeLabelWidth(vtkContext2D* painter)
 
     for (vtkIdType row = 0; row != this->Table->GetNumberOfRows(); ++row)
     {
-      if (this->CollapsedRowsArray && this->CollapsedRowsArray->GetValue(row) == 1)
+      if (this->CollapsedRowsArray &&
+          this->CollapsedRowsArray->GetValue(row) == 1)
       {
         continue;
       }
@@ -957,7 +992,8 @@ void vtkHeatmapItem::ComputeLabelWidth(vtkContext2D* painter)
     {
       continue;
     }
-    if (this->CollapsedColumnsArray && this->CollapsedColumnsArray->GetValue(col) == 1)
+    if (this->CollapsedColumnsArray &&
+        this->CollapsedColumnsArray->GetValue(col) == 1)
     {
       continue;
     }
@@ -981,7 +1017,8 @@ void vtkHeatmapItem::ComputeBounds()
   int numRows = 0;
   for (vtkIdType row = 0; row != this->Table->GetNumberOfRows(); ++row)
   {
-    if (this->CollapsedRowsArray && this->CollapsedRowsArray->GetValue(row) == 1)
+    if (this->CollapsedRowsArray &&
+        this->CollapsedRowsArray->GetValue(row) == 1)
     {
       // a contiguous block of collapsed rows is represented as a single blank
       // row by this item.
@@ -1005,7 +1042,8 @@ void vtkHeatmapItem::ComputeBounds()
     {
       continue;
     }
-    if (this->CollapsedColumnsArray && this->CollapsedColumnsArray->GetValue(col) == 1)
+    if (this->CollapsedColumnsArray &&
+        this->CollapsedColumnsArray->GetValue(col) == 1)
     {
       // a contiguous block of collapsed columns is represented as a single blank
       // column by this item.
@@ -1080,13 +1118,13 @@ void vtkHeatmapItem::GetBounds(double bounds[4])
 }
 
 //-----------------------------------------------------------------------------
-void vtkHeatmapItem::MarkRowAsBlank(const std::string& rowName)
+void vtkHeatmapItem::MarkRowAsBlank(std::string rowName)
 {
   this->BlankRows.insert(rowName);
 }
 
 //-----------------------------------------------------------------------------
-bool vtkHeatmapItem::MouseDoubleClickEvent(const vtkContextMouseEvent& event)
+bool vtkHeatmapItem::MouseDoubleClickEvent(const vtkContextMouseEvent &event)
 {
   // get the position of the double click and convert it to scene coordinates
   double pos[3];
@@ -1094,13 +1132,15 @@ bool vtkHeatmapItem::MouseDoubleClickEvent(const vtkContextMouseEvent& event)
   pos[0] = event.GetPos().GetX();
   pos[1] = event.GetPos().GetY();
   pos[2] = 0;
-  this->GetScene()->GetTransform()->GetInverse(inverse);
+  this->GetScene()->GetTransform()->GetInverse(inverse.GetPointer());
   inverse->MultiplyPoint(pos, pos);
-  if (pos[0] <= this->MaxX && pos[0] >= this->MinX && pos[1] <= this->MaxY && pos[1] >= this->MinY)
+  if (pos[0] <= this->MaxX && pos[0] >= this->MinX &&
+      pos[1] <= this->MaxY && pos[1] >= this->MinY)
   {
     vtkIdType column = 0;
     int orientation = this->GetOrientation();
-    if (orientation == vtkHeatmapItem::UP_TO_DOWN || orientation == vtkHeatmapItem::DOWN_TO_UP)
+    if (orientation == vtkHeatmapItem::UP_TO_DOWN ||
+        orientation == vtkHeatmapItem::DOWN_TO_UP)
     {
       column = static_cast<vtkIdType>(floor((pos[1] - this->MinY) / this->CellWidth));
     }
@@ -1119,16 +1159,17 @@ bool vtkHeatmapItem::MouseDoubleClickEvent(const vtkContextMouseEvent& event)
     {
       // categorical data
       // generate an array of distinct values from this column
-      vtkStringArray* stringColumn =
-        vtkArrayDownCast<vtkStringArray>(this->Table->GetColumn(column));
+      vtkStringArray *stringColumn = vtkArrayDownCast<vtkStringArray>(
+        this->Table->GetColumn(column));
       this->CategoryLegendValues->Reset();
       this->CategoryLegendValues->Squeeze();
       stringColumn->SetMaxDiscreteValues(stringColumn->GetNumberOfTuples() - 1);
-      stringColumn->GetProminentComponentValues(0, this->CategoryLegendValues);
+      stringColumn->GetProminentComponentValues(
+        0, this->CategoryLegendValues.GetPointer());
       this->CategoryLegendValues->Modified();
 
-      // these distinct values become the input to our categorical legend
-      this->CategoryLegend->SetValues(this->CategoryLegendValues);
+      // these distinct values become the the input to our categorical legend
+      this->CategoryLegend->SetValues(this->CategoryLegendValues.GetPointer());
       this->CategoryLegend->SetTitle(this->Table->GetColumn(column)->GetName());
       this->CategoryLegend->SetVisible(true);
       this->ColorLegend->SetVisible(false);
@@ -1140,7 +1181,8 @@ bool vtkHeatmapItem::MouseDoubleClickEvent(const vtkContextMouseEvent& event)
       // continuous data
       // set up the scalar bar legend
       this->ColorLegend->GetTransferFunction()->SetRange(
-        this->ColumnRanges[column].first, this->ColumnRanges[column].second);
+        this->ColumnRanges[column].first,
+        this->ColumnRanges[column].second);
 
       this->ColorLegend->SetTitle(this->Table->GetColumn(column)->GetName());
 
@@ -1151,7 +1193,8 @@ bool vtkHeatmapItem::MouseDoubleClickEvent(const vtkContextMouseEvent& event)
       return true;
     }
   }
-  bool shouldRepaint = this->ColorLegend->GetVisible() || this->CategoryLegend->GetVisible();
+  bool shouldRepaint = this->ColorLegend->GetVisible() ||
+                       this->CategoryLegend->GetVisible();
   this->CategoryLegend->SetVisible(false);
   this->ColorLegend->SetVisible(false);
   if (shouldRepaint)
@@ -1171,7 +1214,7 @@ void vtkHeatmapItem::PositionLegends(int orientation)
     return;
   }
 
-  switch (orientation)
+  switch(orientation)
   {
     case vtkHeatmapItem::DOWN_TO_UP:
     case vtkHeatmapItem::UP_TO_DOWN:
@@ -1179,15 +1222,18 @@ void vtkHeatmapItem::PositionLegends(int orientation)
       this->CategoryLegend->SetHorizontalAlignment(vtkChartLegend::RIGHT);
       this->CategoryLegend->SetVerticalAlignment(vtkChartLegend::CENTER);
       this->CategoryLegend->SetPoint(
-        this->MinX - this->CellHeight, this->MinY + (this->MaxY - this->MinY) / 2.0);
+        this->MinX - this->CellHeight,
+        this->MinY + (this->MaxY - this->MinY) / 2.0);
 
       this->ColorLegend->SetHorizontalAlignment(vtkChartLegend::RIGHT);
       this->ColorLegend->SetVerticalAlignment(vtkChartLegend::CENTER);
       this->ColorLegend->SetOrientation(vtkColorLegend::VERTICAL);
       this->ColorLegend->SetPoint(
-        this->MinX - this->CellHeight, this->MinY + (this->MaxY - this->MinY) / 2.0);
+        this->MinX - this->CellHeight,
+        this->MinY + (this->MaxY - this->MinY) / 2.0);
       this->ColorLegend->SetTextureSize(
-        this->ColorLegend->GetSymbolWidth(), this->MaxY - this->MinY);
+        this->ColorLegend->GetSymbolWidth(),
+       this->MaxY - this->MinY);
       break;
 
     case vtkHeatmapItem::RIGHT_TO_LEFT:
@@ -1197,22 +1243,25 @@ void vtkHeatmapItem::PositionLegends(int orientation)
       this->CategoryLegend->SetHorizontalAlignment(vtkChartLegend::CENTER);
       this->CategoryLegend->SetVerticalAlignment(vtkChartLegend::TOP);
       this->CategoryLegend->SetPoint(
-        this->MinX + (this->MaxX - this->MinX) / 2.0, this->MinY - this->CellHeight);
+        this->MinX + (this->MaxX - this->MinX) / 2.0,
+        this->MinY - this->CellHeight);
 
       this->ColorLegend->SetHorizontalAlignment(vtkChartLegend::CENTER);
       this->ColorLegend->SetVerticalAlignment(vtkChartLegend::TOP);
       this->ColorLegend->SetOrientation(vtkColorLegend::HORIZONTAL);
       this->ColorLegend->SetPoint(
-        this->MinX + (this->MaxX - this->MinX) / 2.0, this->MinY - this->CellHeight);
+        this->MinX + (this->MaxX - this->MinX) / 2.0,
+        this->MinY - this->CellHeight);
       this->ColorLegend->SetTextureSize(
-        this->MaxX - this->MinX, this->ColorLegend->GetSymbolWidth());
+        this->MaxX - this->MinX,
+        this->ColorLegend->GetSymbolWidth());
       break;
   }
   this->LegendPositionSet = true;
 }
 
 //-----------------------------------------------------------------------------
-bool vtkHeatmapItem::Hit(const vtkContextMouseEvent& vtkNotUsed(mouse))
+bool vtkHeatmapItem::Hit(const vtkContextMouseEvent &vtkNotUsed(mouse))
 {
   // If we are interactive, we want to catch anything that propagates to the
   // background, otherwise we do not want any mouse events.
@@ -1220,7 +1269,7 @@ bool vtkHeatmapItem::Hit(const vtkContextMouseEvent& vtkNotUsed(mouse))
 }
 
 //-----------------------------------------------------------------------------
-void vtkHeatmapItem::PrintSelf(ostream& os, vtkIndent indent)
+void vtkHeatmapItem::PrintSelf(ostream &os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
   os << "Table: " << (this->Table ? "" : "(null)") << std::endl;

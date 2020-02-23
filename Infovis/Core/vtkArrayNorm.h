@@ -32,21 +32,21 @@
  *
  * @par Thanks:
  * Developed by Timothy M. Shead (tshead@sandia.gov) at Sandia National Laboratories.
- */
+*/
 
 #ifndef vtkArrayNorm_h
 #define vtkArrayNorm_h
 
+#include "vtkInfovisCoreModule.h" // For export macro
 #include "vtkArrayDataAlgorithm.h"
 #include "vtkArrayRange.h"
-#include "vtkInfovisCoreModule.h" // For export macro
 
 class VTKINFOVISCORE_EXPORT vtkArrayNorm : public vtkArrayDataAlgorithm
 {
 public:
   static vtkArrayNorm* New();
   vtkTypeMacro(vtkArrayNorm, vtkArrayDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -84,18 +84,22 @@ public:
 
 protected:
   vtkArrayNorm();
-  ~vtkArrayNorm() override;
+  ~vtkArrayNorm();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(
+    vtkInformation*,
+    vtkInformationVector**,
+    vtkInformationVector*);
 
 private:
-  vtkArrayNorm(const vtkArrayNorm&) = delete;
-  void operator=(const vtkArrayNorm&) = delete;
+  vtkArrayNorm(const vtkArrayNorm&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkArrayNorm&) VTK_DELETE_FUNCTION;
 
   int Dimension;
   int L;
   int Invert;
   vtkArrayRange Window;
+
 };
 
 #endif

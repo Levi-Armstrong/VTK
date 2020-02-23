@@ -12,7 +12,7 @@ static bool TestRange()
   vtkNew<vtkScalarsToColors> lut;
 
   // Check default range.
-  const double* range = lut->GetRange();
+  const double *range = lut->GetRange();
   if (range[0] != 0.0 || range[1] != 255.0)
   {
     cerr << "Default range wrong\n";
@@ -82,8 +82,8 @@ static bool TestGetColorAndMapValue()
 
   vtkNew<vtkScalarsToColors> lut;
 
-  double rgb[3] = { 0.1, 0.2, 0.3 };
-  const unsigned char* rgba = nullptr;
+  double rgb[3] = {0.1, 0.2, 0.3};
+  const unsigned char * rgba = NULL;
 
   // Sane range.
   lut->SetRange(0.0, 1.0);
@@ -100,6 +100,7 @@ static bool TestGetColorAndMapValue()
     cerr << "MapValue result wrong\n";
     success = false;
   }
+
 
   // Tiny range.
   lut->SetRange(0.0, 1e-80);
@@ -131,15 +132,15 @@ static bool TestDeepCopy()
   ann->InsertNextValue("HelloWorld");
   vtkNew<vtkVariantArray> val;
   val->InsertNextValue(vtkVariant(123.4));
-  lut->SetAnnotations(val, ann);
+  lut->SetAnnotations(val.Get(), ann.Get());
 
   // Test nop DeepCopy.
   vtkNew<vtkScalarsToColors> copy1;
-  copy1->DeepCopy(nullptr);
+  copy1->DeepCopy(NULL);
 
   // Test actual copy.
   vtkNew<vtkScalarsToColors> copy2;
-  copy2->DeepCopy(lut);
+  copy2->DeepCopy(lut.Get());
 
   vtkStringArray* ann2 = copy2->GetAnnotations();
   vtkAbstractArray* val2 = copy2->GetAnnotatedValues();
@@ -148,7 +149,7 @@ static bool TestDeepCopy()
     cerr << "Annotations not copied\n";
     success = false;
   }
-  if (ann == ann2 || val == val2)
+  if (ann.Get() == ann2 || val.Get() == val2)
   {
     cerr << "Annotations only shallow copied\n";
     success = false;
@@ -170,12 +171,12 @@ static bool TestGeneral()
 
   vtkNew<vtkScalarsToColors> lut;
 
-  lut->SetAnnotations(nullptr, nullptr);
+  lut->SetAnnotations(NULL, NULL);
   vtkStringArray* ann2 = lut->GetAnnotations();
   vtkAbstractArray* val2 = lut->GetAnnotatedValues();
   if (ann2 || val2)
   {
-    cerr << "Annotations set to nullptr but didn't return nullptr\n";
+    cerr << "Annotations set to NULL but didn't return NULL\n";
     success = false;
   }
 
@@ -183,12 +184,12 @@ static bool TestGeneral()
   ann->InsertNextValue("Foo");
   vtkNew<vtkVariantArray> val;
   val->InsertNextValue(vtkVariant(10.3));
-  lut->SetAnnotations(val, ann);
+  lut->SetAnnotations(val.Get(), ann.Get());
   ann2 = lut->GetAnnotations();
   val2 = lut->GetAnnotatedValues();
   if (!ann2 || !val2)
   {
-    cerr << "Annotations set to non-nullptr but returned nullptr\n";
+    cerr << "Annotations set to non-NULL but returned NULL\n";
     success = false;
   }
 
@@ -210,7 +211,7 @@ static bool TestGeneral()
   val->InsertNextValue("Narf");
   ann->InsertNextValue("Fezzik");
   val->InsertNextValue(vtkVariant(20));
-  lut->SetAnnotations(val, ann);
+  lut->SetAnnotations(val.Get(), ann.Get());
 
   idx = lut->GetAnnotatedValueIndex("Narf");
   if (idx != 1)
@@ -219,12 +220,12 @@ static bool TestGeneral()
     success = false;
   }
 
-  lut->SetAnnotations(nullptr, nullptr);
+  lut->SetAnnotations(NULL, NULL);
   ann2 = lut->GetAnnotations();
   val2 = lut->GetAnnotatedValues();
   if (ann2 || val2)
   {
-    cerr << "Annotations again set to nullptr but didn't return nullptr\n";
+    cerr << "Annotations again set to NULL but didn't return NULL\n";
     success = false;
   }
 

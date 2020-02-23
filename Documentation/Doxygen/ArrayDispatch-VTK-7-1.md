@@ -270,7 +270,7 @@ this template explosion in check.
 
 Starting with VTK 7.1, the Array-Of-Structs (AOS) memory layout is no longer
 the only `vtkDataArray` implementation provided by the library. The
-Struct-Of-Arrays (SOA) memory layout is now available through the
+Struct-Of-Arrays (SOA) memory layout is now available throught the
 `vtkSOADataArrayTemplate` class. The SOA layout assumes that the components of
 an array are stored separately, as in:
 
@@ -413,7 +413,7 @@ instance, if one wanted to only generate templated worker implementations for
 
 ~~~{.cpp}
 // Create a typelist of 2 types, vtkFloatArray and vtkIntArray:
-typedef vtkTypeList::Create<vtkFloatArray, vtkIntArray> MyArrays;
+typedef vtkTypeList_Create_2(vtkFloatArray, vtkIntArray) MyArrays;
 
 Worker someWorker = ...;
 vtkDataArray *someArray = ...;
@@ -423,7 +423,7 @@ vtkArrayDispatch::DispatchByArray<MyArrays>(someArray, someWorker);
 ~~~
 
 There's not much to know about type lists as a user, other than how to create
-them. As seen above, there is a set of macros named `vtkTypeList::Create<...>`,
+them. As seen above, there is a set of macros named `vtkTypeList_Create_X`,
 where X is the number of types in the created list, and the arguments are the
 types to place in the list. In the example above, the new type list is
 typically bound to a friendlier name using a local `typedef`, which is a common
@@ -454,7 +454,7 @@ used to import views of intermediate results.
 By default, `vtkArrayDispatch::Arrays` contains all AOS arrays. The `CMake`
 option `VTK_DISPATCH_SOA_ARRAYS` will enable SOA array dispatch as well. More
 advanced possibilities exist and are described in
-`VTK/Common/Core/vtkCreateArrayDispatchArrayList.cmake`.
+`VTK/CMake/vtkCreateArrayDispatchArrayList.cmake`.
 
 # vtkArrayDownCast # {#VTKAD-vtkArrayDownCast}
 
@@ -962,7 +962,7 @@ typedef typename vtkArrayDispatch::FilterArraysByValueType
   >::Result InputTypes;
 
 // For output, create a new vtkTypeList with the only two possibilities:
-typedef vtkTypeList::Create<vtkFloatArray, vtkDoubleArray> OutputTypes;
+typedef vtkTypeList_Create_2(vtkFloatArray, vtkDoubleArray) OutputTypes;
 
 // Typedef the dispatch to a more manageable name:
 typedef vtkArrayDispatch::Dispatch2ByArray
@@ -1016,7 +1016,7 @@ vtkDataArray *array3 = ...;
 typedef vtkArrayDispatch::Dispatch3ByValueType
   <
   vtkArrayDispatch::AllTypes,
-  vtkTypeList::Create<unsigned char>,
+  vtkTypeList_Create_1(unsigned char),
   vtkArrayDispatch::Reals
   > MyDispatch;
 
@@ -1060,14 +1060,14 @@ vtkDataArray *array1 = ...;
 vtkDataArray *array2 = ...;
 
 // array1's possible types:
-typedef vtkTypeList;:Create<vtkFloatArray, vtkDoubleArray,
-                            vtkIntArray, vtkIdTypeArray> Array1Types;
+typedef vtkTypeList_Create_4(vtkFloatArray, vtkDoubleArray,
+                             vtkIntArray, vtkIdTypeArray) Array1Types;
 
 // array2's possible types:
 typedef typename vtkArrayDispatch::FilterArraysByValueType
   <
   vtkArrayDispatch::Arrays,
-  vtkTypeList::Create<float, double, int, vtkIdType>
+  vtkTypeList_Create_4(float, double, int, vtkIdType)
   > Array2Types;
 
 // Typedef the dispatch to a more manageable name:
@@ -1121,7 +1121,7 @@ vtkDataArray *array1 = ...;
 vtkDataArray *array2 = ...;
 
 // The allowed ValueTypes:
-typedef vtkTypeList::Create<float, double, int, vtkIdType> ValidValueTypes;
+typedef vtkTypeList_Create_4(float, double, int, vtkIdType) ValidValueTypes;
 
 // Typedef the dispatch to a more manageable name:
 typedef vtkArrayDispatch::Dispatch2BySameValueType
@@ -1274,6 +1274,4 @@ restrictions are not met.
 Hopefully this has convinced you that the `vtkArrayDispatch` and related tools
 are worth using to create flexible, efficient, typesafe implementations for
 your work with VTK. Please direct any questions you may have on the subject to
-the [VTK Discourse][] forum.
-
-[VTK Discourse]: https://discourse.vtk.org
+the VTK mailing lists.

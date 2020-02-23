@@ -23,13 +23,13 @@
  * an error message will be produced.
  * @sa
  * vtkPolyDataMapper
- */
+*/
 
 #ifndef vtkCompositePolyDataMapper_h
 #define vtkCompositePolyDataMapper_h
 
-#include "vtkMapper.h"
 #include "vtkRenderingCoreModule.h" // For export macro
+#include "vtkMapper.h"
 
 class vtkPolyDataMapper;
 class vtkInformation;
@@ -41,54 +41,44 @@ class VTKRENDERINGCORE_EXPORT vtkCompositePolyDataMapper : public vtkMapper
 {
 
 public:
-  static vtkCompositePolyDataMapper* New();
+  static vtkCompositePolyDataMapper *New();
   vtkTypeMacro(vtkCompositePolyDataMapper, vtkMapper);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Standard method for rendering a mapper. This method will be
    * called by the actor.
    */
-  void Render(vtkRenderer* ren, vtkActor* a) override;
+  void Render(vtkRenderer *ren, vtkActor *a);
 
   //@{
   /**
    * Standard vtkProp method to get 3D bounds of a 3D prop
    */
-  double* GetBounds() VTK_SIZEHINT(6) override;
-  void GetBounds(double bounds[6]) override { this->Superclass::GetBounds(bounds); }
+  double *GetBounds();
+  void GetBounds(double bounds[6]) { this->Superclass::GetBounds( bounds ); };
   //@}
 
   /**
    * Release the underlying resources associated with this mapper
    */
-  void ReleaseGraphicsResources(vtkWindow*) override;
-
-  //@{
-  /**
-   * Some introspection on the type of data the mapper will render
-   * used by props to determine if they should invoke the mapper
-   * on a specific rendering pass.
-   */
-  bool HasOpaqueGeometry() override;
-  bool HasTranslucentPolygonalGeometry() override;
-  //@}
+  void ReleaseGraphicsResources(vtkWindow *);
 
 protected:
   vtkCompositePolyDataMapper();
-  ~vtkCompositePolyDataMapper() override;
+  ~vtkCompositePolyDataMapper();
 
   /**
    * We need to override this method because the standard streaming
    * demand driven pipeline is not what we want - we are expecting
    * hierarchical data as input
    */
-  vtkExecutive* CreateDefaultExecutive() override;
+  vtkExecutive* CreateDefaultExecutive();
 
   /**
    * Need to define the type of data handled by this mapper.
    */
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  virtual int FillInputPortInformation(int port, vtkInformation* info);
 
   /**
    * This is the build method for creating the internal polydata
@@ -99,7 +89,7 @@ protected:
   /**
    * BuildPolyDataMapper uses this for each mapper. It is broken out so we can change types.
    */
-  virtual vtkPolyDataMapper* MakeAMapper();
+  virtual vtkPolyDataMapper *MakeAMapper();
 
   /**
    * Need to loop over the hierarchy to compute bounds
@@ -116,7 +106,7 @@ protected:
    * rendering. We save then so that they can keep their
    * display lists.
    */
-  vtkCompositePolyDataMapperInternals* Internal;
+  vtkCompositePolyDataMapperInternals *Internal;
 
   /**
    * Time stamp for when we need to update the
@@ -125,8 +115,8 @@ protected:
   vtkTimeStamp InternalMappersBuildTime;
 
 private:
-  vtkCompositePolyDataMapper(const vtkCompositePolyDataMapper&) = delete;
-  void operator=(const vtkCompositePolyDataMapper&) = delete;
+  vtkCompositePolyDataMapper(const vtkCompositePolyDataMapper&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkCompositePolyDataMapper&) VTK_DELETE_FUNCTION;
 };
 
 #endif

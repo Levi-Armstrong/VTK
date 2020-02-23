@@ -13,18 +13,19 @@
 =========================================================================*/
 #include "vtkBoxMuellerRandomSequence.h"
 
-#include "vtkMath.h"
 #include "vtkMinimalStandardRandomSequence.h"
-#include "vtkObjectFactory.h"
 #include <cassert>
+#include "vtkMath.h"
+#include "vtkObjectFactory.h"
 
 vtkStandardNewMacro(vtkBoxMuellerRandomSequence);
+
 
 // ----------------------------------------------------------------------------
 vtkBoxMuellerRandomSequence::vtkBoxMuellerRandomSequence()
 {
-  this->UniformSequence = vtkMinimalStandardRandomSequence::New();
-  this->Value = 0;
+  this->UniformSequence=vtkMinimalStandardRandomSequence::New();
+  this->Value=0;
 }
 
 // ----------------------------------------------------------------------------
@@ -43,31 +44,31 @@ double vtkBoxMuellerRandomSequence::GetValue()
 void vtkBoxMuellerRandomSequence::Next()
 {
   this->UniformSequence->Next();
-  double x = this->UniformSequence->GetValue();
+  double x=this->UniformSequence->GetValue();
   // Make sure x is in (0,1]
-  while (x == 0.0)
+  while(x==0.0)
   {
     this->UniformSequence->Next();
-    x = this->UniformSequence->GetValue();
+    x=this->UniformSequence->GetValue();
   }
 
   this->UniformSequence->Next();
-  double y = this->UniformSequence->GetValue();
+  double y=this->UniformSequence->GetValue();
 
   // Make sure y is in (0,1]
-  while (y == 0.0)
+  while(y==0.0)
   {
     this->UniformSequence->Next();
-    y = this->UniformSequence->GetValue();
+    y=this->UniformSequence->GetValue();
   }
 
-  this->Value = sqrt(-2.0 * log(x)) * cos(2.0 * vtkMath::Pi() * y);
+  this->Value=sqrt(-2.0*log(x))*cos(2.0 * vtkMath::Pi()*y);
 }
 
 // ----------------------------------------------------------------------------
-vtkRandomSequence* vtkBoxMuellerRandomSequence::GetUniformSequence()
+vtkRandomSequence *vtkBoxMuellerRandomSequence::GetUniformSequence()
 {
-  assert("post: result_exists" && this->UniformSequence != nullptr);
+  assert("post: result_exists" && this->UniformSequence!=0);
   return this->UniformSequence;
 }
 
@@ -75,18 +76,19 @@ vtkRandomSequence* vtkBoxMuellerRandomSequence::GetUniformSequence()
 // Description:
 // Set the uniformly distributed sequence of random numbers.
 // Default is a .
-void vtkBoxMuellerRandomSequence::SetUniformSequence(vtkRandomSequence* uniformSequence)
+void vtkBoxMuellerRandomSequence::SetUniformSequence(
+  vtkRandomSequence *uniformSequence)
 {
-  assert("pre: uniformSequence_exists" && uniformSequence != nullptr);
+  assert("pre: uniformSequence_exists" && uniformSequence!=0);
 
-  if (this->UniformSequence != uniformSequence)
+  if(this->UniformSequence!=uniformSequence)
   {
     this->UniformSequence->Delete();
-    this->UniformSequence = uniformSequence;
+    this->UniformSequence=uniformSequence;
     this->UniformSequence->Register(this);
   }
 
-  assert("post: assigned" && uniformSequence == this->GetUniformSequence());
+  assert("post: assigned" && uniformSequence==this->GetUniformSequence());
 }
 
 // ----------------------------------------------------------------------------

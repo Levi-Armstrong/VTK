@@ -19,11 +19,10 @@
 #ifndef Q_VTK_WIDGET2_H
 #define Q_VTK_WIDGET2_H
 
-#include "QVTKWin32Header.h"
 #include "vtkGUISupportQtOpenGLModule.h" // For export macro
-#include "vtkSetGet.h"
-#include "vtkSmartPointer.h"
 #include <QtOpenGL/QGLWidget>
+#include "vtkSmartPointer.h"
+#include "QVTKWin32Header.h"
 
 class vtkGenericOpenGLRenderWindow;
 class vtkEventQtSlotConnect;
@@ -36,31 +35,17 @@ class vtkObject;
 class vtkTDxDevice;
 #endif
 
-/**
- * @class QVTKWidget2
- * @brief display a vtkRenderWindow in Qt's QGLWidget.
- *
- * QVTKWidget2 provides a way to display VTK data in a Qt QGLWidget. Since
- * QGLWidget is flagged as obsolete by Qt, it is recommended to use
- * QVTKOpenGLNativeWidget instead.
- *
- * @deprecated Please use QVTKOpenGLNativeWidget instead.
- */
+//! QVTKWidget2 displays a VTK window in a Qt window.
 class VTKGUISUPPORTQTOPENGL_EXPORT QVTKWidget2 : public QGLWidget
 {
   Q_OBJECT
   typedef QGLWidget Superclass;
-
 public:
   //! constructor
-  VTK_LEGACY(QVTKWidget2(
-    QWidget* parent = nullptr, const QGLWidget* shareWidget = 0, Qt::WindowFlags f = 0));
-  VTK_LEGACY(QVTKWidget2(vtkGenericOpenGLRenderWindow* w, QWidget* parent = nullptr,
-    const QGLWidget* shareWidget = 0, Qt::WindowFlags f = 0));
-  VTK_LEGACY(QVTKWidget2(QGLContext* ctx, QWidget* parent = nullptr,
-    const QGLWidget* shareWidget = 0, Qt::WindowFlags f = 0));
-  VTK_LEGACY(QVTKWidget2(const QGLFormat& fmt, QWidget* parent = nullptr,
-    const QGLWidget* shareWidget = 0, Qt::WindowFlags f = 0));
+  QVTKWidget2(QWidget* parent = NULL, const QGLWidget* shareWidget=0, Qt::WindowFlags f = 0);
+  QVTKWidget2(vtkGenericOpenGLRenderWindow* w, QWidget* parent = NULL, const QGLWidget* shareWidget=0, Qt::WindowFlags f = 0);
+  QVTKWidget2(QGLContext* ctx, QWidget* parent = NULL, const QGLWidget* shareWidget=0, Qt::WindowFlags f = 0);
+  QVTKWidget2(const QGLFormat& fmt, QWidget* parent = NULL, const QGLWidget* shareWidget=0, Qt::WindowFlags f = 0);
   //! destructor
   virtual ~QVTKWidget2();
 
@@ -95,7 +80,7 @@ public:
   void setAutoBufferSwap(bool);
   bool autoBufferSwap() const;
 
-  static QGLFormat GetDefaultVTKFormat(vtkGenericOpenGLRenderWindow* w = nullptr);
+  static QGLFormat GetDefaultVTKFormat(vtkGenericOpenGLRenderWindow* w = NULL);
 
 signals:
   void mouseEvent(QMouseEvent* e);
@@ -106,15 +91,14 @@ public Q_SLOTS:
   // Receive notification of the creation of the TDxDevice.
   // Only relevant for Unix.
 #ifdef VTK_USE_TDX
-  void setDevice(vtkTDxDevice* device);
+  void setDevice(vtkTDxDevice *device);
 #endif
 
 protected Q_SLOTS:
   // slot to make this vtk render window current
   virtual void MakeCurrent();
   // slot called when vtk wants to know if the context is current
-  virtual void IsCurrent(
-    vtkObject* caller, unsigned long vtk_event, void* client_data, void* call_data);
+  virtual void IsCurrent(vtkObject* caller, unsigned long vtk_event, void* client_data, void* call_data);
   // slot called when vtk wants to frame the window
   virtual void Frame();
   // slot called when vtk wants to start the render
@@ -122,11 +106,9 @@ protected Q_SLOTS:
   // slot called when vtk wants to end the render
   virtual void End();
   // slot called when vtk wants to know if a window is direct
-  virtual void IsDirect(
-    vtkObject* caller, unsigned long vtk_event, void* client_data, void* call_data);
+  virtual void IsDirect(vtkObject* caller, unsigned long vtk_event, void* client_data, void* call_data);
   // slot called when vtk wants to know if a window supports OpenGL
-  virtual void SupportsOpenGL(
-    vtkObject* caller, unsigned long vtk_event, void* client_data, void* call_data);
+  virtual void SupportsOpenGL(vtkObject* caller, unsigned long vtk_event, void* client_data, void* call_data);
 
 protected:
   // overloaded initialize handler
@@ -179,8 +161,11 @@ protected:
   vtkSmartPointer<vtkEventQtSlotConnect> mConnect;
 
 private:
-  QVTKWidget2& operator=(QVTKWidget2 const&) = delete;
-  QVTKWidget2(const QVTKWidget2&) = delete;
+  //! unimplemented operator=
+  QVTKWidget2 const& operator=(QVTKWidget2 const&);
+  //! unimplemented copy
+  QVTKWidget2(const QVTKWidget2&);
+
 };
 
 #endif

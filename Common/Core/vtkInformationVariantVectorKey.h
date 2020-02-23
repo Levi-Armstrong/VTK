@@ -18,7 +18,7 @@
  *
  * vtkInformationVariantVectorKey is used to represent keys for variant
  * vector values in vtkInformation.h
- */
+*/
 
 #ifndef vtkInformationVariantVectorKey_h
 #define vtkInformationVariantVectorKey_h
@@ -33,19 +33,20 @@ class vtkVariant;
 class VTKCOMMONCORE_EXPORT vtkInformationVariantVectorKey : public vtkInformationKey
 {
 public:
-  vtkTypeMacro(vtkInformationVariantVectorKey, vtkInformationKey);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkInformationVariantVectorKey,vtkInformationKey);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
-  vtkInformationVariantVectorKey(const char* name, const char* location, int length = -1);
-  ~vtkInformationVariantVectorKey() override;
+  vtkInformationVariantVectorKey(const char* name, const char* location,
+                                 int length=-1);
+  ~vtkInformationVariantVectorKey() VTK_OVERRIDE;
 
   /**
    * This method simply returns a new vtkInformationVariantVectorKey, given a
    * name, a location and a required length. This method is provided for
    * wrappers. Use the constructor directly from C++ instead.
    */
-  static vtkInformationVariantVectorKey* MakeKey(
-    const char* name, const char* location, int length = -1)
+  static vtkInformationVariantVectorKey* MakeKey(const char* name, const char* location,
+    int length=-1)
   {
     return new vtkInformationVariantVectorKey(name, location, length);
   }
@@ -68,20 +69,20 @@ public:
    * object to another.  If there is no entry in the first information
    * object for this key, the value is removed from the second.
    */
-  void ShallowCopy(vtkInformation* from, vtkInformation* to) override;
+  void ShallowCopy(vtkInformation* from, vtkInformation* to) VTK_OVERRIDE;
 
   /**
    * Print the key's value in an information object to a stream.
    */
-  void Print(ostream& os, vtkInformation* info) override;
+  void Print(ostream& os, vtkInformation* info) VTK_OVERRIDE;
 
 protected:
   // The required length of the vector value (-1 is no restriction).
   int RequiredLength;
 
 private:
-  vtkInformationVariantVectorKey(const vtkInformationVariantVectorKey&) = delete;
-  void operator=(const vtkInformationVariantVectorKey&) = delete;
+  vtkInformationVariantVectorKey(const vtkInformationVariantVectorKey&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkInformationVariantVectorKey&) VTK_DELETE_FUNCTION;
 };
 
 #endif

@@ -20,39 +20,49 @@
 #include "vtkObjectFactory.h"
 #include "vtkSmartPointer.h"
 #include "vtkXMLDataElement.h"
+#include "vtkInformation.h"
 
 vtkStandardNewMacro(vtkXMLMultiBlockDataWriter);
 //----------------------------------------------------------------------------
-vtkXMLMultiBlockDataWriter::vtkXMLMultiBlockDataWriter() = default;
+vtkXMLMultiBlockDataWriter::vtkXMLMultiBlockDataWriter()
+{
+}
 
 //----------------------------------------------------------------------------
-vtkXMLMultiBlockDataWriter::~vtkXMLMultiBlockDataWriter() = default;
+vtkXMLMultiBlockDataWriter::~vtkXMLMultiBlockDataWriter()
+{
+}
 
 //----------------------------------------------------------------------------
-int vtkXMLMultiBlockDataWriter::FillInputPortInformation(int vtkNotUsed(port), vtkInformation* info)
+int vtkXMLMultiBlockDataWriter::FillInputPortInformation(
+  int vtkNotUsed(port), vtkInformation* info)
 {
   info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkMultiBlockDataSet");
   return 1;
 }
 
 //----------------------------------------------------------------------------
-int vtkXMLMultiBlockDataWriter::WriteComposite(
-  vtkCompositeDataSet* compositeData, vtkXMLDataElement* parent, int& writerIdx)
+int vtkXMLMultiBlockDataWriter::WriteComposite(vtkCompositeDataSet* compositeData,
+    vtkXMLDataElement* parent, int &writerIdx)
 {
-  if (!(compositeData->IsA("vtkMultiBlockDataSet") || compositeData->IsA("vtkMultiPieceDataSet")))
+  if (! (compositeData->IsA("vtkMultiBlockDataSet")
+        ||compositeData->IsA("vtkMultiPieceDataSet")) )
   {
-    vtkErrorMacro("Unsupported composite dataset type: " << compositeData->GetClassName() << ".");
+    vtkErrorMacro("Unsupported composite dataset type: "
+                  << compositeData->GetClassName() << ".");
     return 0;
   }
 
   // Write each input.
   vtkSmartPointer<vtkDataObjectTreeIterator> iter;
-  iter.TakeReference(vtkDataObjectTree::SafeDownCast(compositeData)->NewTreeIterator());
+  iter.TakeReference(
+    vtkDataObjectTree::SafeDownCast(compositeData)->NewTreeIterator());
   iter->VisitOnlyLeavesOff();
   iter->TraverseSubTreeOff();
   iter->SkipEmptyNodesOff();
   int toBeWritten = 0;
-  for (iter->InitTraversal(); !iter->IsDoneWithTraversal(); iter->GoToNextItem())
+  for (iter->InitTraversal(); !iter->IsDoneWithTraversal();
+    iter->GoToNextItem())
   {
     toBeWritten++;
   }
@@ -62,10 +72,11 @@ int vtkXMLMultiBlockDataWriter::WriteComposite(
 
   int index = 0;
   int RetVal = 0;
-  for (iter->InitTraversal(); !iter->IsDoneWithTraversal(); iter->GoToNextItem(), index++)
+  for (iter->InitTraversal(); !iter->IsDoneWithTraversal();
+    iter->GoToNextItem(), index++)
   {
     vtkDataObject* curDO = iter->GetCurrentDataObject();
-    const char* name = nullptr;
+    const char *name = NULL;
     if (iter->HasCurrentMetaData())
     {
       name = iter->GetCurrentMetaData()->Get(vtkCompositeDataSet::NAME());
@@ -91,7 +102,8 @@ int vtkXMLMultiBlockDataWriter::WriteComposite(
         tag->SetName("Block");
         tag->SetIntAttribute("index", index);
       }
-      vtkCompositeDataSet* curCD = vtkCompositeDataSet::SafeDownCast(curDO);
+      vtkCompositeDataSet* curCD
+        = vtkCompositeDataSet::SafeDownCast(curDO);
       if (!this->WriteComposite(curCD, tag, writerIdx))
       {
         tag->Delete();
@@ -114,7 +126,8 @@ int vtkXMLMultiBlockDataWriter::WriteComposite(
       vtkStdString fileName = this->CreatePieceFileName(writerIdx);
 
       this->SetProgressRange(progressRange, writerIdx, toBeWritten);
-      if (this->WriteNonCompositeData(curDO, datasetXML, writerIdx, fileName.c_str()))
+      if (this->WriteNonCompositeData( curDO, datasetXML, writerIdx,
+                                       fileName.c_str()))
       {
         parent->AddNestedElement(datasetXML);
         RetVal = 1;
@@ -125,8 +138,10 @@ int vtkXMLMultiBlockDataWriter::WriteComposite(
   return RetVal;
 }
 
+
 //----------------------------------------------------------------------------
 void vtkXMLMultiBlockDataWriter::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 }
+

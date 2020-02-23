@@ -22,31 +22,23 @@
  * This class provides a clean way to store and access those strings.
  * @par Thanks:
  * Andy Wilson (atwilso@sandia.gov) wrote this class.
- */
+*/
 
 #ifndef vtkStringArray_h
 #define vtkStringArray_h
 
-#include "vtkAbstractArray.h"
 #include "vtkCommonCoreModule.h" // For export macro
-#include "vtkStdString.h"        // needed for vtkStdString definition
+#include "vtkAbstractArray.h"
+#include "vtkStdString.h" // needed for vtkStdString definition
 
 class vtkStringArrayLookup;
 
 class VTKCOMMONCORE_EXPORT vtkStringArray : public vtkAbstractArray
 {
 public:
-  enum DeleteMethod
-  {
-    VTK_DATA_ARRAY_FREE = vtkAbstractArray::VTK_DATA_ARRAY_FREE,
-    VTK_DATA_ARRAY_DELETE = vtkAbstractArray::VTK_DATA_ARRAY_DELETE,
-    VTK_DATA_ARRAY_ALIGNED_FREE = vtkAbstractArray::VTK_DATA_ARRAY_ALIGNED_FREE,
-    VTK_DATA_ARRAY_USER_DEFINED = vtkAbstractArray::VTK_DATA_ARRAY_USER_DEFINED
-  };
-
   static vtkStringArray* New();
-  vtkTypeMacro(vtkStringArray, vtkAbstractArray);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkStringArray,vtkAbstractArray);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   //
   //
@@ -57,14 +49,15 @@ public:
   /**
    * Get the data type.
    */
-  int GetDataType() const override { return VTK_STRING; }
+  int GetDataType() VTK_OVERRIDE
+    { return VTK_STRING; }
 
-  int IsNumeric() const override { return 0; }
+  int IsNumeric() VTK_OVERRIDE { return 0; }
 
   /**
    * Release storage and reset array to initial state.
    */
-  void Initialize() override;
+  void Initialize() VTK_OVERRIDE;
 
   /**
    * Return the size of the data type.  WARNING: This may not mean
@@ -72,18 +65,18 @@ public:
    * sizeof(std::string) and not take into account the data
    * included in any particular string.
    */
-  int GetDataTypeSize() const override;
+  int GetDataTypeSize() VTK_OVERRIDE;
 
   /**
    * Free any unnecessary memory.
    * Resize object to just fit data requirement. Reclaims extra memory.
    */
-  void Squeeze() override { this->ResizeAndExtend(this->MaxId + 1); }
+  void Squeeze() VTK_OVERRIDE { this->ResizeAndExtend (this->MaxId+1); }
 
   /**
    * Resize the array while conserving the data.
    */
-  vtkTypeBool Resize(vtkIdType numTuples) override;
+  int Resize(vtkIdType numTuples) VTK_OVERRIDE;
 
   /**
    * Set the tuple at the ith location using the jth tuple in the source array.
@@ -91,45 +84,46 @@ public:
    * and structure. Note that range checking and memory allocation is not
    * performed; use in conjunction with SetNumberOfTuples() to allocate space.
    */
-  void SetTuple(vtkIdType i, vtkIdType j, vtkAbstractArray* source) override;
+  void SetTuple(vtkIdType i, vtkIdType j, vtkAbstractArray* source) VTK_OVERRIDE;
 
   /**
    * Insert the jth tuple in the source array, at ith location in this array.
    * Note that memory allocation is performed as necessary to hold the data.
    */
-  void InsertTuple(vtkIdType i, vtkIdType j, vtkAbstractArray* source) override;
+  void InsertTuple(vtkIdType i, vtkIdType j, vtkAbstractArray* source) VTK_OVERRIDE;
 
   /**
    * Copy the tuples indexed in srcIds from the source array to the tuple
    * locations indexed by dstIds in this array.
    * Note that memory allocation is performed as necessary to hold the data.
    */
-  void InsertTuples(vtkIdList* dstIds, vtkIdList* srcIds, vtkAbstractArray* source) override;
+  void InsertTuples(vtkIdList *dstIds, vtkIdList *srcIds,
+                            vtkAbstractArray *source) VTK_OVERRIDE;
 
   /**
    * Copy n consecutive tuples starting at srcStart from the source array to
    * this array, starting at the dstStart location.
    * Note that memory allocation is performed as necessary to hold the data.
    */
-  void InsertTuples(
-    vtkIdType dstStart, vtkIdType n, vtkIdType srcStart, vtkAbstractArray* source) override;
+  void InsertTuples(vtkIdType dstStart, vtkIdType n, vtkIdType srcStart,
+                            vtkAbstractArray* source) VTK_OVERRIDE;
 
   /**
    * Insert the jth tuple in the source array, at the end in this array.
    * Note that memory allocation is performed as necessary to hold the data.
    * Returns the location at which the data was inserted.
    */
-  vtkIdType InsertNextTuple(vtkIdType j, vtkAbstractArray* source) override;
+  vtkIdType InsertNextTuple(vtkIdType j, vtkAbstractArray* source) VTK_OVERRIDE;
 
   /**
    * Set the ith tuple in this array as the interpolated tuple value,
    * given the ptIndices in the source array and associated
    * interpolation weights.
    * This method assumes that the two arrays are of the same type
-   * and structure.
+   * and strcuture.
    */
-  void InterpolateTuple(
-    vtkIdType i, vtkIdList* ptIndices, vtkAbstractArray* source, double* weights) override;
+  void InterpolateTuple(vtkIdType i, vtkIdList *ptIndices,
+    vtkAbstractArray* source,  double* weights) VTK_OVERRIDE;
 
   /**
    * Insert the ith tuple in this array as interpolated from the two values,
@@ -139,8 +133,9 @@ public:
    * the same type. p1 is value at index id1 in source1, while, p2 is
    * value at index id2 in source2.
    */
-  void InterpolateTuple(vtkIdType i, vtkIdType id1, vtkAbstractArray* source1, vtkIdType id2,
-    vtkAbstractArray* source2, double t) override;
+  void InterpolateTuple(vtkIdType i,
+    vtkIdType id1, vtkAbstractArray* source1,
+    vtkIdType id2, vtkAbstractArray* source2, double t) VTK_OVERRIDE;
 
   /**
    * Given a list of indices, return an array of values.  You must
@@ -148,7 +143,7 @@ public:
    * enough space to hold the data and that the types match
    * sufficiently to allow conversion (if necessary).
    */
-  void GetTuples(vtkIdList* ptIds, vtkAbstractArray* output) override;
+  void GetTuples(vtkIdList *ptIds, vtkAbstractArray *output) VTK_OVERRIDE;
 
   /**
    * Get the values for the range of indices specified (i.e.,
@@ -157,73 +152,72 @@ public:
    * the type of the output array is compatible with the type of this
    * array.
    */
-  void GetTuples(vtkIdType p1, vtkIdType p2, vtkAbstractArray* output) override;
+  void GetTuples(vtkIdType p1, vtkIdType p2, vtkAbstractArray *output) VTK_OVERRIDE;
 
   /**
    * Allocate memory for this array. Delete old storage only if necessary.
    * Note that ext is no longer used.
    */
-  vtkTypeBool Allocate(vtkIdType sz, vtkIdType ext = 1000) override;
+  int Allocate( vtkIdType sz, vtkIdType ext=1000 ) VTK_OVERRIDE;
 
   /**
    * Get the data at a particular index.
    */
-  vtkStdString& GetValue(vtkIdType id) VTK_EXPECTS(0 <= id && id < this->GetNumberOfValues());
+  vtkStdString &GetValue(vtkIdType id);
 
   /**
    * Set the data at a particular index. Does not do range checking. Make sure
    * you use the method SetNumberOfValues() before inserting data.
    */
   void SetValue(vtkIdType id, vtkStdString value)
-    VTK_EXPECTS(0 <= id && id < this->GetNumberOfValues())
-  {
-    this->Array[id] = value;
-    this->DataChanged();
-  }
+    { this->Array[id] = value; this->DataChanged(); }
 
-  void SetValue(vtkIdType id, const char* value)
-    VTK_EXPECTS(0 <= id && id < this->GetNumberOfValues()) VTK_EXPECTS(value != nullptr);
+  void SetValue(vtkIdType id, const char *value);
 
   /**
    * Set the number of tuples (a component group) in the array. Note that
    * this may allocate space depending on the number of components.
    */
-  void SetNumberOfTuples(vtkIdType number) override
-  {
-    this->SetNumberOfValues(this->NumberOfComponents * number);
-  }
+  void SetNumberOfTuples(vtkIdType number) VTK_OVERRIDE
+    { this->SetNumberOfValues(this->NumberOfComponents* number); }
+
+  /**
+   * Specify the number of values for this object to hold. Does an
+   * allocation as well as setting the MaxId ivar. Used in conjunction with
+   * SetValue() method for fast insertion.
+   */
+  void SetNumberOfValues(vtkIdType number) VTK_OVERRIDE;
 
   vtkIdType GetNumberOfValues() { return this->MaxId + 1; }
 
   int GetNumberOfElementComponents() { return 0; }
-  int GetElementComponentSize() const override
-  {
-    return static_cast<int>(sizeof(vtkStdString::value_type));
-  }
+  int GetElementComponentSize() VTK_OVERRIDE { return static_cast<int>(sizeof(vtkStdString::value_type)); }
 
   /**
    * Insert data at a specified position in the array.
    */
-  void InsertValue(vtkIdType id, vtkStdString f) VTK_EXPECTS(0 <= id);
-  void InsertValue(vtkIdType id, const char* val) VTK_EXPECTS(0 <= id) VTK_EXPECTS(val != nullptr);
+  void InsertValue(vtkIdType id, vtkStdString f);
+
+  void InsertValue(vtkIdType id, const char *val);
 
   /**
    * Set a value in the array form a variant.
    * Insert a value into the array from a variant.
    */
-  void SetVariantValue(vtkIdType idx, vtkVariant value) override;
+  void SetVariantValue(vtkIdType idx, vtkVariant value) VTK_OVERRIDE;
 
   /**
    * Safely set a value in the array form a variant.
    * Safely insert a value into the array from a variant.
    */
-  void InsertVariantValue(vtkIdType idx, vtkVariant value) override;
+  void InsertVariantValue(vtkIdType idx, vtkVariant value) VTK_OVERRIDE;
 
   /**
    * Insert data at the end of the array. Return its location in the array.
    */
   vtkIdType InsertNextValue(vtkStdString f);
-  vtkIdType InsertNextValue(const char* f) VTK_EXPECTS(f != nullptr);
+
+  vtkIdType InsertNextValue(const char *f);
 
   /**
    * Get the address of a particular data index. Make sure data is allocated
@@ -237,13 +231,13 @@ public:
    * to verify that the memory has been allocated etc.
    */
   vtkStdString* GetPointer(vtkIdType id) { return this->Array + id; }
-  void* GetVoidPointer(vtkIdType id) override { return this->GetPointer(id); }
+  void* GetVoidPointer(vtkIdType id) VTK_OVERRIDE { return this->GetPointer(id); }
 
   /**
    * Deep copy of another string array.  Will complain and change nothing
    * if the array passed in is not a vtkStringArray.
    */
-  void DeepCopy(vtkAbstractArray* aa) override;
+  void DeepCopy( vtkAbstractArray* aa ) VTK_OVERRIDE;
 
   /**
    * This method lets the user specify data to be held by the array.  The
@@ -252,29 +246,15 @@ public:
    * from deleting the array when it cleans up or reallocates memory.
    * The class uses the actual array provided; it does not copy the data
    * from the supplied array. If save is 0, then this class is free to delete
-   * the array when it cleans up or reallocates using the provided free function
-   * If the delete method is VTK_DATA_ARRAY_USER_DEFINED
-   * a custom free function can be assigned to be called using SetArrayFreeFunction,
-   * if no custom function is assigned we will default to delete[].
+   * the array when it cleans up or reallocates. In that case, it is required
+   * that the array was allocated using the C++ new operator (and not malloc).
    */
-  void SetArray(
-    vtkStdString* array, vtkIdType size, int save, int deleteMethod = VTK_DATA_ARRAY_DELETE);
-  void SetVoidArray(void* array, vtkIdType size, int save) override
-  {
-    this->SetArray(static_cast<vtkStdString*>(array), size, save);
-  }
-  void SetVoidArray(void* array, vtkIdType size, int save, int deleteMethod) override
-  {
-    this->SetArray(static_cast<vtkStdString*>(array), size, save, deleteMethod);
-  }
-
-  /**
-   * This method allows the user to specify a custom free function to be
-   * called when the array is deallocated. Calling this method will implicitly
-   * mean that the given free function will be called when the class
-   * cleans up or reallocates memory.
-   **/
-  void SetArrayFreeFunction(void (*callback)(void*)) override;
+  void SetArray(vtkStdString* array, vtkIdType size, int save);
+  void SetVoidArray(void* array, vtkIdType size, int save) VTK_OVERRIDE
+    { this->SetArray(static_cast<vtkStdString*>(array), size, save); }
+  void SetVoidArray(void* array, vtkIdType size, int save,
+                    int vtkNotUsed(deleteMethod)) VTK_OVERRIDE
+    { this->SetArray(static_cast<vtkStdString*>(array), size, save); }
 
   /**
    * Return the memory in kibibytes (1024 bytes) consumed by this data array. Used to
@@ -287,30 +267,30 @@ public:
    * This function takes into account the size of the contents of the
    * strings as well as the string containers themselves.
    */
-  unsigned long GetActualMemorySize() const override;
+  unsigned long GetActualMemorySize() VTK_OVERRIDE;
 
   /**
    * Returns a vtkArrayIteratorTemplate<vtkStdString>.
    */
-  VTK_NEWINSTANCE vtkArrayIterator* NewIterator() override;
+  VTK_NEWINSTANCE vtkArrayIterator* NewIterator() VTK_OVERRIDE;
 
   /**
    * Returns the size of the data in DataTypeSize units. Thus, the number of bytes
    * for the data can be computed by GetDataSize() * GetDataTypeSize().
    * The size computation includes the string termination character for each string.
    */
-  vtkIdType GetDataSize() const override;
+  vtkIdType GetDataSize() VTK_OVERRIDE;
 
   //@{
   /**
    * Return the indices where a specific value appears.
    */
-  vtkIdType LookupValue(vtkVariant value) override;
-  void LookupValue(vtkVariant value, vtkIdList* ids) override;
+  vtkIdType LookupValue(vtkVariant value) VTK_OVERRIDE;
+  void LookupValue(vtkVariant value, vtkIdList* ids) VTK_OVERRIDE;
   //@}
 
-  vtkIdType LookupValue(const vtkStdString& value);
-  void LookupValue(const vtkStdString& value, vtkIdList* ids);
+  vtkIdType LookupValue(vtkStdString value);
+  void LookupValue(vtkStdString value, vtkIdList* ids);
 
   vtkIdType LookupValue(const char* value);
   void LookupValue(const char* value, vtkIdList* ids);
@@ -323,7 +303,7 @@ public:
    * the fast lookup will know to rebuild itself.  Otherwise, the lookup
    * functions will give incorrect results.
    */
-  void DataChanged() override;
+  void DataChanged() VTK_OVERRIDE;
 
   /**
    * Tell the array explicitly that a single data element has
@@ -337,23 +317,24 @@ public:
    * if it exists.  The lookup will be rebuilt on the next call to a lookup
    * function.
    */
-  void ClearLookup() override;
+  void ClearLookup() VTK_OVERRIDE;
 
 protected:
   vtkStringArray();
-  ~vtkStringArray() override;
+  ~vtkStringArray() VTK_OVERRIDE;
 
-  vtkStdString* Array;                         // pointer to data
-  vtkStdString* ResizeAndExtend(vtkIdType sz); // function to resize data
+  vtkStdString* Array;   // pointer to data
+  vtkStdString* ResizeAndExtend(vtkIdType sz);  // function to resize data
 
-  void (*DeleteFunction)(void*);
+  int SaveUserArray;
 
 private:
-  vtkStringArray(const vtkStringArray&) = delete;
-  void operator=(const vtkStringArray&) = delete;
+  vtkStringArray(const vtkStringArray&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkStringArray&) VTK_DELETE_FUNCTION;
 
   vtkStringArrayLookup* Lookup;
   void UpdateLookup();
+
 };
 
 #endif

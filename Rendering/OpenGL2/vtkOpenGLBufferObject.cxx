@@ -16,10 +16,9 @@
 
 #include "vtk_glew.h"
 
-vtkStandardNewMacro(vtkOpenGLBufferObject);
+vtkStandardNewMacro(vtkOpenGLBufferObject)
 
-namespace
-{
+namespace {
 inline GLenum convertType(vtkOpenGLBufferObject::ObjectType type)
 {
   switch (type)
@@ -27,7 +26,7 @@ inline GLenum convertType(vtkOpenGLBufferObject::ObjectType type)
     case vtkOpenGLBufferObject::ElementArrayBuffer:
       return GL_ELEMENT_ARRAY_BUFFER;
     case vtkOpenGLBufferObject::TextureBuffer:
-#if defined(GL_TEXTURE_BUFFER)
+#if defined (GL_TEXTURE_BUFFER)
       return GL_TEXTURE_BUFFER;
       // intentional fall through when not defined
 #endif
@@ -123,7 +122,8 @@ bool vtkOpenGLBufferObject::Release()
   return true;
 }
 
-bool vtkOpenGLBufferObject::GenerateBuffer(vtkOpenGLBufferObject::ObjectType objectType)
+bool vtkOpenGLBufferObject::GenerateBuffer(
+  vtkOpenGLBufferObject::ObjectType objectType)
 {
   GLenum objectTypeGL = convertType(objectType);
   if (this->Internal->Handle == 0)
@@ -135,7 +135,8 @@ bool vtkOpenGLBufferObject::GenerateBuffer(vtkOpenGLBufferObject::ObjectType obj
 }
 
 bool vtkOpenGLBufferObject::UploadInternal(
-  const void* buffer, size_t size, vtkOpenGLBufferObject::ObjectType objectType)
+  const void *buffer, size_t size,
+  vtkOpenGLBufferObject::ObjectType objectType)
 {
   const bool generated = this->GenerateBuffer(objectType);
   if (!generated)
@@ -145,10 +146,12 @@ bool vtkOpenGLBufferObject::UploadInternal(
   }
 
   glBindBuffer(this->Internal->Type, this->Internal->Handle);
-  glBufferData(this->Internal->Type, size, static_cast<const GLvoid*>(buffer), GL_STATIC_DRAW);
+  glBufferData(this->Internal->Type, size, static_cast<const GLvoid *>(buffer),
+               GL_STATIC_DRAW);
   this->Dirty = false;
   return true;
 }
+
 
 //-----------------------------------------------------------------------------
 void vtkOpenGLBufferObject::PrintSelf(ostream& os, vtkIndent indent)

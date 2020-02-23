@@ -24,7 +24,7 @@
  *
  * This layout is modeled after D3's force layout described at
  * https://github.com/mbostock/d3/wiki/Force-Layout
- */
+*/
 
 #ifndef vtkIncrementalForceLayout_h
 #define vtkIncrementalForceLayout_h
@@ -40,7 +40,7 @@ class VTKINFOVISLAYOUT_EXPORT vtkIncrementalForceLayout : public vtkObject
 {
 public:
   vtkTypeMacro(vtkIncrementalForceLayout, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  virtual void PrintSelf(ostream &os, vtkIndent indent);
   static vtkIncrementalForceLayout* New();
 
   //@{
@@ -127,8 +127,10 @@ public:
    * should be set to the location in the center of the scene.
    * Default location is (200, 200).
    */
-  virtual void SetGravityPoint(const vtkVector2f& point) { this->GravityPoint = point; }
-  virtual vtkVector2f GetGravityPoint() { return this->GravityPoint; }
+  virtual void SetGravityPoint(const vtkVector2f &point)
+    { this->GravityPoint = point; }
+  virtual vtkVector2f GetGravityPoint()
+    { return this->GravityPoint; }
 
   /**
    * Perform one iteration of the force-directed layout.
@@ -137,7 +139,7 @@ public:
 
 protected:
   vtkIncrementalForceLayout();
-  ~vtkIncrementalForceLayout() override;
+  ~vtkIncrementalForceLayout();
 
   vtkGraph* Graph;
   class Implementation;
@@ -153,7 +155,7 @@ protected:
   float Friction;
 
 private:
-  vtkIncrementalForceLayout(const vtkIncrementalForceLayout&) = delete;
-  void operator=(const vtkIncrementalForceLayout&) = delete;
+  vtkIncrementalForceLayout(const vtkIncrementalForceLayout &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkIncrementalForceLayout &) VTK_DELETE_FUNCTION;
 };
 #endif

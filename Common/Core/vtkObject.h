@@ -36,7 +36,7 @@
  *
  * @sa
  * vtkCommand vtkTimeStamp
- */
+*/
 
 #ifndef vtkObject_h
 #define vtkObject_h
@@ -53,18 +53,18 @@ class vtkCommand;
 class VTKCOMMONCORE_EXPORT vtkObject : public vtkObjectBase
 {
 public:
-  vtkBaseTypeMacro(vtkObject, vtkObjectBase);
+  vtkBaseTypeMacro(vtkObject,vtkObjectBase);
 
   /**
    * Create an object with Debug turned off, modified time initialized
    * to zero, and reference counting on.
    */
-  static vtkObject* New();
+  static vtkObject *New();
 
 #ifdef _WIN32
   // avoid dll boundary problems
-  void* operator new(size_t tSize);
-  void operator delete(void* p);
+  void* operator new( size_t tSize );
+  void operator delete( void* p );
 #endif
 
   /**
@@ -112,7 +112,7 @@ public:
    * Print() instead) but used in the hierarchical print process to
    * combine the output of several classes.
    */
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   //@{
   /**
@@ -120,9 +120,10 @@ public:
    * or error messages are displayed.
    */
   static void SetGlobalWarningDisplay(int val);
-  static void GlobalWarningDisplayOn() { vtkObject::SetGlobalWarningDisplay(1); }
-  static void GlobalWarningDisplayOff() { vtkObject::SetGlobalWarningDisplay(0); }
-  static int GetGlobalWarningDisplay();
+  static void GlobalWarningDisplayOn(){vtkObject::SetGlobalWarningDisplay(1);};
+  static void GlobalWarningDisplayOff()
+    {vtkObject::SetGlobalWarningDisplay(0);};
+  static int  GetGlobalWarningDisplay();
   //@}
 
   //@{
@@ -138,22 +139,24 @@ public:
    * flag to stop processing of the event. (See vtkCommand.h for more
    * information.)
    */
-  unsigned long AddObserver(unsigned long event, vtkCommand*, float priority = 0.0f);
-  unsigned long AddObserver(const char* event, vtkCommand*, float priority = 0.0f);
-  vtkCommand* GetCommand(unsigned long tag);
+  unsigned long AddObserver(unsigned long event, vtkCommand *,
+                            float priority=0.0f);
+  unsigned long AddObserver(const char *event, vtkCommand *,
+                            float priority=0.0f);
+  vtkCommand *GetCommand(unsigned long tag);
   void RemoveObserver(vtkCommand*);
-  void RemoveObservers(unsigned long event, vtkCommand*);
-  void RemoveObservers(const char* event, vtkCommand*);
-  vtkTypeBool HasObserver(unsigned long event, vtkCommand*);
-  vtkTypeBool HasObserver(const char* event, vtkCommand*);
+  void RemoveObservers(unsigned long event, vtkCommand *);
+  void RemoveObservers(const char *event, vtkCommand *);
+  int HasObserver(unsigned long event, vtkCommand *);
+  int HasObserver(const char *event, vtkCommand *);
   //@}
 
   void RemoveObserver(unsigned long tag);
   void RemoveObservers(unsigned long event);
-  void RemoveObservers(const char* event);
-  void RemoveAllObservers(); // remove every last one of them
-  vtkTypeBool HasObserver(unsigned long event);
-  vtkTypeBool HasObserver(const char* event);
+  void RemoveObservers(const char *event);
+  void RemoveAllObservers(); //remove every last one of them
+  int HasObserver(unsigned long event);
+  int HasObserver(const char *event);
 
   //@{
   /**
@@ -182,19 +185,22 @@ public:
    * Return value is a tag that can be used to remove the observer.
    */
   template <class U, class T>
-  unsigned long AddObserver(
-    unsigned long event, U observer, void (T::*callback)(), float priority = 0.0f)
+  unsigned long AddObserver(unsigned long event,
+    U observer, void (T::*callback)(), float priority=0.0f)
   {
-    vtkClassMemberCallback<T>* callable = new vtkClassMemberCallback<T>(observer, callback);
+    vtkClassMemberCallback<T> *callable =
+      new vtkClassMemberCallback<T>(observer, callback);
     // callable is deleted when the observer is cleaned up (look at
     // vtkObjectCommandInternal)
     return this->AddTemplatedObserver(event, callable, priority);
   }
   template <class U, class T>
-  unsigned long AddObserver(unsigned long event, U observer,
-    void (T::*callback)(vtkObject*, unsigned long, void*), float priority = 0.0f)
+  unsigned long AddObserver(unsigned long event,
+    U observer, void (T::*callback)(vtkObject*, unsigned long, void*),
+    float priority=0.0f)
   {
-    vtkClassMemberCallback<T>* callable = new vtkClassMemberCallback<T>(observer, callback);
+    vtkClassMemberCallback<T> *callable =
+      new vtkClassMemberCallback<T>(observer, callback);
     // callable is deleted when the observer is cleaned up (look at
     // vtkObjectCommandInternal)
     return this->AddTemplatedObserver(event, callable, priority);
@@ -207,10 +213,12 @@ public:
    * method.
    */
   template <class U, class T>
-  unsigned long AddObserver(unsigned long event, U observer,
-    bool (T::*callback)(vtkObject*, unsigned long, void*), float priority = 0.0f)
+  unsigned long AddObserver(unsigned long event,
+    U observer, bool (T::*callback)(vtkObject*, unsigned long, void*),
+    float priority=0.0f)
   {
-    vtkClassMemberCallback<T>* callable = new vtkClassMemberCallback<T>(observer, callback);
+    vtkClassMemberCallback<T> *callable =
+      new vtkClassMemberCallback<T>(observer, callback);
     // callable is deleted when the observer is cleaned up (look at
     // vtkObjectCommandInternal)
     return this->AddTemplatedObserver(event, callable, priority);
@@ -223,24 +231,24 @@ public:
    * aborted or not. If the event was aborted, the return value is 1,
    * otherwise it is 0.
    */
-  int InvokeEvent(unsigned long event, void* callData);
-  int InvokeEvent(const char* event, void* callData);
+  int InvokeEvent(unsigned long event, void *callData);
+  int InvokeEvent(const char *event, void *callData);
   //@}
 
-  int InvokeEvent(unsigned long event) { return this->InvokeEvent(event, nullptr); }
-  int InvokeEvent(const char* event) { return this->InvokeEvent(event, nullptr); }
+  int InvokeEvent(unsigned long event) { return this->InvokeEvent(event, NULL); };
+  int InvokeEvent(const char *event) { return this->InvokeEvent(event, NULL); };
 
 protected:
   vtkObject();
-  ~vtkObject() override;
+  ~vtkObject() VTK_OVERRIDE;
 
   // See vtkObjectBase.h.
-  void RegisterInternal(vtkObjectBase*, vtkTypeBool check) override;
-  void UnRegisterInternal(vtkObjectBase*, vtkTypeBool check) override;
+  void RegisterInternal(vtkObjectBase*, vtkTypeBool check) VTK_OVERRIDE;
+  void UnRegisterInternal(vtkObjectBase*, vtkTypeBool check) VTK_OVERRIDE;
 
-  bool Debug;                      // Enable debug messages
-  vtkTimeStamp MTime;              // Keep track of modification time
-  vtkSubjectHelper* SubjectHelper; // List of observers on this object
+  bool     Debug;      // Enable debug messages
+  vtkTimeStamp      MTime;      // Keep track of modification time
+  vtkSubjectHelper *SubjectHelper; // List of observers on this object
 
   //@{
   /**
@@ -251,13 +259,13 @@ protected:
    * these methods are designed to support vtkInteractorObservers since
    * they use two separate vtkCommands to watch for mouse and keypress events.
    */
-  void InternalGrabFocus(vtkCommand* mouseEvents, vtkCommand* keypressEvents = nullptr);
+  void InternalGrabFocus(vtkCommand *mouseEvents, vtkCommand *keypressEvents=NULL);
   void InternalReleaseFocus();
   //@}
 
 private:
-  vtkObject(const vtkObject&) = delete;
-  void operator=(const vtkObject&) = delete;
+  vtkObject(const vtkObject&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkObject&) VTK_DELETE_FUNCTION;
 
   /**
    * Following classes (vtkClassMemberCallbackBase,
@@ -274,50 +282,49 @@ private:
      * Called when the event is invoked
      */
     virtual bool operator()(vtkObject*, unsigned long, void*) = 0;
-    virtual ~vtkClassMemberCallbackBase() {}
-    //@}
+    virtual ~vtkClassMemberCallbackBase(){}
   };
+    //@}
 
   //@{
   /**
    * This is a weak pointer for vtkObjectBase and a regular
    * void pointer for everything else
    */
-  template <class T>
-  class vtkClassMemberHandlerPointer
+  template<class T>
+    class vtkClassMemberHandlerPointer
   {
-  public:
-    void operator=(vtkObjectBase* o)
-    {
-      // The cast is needed in case "o" has multi-inheritance,
-      // to offset the pointer to get the vtkObjectBase.
-      if ((this->VoidPointer = dynamic_cast<T*>(o)) == nullptr)
+    public:
+      void operator=(vtkObjectBase *o)
       {
-        // fallback to just using its vtkObjectBase as-is.
+        // The cast is needed in case "o" has multi-inheritance,
+        // to offset the pointer to get the vtkObjectBase.
+        if ((this->VoidPointer = dynamic_cast<T*>(o)) == 0)
+        {
+          // fallback to just using its vtkObjectBase as-is.
+          this->VoidPointer = o;
+        }
+        this->WeakPointer = o;
+        this->UseWeakPointer = true;
+      }
+      void operator=(void *o)
+      {
         this->VoidPointer = o;
+        this->WeakPointer = 0;
+        this->UseWeakPointer = false;
       }
-      this->WeakPointer = o;
-      this->UseWeakPointer = true;
-    }
-    void operator=(void* o)
-    {
-      this->VoidPointer = o;
-      this->WeakPointer = nullptr;
-      this->UseWeakPointer = false;
-    }
-    T* GetPointer()
-    {
-      if (this->UseWeakPointer && !this->WeakPointer.GetPointer())
+      T *GetPointer()
       {
-        return nullptr;
+        if (this->UseWeakPointer && !this->WeakPointer.GetPointer())
+        {
+          return 0;
+        }
+        return static_cast<T*>(this->VoidPointer);
       }
-      return static_cast<T*>(this->VoidPointer);
-    }
-
-  private:
-    vtkWeakPointerBase WeakPointer;
-    void* VoidPointer;
-    bool UseWeakPointer;
+    private:
+      vtkWeakPointerBase WeakPointer;
+      void *VoidPointer;
+      bool UseWeakPointer;
   };
   //@}
 
@@ -326,62 +333,65 @@ private:
    * Templated member callback.
    */
   template <class T>
-  class vtkClassMemberCallback : public vtkClassMemberCallbackBase
+    class vtkClassMemberCallback : public vtkClassMemberCallbackBase
   {
-    vtkClassMemberHandlerPointer<T> Handler;
-    void (T::*Method1)();
-    void (T::*Method2)(vtkObject*, unsigned long, void*);
-    bool (T::*Method3)(vtkObject*, unsigned long, void*);
-
-  public:
-    vtkClassMemberCallback(T* handler, void (T::*method)())
-    {
-      this->Handler = handler;
-      this->Method1 = method;
-      this->Method2 = nullptr;
-      this->Method3 = nullptr;
-    }
-
-    vtkClassMemberCallback(T* handler, void (T::*method)(vtkObject*, unsigned long, void*))
-    {
-      this->Handler = handler;
-      this->Method1 = nullptr;
-      this->Method2 = method;
-      this->Method3 = nullptr;
-    }
-
-    vtkClassMemberCallback(T* handler, bool (T::*method)(vtkObject*, unsigned long, void*))
-    {
-      this->Handler = handler;
-      this->Method1 = nullptr;
-      this->Method2 = nullptr;
-      this->Method3 = method;
-    }
-    ~vtkClassMemberCallback() override {}
-
-    // Called when the event is invoked
-    bool operator()(vtkObject* caller, unsigned long event, void* calldata) override
-    {
-      T* handler = this->Handler.GetPointer();
-      if (handler)
-      {
-        if (this->Method1)
-        {
-          (handler->*this->Method1)();
-        }
-        else if (this->Method2)
-        {
-          (handler->*this->Method2)(caller, event, calldata);
-        }
-        else if (this->Method3)
-        {
-          return (handler->*this->Method3)(caller, event, calldata);
-        }
-      }
-      return false;
-    }
-  };
+      vtkClassMemberHandlerPointer<T> Handler;
+      void (T::*Method1)();
+      void (T::*Method2)(vtkObject*, unsigned long, void*);
+      bool (T::*Method3)(vtkObject*, unsigned long, void*);
   //@}
+
+    public:
+      vtkClassMemberCallback(T* handler, void (T::*method)())
+      {
+        this->Handler = handler;
+        this->Method1 = method;
+        this->Method2 = NULL;
+        this->Method3 = NULL;
+      }
+
+      vtkClassMemberCallback(
+        T* handler, void (T::*method)(vtkObject*, unsigned long, void*))
+      {
+        this->Handler = handler;
+        this->Method1 = NULL;
+        this->Method2 = method;
+        this->Method3 = NULL;
+      }
+
+      vtkClassMemberCallback(
+        T* handler, bool (T::*method)(vtkObject*, unsigned long, void*))
+      {
+        this->Handler = handler;
+        this->Method1 = NULL;
+        this->Method2 = NULL;
+        this->Method3 = method;
+      }
+      ~vtkClassMemberCallback() VTK_OVERRIDE { }
+
+      // Called when the event is invoked
+      bool operator()(
+        vtkObject* caller, unsigned long event, void* calldata) VTK_OVERRIDE
+      {
+        T *handler = this->Handler.GetPointer();
+        if (handler)
+        {
+          if (this->Method1)
+          {
+            (handler->*this->Method1)();
+          }
+          else if (this->Method2)
+          {
+            (handler->*this->Method2)(caller, event, calldata);
+          }
+          else if (this->Method3)
+          {
+            return (handler->*this->Method3)(caller, event, calldata);
+          }
+        }
+        return false;
+      }
+  };
 
   //@{
   /**
@@ -392,6 +402,7 @@ private:
   // Friend to access AddTemplatedObserver().
   friend class vtkObjectCommandInternal;
   //@}
+
 };
 
 #endif

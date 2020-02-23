@@ -23,7 +23,7 @@
 uniform sampler2D texDepth;     // z values from vertex shader
 uniform sampler2D texRGBColors; // final rgb LIC colors
 
-in vec2 tcoordVC;
+varying vec2 tcoordVC;
 
 void main()
 {

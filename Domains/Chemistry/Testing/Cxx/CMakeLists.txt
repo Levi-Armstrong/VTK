@@ -14,7 +14,7 @@ endif()
 set(TestVASPAnimationReader_ARGS DATA{../Data/VASP/NPT_Z_ANIMATE.out})
 set(TestVASPTessellationReader_ARGS DATA{../Data/VASP/NPT_Z_TESSELLATE.out})
 
-vtk_add_test_cxx(vtkDomainsChemistryCxxTests tests
+vtk_add_test_cxx(${vtk-module}CxxTests tests
   ${generator_test}
   TestBallAndStick.cxx
   TestPDBBallAndStick.cxx
@@ -27,13 +27,10 @@ vtk_add_test_cxx(vtkDomainsChemistryCxxTests tests
   TestMolecule.cxx,NO_VALID
   TestMoleculeIOLegacy.cxx
   TestMoleculeSelection.cxx,NO_VALID
-  TestMoleculeMapperColors.cxx
   TestMoleculeMapperPropertyUpdate.cxx
-  TestMoleculeToLines.cxx,NO_VALID
   TestMultiCylinderOn.cxx
   TestMultiCylinderOff.cxx
   TestPeriodicTable.cxx,NO_VALID
-  TestPointSetToMoleculeFilter.cxx,NO_VALID
   TestProgrammableElectronicData.cxx,NO_VALID
   TestProteinRibbon.cxx
   TestSimpleBondPerceiver.cxx,NO_VALID
@@ -42,7 +39,7 @@ vtk_add_test_cxx(vtkDomainsChemistryCxxTests tests
   TestVDWSpheres.cxx
   TestCMLMoleculeReader.cxx
   )
-vtk_test_cxx_executable(vtkDomainsChemistryCxxTests tests
+vtk_test_cxx_executable(${vtk-module}CxxTests tests
   RENDERING_FACTORY
   )
 
@@ -51,6 +48,6 @@ vtk_test_cxx_executable(vtkDomainsChemistryCxxTests tests
 if(NOT VTK_TEST_TIMEOUT_TestPDBBallAndStick)
   set(VTK_TEST_TIMEOUT_TestPDBBallAndStick 360)
 endif()
-set_tests_properties(VTK::DomainsChemistryCxx-TestPDBBallAndStick
+set_tests_properties(${vtk-module}Cxx-TestPDBBallAndStick
     PROPERTIES TIMEOUT ${VTK_TEST_TIMEOUT_TestPDBBallAndStick}
                RUN_SERIAL ON)

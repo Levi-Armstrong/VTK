@@ -34,7 +34,7 @@
  *  <li> node-center fields must match across processes. </li>
  * </ul>
  *
- */
+*/
 
 #ifndef vtkStructuredImplicitConnectivity_h
 #define vtkStructuredImplicitConnectivity_h
@@ -64,30 +64,36 @@ struct StructuredGrid;
 } // END namespace detail
 } // END namespace vtk
 
-class VTKFILTERSPARALLELMPI_EXPORT vtkStructuredImplicitConnectivity : public vtkObject
+class VTKFILTERSPARALLELMPI_EXPORT vtkStructuredImplicitConnectivity :
+  public vtkObject
 {
 public:
   static vtkStructuredImplicitConnectivity* New();
-  void PrintSelf(ostream& os, vtkIndent indent) override;
-  vtkTypeMacro(vtkStructuredImplicitConnectivity, vtkObject);
+  void PrintSelf(ostream& os, vtkIndent indent);
+  vtkTypeMacro(vtkStructuredImplicitConnectivity,vtkObject);
 
   /**
    * \brief Sets the whole extent for the distributed structured domain.
    * \param wholeExt the extent of the entire domain (in).
    * \note All ranks must call this method with the same whole extent.
-   * \post this->DomainInfo != nullptr
+   * \post this->DomainInfo != NULL
    */
   void SetWholeExtent(int wholeExt[6]);
 
   // \brief Registers the structured grid dataset belonging to this process.
   // \param gridID the ID of the grid in this rank.
   // \param extent the [imin,imax,jmin,jmax,kmin,kmax] of the grid.
-  // \param gridPnts pointer to the points of the grid (nullptr for uniform grid).
+  // \param gridPnts pointer to the points of the grid (NULL for uniform grid).
   // \param pointData pointer to the node-centered fields of the grid.
   // \pre gridID >= 0. The code uses values of gridID < -1 as flag internally.
   // \pre vtkStructuredExtent::Smaller(extent,wholeExtent) == true.
   // \note A rank with no or an empty grid, should not call this method.
-  void RegisterGrid(const int gridID, int extent[6], vtkPoints* gridPnts, vtkPointData* pointData);
+  void RegisterGrid(
+        const int gridID,
+        int extent[6],
+        vtkPoints* gridPnts,
+        vtkPointData* pointData
+        );
 
   // \brief Registers the rectilinear grid dataset belonging to this process.
   // \param gridID the ID of the in this rank.
@@ -99,14 +105,20 @@ public:
   // \pre gridID >= 0. The code uses values of gridID < -1 as flag internally.
   // \pre vtkStructuredExtent::Smaller(extent,wholeExtent) == true.
   // \note A rank with no or an empty grid, should not call this method.
-  void RegisterRectilinearGrid(const int gridID, int extent[6], vtkDataArray* xcoords,
-    vtkDataArray* ycoords, vtkDataArray* zcoords, vtkPointData* pointData);
+  void RegisterRectilinearGrid(
+        const int gridID,
+        int extent[6],
+        vtkDataArray* xcoords,
+        vtkDataArray* ycoords,
+        vtkDataArray* zcoords,
+        vtkPointData* pointData
+        );
 
   /**
    * \brief Finds implicit connectivity for a distributed structured dataset.
    * \note This is a collective operation, all ranks must call this method.
-   * \pre this->Controller != nullptr
-   * \pre this->DomainInfo != nullptr
+   * \pre this->Controller != NULL
+   * \pre this->DomainInfo != NULL
    */
   void EstablishConnectivity();
 
@@ -120,8 +132,8 @@ public:
    * \brief Exchanges one layer (row or column) of data between neighboring
    * grids to fix the implicit connectivity.
    * \note This is a collective operation, all ranks must call this method.
-   * \pre this->Controller != nullptr
-   * \pre this->DomainInfo != nullptr
+   * \pre this->Controller != NULL
+   * \pre this->DomainInfo != NULL
    */
   void ExchangeData();
 
@@ -207,13 +219,13 @@ protected:
 
   /**
    * \brief Exchanges extents among processes.
-   * \pre this->Controller != nullptr.
+   * \pre this->Controller != NULL.
    * \note This method is collective operation. All ranks must call it.
    */
   void ExchangeExtents();
 
 private:
-  vtkStructuredImplicitConnectivity(const vtkStructuredImplicitConnectivity&) = delete;
-  void operator=(const vtkStructuredImplicitConnectivity&) = delete;
+  vtkStructuredImplicitConnectivity(const vtkStructuredImplicitConnectivity&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkStructuredImplicitConnectivity&) VTK_DELETE_FUNCTION;
 };
 #endif

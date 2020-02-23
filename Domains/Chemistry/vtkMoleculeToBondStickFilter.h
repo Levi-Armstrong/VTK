@@ -16,7 +16,7 @@
  * @class   vtkMoleculeToBondStickFilter
  * @brief   Generate polydata with cylinders
  * representing bonds
- */
+*/
 
 #ifndef vtkMoleculeToBondStickFilter_h
 #define vtkMoleculeToBondStickFilter_h
@@ -26,23 +26,25 @@
 
 class vtkMolecule;
 
-class VTKDOMAINSCHEMISTRY_EXPORT vtkMoleculeToBondStickFilter : public vtkMoleculeToPolyDataFilter
+class VTKDOMAINSCHEMISTRY_EXPORT vtkMoleculeToBondStickFilter
+: public vtkMoleculeToPolyDataFilter
 {
-public:
-  vtkTypeMacro(vtkMoleculeToBondStickFilter, vtkMoleculeToPolyDataFilter);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+ public:
+  vtkTypeMacro(vtkMoleculeToBondStickFilter,vtkMoleculeToPolyDataFilter);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
-  static vtkMoleculeToBondStickFilter* New();
+  static vtkMoleculeToBondStickFilter *New();
 
 protected:
   vtkMoleculeToBondStickFilter();
-  ~vtkMoleculeToBondStickFilter() override;
+  ~vtkMoleculeToBondStickFilter();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *, vtkInformationVector **,
+                  vtkInformationVector *);
 
 private:
-  vtkMoleculeToBondStickFilter(const vtkMoleculeToBondStickFilter&) = delete;
-  void operator=(const vtkMoleculeToBondStickFilter&) = delete;
+  vtkMoleculeToBondStickFilter(const vtkMoleculeToBondStickFilter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkMoleculeToBondStickFilter&) VTK_DELETE_FUNCTION;
 };
 
 #endif

@@ -26,32 +26,28 @@
  *
  * @sa
  * vtkRenderPass vtkDefaultPass
- */
+*/
 
 #ifndef vtkLightingMapPass_h
 #define vtkLightingMapPass_h
 
-#include "vtkDefaultPass.h"
 #include "vtkRenderingOpenGL2Module.h" // For export macro
+#include "vtkDefaultPass.h"
 
 class vtkInformationIntegerKey;
 
 class VTKRENDERINGOPENGL2_EXPORT vtkLightingMapPass : public vtkDefaultPass
 {
 public:
-  static vtkLightingMapPass* New();
+  static vtkLightingMapPass *New();
   vtkTypeMacro(vtkLightingMapPass, vtkDefaultPass);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
    * Set the type of lighting render to perform
    */
-  enum RenderMode
-  {
-    LUMINANCE,
-    NORMALS
-  };
+  enum RenderMode { LUMINANCE, NORMALS };
   vtkSetMacro(RenderType, RenderMode);
   vtkGetMacro(RenderType, RenderMode);
   //@}
@@ -61,22 +57,22 @@ public:
    * on the prop will be rendered as its color. This key is mutually exclusive
    * with the RENDER_LUMINANCE key.
    */
-  static vtkInformationIntegerKey* RENDER_LUMINANCE();
+  static vtkInformationIntegerKey *RENDER_LUMINANCE();
 
   /**
    * if this key exists on the ProperyKeys of a prop, the active vector array on
    * the prop will be rendered as its color. This key is mutually exclusive with
    * the RENDER_LUMINANCE key.
    */
-  static vtkInformationIntegerKey* RENDER_NORMALS();
+  static vtkInformationIntegerKey *RENDER_NORMALS();
 
   /**
    * Perform rendering according to a render state \p s.
    * \pre s_exists: s!=0
    */
-  void Render(const vtkRenderState* s) override;
+  virtual void Render(const vtkRenderState *s);
 
-protected:
+ protected:
   /**
    * Default constructor.
    */
@@ -85,17 +81,17 @@ protected:
   /**
    * Destructor.
    */
-  ~vtkLightingMapPass() override;
+  virtual ~vtkLightingMapPass();
 
   /**
    * Opaque pass with key checking.
    * \pre s_exists: s!=0
    */
-  void RenderOpaqueGeometry(const vtkRenderState* s) override;
+  virtual void RenderOpaqueGeometry(const vtkRenderState *s);
 
-private:
-  vtkLightingMapPass(const vtkLightingMapPass&) = delete;
-  void operator=(const vtkLightingMapPass&) = delete;
+ private:
+  vtkLightingMapPass(const vtkLightingMapPass&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkLightingMapPass&) VTK_DELETE_FUNCTION;
 
   RenderMode RenderType;
 };

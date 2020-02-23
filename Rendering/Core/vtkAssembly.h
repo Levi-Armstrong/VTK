@@ -52,13 +52,13 @@
  *
  * @sa
  * vtkActor vtkTransform vtkMapper vtkPolyDataMapper vtkPropAssembly
- */
+*/
 
 #ifndef vtkAssembly_h
 #define vtkAssembly_h
 
-#include "vtkProp3D.h"
 #include "vtkRenderingCoreModule.h" // For export macro
+#include "vtkProp3D.h"
 
 class vtkAssemblyPaths;
 class vtkProp3DCollection;
@@ -69,25 +69,26 @@ class vtkActor;
 class VTKRENDERINGCORE_EXPORT vtkAssembly : public vtkProp3D
 {
 public:
-  static vtkAssembly* New();
+  static vtkAssembly *New();
 
   vtkTypeMacro(vtkAssembly, vtkProp3D);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Add a part to the list of parts.
    */
-  void AddPart(vtkProp3D*);
+  void AddPart(vtkProp3D *);
 
   /**
    * Remove a part from the list of parts,
    */
-  void RemovePart(vtkProp3D*);
+  void RemovePart(vtkProp3D *);
 
   /**
    * Return the parts (direct descendants) of this assembly.
    */
-  vtkProp3DCollection* GetParts() { return this->Parts; }
+  vtkProp3DCollection *GetParts()
+    { return this->Parts; }
 
   //@{
   /**
@@ -95,8 +96,8 @@ public:
    * able to collect all the actors or volumes. These methods
    * are used in that process.
    */
-  void GetActors(vtkPropCollection*) override;
-  void GetVolumes(vtkPropCollection*) override;
+  void GetActors(vtkPropCollection *) VTK_OVERRIDE;
+  void GetVolumes(vtkPropCollection *) VTK_OVERRIDE;
   //@}
 
   //@{
@@ -108,22 +109,22 @@ public:
    * assemblies; that is, assemblies that only serve to group and transform
    * its parts.
    */
-  int RenderOpaqueGeometry(vtkViewport* ren) override;
-  int RenderTranslucentPolygonalGeometry(vtkViewport* ren) override;
-  int RenderVolumetricGeometry(vtkViewport* ren) override;
+  int RenderOpaqueGeometry(vtkViewport *ren) VTK_OVERRIDE;
+  virtual int RenderTranslucentPolygonalGeometry(vtkViewport *ren) VTK_OVERRIDE;
+  virtual int RenderVolumetricGeometry(vtkViewport *ren) VTK_OVERRIDE;
   //@}
 
   /**
    * Does this prop have some translucent polygonal geometry?
    */
-  vtkTypeBool HasTranslucentPolygonalGeometry() override;
+  virtual int HasTranslucentPolygonalGeometry() VTK_OVERRIDE;
 
   /**
    * Release any graphics resources that are being consumed by this actor.
    * The parameter window could be used to determine which graphic
    * resources to release.
    */
-  void ReleaseGraphicsResources(vtkWindow*) override;
+  void ReleaseGraphicsResources(vtkWindow *) VTK_OVERRIDE;
 
   //@{
   /**
@@ -138,27 +139,28 @@ public:
    * calls to GetNextPath().  GetNextPath() returns a NULL pointer when the
    * list is exhausted.
    */
-  void InitPathTraversal() override;
-  vtkAssemblyPath* GetNextPath() override;
-  int GetNumberOfPaths() override;
+  void InitPathTraversal() VTK_OVERRIDE;
+  vtkAssemblyPath *GetNextPath() VTK_OVERRIDE;
+  int GetNumberOfPaths() VTK_OVERRIDE;
   //@}
 
   /**
    * Get the bounds for the assembly as (Xmin,Xmax,Ymin,Ymax,Zmin,Zmax).
    */
-  void GetBounds(double bounds[6]) { this->vtkProp3D::GetBounds(bounds); }
-  double* GetBounds() VTK_SIZEHINT(6) override;
+  void GetBounds(double bounds[6])
+    { this->vtkProp3D::GetBounds( bounds ); }
+  double *GetBounds() VTK_OVERRIDE;
 
   /**
    * Override default GetMTime method to also consider all of the
    * assembly's parts.
    */
-  vtkMTimeType GetMTime() override;
+  vtkMTimeType GetMTime() VTK_OVERRIDE;
 
   /**
    * Shallow copy of an assembly. Overloads the virtual vtkProp method.
    */
-  void ShallowCopy(vtkProp* prop) override;
+  void ShallowCopy(vtkProp *prop) VTK_OVERRIDE;
 
   /**
    * WARNING: INTERNAL METHOD - NOT INTENDED FOR GENERAL USE DO NOT USE THIS
@@ -166,23 +168,23 @@ public:
    * BuildPaths() method. Paths consist of an ordered sequence of actors,
    * with transformations properly concatenated.
    */
-  void BuildPaths(vtkAssemblyPaths* paths, vtkAssemblyPath* path) override;
+  void BuildPaths(vtkAssemblyPaths *paths, vtkAssemblyPath *path) VTK_OVERRIDE;
 
 protected:
   vtkAssembly();
-  ~vtkAssembly() override;
+  ~vtkAssembly();
 
   // Keep a list of direct descendants of the assembly hierarchy
-  vtkProp3DCollection* Parts;
+  vtkProp3DCollection *Parts;
 
   // Support the BuildPaths() method. Caches last paths built for
   // performance.
   vtkTimeStamp PathTime;
-  virtual void UpdatePaths(); // apply transformations and properties recursively
+  virtual void UpdatePaths(); //apply transformations and properties recursively
 
 private:
-  vtkAssembly(const vtkAssembly&) = delete;
-  void operator=(const vtkAssembly&) = delete;
+  vtkAssembly(const vtkAssembly&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkAssembly&) VTK_DELETE_FUNCTION;
 };
 
 #endif

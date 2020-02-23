@@ -21,29 +21,30 @@
  * a stencil to an image.
  * @sa
  * vtkImageStencil vtkImplicitFunctionToImageStencil vtkPolyDataToImageStencil
- */
+*/
 
 #ifndef vtkImageToImageStencil_h
 #define vtkImageToImageStencil_h
 
-#include "vtkImageStencilAlgorithm.h"
+
 #include "vtkImagingStencilModule.h" // For export macro
+#include "vtkImageStencilAlgorithm.h"
 
 class vtkImageData;
 
 class VTKIMAGINGSTENCIL_EXPORT vtkImageToImageStencil : public vtkImageStencilAlgorithm
 {
 public:
-  static vtkImageToImageStencil* New();
+  static vtkImageToImageStencil *New();
   vtkTypeMacro(vtkImageToImageStencil, vtkImageStencilAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
    * Specify the image data to convert into a stencil.
    */
-  void SetInputData(vtkImageData* input);
-  vtkImageData* GetInput();
+  void SetInputData(vtkImageData *input);
+  vtkImageData *GetInput();
   //@}
 
   /**
@@ -73,20 +74,19 @@ public:
 
 protected:
   vtkImageToImageStencil();
-  ~vtkImageToImageStencil() override;
+  ~vtkImageToImageStencil();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int RequestUpdateExtent(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int FillInputPortInformation(int, vtkInformation*) override;
+  virtual int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
+  virtual int RequestInformation(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
+  virtual int RequestUpdateExtent(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
+  virtual int FillInputPortInformation(int, vtkInformation*);
 
   double UpperThreshold;
   double LowerThreshold;
   double Threshold;
-
 private:
-  vtkImageToImageStencil(const vtkImageToImageStencil&) = delete;
-  void operator=(const vtkImageToImageStencil&) = delete;
+  vtkImageToImageStencil(const vtkImageToImageStencil&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkImageToImageStencil&) VTK_DELETE_FUNCTION;
 };
 
 #endif

@@ -29,7 +29,7 @@
  *
  * @sa
  *  vtkIncrementalPointLocator vtkPointLocator vtkMergePoints
- */
+*/
 
 #ifndef vtkNonMergingPointLocator_h
 #define vtkNonMergingPointLocator_h
@@ -42,18 +42,20 @@ class vtkPoints;
 class VTKCOMMONDATAMODEL_EXPORT vtkNonMergingPointLocator : public vtkPointLocator
 {
 public:
-  static vtkNonMergingPointLocator* New();
+  static vtkNonMergingPointLocator * New();
 
-  vtkTypeMacro(vtkNonMergingPointLocator, vtkPointLocator);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro( vtkNonMergingPointLocator, vtkPointLocator );
+  void PrintSelf( ostream & os, vtkIndent indent ) VTK_OVERRIDE;
 
   /**
    * Determine whether a given point x has been inserted into the points list.
    * Return the id of the already inserted point if it is true, or -1 else.
    * Note this function always returns -1 since any point is always inserted.
    */
-  vtkIdType IsInsertedPoint(const double[3]) override { return -1; }
-  vtkIdType IsInsertedPoint(double, double, double) override { return -1; }
+  vtkIdType IsInsertedPoint( const double [3] ) VTK_OVERRIDE
+    { return -1; }
+  vtkIdType IsInsertedPoint( double, double, double ) VTK_OVERRIDE
+    { return -1; }
 
   /**
    * Determine whether a given point x has been inserted into the points list.
@@ -61,15 +63,17 @@ public:
    * this function always returns 1 since any point is always inserted. The
    * index of the point is returned via ptId.
    */
-  int InsertUniquePoint(const double x[3], vtkIdType& ptId) override;
+  int InsertUniquePoint( const double x[3], vtkIdType & ptId ) VTK_OVERRIDE;
 
 protected:
-  vtkNonMergingPointLocator() {}
-  ~vtkNonMergingPointLocator() override {}
+  vtkNonMergingPointLocator() { };
+  ~vtkNonMergingPointLocator() VTK_OVERRIDE { };
 
 private:
-  vtkNonMergingPointLocator(const vtkNonMergingPointLocator&) = delete;
-  void operator=(const vtkNonMergingPointLocator&) = delete;
+  vtkNonMergingPointLocator( const vtkNonMergingPointLocator & ) VTK_DELETE_FUNCTION;
+  void operator = ( const vtkNonMergingPointLocator & ) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+

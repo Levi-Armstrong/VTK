@@ -19,42 +19,43 @@
 
 #include "vtkExtractUserDefinedPiece.h"
 
-#include "vtkCell.h"
+#include "vtkObjectFactory.h"
+#include "vtkUnstructuredGrid.h"
+#include "vtkPointData.h"
 #include "vtkCellData.h"
+#include "vtkIntArray.h"
 #include "vtkIdList.h"
+#include "vtkCell.h"
+#include "vtkPoints.h"
+#include "vtkUnsignedCharArray.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
-#include "vtkIntArray.h"
-#include "vtkObjectFactory.h"
-#include "vtkPointData.h"
-#include "vtkPoints.h"
 #include "vtkStreamingDemandDrivenPipeline.h"
-#include "vtkUnsignedCharArray.h"
-#include "vtkUnstructuredGrid.h"
 
 vtkStandardNewMacro(vtkExtractUserDefinedPiece);
 
 vtkExtractUserDefinedPiece::vtkExtractUserDefinedPiece()
 {
-  this->ConstantData = nullptr;
+  this->ConstantData = NULL;
   this->ConstantDataLen = 0;
-  this->InPiece = nullptr;
+  this->InPiece = NULL;
 }
 vtkExtractUserDefinedPiece::~vtkExtractUserDefinedPiece()
 {
-  delete[](char*) this->ConstantData;
-  this->ConstantData = nullptr;
+  delete [] (char *)this->ConstantData;
+  this->ConstantData = NULL;
 }
 void vtkExtractUserDefinedPiece::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
-  os << indent << "ConstantData: " << this->ConstantData << indent
-     << "ConstantDataLen: " << this->ConstantDataLen << indent << "InPiece: " << this->InPiece
+  this->Superclass::PrintSelf( os, indent );
+  os << indent << "ConstantData: " << this->ConstantData
+     << indent << "ConstantDataLen: " << this->ConstantDataLen
+     << indent << "InPiece: " << this->InPiece
      << "\n";
 }
-void vtkExtractUserDefinedPiece::SetConstantData(void* data, int len)
+void vtkExtractUserDefinedPiece::SetConstantData(void *data, int len)
 {
-  this->ConstantData = new char[len];
+  this->ConstantData = new char [len];
   this->ConstantDataLen = len;
 
   memcpy(this->ConstantData, data, len);
@@ -62,45 +63,48 @@ void vtkExtractUserDefinedPiece::SetConstantData(void* data, int len)
   this->Modified();
 }
 
-int vtkExtractUserDefinedPiece::GetConstantData(void** data)
+int vtkExtractUserDefinedPiece::GetConstantData(void **data)
 {
   *data = this->ConstantData;
   return this->ConstantDataLen;
 }
+
 
 // This is exactly vtkExtractUnstructuredGridPiece::Execute(), with
 // the exception that we call ComputeCellTagsWithFunction rather
 // than ComputeCellTags.  If ComputeCellTags were virtual, we could
 // just override it here.
 
-int vtkExtractUserDefinedPiece::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+int vtkExtractUserDefinedPiece::RequestData(
+  vtkInformation *vtkNotUsed(request),
+  vtkInformationVector **inputVector,
+  vtkInformationVector *outputVector)
 {
   // get the info objects
-  vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
-  vtkInformation* outInfo = outputVector->GetInformationObject(0);
+  vtkInformation *inInfo = inputVector[0]->GetInformationObject(0);
+  vtkInformation *outInfo = outputVector->GetInformationObject(0);
 
   // get the input and output
-  vtkUnstructuredGrid* input =
-    vtkUnstructuredGrid::SafeDownCast(inInfo->Get(vtkDataObject::DATA_OBJECT()));
-  vtkUnstructuredGrid* output =
-    vtkUnstructuredGrid::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
+  vtkUnstructuredGrid *input = vtkUnstructuredGrid::SafeDownCast(
+    inInfo->Get(vtkDataObject::DATA_OBJECT()));
+  vtkUnstructuredGrid *output = vtkUnstructuredGrid::SafeDownCast(
+    outInfo->Get(vtkDataObject::DATA_OBJECT()));
 
-  vtkPointData *pd = input->GetPointData(), *outPD = output->GetPointData();
-  vtkCellData *cd = input->GetCellData(), *outCD = output->GetCellData();
-  vtkIntArray* cellTags;
+  vtkPointData *pd=input->GetPointData(), *outPD=output->GetPointData();
+  vtkCellData *cd=input->GetCellData(), *outCD=output->GetCellData();
+  vtkIntArray *cellTags;
   int ghostLevel;
   vtkIdType cellId, newCellId;
   vtkIdList *cellPts, *pointMap;
-  vtkIdList* newCellPts = vtkIdList::New();
-  vtkIdList* pointOwnership;
-  vtkCell* cell;
-  vtkPoints* newPoints;
-  vtkUnsignedCharArray* cellGhostLevels = nullptr;
-  vtkUnsignedCharArray* pointGhostLevels = nullptr;
+  vtkIdList *newCellPts = vtkIdList::New();
+  vtkIdList *pointOwnership;
+  vtkCell *cell;
+  vtkPoints *newPoints;
+  vtkUnsignedCharArray* cellGhostLevels = 0;
+  vtkUnsignedCharArray* pointGhostLevels = 0;
   vtkIdType i, ptId, newId, numPts;
   int numCellPts;
-  double* x;
+  double *x;
 
   // Pipeline update piece will tell us what to generate.
   ghostLevel = outInfo->Get(vtkStreamingDemandDrivenPipeline::UPDATE_NUMBER_OF_GHOST_LEVELS());
@@ -132,7 +136,7 @@ int vtkExtractUserDefinedPiece::RequestData(vtkInformation* vtkNotUsed(request),
   {
     for (i = 0; i < ghostLevel; i++)
     {
-      this->AddGhostLevel(input, cellTags, i + 1);
+      this->AddGhostLevel(input, cellTags, i+1);
     }
   }
 
@@ -143,53 +147,55 @@ int vtkExtractUserDefinedPiece::RequestData(vtkInformation* vtkNotUsed(request),
   newPoints = vtkPoints::New();
   newPoints->Allocate(numPts);
 
-  pointMap = vtkIdList::New(); // maps old point ids into new
+  pointMap = vtkIdList::New(); //maps old point ids into new
   pointMap->SetNumberOfIds(numPts);
-  for (i = 0; i < numPts; i++)
+  for (i=0; i < numPts; i++)
   {
-    pointMap->SetId(i, -1);
+    pointMap->SetId(i,-1);
   }
 
   // Filter the cells
-  for (cellId = 0; cellId < input->GetNumberOfCells(); cellId++)
+  for (cellId=0; cellId < input->GetNumberOfCells(); cellId++)
   {
-    if (cellTags->GetValue(cellId) != -1) // satisfied thresholding
+    if ( cellTags->GetValue(cellId) != -1) // satisfied thresholding
     {
       if (cellGhostLevels)
       {
         cellGhostLevels->InsertNextValue(
-          cellTags->GetValue(cellId) > 0 ? vtkDataSetAttributes::DUPLICATECELL : 0);
+          cellTags->GetValue(cellId) > 0 ?
+          vtkDataSetAttributes::DUPLICATECELL : 0);
       }
 
       cell = input->GetCell(cellId);
       cellPts = cell->GetPointIds();
       numCellPts = cell->GetNumberOfPoints();
 
-      for (i = 0; i < numCellPts; i++)
+      for (i=0; i < numCellPts; i++)
       {
         ptId = cellPts->GetId(i);
-        if ((newId = pointMap->GetId(ptId)) < 0)
+        if ( (newId = pointMap->GetId(ptId)) < 0 )
         {
           x = input->GetPoint(ptId);
           newId = newPoints->InsertNextPoint(x);
           if (pointGhostLevels)
           {
-            pointGhostLevels->InsertNextValue(cellTags->GetValue(pointOwnership->GetId(ptId)) > 0
-                ? vtkDataSetAttributes::DUPLICATEPOINT
-                : 0);
+            pointGhostLevels->InsertNextValue(
+              cellTags->GetValue(pointOwnership->GetId(ptId)) > 0 ?
+              vtkDataSetAttributes::DUPLICATEPOINT : 0);
           }
-          pointMap->SetId(ptId, newId);
-          outPD->CopyData(pd, ptId, newId);
+          pointMap->SetId(ptId,newId);
+          outPD->CopyData(pd,ptId,newId);
         }
-        newCellPts->InsertId(i, newId);
+        newCellPts->InsertId(i,newId);
       }
-      newCellId = output->InsertNextCell(cell->GetCellType(), newCellPts);
-      outCD->CopyData(cd, cellId, newCellId);
+      newCellId = output->InsertNextCell(cell->GetCellType(),newCellPts);
+      outCD->CopyData(cd,cellId,newCellId);
       newCellPts->Reset();
     } // satisfied thresholding
-  }   // for all cells
+  } // for all cells
 
-  vtkDebugMacro(<< "Extracted " << output->GetNumberOfCells() << " number of cells.");
+  vtkDebugMacro(<< "Extracted " << output->GetNumberOfCells()
+                << " number of cells.");
 
   // now clean up / update ourselves
   pointMap->Delete();
@@ -200,14 +206,14 @@ int vtkExtractUserDefinedPiece::RequestData(vtkInformation* vtkNotUsed(request),
     cellGhostLevels->SetName(vtkDataSetAttributes::GhostArrayName());
     output->GetCellData()->AddArray(cellGhostLevels);
     cellGhostLevels->Delete();
-    cellGhostLevels = nullptr;
+    cellGhostLevels = 0;
   }
   if (pointGhostLevels)
   {
     pointGhostLevels->SetName(vtkDataSetAttributes::GhostArrayName());
     output->GetPointData()->AddArray(pointGhostLevels);
     pointGhostLevels->Delete();
-    pointGhostLevels = nullptr;
+    pointGhostLevels = 0;
   }
   output->SetPoints(newPoints);
   newPoints->Delete();
@@ -218,12 +224,14 @@ int vtkExtractUserDefinedPiece::RequestData(vtkInformation* vtkNotUsed(request),
 
   return 1;
 }
-void vtkExtractUserDefinedPiece::ComputeCellTagsWithFunction(
-  vtkIntArray* tags, vtkIdList* pointOwnership, vtkUnstructuredGrid* input)
+void vtkExtractUserDefinedPiece::
+ComputeCellTagsWithFunction(vtkIntArray *tags,
+                            vtkIdList *pointOwnership,
+                            vtkUnstructuredGrid *input)
 {
   int j;
   vtkIdType idx, numCells, ptId;
-  vtkIdList* cellPtIds;
+  vtkIdList *cellPtIds;
 
   numCells = input->GetNumberOfCells();
 

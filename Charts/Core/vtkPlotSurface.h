@@ -20,7 +20,7 @@
  *
  * 3D surface plot.
  *
- */
+*/
 
 #ifndef vtkPlotSurface_h
 #define vtkPlotSurface_h
@@ -37,18 +37,18 @@ class VTKCHARTSCORE_EXPORT vtkPlotSurface : public vtkPlot3D
 {
 public:
   vtkTypeMacro(vtkPlotSurface, vtkPlot3D);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
-  static vtkPlotSurface* New();
+  virtual void PrintSelf(ostream &os, vtkIndent indent);
+  static vtkPlotSurface * New();
 
   /**
    * Paint event for the XY plot, called whenever the chart needs to be drawn
    */
-  bool Paint(vtkContext2D* painter) override;
+  virtual bool Paint(vtkContext2D *painter);
 
   /**
    * Set the input to the surface plot.
    */
-  void SetInputData(vtkTable* input) override;
+  virtual void SetInputData(vtkTable *input);
 
   //@{
   /**
@@ -56,12 +56,15 @@ public:
    * Do not use these versions of SetInputData, as all the parameters
    * beyond the vtkTable are ignored.
    */
-  void SetInputData(vtkTable* input, const vtkStdString& xName, const vtkStdString& yName,
-    const vtkStdString& zName) override;
-  void SetInputData(vtkTable* input, const vtkStdString& xName, const vtkStdString& yName,
-    const vtkStdString& zName, const vtkStdString& colorName) override;
-  void SetInputData(
-    vtkTable* input, vtkIdType xColumn, vtkIdType yColumn, vtkIdType zColumn) override;
+  virtual void SetInputData(vtkTable *input, const vtkStdString &xName,
+                            const vtkStdString &yName,
+                            const vtkStdString &zName);
+  virtual void SetInputData(vtkTable *input, const vtkStdString &xName,
+                            const vtkStdString &yName,
+                            const vtkStdString &zName,
+                            const vtkStdString &colorName);
+  virtual void SetInputData(vtkTable *input, vtkIdType xColumn,
+                            vtkIdType yColumn, vtkIdType zColumn);
   //@}
 
   /**
@@ -82,7 +85,7 @@ public:
 
 protected:
   vtkPlotSurface();
-  ~vtkPlotSurface() override;
+  ~vtkPlotSurface();
 
   /**
    * Generate a surface (for OpenGL) from our list of points.
@@ -92,7 +95,7 @@ protected:
   /**
    * Helper function used to setup a colored surface.
    */
-  void InsertSurfaceVertex(float* data, float value, int i, int j, int& pos);
+  void InsertSurfaceVertex(float *data, float value, int i, int j, int &pos);
 
   /**
    * Change data values if SetXRange() or SetYRange() were called.
@@ -130,6 +133,11 @@ protected:
   vtkIdType NumberOfVertices;
 
   /**
+   * This array indicates how the surface should be colored.
+   */
+  vtkNew<vtkUnsignedCharArray> Colors;
+
+  /**
    * The number of components used to color the surface.
    */
   int ColorComponents;
@@ -137,7 +145,7 @@ protected:
   /**
    * The input table used to generate the surface.
    */
-  vtkTable* InputTable;
+  vtkTable *InputTable;
 
   /**
    * The lookup table used to color the surface by height (Z dimension).
@@ -161,8 +169,9 @@ protected:
   bool DataHasBeenRescaled;
 
 private:
-  vtkPlotSurface(const vtkPlotSurface&) = delete;
-  void operator=(const vtkPlotSurface&) = delete;
+  vtkPlotSurface(const vtkPlotSurface &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPlotSurface &) VTK_DELETE_FUNCTION;
+
 };
 
-#endif // vtkPlotSurface_h
+#endif //vtkPlotSurface_h

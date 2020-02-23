@@ -28,7 +28,7 @@
  *
  * @sa
  * vtkDataObjectTreeIterator
- */
+*/
 
 #ifndef vtkDataObjectTree_h
 #define vtkDataObjectTree_h
@@ -47,12 +47,12 @@ class VTKCOMMONDATAMODEL_EXPORT vtkDataObjectTree : public vtkCompositeDataSet
 {
 public:
   vtkTypeMacro(vtkDataObjectTree, vtkCompositeDataSet);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Return a new iterator (the iterator has to be deleted by user).
    */
-  VTK_NEWINSTANCE virtual vtkDataObjectTreeIterator* NewTreeIterator();
+  virtual vtkDataObjectTreeIterator* NewTreeIterator();
 
   /**
    * Return a new iterator (the iterator has to be deleted by user).
@@ -61,14 +61,14 @@ public:
    * and NewIterator when you have a pointer to a vtkCompositeDataSet;
    * NewIterator is inherited and calls NewTreeIterator internally.
    */
-  VTK_NEWINSTANCE vtkCompositeDataIterator* NewIterator() override;
+  VTK_NEWINSTANCE vtkCompositeDataIterator* NewIterator() VTK_OVERRIDE;
 
   /**
    * Copies the tree structure from the input. All pointers to non-composite
-   * data objects are initialized to nullptr. This also shallow copies the meta data
+   * data objects are intialized to NULL. This also shallow copies the meta data
    * associated with all the nodes.
    */
-  void CopyStructure(vtkCompositeDataSet* input) override;
+  void CopyStructure(vtkCompositeDataSet* input) VTK_OVERRIDE;
 
   /**
    * Sets the data set at the location pointed by the iterator.
@@ -76,7 +76,8 @@ public:
    * be any composite datasite with similar structure (achieved by using
    * CopyStructure).
    */
-  void SetDataSet(vtkCompositeDataIterator* iter, vtkDataObject* dataObj) override;
+  void SetDataSet(vtkCompositeDataIterator* iter,
+                  vtkDataObject* dataObj) VTK_OVERRIDE;
 
   /**
    * Sets the data at the location provided by a vtkDataObjectTreeIterator
@@ -89,7 +90,7 @@ public:
    * be an iterator for composite dataset with similar structure (achieved by
    * using CopyStructure).
    */
-  vtkDataObject* GetDataSet(vtkCompositeDataIterator* iter) override;
+  vtkDataObject* GetDataSet(vtkCompositeDataIterator* iter) VTK_OVERRIDE;
 
   /**
    * Returns the meta-data associated with the position pointed by the iterator.
@@ -113,19 +114,19 @@ public:
    * Return the actual size of the data in kibibytes (1024 bytes). This number
    * is valid only after the pipeline has updated.
    */
-  unsigned long GetActualMemorySize() override;
+  unsigned long GetActualMemorySize() VTK_OVERRIDE;
 
   /**
    * Restore data object to initial state,
    */
-  void Initialize() override;
+  void Initialize() VTK_OVERRIDE;
 
   //@{
   /**
    * Shallow and Deep copy.
    */
-  void ShallowCopy(vtkDataObject* src) override;
-  void DeepCopy(vtkDataObject* src) override;
+  void ShallowCopy(vtkDataObject *src) VTK_OVERRIDE;
+  void DeepCopy(vtkDataObject *src) VTK_OVERRIDE;
   //@}
 
   /**
@@ -133,26 +134,19 @@ public:
    * iterate over all blocks and call GetNumberOfPoints() so it
    * might be expansive.
    */
-  vtkIdType GetNumberOfPoints() override;
-
-  /**
-   * Returns the total number of cells of all blocks. This will
-   * iterate over all blocks and call GetNumberOfPoints() so it
-   * might be expensive.
-   */
-  vtkIdType GetNumberOfCells() override;
+  vtkIdType GetNumberOfPoints() VTK_OVERRIDE;
 
   //@{
   /**
    * Retrieve an instance of this class from an information object.
    */
   static vtkDataObjectTree* GetData(vtkInformation* info);
-  static vtkDataObjectTree* GetData(vtkInformationVector* v, int i = 0);
+  static vtkDataObjectTree* GetData(vtkInformationVector* v, int i=0);
   //@}
 
 protected:
   vtkDataObjectTree();
-  ~vtkDataObjectTree() override;
+  ~vtkDataObjectTree() VTK_OVERRIDE;
 
   /**
    * Set the number of children.
@@ -204,8 +198,9 @@ protected:
   friend class vtkDataObjectTreeIterator;
 
 private:
-  vtkDataObjectTree(const vtkDataObjectTree&) = delete;
-  void operator=(const vtkDataObjectTree&) = delete;
+  vtkDataObjectTree(const vtkDataObjectTree&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkDataObjectTree&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif

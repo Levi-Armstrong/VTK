@@ -28,9 +28,9 @@
 #include <vtkPolyDataMapper.h>
 #include <vtkProperty.h>
 #include <vtkRegressionTestImage.h>
+#include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
-#include <vtkRenderer.h>
 #include <vtkSmartPointer.h>
 #include <vtkTestUtilities.h>
 
@@ -40,14 +40,14 @@
 // Main program
 int TestGDALVectorReader(int argc, char* argv[])
 {
-  const char* vectorFileName =
-    vtkTestUtilities::ExpandDataFileName(argc, argv, "Data/GIS/countries.shp");
+  const char* vectorFileName = vtkTestUtilities::ExpandDataFileName(argc, argv,
+                                 "Data/GIS/countries.shp");
 
   // Create reader to read shape file.
   vtkNew<vtkGDALVectorReader> reader;
   reader->SetFileName(vectorFileName);
   reader->AddFeatureIdsOn();
-  delete[] vectorFileName;
+  delete [] vectorFileName;
 
   // Test layer information helpers
   reader->UpdateInformation();
@@ -55,8 +55,11 @@ int TestGDALVectorReader(int argc, char* argv[])
   for (int i = 0; i < nl; ++i)
   {
     reader->SetActiveLayer(i);
-    cout << "Layer " << i << " Type " << reader->GetActiveLayerType() << " FeatureCount "
-         << reader->GetActiveLayerFeatureCount() << "\n";
+    cout
+      << "Layer " << i
+      << " Type " << reader->GetActiveLayerType()
+      << " FeatureCount " << reader->GetActiveLayerFeatureCount()
+      << "\n";
   }
   reader->SetActiveLayer(0); // Read only layer 0, which is the only layer.
   reader->Update();
@@ -71,7 +74,7 @@ int TestGDALVectorReader(int argc, char* argv[])
   if (mbds && mbds->GetNumberOfBlocks() > 0)
   {
     vtkPolyData* pd = vtkPolyData::SafeDownCast(mbds->GetBlock(0));
-    vtkCellData* cd = pd ? pd->GetCellData() : nullptr;
+    vtkCellData* cd = pd ? pd->GetCellData() : NULL;
     if (cd)
     {
       if (!cd->GetPedigreeIds())
@@ -100,28 +103,28 @@ int TestGDALVectorReader(int argc, char* argv[])
   mapper->SetScalarModeToUseCellFieldData();
   mapper->SetScalarVisibility(1);
   mapper->UseLookupTableScalarRangeOn();
-  mapper->SetLookupTable(lut);
+  mapper->SetLookupTable(lut.GetPointer());
   mapper->SetColorModeToMapScalars();
-  actor->SetMapper(mapper);
+  actor->SetMapper(mapper.GetPointer());
   actor->GetProperty()->SetLineWidth(1.4f);
-  renderer->AddActor(actor);
+  renderer->AddActor(actor.GetPointer());
 
   // Create a render window, and an interactor
   vtkNew<vtkRenderWindow> renderWindow;
   vtkNew<vtkRenderWindowInteractor> renderWindowInteractor;
-  renderWindow->AddRenderer(renderer);
-  renderWindowInteractor->SetRenderWindow(renderWindow);
+  renderWindow->AddRenderer(renderer.GetPointer());
+  renderWindowInteractor->SetRenderWindow(renderWindow.GetPointer());
 
-  // Add the actor to the scene
+  //Add the actor to the scene
   renderer->SetBackground(1.0, 1.0, 1.0);
   renderWindow->SetSize(400, 400);
   renderWindow->Render();
   renderer->ResetCamera();
   renderWindow->Render();
 
-  int retVal = vtkRegressionTestImage(renderWindow);
+  int retVal = vtkRegressionTestImage(renderWindow.GetPointer());
 
-  if (retVal == vtkRegressionTester::DO_INTERACTOR)
+  if ( retVal == vtkRegressionTester::DO_INTERACTOR)
   {
     renderWindowInteractor->Start();
   }

@@ -16,9 +16,9 @@
 
 #include "metaContour.h"
 
-#include <cassert>
-#include <cctype>
-#include <cstdio>
+#include <assert.h>
+#include <stdio.h>
+#include <ctype.h>
 #include <string>
 
 #if (METAIO_USE_NAMESPACE)
@@ -141,7 +141,7 @@ ControlPointDim(const char* pointDim)
 }
 
 const char* MetaContour::
-ControlPointDim() const
+ControlPointDim(void) const
 {
   return m_ControlPointDim;
 }
@@ -153,26 +153,26 @@ InterpolatedPointDim(const char* pointDim)
 }
 
 const char* MetaContour::
-InterpolatedPointDim() const
+InterpolatedPointDim(void) const
 {
   return m_InterpolatedPointDim;
 }
 
 int MetaContour::
-NControlPoints() const
+NControlPoints(void) const
 {
   return m_NControlPoints;
 }
 
 int MetaContour::
-NInterpolatedPoints() const
+NInterpolatedPoints(void) const
 {
   return m_NInterpolatedPoints;
 }
 
 
 MET_InterpolationEnumType
-MetaContour::Interpolation() const
+MetaContour::Interpolation(void) const
 {
   return m_InterpolationType;
 }
@@ -185,7 +185,7 @@ void MetaContour::Interpolation(MET_InterpolationEnumType _interpolation)
 
 /** Clear Contour information */
 void MetaContour::
-Clear()
+Clear(void)
 {
   if(META_DEBUG)
     {
@@ -202,7 +202,7 @@ Clear()
   while(it != itEnd)
     {
     ContourControlPnt* pnt = *it;
-    ++it;
+    it++;
     delete pnt;
     }
   m_ControlPointsList.clear();
@@ -215,7 +215,7 @@ Clear()
   while(itInterpolated != itInterpolatedEnd)
     {
     ContourInterpolatedPnt* pnt = *itInterpolated;
-    ++itInterpolated;
+    itInterpolated++;
     delete pnt;
     }
   m_InterpolatedPointsList.clear();
@@ -229,7 +229,7 @@ Clear()
 
 /** Destroy Contour information */
 void MetaContour::
-M_Destroy()
+M_Destroy(void)
 {
   MetaObject::M_Destroy();
 }
@@ -263,7 +263,7 @@ DisplayOrientation() const
 
 /** Set Read fields */
 void MetaContour::
-M_SetupReadFields()
+M_SetupReadFields(void)
 {
   if(META_DEBUG) METAIO_STREAM::cout << "MetaContour: M_SetupReadFields" << METAIO_STREAM::endl;
 
@@ -298,7 +298,7 @@ M_SetupReadFields()
 }
 
 void MetaContour::
-M_SetupWriteFields()
+M_SetupWriteFields(void)
 {
   if(META_DEBUG) METAIO_STREAM::cout << "MetaContour: M_SetupWriteFields" << METAIO_STREAM::endl;
 
@@ -345,7 +345,7 @@ M_SetupWriteFields()
 
 
 bool MetaContour::
-M_Read()
+M_Read(void)
 {
   if(META_DEBUG) METAIO_STREAM::cout << "MetaContour: M_Read: Loading Header" << METAIO_STREAM::endl;
 
@@ -399,7 +399,7 @@ M_Read()
     }
 
   int pntDim;
-  char** pntVal = nullptr;
+  char** pntVal = NULL;
   MET_StringToWordArray(m_ControlPointDim, &pntDim, &pntVal);
 
   int i;
@@ -728,7 +728,7 @@ M_Read()
 
 
 bool MetaContour::
-M_Write()
+M_Write(void)
 {
   if(META_DEBUG)
     {
@@ -784,7 +784,7 @@ M_Write()
         MET_SwapByteIfSystemMSB(&pntX,MET_FLOAT);
         MET_DoubleToValue((double)pntX,MET_FLOAT,data,i++);
         }
-      ++it;
+      it++;
       }
 
     m_WriteStream->write((char *)data,(m_NDims*3+5)*m_NControlPoints*4);
@@ -821,7 +821,7 @@ M_Write()
         *m_WriteStream << (*it)->m_Color[d] << " ";
         }
       *m_WriteStream << METAIO_STREAM::endl;
-      ++it;
+      it++;
       }
     }
 
@@ -885,7 +885,7 @@ M_Write()
         MET_SwapByteIfSystemMSB(&x,MET_FLOAT);
         MET_DoubleToValue((double)x,MET_FLOAT,data,i++);
         }
-      ++it;
+      it++;
       }
 
     m_WriteStream->write((char *)data,(m_NDims+5)*m_NInterpolatedPoints*4);
@@ -914,7 +914,7 @@ M_Write()
         *m_WriteStream << (*it)->m_Color[d] << " ";
         }
       *m_WriteStream << METAIO_STREAM::endl;
-      ++it;
+      it++;
       }
     }
   return true;

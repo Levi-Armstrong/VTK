@@ -20,19 +20,19 @@
  *
  * Derive from this class to create custom items that can be added to a
  * vtkContextScene.
- */
+*/
 
 #ifndef vtkContextItem_h
 #define vtkContextItem_h
 
-#include "vtkAbstractContextItem.h"
 #include "vtkRenderingContext2DModule.h" // For export macro
+#include "vtkAbstractContextItem.h"
 
 class VTKRENDERINGCONTEXT2D_EXPORT vtkContextItem : public vtkAbstractContextItem
 {
 public:
   vtkTypeMacro(vtkContextItem, vtkAbstractContextItem);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  virtual void PrintSelf(ostream &os, vtkIndent indent);
 
   //@{
   /**
@@ -51,13 +51,14 @@ public:
 
 protected:
   vtkContextItem();
-  ~vtkContextItem() override;
+  ~vtkContextItem();
 
   double Opacity;
 
 private:
-  vtkContextItem(const vtkContextItem&) = delete;
-  void operator=(const vtkContextItem&) = delete;
+  vtkContextItem(const vtkContextItem &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkContextItem &) VTK_DELETE_FUNCTION;
+
 };
 
-#endif // vtkContextItem_h
+#endif //vtkContextItem_h

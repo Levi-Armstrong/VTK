@@ -14,12 +14,12 @@
 =========================================================================*/
 #include "vtkGeneralizedKernel.h"
 #include "vtkAbstractPointLocator.h"
-#include "vtkDataSet.h"
-#include "vtkDoubleArray.h"
-#include "vtkIdList.h"
-#include "vtkMath.h"
 #include "vtkObjectFactory.h"
+#include "vtkIdList.h"
+#include "vtkDoubleArray.h"
+#include "vtkDataSet.h"
 #include "vtkPointData.h"
+#include "vtkMath.h"
 
 //----------------------------------------------------------------------------
 vtkGeneralizedKernel::vtkGeneralizedKernel()
@@ -30,13 +30,17 @@ vtkGeneralizedKernel::vtkGeneralizedKernel()
   this->NormalizeWeights = true;
 }
 
-//----------------------------------------------------------------------------
-vtkGeneralizedKernel::~vtkGeneralizedKernel() = default;
 
 //----------------------------------------------------------------------------
-vtkIdType vtkGeneralizedKernel::ComputeBasis(double x[3], vtkIdList* pIds, vtkIdType)
+vtkGeneralizedKernel::~vtkGeneralizedKernel()
 {
-  if (this->KernelFootprint == vtkGeneralizedKernel::RADIUS)
+}
+
+//----------------------------------------------------------------------------
+vtkIdType vtkGeneralizedKernel::
+ComputeBasis(double x[3], vtkIdList *pIds, vtkIdType)
+{
+  if ( this->KernelFootprint == vtkGeneralizedKernel::RADIUS )
   {
     this->Locator->FindPointsWithinRadius(this->Radius, x, pIds);
   }
@@ -51,10 +55,12 @@ vtkIdType vtkGeneralizedKernel::ComputeBasis(double x[3], vtkIdList* pIds, vtkId
 //----------------------------------------------------------------------------
 void vtkGeneralizedKernel::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 
   os << indent << "Kernel Footprint: " << this->GetKernelFootprint() << "\n";
   os << indent << "Radius: " << this->GetRadius() << "\n";
   os << indent << "Number of Points: " << this->GetNumberOfPoints() << "\n";
-  os << indent << "Normalize Weights: " << (this->GetNormalizeWeights() ? "On\n" : "Off\n");
+  os << indent << "Normalize Weights: "
+     << (this->GetNormalizeWeights() ? "On\n" : "Off\n");
+
 }

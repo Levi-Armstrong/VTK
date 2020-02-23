@@ -13,31 +13,31 @@
 
 =========================================================================*/
 
+#include "vtkTanglegramItem.h"
 #include "vtkDataSetAttributes.h"
 #include "vtkDoubleArray.h"
 #include "vtkMutableDirectedGraph.h"
 #include "vtkNew.h"
 #include "vtkStringArray.h"
 #include "vtkTable.h"
-#include "vtkTanglegramItem.h"
 #include "vtkTree.h"
 
-#include "vtkContextActor.h"
+#include "vtkRenderer.h"
+#include "vtkRenderWindow.h"
+#include "vtkRenderWindowInteractor.h"
 #include "vtkContextInteractorStyle.h"
+#include "vtkContextActor.h"
 #include "vtkContextMouseEvent.h"
 #include "vtkContextScene.h"
 #include "vtkContextTransform.h"
 #include "vtkNew.h"
-#include "vtkRenderWindow.h"
-#include "vtkRenderWindowInteractor.h"
-#include "vtkRenderer.h"
 
 #include "vtkRegressionTestImage.h"
 
 //----------------------------------------------------------------------------
 int TestTanglegramItem(int argc, char* argv[])
 {
-  // tree #1
+  //tree #1
   vtkNew<vtkMutableDirectedGraph> graph1;
   vtkIdType root = graph1->AddVertex();
   vtkIdType internalOne = graph1->AddChild(root);
@@ -55,7 +55,7 @@ int TestTanglegramItem(int argc, char* argv[])
   weights->SetValue(graph1->GetEdgeId(internalOne, c), 3.0f);
 
   weights->SetName("weight");
-  graph1->GetEdgeData()->AddArray(weights);
+  graph1->GetEdgeData()->AddArray(weights.GetPointer());
 
   vtkNew<vtkStringArray> names1;
   names1->SetNumberOfTuples(6);
@@ -64,7 +64,7 @@ int TestTanglegramItem(int argc, char* argv[])
   names1->SetValue(c, "human");
 
   names1->SetName("node name");
-  graph1->GetVertexData()->AddArray(names1);
+  graph1->GetVertexData()->AddArray(names1.GetPointer());
 
   vtkNew<vtkDoubleArray> nodeWeights;
   nodeWeights->SetNumberOfTuples(6);
@@ -75,9 +75,9 @@ int TestTanglegramItem(int argc, char* argv[])
   nodeWeights->SetValue(b, 4.0f);
   nodeWeights->SetValue(c, 4.0f);
   nodeWeights->SetName("node weight");
-  graph1->GetVertexData()->AddArray(nodeWeights);
+  graph1->GetVertexData()->AddArray(nodeWeights.GetPointer());
 
-  // tree #2
+  //tree #2
   vtkNew<vtkMutableDirectedGraph> graph2;
   root = graph2->AddVertex();
   internalOne = graph2->AddChild(root);
@@ -87,7 +87,7 @@ int TestTanglegramItem(int argc, char* argv[])
   c = graph2->AddChild(internalOne);
 
   weights->SetName("weight");
-  graph2->GetEdgeData()->AddArray(weights);
+  graph2->GetEdgeData()->AddArray(weights.GetPointer());
 
   vtkNew<vtkStringArray> names2;
   names2->SetNumberOfTuples(6);
@@ -96,9 +96,9 @@ int TestTanglegramItem(int argc, char* argv[])
   names2->SetValue(c, "steak");
 
   names2->SetName("node name");
-  graph2->GetVertexData()->AddArray(names2);
+  graph2->GetVertexData()->AddArray(names2.GetPointer());
 
-  graph2->GetVertexData()->AddArray(nodeWeights);
+  graph2->GetVertexData()->AddArray(nodeWeights.GetPointer());
 
   // set up correspondence table: who eats what
   vtkNew<vtkTable> table;
@@ -131,53 +131,53 @@ int TestTanglegramItem(int argc, char* argv[])
   hungerForCatFood->SetValue(1, 1.0);
   hungerForCatFood->SetValue(2, 2.0);
 
-  table->AddColumn(eaters);
-  table->AddColumn(hungerForSteak);
-  table->AddColumn(hungerForDogFood);
-  table->AddColumn(hungerForCatFood);
+  table->AddColumn(eaters.GetPointer());
+  table->AddColumn(hungerForSteak.GetPointer());
+  table->AddColumn(hungerForDogFood.GetPointer());
+  table->AddColumn(hungerForCatFood.GetPointer());
 
   vtkNew<vtkContextActor> actor;
 
   vtkNew<vtkTree> tree1;
-  tree1->ShallowCopy(graph1);
+  tree1->ShallowCopy(graph1.GetPointer());
 
   vtkNew<vtkTree> tree2;
-  tree2->ShallowCopy(graph2);
+  tree2->ShallowCopy(graph2.GetPointer());
 
   vtkNew<vtkTanglegramItem> tanglegram;
-  tanglegram->SetTree1(tree1);
-  tanglegram->SetTree2(tree2);
-  tanglegram->SetTable(table);
+  tanglegram->SetTree1(tree1.GetPointer());
+  tanglegram->SetTree2(tree2.GetPointer());
+  tanglegram->SetTable(table.GetPointer());
   tanglegram->SetTree1Label("Diners");
   tanglegram->SetTree2Label("Meals");
 
   vtkNew<vtkContextTransform> trans;
   trans->SetInteractive(true);
-  trans->AddItem(tanglegram);
+  trans->AddItem(tanglegram.GetPointer());
   // center the item within the render window
   trans->Translate(20, 75);
   trans->Scale(1.25, 1.25);
-  actor->GetScene()->AddItem(trans);
+  actor->GetScene()->AddItem(trans.GetPointer());
 
   vtkNew<vtkRenderer> renderer;
   renderer->SetBackground(1.0, 1.0, 1.0);
 
   vtkNew<vtkRenderWindow> renderWindow;
   renderWindow->SetSize(400, 200);
-  renderWindow->AddRenderer(renderer);
-  renderer->AddActor(actor);
-  actor->GetScene()->SetRenderer(renderer);
+  renderWindow->AddRenderer(renderer.GetPointer());
+  renderer->AddActor(actor.GetPointer());
+  actor->GetScene()->SetRenderer(renderer.GetPointer());
 
   vtkNew<vtkContextInteractorStyle> interactorStyle;
   interactorStyle->SetScene(actor->GetScene());
 
   vtkNew<vtkRenderWindowInteractor> interactor;
-  interactor->SetInteractorStyle(interactorStyle);
-  interactor->SetRenderWindow(renderWindow);
+  interactor->SetInteractorStyle(interactorStyle.GetPointer());
+  interactor->SetRenderWindow(renderWindow.GetPointer());
   renderWindow->SetMultiSamples(0);
   renderWindow->Render();
 
-  int retVal = vtkRegressionTestImageThreshold(renderWindow, 100);
+  int retVal = vtkRegressionTestImageThreshold(renderWindow.GetPointer(), 100);
   if (retVal == vtkRegressionTester::DO_INTERACTOR)
   {
     renderWindow->Render();

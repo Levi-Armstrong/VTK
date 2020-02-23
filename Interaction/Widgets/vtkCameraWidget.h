@@ -27,15 +27,16 @@
  *
  * @sa
  * vtkBorderWidget vtkCameraInterpolator
- */
+*/
 
 #ifndef vtkCameraWidget_h
 #define vtkCameraWidget_h
 
-#include "vtkBorderWidget.h"
 #include "vtkInteractionWidgetsModule.h" // For export macro
+#include "vtkBorderWidget.h"
 
 class vtkCameraRepresentation;
+
 
 class VTKINTERACTIONWIDGETS_EXPORT vtkCameraWidget : public vtkBorderWidget
 {
@@ -43,14 +44,14 @@ public:
   /**
    * Instantiate this class.
    */
-  static vtkCameraWidget* New();
+  static vtkCameraWidget *New();
 
   //@{
   /**
-   * Standard VTK class methods.
+   * Standar VTK class methods.
    */
-  vtkTypeMacro(vtkCameraWidget, vtkBorderWidget);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkCameraWidget,vtkBorderWidget);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   /**
@@ -58,30 +59,28 @@ public:
    * widget in the scene. Note that the representation is a subclass of vtkProp
    * so it can be added to the renderer independent of the widget.
    */
-  void SetRepresentation(vtkCameraRepresentation* r)
-  {
-    this->Superclass::SetWidgetRepresentation(reinterpret_cast<vtkWidgetRepresentation*>(r));
-  }
+  void SetRepresentation(vtkCameraRepresentation *r)
+    {this->Superclass::SetWidgetRepresentation(reinterpret_cast<vtkWidgetRepresentation*>(r));}
 
   /**
    * Create the default widget representation if one is not set.
    */
-  void CreateDefaultRepresentation() override;
+  void CreateDefaultRepresentation();
 
 protected:
   vtkCameraWidget();
-  ~vtkCameraWidget() override;
+  ~vtkCameraWidget();
 
   /**
    * When selecting the interior of this widget, special operations occur
    * (i.e., adding a camera view, deleting a path, animating a path). Thus
    * this methods overrides the superclasses' method.
    */
-  void SelectRegion(double eventPos[2]) override;
+  virtual void SelectRegion(double eventPos[2]);
 
 private:
-  vtkCameraWidget(const vtkCameraWidget&) = delete;
-  void operator=(const vtkCameraWidget&) = delete;
+  vtkCameraWidget(const vtkCameraWidget&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkCameraWidget&) VTK_DELETE_FUNCTION;
 };
 
 #endif

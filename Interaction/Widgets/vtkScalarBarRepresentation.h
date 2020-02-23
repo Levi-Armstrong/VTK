@@ -38,13 +38,13 @@
  * @sa
  * vtkScalarBarWidget vtkWidgetRepresentation vtkScalarBarActor
  *
- */
+*/
 
 #ifndef vtkScalarBarRepresentation_h
 #define vtkScalarBarRepresentation_h
 
-#include "vtkBorderRepresentation.h"
 #include "vtkInteractionWidgetsModule.h" // For export macro
+#include "vtkBorderRepresentation.h"
 
 class vtkScalarBarActor;
 
@@ -52,28 +52,25 @@ class VTKINTERACTIONWIDGETS_EXPORT vtkScalarBarRepresentation : public vtkBorder
 {
 public:
   vtkTypeMacro(vtkScalarBarRepresentation, vtkBorderRepresentation);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
-  static vtkScalarBarRepresentation* New();
+  virtual void PrintSelf(ostream &os, vtkIndent indent);
+  static vtkScalarBarRepresentation *New();
 
   //@{
   /**
    * The prop that is placed in the renderer.
    */
   vtkGetObjectMacro(ScalarBarActor, vtkScalarBarActor);
-  virtual void SetScalarBarActor(vtkScalarBarActor*);
+  virtual void SetScalarBarActor(vtkScalarBarActor *);
   //@}
 
   //@{
   /**
    * Satisfy the superclass' API.
    */
-  void BuildRepresentation() override;
-  void WidgetInteraction(double eventPos[2]) override;
-  void GetSize(double size[2]) override
-  {
-    size[0] = 2.0;
-    size[1] = 2.0;
-  }
+  virtual void BuildRepresentation();
+  virtual void WidgetInteraction(double eventPos[2]);
+  virtual void GetSize(double size[2])
+    {size[0]=2.0; size[1]=2.0;}
   //@}
 
   //@{
@@ -81,14 +78,14 @@ public:
    * These methods are necessary to make this representation behave as
    * a vtkProp.
    */
-  vtkTypeBool GetVisibility() override;
-  void SetVisibility(vtkTypeBool) override;
-  void GetActors2D(vtkPropCollection* collection) override;
-  void ReleaseGraphicsResources(vtkWindow* window) override;
-  int RenderOverlay(vtkViewport*) override;
-  int RenderOpaqueGeometry(vtkViewport*) override;
-  int RenderTranslucentPolygonalGeometry(vtkViewport*) override;
-  vtkTypeBool HasTranslucentPolygonalGeometry() override;
+  virtual int GetVisibility();
+  virtual void SetVisibility(int);
+  virtual void GetActors2D(vtkPropCollection *collection);
+  virtual void ReleaseGraphicsResources(vtkWindow *window);
+  virtual int RenderOverlay(vtkViewport*);
+  virtual int RenderOpaqueGeometry(vtkViewport*);
+  virtual int RenderTranslucentPolygonalGeometry(vtkViewport*);
+  virtual int HasTranslucentPolygonalGeometry();
   //@}
 
   //@{
@@ -96,8 +93,8 @@ public:
    * If true, the orientation will be updated based on the widget's position.
    * Default is true.
    */
-  vtkSetMacro(AutoOrient, bool);
-  vtkGetMacro(AutoOrient, bool);
+  vtkSetMacro(AutoOrient, bool)
+  vtkGetMacro(AutoOrient, bool)
   //@}
 
   //@{
@@ -110,7 +107,7 @@ public:
 
 protected:
   vtkScalarBarRepresentation();
-  ~vtkScalarBarRepresentation() override;
+  ~vtkScalarBarRepresentation();
 
   /**
    * Change horizontal <--> vertical orientation, rotate the corners of the
@@ -118,12 +115,12 @@ protected:
    */
   void SwapOrientation();
 
-  vtkScalarBarActor* ScalarBarActor;
+  vtkScalarBarActor *ScalarBarActor;
   bool AutoOrient;
 
 private:
-  vtkScalarBarRepresentation(const vtkScalarBarRepresentation&) = delete;
-  void operator=(const vtkScalarBarRepresentation&) = delete;
+  vtkScalarBarRepresentation(const vtkScalarBarRepresentation &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkScalarBarRepresentation &) VTK_DELETE_FUNCTION;
 };
 
-#endif // vtkScalarBarRepresentation_h
+#endif //vtkScalarBarRepresentation_h

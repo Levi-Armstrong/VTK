@@ -24,7 +24,7 @@
  *
  * @sa
  * vtkXMLPolyDataWriter
- */
+*/
 
 #ifndef vtkXMLPPolyDataWriter_h
 #define vtkXMLPPolyDataWriter_h
@@ -38,8 +38,8 @@ class VTKIOPARALLELXML_EXPORT vtkXMLPPolyDataWriter : public vtkXMLPUnstructured
 {
 public:
   static vtkXMLPPolyDataWriter* New();
-  vtkTypeMacro(vtkXMLPPolyDataWriter, vtkXMLPUnstructuredDataWriter);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkXMLPPolyDataWriter,vtkXMLPUnstructuredDataWriter);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Get/Set the writer's input.
@@ -49,21 +49,21 @@ public:
   /**
    * Get the default file extension for files written by this writer.
    */
-  const char* GetDefaultFileExtension() override;
+  const char* GetDefaultFileExtension();
 
 protected:
   vtkXMLPPolyDataWriter();
-  ~vtkXMLPPolyDataWriter() override;
+  ~vtkXMLPPolyDataWriter();
 
   // see algorithm for more info
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  virtual int FillInputPortInformation(int port, vtkInformation* info);
 
-  const char* GetDataSetName() override;
-  vtkXMLUnstructuredDataWriter* CreateUnstructuredPieceWriter() override;
+  const char* GetDataSetName();
+  vtkXMLUnstructuredDataWriter* CreateUnstructuredPieceWriter();
 
 private:
-  vtkXMLPPolyDataWriter(const vtkXMLPPolyDataWriter&) = delete;
-  void operator=(const vtkXMLPPolyDataWriter&) = delete;
+  vtkXMLPPolyDataWriter(const vtkXMLPPolyDataWriter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkXMLPPolyDataWriter&) VTK_DELETE_FUNCTION;
 };
 
 #endif

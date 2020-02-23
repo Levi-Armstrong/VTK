@@ -16,46 +16,46 @@
  * @class   vtkDataSetCellIterator
  * @brief   Implementation of vtkCellIterator using
  * vtkDataSet API.
- */
+*/
 
 #ifndef vtkDataSetCellIterator_h
 #define vtkDataSetCellIterator_h
 
-#include "vtkCellIterator.h"
 #include "vtkCommonDataModelModule.h" // For export macro
-#include "vtkSmartPointer.h"          // For vtkSmartPointer
+#include "vtkCellIterator.h"
+#include "vtkSmartPointer.h" // For vtkSmartPointer
 
 class vtkDataSet;
 
-class VTKCOMMONDATAMODEL_EXPORT vtkDataSetCellIterator : public vtkCellIterator
+class VTKCOMMONDATAMODEL_EXPORT vtkDataSetCellIterator: public vtkCellIterator
 {
 public:
-  static vtkDataSetCellIterator* New();
-  vtkTypeMacro(vtkDataSetCellIterator, vtkCellIterator);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkDataSetCellIterator *New();
+  vtkTypeMacro(vtkDataSetCellIterator, vtkCellIterator)
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
-  bool IsDoneWithTraversal() override;
-  vtkIdType GetCellId() override;
+  bool IsDoneWithTraversal() VTK_OVERRIDE;
+  vtkIdType GetCellId() VTK_OVERRIDE;
 
 protected:
   vtkDataSetCellIterator();
-  ~vtkDataSetCellIterator() override;
+  ~vtkDataSetCellIterator() VTK_OVERRIDE;
 
-  void ResetToFirstCell() override;
-  void IncrementToNextCell() override;
-  void FetchCellType() override;
-  void FetchPointIds() override;
-  void FetchPoints() override;
+  void ResetToFirstCell() VTK_OVERRIDE;
+  void IncrementToNextCell() VTK_OVERRIDE;
+  void FetchCellType() VTK_OVERRIDE;
+  void FetchPointIds() VTK_OVERRIDE;
+  void FetchPoints() VTK_OVERRIDE;
 
   friend class vtkDataSet;
-  void SetDataSet(vtkDataSet* ds);
+  void SetDataSet(vtkDataSet *ds);
 
   vtkSmartPointer<vtkDataSet> DataSet;
   vtkIdType CellId;
 
 private:
-  vtkDataSetCellIterator(const vtkDataSetCellIterator&) = delete;
-  void operator=(const vtkDataSetCellIterator&) = delete;
+  vtkDataSetCellIterator(const vtkDataSetCellIterator &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkDataSetCellIterator &) VTK_DELETE_FUNCTION;
 };
 
-#endif // vtkDataSetCellIterator_h
+#endif //vtkDataSetCellIterator_h

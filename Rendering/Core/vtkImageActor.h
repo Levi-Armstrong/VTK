@@ -26,29 +26,30 @@
  *
  * @sa
  * vtkImageData vtkImageSliceMapper vtkImageProperty
- */
+*/
 
 #ifndef vtkImageActor_h
 #define vtkImageActor_h
 
-#include "vtkImageSlice.h"
 #include "vtkRenderingCoreModule.h" // For export macro
+#include "vtkImageSlice.h"
 
 class vtkAlgorithm;
 class vtkPropCollection;
 class vtkRenderer;
 class vtkImageData;
 
+
 class VTKRENDERINGCORE_EXPORT vtkImageActor : public vtkImageSlice
 {
 public:
-  vtkTypeMacro(vtkImageActor, vtkImageSlice);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkImageActor,vtkImageSlice);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Instantiate the image actor.
    */
-  static vtkImageActor* New();
+  static vtkImageActor *New();
 
   //@{
   /**
@@ -56,8 +57,8 @@ public:
    * backwards compatibility, for a proper pipeline connection you
    * should use GetMapper()->SetInputConnection() instead.
    */
-  virtual void SetInputData(vtkImageData*);
-  virtual vtkImageData* GetInput();
+  virtual void SetInputData(vtkImageData *);
+  virtual vtkImageData *GetInput();
   //@}
 
   //@{
@@ -65,15 +66,15 @@ public:
    * Turn on/off linear interpolation of the image when rendering.
    * More options are available in the Property of the image actor.
    */
-  virtual void SetInterpolate(vtkTypeBool);
-  virtual vtkTypeBool GetInterpolate();
-  vtkBooleanMacro(Interpolate, vtkTypeBool);
+  virtual void SetInterpolate(int);
+  virtual int GetInterpolate();
+  vtkBooleanMacro(Interpolate,int);
   //@}
 
   //@{
   /**
    * Set/Get the object's opacity. 1.0 is totally opaque and 0.0 is completely
-   * transparent. The default is 1.0.
+   * transparent.
    */
   virtual void SetOpacity(double);
   virtual double GetOpacity();
@@ -86,21 +87,22 @@ public:
    * The image extent is generally set explicitly, but if not set
    * it will be determined from the input image data.
    */
-  void SetDisplayExtent(const int extent[6]);
-  void SetDisplayExtent(int minX, int maxX, int minY, int maxY, int minZ, int maxZ);
+  void SetDisplayExtent(int extent[6]);
+  void SetDisplayExtent(int minX, int maxX, int minY, int maxY,
+                        int minZ, int maxZ);
   void GetDisplayExtent(int extent[6]);
-  int* GetDisplayExtent() VTK_SIZEHINT(6) { return this->DisplayExtent; }
+  int *GetDisplayExtent() {return this->DisplayExtent;}
   //@}
 
   //@{
   /**
    * Get the bounds of this image actor. Either copy the bounds
    * into a user provided array or return a pointer to an array.
-   * In either case the bounds is expressed as a 6-vector
+   * In either case the boudns is expressed as a 6-vector
    * (xmin,xmax, ymin,ymax, zmin,zmax).
    */
-  double* GetBounds() VTK_SIZEHINT(6) override;
-  void GetBounds(double bounds[6]) { this->Superclass::GetBounds(bounds); }
+  double *GetBounds();
+  void GetBounds(double bounds[6]) { this->Superclass::GetBounds(bounds); };
   //@}
 
   //@{
@@ -110,7 +112,7 @@ public:
    * identity matrix, this will return the same value as
    * GetBounds.
    */
-  double* GetDisplayBounds();
+  double *GetDisplayBounds();
   void GetDisplayBounds(double bounds[6]);
   //@}
 
@@ -134,12 +136,11 @@ public:
    * of slices is in reference to the display z axis, which is not
    * necessarily the z axis on disk. (due to reformatting etc)
    */
-  void SetZSlice(int z)
-  {
-    this->SetDisplayExtent(this->DisplayExtent[0], this->DisplayExtent[1], this->DisplayExtent[2],
-      this->DisplayExtent[3], z, z);
-  }
-  int GetZSlice() { return this->DisplayExtent[4]; }
+  void SetZSlice(int z) {this->SetDisplayExtent(
+    this->DisplayExtent[0], this->DisplayExtent[1],
+    this->DisplayExtent[2], this->DisplayExtent[3], z, z);
+  };
+  int GetZSlice() { return this->DisplayExtent[4];};
   int GetWholeZMin();
   int GetWholeZMax();
   //@}
@@ -151,12 +152,11 @@ public:
    * ForceOpaqueOn(), which forces this method to return false, or
    * ForceTranslucentOn(), which forces this method to return true.
    */
-  vtkTypeBool HasTranslucentPolygonalGeometry() override;
+  virtual int HasTranslucentPolygonalGeometry();
 
   //@{
   /**
    * Force the actor to be rendered during the opaque rendering pass.
-   * Default is false.
    * See also: ForceTranslucentOn() to use translucent rendering pass.
    */
   vtkGetMacro(ForceOpaque, bool);
@@ -166,7 +166,7 @@ public:
 
 protected:
   vtkImageActor();
-  ~vtkImageActor() override;
+  ~vtkImageActor();
 
   /**
    * Guess the orientation from the extent.  The orientation will be Z
@@ -174,11 +174,11 @@ protected:
    */
   static int GetOrientationFromExtent(const int extent[6]);
 
-  int DisplayExtent[6];
-  double DisplayBounds[6];
+  int           DisplayExtent[6];
+  double        DisplayBounds[6];
 
   // Convenience function that returns the input of the mapper
-  vtkAlgorithm* GetInputAlgorithm();
+  vtkAlgorithm *GetInputAlgorithm();
 
   // the result of HasTranslucentPolygonalGeometry is cached
   vtkTimeStamp TranslucentComputationTime;
@@ -186,8 +186,8 @@ protected:
   bool ForceOpaque;
 
 private:
-  vtkImageActor(const vtkImageActor&) = delete;
-  void operator=(const vtkImageActor&) = delete;
+  vtkImageActor(const vtkImageActor&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkImageActor&) VTK_DELETE_FUNCTION;
 };
 
 #endif

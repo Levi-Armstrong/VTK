@@ -27,24 +27,23 @@
  *
  * @par Thanks:
  * Thanks to Philippe Pebay from Sandia National Laboratories for implementing this class.
- */
+*/
 
 #ifndef vtkPCorrelativeStatistics_h
 #define vtkPCorrelativeStatistics_h
 
-#include "vtkCorrelativeStatistics.h"
 #include "vtkFiltersParallelStatisticsModule.h" // For export macro
+#include "vtkCorrelativeStatistics.h"
 
 class vtkMultiBlockDataSet;
 class vtkMultiProcessController;
 
-class VTKFILTERSPARALLELSTATISTICS_EXPORT vtkPCorrelativeStatistics
-  : public vtkCorrelativeStatistics
+class VTKFILTERSPARALLELSTATISTICS_EXPORT vtkPCorrelativeStatistics : public vtkCorrelativeStatistics
 {
 public:
   static vtkPCorrelativeStatistics* New();
   vtkTypeMacro(vtkPCorrelativeStatistics, vtkCorrelativeStatistics);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -58,23 +57,26 @@ public:
   /**
    * Execute the parallel calculations required by the Learn option.
    */
-  void Learn(vtkTable* inData, vtkTable* inParameters, vtkMultiBlockDataSet* outMeta) override;
+  virtual void Learn( vtkTable* inData,
+                      vtkTable* inParameters,
+                      vtkMultiBlockDataSet* outMeta );
 
   /**
    * Execute the calculations required by the Test option.
    * NB: Not implemented for more than 1 processor
    */
-  void Test(vtkTable*, vtkMultiBlockDataSet*, vtkTable*) override;
+  virtual void Test( vtkTable*,
+                     vtkMultiBlockDataSet*,
+                     vtkTable* );
 
 protected:
   vtkPCorrelativeStatistics();
-  ~vtkPCorrelativeStatistics() override;
+  ~vtkPCorrelativeStatistics();
 
   vtkMultiProcessController* Controller;
-
 private:
-  vtkPCorrelativeStatistics(const vtkPCorrelativeStatistics&) = delete;
-  void operator=(const vtkPCorrelativeStatistics&) = delete;
+  vtkPCorrelativeStatistics(const vtkPCorrelativeStatistics&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPCorrelativeStatistics&) VTK_DELETE_FUNCTION;
 };
 
 #endif

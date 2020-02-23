@@ -25,25 +25,34 @@
 class vtkObjectBaseToGarbageCollectorFriendship
 {
 public:
-  static int GiveReference(vtkObjectBase* obj) { return vtkGarbageCollector::GiveReference(obj); }
-  static int TakeReference(vtkObjectBase* obj) { return vtkGarbageCollector::TakeReference(obj); }
+  static int GiveReference(vtkObjectBase* obj)
+  {
+    return vtkGarbageCollector::GiveReference(obj);
+  }
+  static int TakeReference(vtkObjectBase* obj)
+  {
+    return vtkGarbageCollector::TakeReference(obj);
+  }
 };
 
 class vtkObjectBaseToWeakPointerBaseFriendship
 {
 public:
-  static void ClearPointer(vtkWeakPointerBase* p) { p->Object = nullptr; }
+  static void ClearPointer(vtkWeakPointerBase *p)
+  {
+    p->Object = NULL;
+  }
 };
 
 // avoid dll boundary problems
 #ifdef _WIN32
 void* vtkObjectBase::operator new(size_t nSize)
 {
-  void* p = malloc(nSize);
+  void* p=malloc(nSize);
   return p;
 }
 
-void vtkObjectBase::operator delete(void* p)
+void vtkObjectBase::operator delete( void *p )
 {
   free(p);
 }
@@ -65,7 +74,7 @@ ostream& operator<<(ostream& os, vtkObjectBase& o)
 vtkObjectBase::vtkObjectBase()
 {
   this->ReferenceCount = 1;
-  this->WeakPointers = nullptr;
+  this->WeakPointers = 0;
 #ifdef VTK_DEBUG_LEAKS
   vtkDebugLeaks::ConstructingObject(this);
 #endif
@@ -79,7 +88,7 @@ vtkObjectBase::~vtkObjectBase()
 
   // warn user if reference counting is on and the object is being referenced
   // by another object
-  if (this->ReferenceCount > 0)
+  if ( this->ReferenceCount > 0)
   {
     vtkGenericWarningMacro(<< "Trying to delete object with non-zero reference count.");
   }
@@ -89,13 +98,13 @@ vtkObjectBase::~vtkObjectBase()
 void vtkObjectBase::InitializeObjectBase()
 {
 #ifdef VTK_DEBUG_LEAKS
-  vtkDebugLeaks::ConstructClass(this);
+  vtkDebugLeaks::ConstructClass(this->GetClassName());
 #endif // VTK_DEBUG_LEAKS
 }
 
 //----------------------------------------------------------------------------
 #ifdef VTK_WORKAROUND_WINDOWS_MANGLE
-#undef GetClassName
+# undef GetClassName
 // Define possible mangled names.
 const char* vtkObjectBase::GetClassNameA() const
 {
@@ -111,36 +120,18 @@ const char* vtkObjectBase::GetClassName() const
   return this->GetClassNameInternal();
 }
 
-vtkTypeBool vtkObjectBase::IsTypeOf(const char* name)
+vtkTypeBool vtkObjectBase::IsTypeOf(const char *name)
 {
-  if (!strcmp("vtkObjectBase", name))
+  if ( !strcmp("vtkObjectBase",name) )
   {
     return 1;
   }
   return 0;
 }
 
-vtkTypeBool vtkObjectBase::IsA(const char* type)
+vtkTypeBool vtkObjectBase::IsA(const char *type)
 {
   return this->vtkObjectBase::IsTypeOf(type);
-}
-
-vtkIdType vtkObjectBase::GetNumberOfGenerationsFromBaseType(const char* name)
-{
-  if (!strcmp("vtkObjectBase", name))
-  {
-    return 0;
-  }
-  // Return the lowest value for vtkIdType. Because of recursion, the returned
-  // value for derived classes will be this value added to the type distance to
-  // vtkObjectBase. This sum will still be a negative (and, therefore, invalid)
-  // value.
-  return VTK_ID_MIN;
-}
-
-vtkIdType vtkObjectBase::GetNumberOfGenerationsFromBase(const char* type)
-{
-  return this->vtkObjectBase::GetNumberOfGenerationsFromBaseType(type);
 }
 
 // Delete a vtk object. This method should always be used to delete an object
@@ -148,23 +139,23 @@ vtkIdType vtkObjectBase::GetNumberOfGenerationsFromBase(const char* type)
 // will not work with reference counting.
 void vtkObjectBase::Delete()
 {
-  this->UnRegister(static_cast<vtkObjectBase*>(nullptr));
+  this->UnRegister(static_cast<vtkObjectBase *>(NULL));
 }
 
 void vtkObjectBase::FastDelete()
 {
   // Remove the reference without doing a collection check even if
   // this object normally participates in garbage collection.
-  this->UnRegisterInternal(nullptr, 0);
+  this->UnRegisterInternal(0, 0);
 }
 
 void vtkObjectBase::Print(ostream& os)
 {
   vtkIndent indent;
 
-  this->PrintHeader(os, vtkIndent(0));
+  this->PrintHeader(os,vtkIndent(0));
   this->PrintSelf(os, indent.GetNextIndent());
-  this->PrintTrailer(os, vtkIndent(0));
+  this->PrintTrailer(os,vtkIndent(0));
 }
 
 void vtkObjectBase::PrintHeader(ostream& os, vtkIndent indent)
@@ -212,7 +203,8 @@ void vtkObjectBase::RegisterInternal(vtkObjectBase*, vtkTypeBool check)
   // If a reference is available from the garbage collector, use it.
   // Otherwise create a new reference by incrementing the reference
   // count.
-  if (!(check && vtkObjectBaseToGarbageCollectorFriendship::TakeReference(this)))
+  if(!(check &&
+       vtkObjectBaseToGarbageCollectorFriendship::TakeReference(this)))
   {
     this->ReferenceCount++;
   }
@@ -223,31 +215,31 @@ void vtkObjectBase::UnRegisterInternal(vtkObjectBase*, vtkTypeBool check)
 {
   // If the garbage collector accepts a reference, do not decrement
   // the count.
-  if (check && this->ReferenceCount > 1 &&
-    vtkObjectBaseToGarbageCollectorFriendship::GiveReference(this))
+  if(check && this->ReferenceCount > 1 &&
+     vtkObjectBaseToGarbageCollectorFriendship::GiveReference(this))
   {
     return;
   }
 
   // Decrement the reference count, delete object if count goes to zero.
-  if (--this->ReferenceCount <= 0)
+  if(--this->ReferenceCount <= 0)
   {
     // Clear all weak pointers to the object before deleting it.
     if (this->WeakPointers)
     {
-      vtkWeakPointerBase** p = this->WeakPointers;
+      vtkWeakPointerBase **p = this->WeakPointers;
       while (*p)
       {
         vtkObjectBaseToWeakPointerBaseFriendship::ClearPointer(*p++);
       }
-      delete[] this->WeakPointers;
+      delete [] this->WeakPointers;
     }
 #ifdef VTK_DEBUG_LEAKS
-    vtkDebugLeaks::DestructClass(this);
+    vtkDebugLeaks::DestructClass(this->GetClassName());
 #endif
     delete this;
   }
-  else if (check)
+  else if(check)
   {
     // The garbage collector did not accept the reference, but the
     // object still exists and is participating in garbage collection.

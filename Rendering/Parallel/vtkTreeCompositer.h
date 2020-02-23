@@ -39,6 +39,7 @@
 // SOFTWARE should be clearly marked, so as not to confuse it with the
 // version available from Los Alamos National Laboratory.
 
+
 /**
  * @class   vtkTreeCompositer
  * @brief   Implements tree based compositing.
@@ -51,31 +52,32 @@
  *
  * @sa
  * vtkCompositeManager
- */
+*/
 
 #ifndef vtkTreeCompositer_h
 #define vtkTreeCompositer_h
 
-#include "vtkCompositer.h"
 #include "vtkRenderingParallelModule.h" // For export macro
+#include "vtkCompositer.h"
+
 
 class VTKRENDERINGPARALLEL_EXPORT vtkTreeCompositer : public vtkCompositer
 {
 public:
-  static vtkTreeCompositer* New();
-  vtkTypeMacro(vtkTreeCompositer, vtkCompositer);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkTreeCompositer *New();
+  vtkTypeMacro(vtkTreeCompositer,vtkCompositer);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
-  void CompositeBuffer(
-    vtkDataArray* pBuf, vtkFloatArray* zBuf, vtkDataArray* pTmp, vtkFloatArray* zTmp) override;
+  virtual void CompositeBuffer(vtkDataArray *pBuf, vtkFloatArray *zBuf,
+                               vtkDataArray *pTmp, vtkFloatArray *zTmp);
 
 protected:
   vtkTreeCompositer();
-  ~vtkTreeCompositer() override;
+  ~vtkTreeCompositer();
 
 private:
-  vtkTreeCompositer(const vtkTreeCompositer&) = delete;
-  void operator=(const vtkTreeCompositer&) = delete;
+  vtkTreeCompositer(const vtkTreeCompositer&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTreeCompositer&) VTK_DELETE_FUNCTION;
 };
 
 #endif

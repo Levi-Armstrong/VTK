@@ -40,7 +40,7 @@
  * @sa
  * vtkInteractorStyle vtkInteractorStyleTrackballActor
  * vtkInteractorStyleJoystickCamera vtkInteractorStyleJoystickActor
- */
+*/
 
 #ifndef vtkParallelCoordinatesInteractorStyle_h
 #define vtkParallelCoordinatesInteractorStyle_h
@@ -50,17 +50,15 @@
 
 class vtkViewport;
 
-class VTKINTERACTIONSTYLE_EXPORT vtkParallelCoordinatesInteractorStyle
-  : public vtkInteractorStyleTrackballCamera
+class VTKINTERACTIONSTYLE_EXPORT vtkParallelCoordinatesInteractorStyle : public vtkInteractorStyleTrackballCamera
 {
 public:
-  static vtkParallelCoordinatesInteractorStyle* New();
+  static vtkParallelCoordinatesInteractorStyle *New();
   vtkTypeMacro(vtkParallelCoordinatesInteractorStyle, vtkInteractorStyleTrackballCamera);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
-  enum
-  {
-    INTERACT_HOVER = 0,
+  enum {
+    INTERACT_HOVER=0,
     INTERACT_INSPECT,
     INTERACT_ZOOM,
     INTERACT_PAN
@@ -70,18 +68,18 @@ public:
   /**
    * Get the cursor positions in pixel coords
    */
-  vtkGetVector2Macro(CursorStartPosition, int);
-  vtkGetVector2Macro(CursorCurrentPosition, int);
-  vtkGetVector2Macro(CursorLastPosition, int);
+  vtkGetVector2Macro(CursorStartPosition,int);
+  vtkGetVector2Macro(CursorCurrentPosition,int);
+  vtkGetVector2Macro(CursorLastPosition,int);
   //@}
 
   //@{
   /**
    * Get the cursor positions in a given coordinate system
    */
-  void GetCursorStartPosition(vtkViewport* viewport, double pos[2]);
-  void GetCursorCurrentPosition(vtkViewport* viewport, double pos[2]);
-  void GetCursorLastPosition(vtkViewport* viewport, double pos[2]);
+  void GetCursorStartPosition(vtkViewport *viewport, double pos[2]);
+  void GetCursorCurrentPosition(vtkViewport *viewport, double pos[2]);
+  void GetCursorLastPosition(vtkViewport *viewport, double pos[2]);
   //@}
 
   //@{
@@ -89,14 +87,14 @@ public:
    * Event bindings controlling the effects of pressing mouse buttons
    * or moving the mouse.
    */
-  void OnMouseMove() override;
-  void OnLeftButtonDown() override;
-  void OnLeftButtonUp() override;
-  void OnMiddleButtonDown() override;
-  void OnMiddleButtonUp() override;
-  void OnRightButtonDown() override;
-  void OnRightButtonUp() override;
-  void OnLeave() override;
+  virtual void OnMouseMove();
+  virtual void OnLeftButtonDown();
+  virtual void OnLeftButtonUp();
+  virtual void OnMiddleButtonDown();
+  virtual void OnMiddleButtonUp();
+  virtual void OnRightButtonDown();
+  virtual void OnRightButtonUp();
+  virtual void OnLeave();
   //@}
 
   //@{
@@ -106,33 +104,33 @@ public:
   //@}
 
   //@{
-  void StartZoom() override;
-  void Zoom() override;
-  void EndZoom() override;
+  virtual void StartZoom();
+  virtual void Zoom();
+  virtual void EndZoom();
   //@}
 
   //@{
-  void StartPan() override;
-  void Pan() override;
-  void EndPan() override;
+  virtual void StartPan();
+  virtual void Pan();
+  virtual void EndPan();
   //@}
 
   /**
    * Override the "fly-to" (f keypress) for images.
    */
-  void OnChar() override;
+  virtual void OnChar();
 
 protected:
   vtkParallelCoordinatesInteractorStyle();
-  ~vtkParallelCoordinatesInteractorStyle() override;
+  ~vtkParallelCoordinatesInteractorStyle();
 
   int CursorStartPosition[2];
   int CursorCurrentPosition[2];
   int CursorLastPosition[2];
 
 private:
-  vtkParallelCoordinatesInteractorStyle(const vtkParallelCoordinatesInteractorStyle&) = delete;
-  void operator=(const vtkParallelCoordinatesInteractorStyle&) = delete;
+  vtkParallelCoordinatesInteractorStyle(const vtkParallelCoordinatesInteractorStyle&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkParallelCoordinatesInteractorStyle&) VTK_DELETE_FUNCTION;
 };
 
 #endif

@@ -30,7 +30,7 @@
  * subtracts the 2nd through last implicit functions from the first. The
  * VTK_UNION_OF_MAGNITUDES takes the minimum absolute value of the
  * implicit functions.
- */
+*/
 
 #ifndef vtkImplicitBoolean_h
 #define vtkImplicitBoolean_h
@@ -43,12 +43,12 @@ class vtkImplicitFunctionCollection;
 class VTKCOMMONDATAMODEL_EXPORT vtkImplicitBoolean : public vtkImplicitFunction
 {
 public:
-  vtkTypeMacro(vtkImplicitBoolean, vtkImplicitFunction);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkImplicitBoolean,vtkImplicitFunction);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   enum OperationType
   {
-    VTK_UNION = 0,
+    VTK_UNION=0,
     VTK_INTERSECTION,
     VTK_DIFFERENCE,
     VTK_UNION_OF_MAGNITUDES
@@ -57,82 +57,87 @@ public:
   /**
    * Default boolean method is union.
    */
-  static vtkImplicitBoolean* New();
+  static vtkImplicitBoolean *New();
 
   //@{
   /**
    * Evaluate boolean combinations of implicit function using current operator.
    */
-  using vtkImplicitFunction::EvaluateFunction;
-  double EvaluateFunction(double x[3]) override;
+  double EvaluateFunction(double x[3]) VTK_OVERRIDE;
+  double EvaluateFunction(double x, double y, double z)
+    {return this->vtkImplicitFunction::EvaluateFunction(x, y, z); } ;
   //@}
 
   /**
    * Evaluate gradient of boolean combination.
    */
-  void EvaluateGradient(double x[3], double g[3]) override;
+  void EvaluateGradient(double x[3], double g[3]) VTK_OVERRIDE;
 
   /**
    * Override modified time retrieval because of object dependencies.
    */
-  vtkMTimeType GetMTime() override;
+  vtkMTimeType GetMTime() VTK_OVERRIDE;
 
   /**
    * Add another implicit function to the list of functions.
    */
-  void AddFunction(vtkImplicitFunction* in);
+  void AddFunction(vtkImplicitFunction *in);
 
   /**
    * Remove a function from the list of implicit functions to boolean.
    */
-  void RemoveFunction(vtkImplicitFunction* in);
+  void RemoveFunction(vtkImplicitFunction *in);
 
   /**
    * Return the collection of implicit functions.
    */
-  vtkImplicitFunctionCollection* GetFunction() { return this->FunctionList; }
+  vtkImplicitFunctionCollection *GetFunction() {return this->FunctionList;};
 
   //@{
   /**
    * Specify the type of boolean operation.
    */
-  vtkSetClampMacro(OperationType, int, VTK_UNION, VTK_UNION_OF_MAGNITUDES);
-  vtkGetMacro(OperationType, int);
-  void SetOperationTypeToUnion() { this->SetOperationType(VTK_UNION); }
-  void SetOperationTypeToIntersection() { this->SetOperationType(VTK_INTERSECTION); }
-  void SetOperationTypeToDifference() { this->SetOperationType(VTK_DIFFERENCE); }
-  void SetOperationTypeToUnionOfMagnitudes() { this->SetOperationType(VTK_UNION_OF_MAGNITUDES); }
-  const char* GetOperationTypeAsString();
+  vtkSetClampMacro(OperationType,int,VTK_UNION,VTK_UNION_OF_MAGNITUDES);
+  vtkGetMacro(OperationType,int);
+  void SetOperationTypeToUnion()
+    {this->SetOperationType(VTK_UNION);};
+  void SetOperationTypeToIntersection()
+    {this->SetOperationType(VTK_INTERSECTION);};
+  void SetOperationTypeToDifference()
+    {this->SetOperationType(VTK_DIFFERENCE);};
+  void SetOperationTypeToUnionOfMagnitudes()
+    {this->SetOperationType(VTK_UNION_OF_MAGNITUDES);};
+  const char *GetOperationTypeAsString();
   //@}
 
 protected:
   vtkImplicitBoolean();
-  ~vtkImplicitBoolean() override;
+  ~vtkImplicitBoolean() VTK_OVERRIDE;
 
-  vtkImplicitFunctionCollection* FunctionList;
+  vtkImplicitFunctionCollection *FunctionList;
 
   int OperationType;
 
 private:
-  vtkImplicitBoolean(const vtkImplicitBoolean&) = delete;
-  void operator=(const vtkImplicitBoolean&) = delete;
+  vtkImplicitBoolean(const vtkImplicitBoolean&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkImplicitBoolean&) VTK_DELETE_FUNCTION;
 };
 
 //@{
 /**
  * Return the boolean operation type as a descriptive character string.
  */
-inline const char* vtkImplicitBoolean::GetOperationTypeAsString(void)
+inline const char *vtkImplicitBoolean::GetOperationTypeAsString(void)
 {
-  if (this->OperationType == VTK_UNION)
+  if ( this->OperationType == VTK_UNION )
   {
     return "Union";
   }
-  else if (this->OperationType == VTK_INTERSECTION)
+  else if ( this->OperationType == VTK_INTERSECTION )
   {
     return "Intersection";
   }
-  else if (this->OperationType == VTK_DIFFERENCE)
+  else if ( this->OperationType == VTK_DIFFERENCE )
   {
     return "Difference";
   }
@@ -144,3 +149,5 @@ inline const char* vtkImplicitBoolean::GetOperationTypeAsString(void)
 //@}
 
 #endif
+
+

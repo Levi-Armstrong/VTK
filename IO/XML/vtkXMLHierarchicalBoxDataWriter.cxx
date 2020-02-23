@@ -18,10 +18,14 @@
 
 vtkStandardNewMacro(vtkXMLHierarchicalBoxDataWriter);
 //----------------------------------------------------------------------------
-vtkXMLHierarchicalBoxDataWriter::vtkXMLHierarchicalBoxDataWriter() = default;
+vtkXMLHierarchicalBoxDataWriter::vtkXMLHierarchicalBoxDataWriter()
+{
+}
 
 //----------------------------------------------------------------------------
-vtkXMLHierarchicalBoxDataWriter::~vtkXMLHierarchicalBoxDataWriter() = default;
+vtkXMLHierarchicalBoxDataWriter::~vtkXMLHierarchicalBoxDataWriter()
+{
+}
 
 //----------------------------------------------------------------------------
 void vtkXMLHierarchicalBoxDataWriter::PrintSelf(ostream& os, vtkIndent indent)

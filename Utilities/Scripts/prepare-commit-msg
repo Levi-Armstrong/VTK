@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-egrep_q() {
+egrep-q() {
   egrep "$@" >/dev/null 2>/dev/null
 }
 
@@ -8,7 +8,7 @@ egrep_q() {
 commit_msg="$1"
 
 # Check for our extra instructions.
-egrep_q "^# Start the commit message" -- "$commit_msg" && return 0
+egrep-q "^# Start the commit message" -- "$commit_msg" && return 0
 
 # Insert our extra instructions.
 commit_msg_tmp="$commit_msg.$$"

@@ -8,7 +8,7 @@ readonly name="zlib"
 readonly ownership="Zlib Upstream <kwrobot@kitware.com>"
 readonly subtree="ThirdParty/$name/vtk$name"
 readonly repo="https://gitlab.kitware.com/third-party/zlib.git"
-readonly tag="for/vtk-20181015-1.2.11"
+readonly tag="for/vtk"
 readonly paths="
 CMakeLists.txt
 
@@ -41,10 +41,8 @@ zutil.h
 
 zconf.h.cmakein
 
-.gitattributes
 ChangeLog
 README
-README.kitware.md
 FAQ
 INDEX
 "

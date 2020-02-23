@@ -33,7 +33,7 @@
  *
  * @sa
  * vtkGraph vtkMutableDirectedGraph
- */
+*/
 
 #ifndef vtkDirectedGraph_h
 #define vtkDirectedGraph_h
@@ -44,21 +44,21 @@
 class VTKCOMMONDATAMODEL_EXPORT vtkDirectedGraph : public vtkGraph
 {
 public:
-  static vtkDirectedGraph* New();
+  static vtkDirectedGraph *New();
   vtkTypeMacro(vtkDirectedGraph, vtkGraph);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Return what type of dataset this is.
    */
-  int GetDataObjectType() override { return VTK_DIRECTED_GRAPH; }
+  int GetDataObjectType() VTK_OVERRIDE {return VTK_DIRECTED_GRAPH;}
 
   //@{
   /**
    * Retrieve a graph from an information vector.
    */
-  static vtkDirectedGraph* GetData(vtkInformation* info);
-  static vtkDirectedGraph* GetData(vtkInformationVector* v, int i = 0);
+  static vtkDirectedGraph *GetData(vtkInformation *info);
+  static vtkDirectedGraph *GetData(vtkInformationVector *v, int i=0);
   //@}
 
   /**
@@ -66,15 +66,15 @@ public:
    * undirected graph. This is public to allow
    * the ToDirected/UndirectedGraph to work.
    */
-  bool IsStructureValid(vtkGraph* g) override;
+  bool IsStructureValid(vtkGraph *g) VTK_OVERRIDE;
 
 protected:
   vtkDirectedGraph();
-  ~vtkDirectedGraph() override;
+  ~vtkDirectedGraph() VTK_OVERRIDE;
 
 private:
-  vtkDirectedGraph(const vtkDirectedGraph&) = delete;
-  void operator=(const vtkDirectedGraph&) = delete;
+  vtkDirectedGraph(const vtkDirectedGraph&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkDirectedGraph&) VTK_DELETE_FUNCTION;
 };
 
 #endif

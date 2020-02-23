@@ -18,13 +18,18 @@
 
 vtkStandardNewMacro(vtkHierarchicalDataSetGeometryFilter);
 //-----------------------------------------------------------------------------
-vtkHierarchicalDataSetGeometryFilter::vtkHierarchicalDataSetGeometryFilter() = default;
+vtkHierarchicalDataSetGeometryFilter::vtkHierarchicalDataSetGeometryFilter()
+{
+}
 
 //-----------------------------------------------------------------------------
-vtkHierarchicalDataSetGeometryFilter::~vtkHierarchicalDataSetGeometryFilter() = default;
+vtkHierarchicalDataSetGeometryFilter::~vtkHierarchicalDataSetGeometryFilter()
+{
+}
 
 //-----------------------------------------------------------------------------
 void vtkHierarchicalDataSetGeometryFilter::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 }
+

@@ -48,7 +48,7 @@
  *
  * @sa
  * vtkRowQueryToTable
- */
+*/
 
 #ifndef vtkRowQuery_h
 #define vtkRowQuery_h
@@ -63,7 +63,7 @@ class VTKIOSQL_EXPORT vtkRowQuery : public vtkObject
 {
 public:
   vtkTypeMacro(vtkRowQuery, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Execute the query.  This must be performed
@@ -92,7 +92,7 @@ public:
    * Uses GetNumberOfFields() and GetFieldName()
    * to match field name.
    */
-  int GetFieldIndex(const char* name);
+  int GetFieldIndex(char* name);
 
   /**
    * Advance row, return false if past end.
@@ -143,12 +143,12 @@ public:
 
 protected:
   vtkRowQuery();
-  ~vtkRowQuery() override;
+  ~vtkRowQuery();
   bool CaseSensitiveFieldNames;
-
 private:
-  vtkRowQuery(const vtkRowQuery&) = delete;
-  void operator=(const vtkRowQuery&) = delete;
+  vtkRowQuery(const vtkRowQuery &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkRowQuery &) VTK_DELETE_FUNCTION;
 };
 
 #endif // vtkRowQuery_h
+

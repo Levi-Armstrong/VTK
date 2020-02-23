@@ -19,10 +19,11 @@
  * vtkImageLogarithmicScale passes each pixel through the function
  * c*log(1+x).  It also handles negative values with the function
  * -c*log(1-x).
- */
+*/
 
 #ifndef vtkImageLogarithmicScale_h
 #define vtkImageLogarithmicScale_h
+
 
 #include "vtkImagingMathModule.h" // For export macro
 #include "vtkThreadedImageAlgorithm.h"
@@ -30,29 +31,32 @@
 class VTKIMAGINGMATH_EXPORT vtkImageLogarithmicScale : public vtkThreadedImageAlgorithm
 {
 public:
-  static vtkImageLogarithmicScale* New();
-  vtkTypeMacro(vtkImageLogarithmicScale, vtkThreadedImageAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkImageLogarithmicScale *New();
+  vtkTypeMacro(vtkImageLogarithmicScale,vtkThreadedImageAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
    * Set/Get the scale factor for the logarithmic function.
    */
-  vtkSetMacro(Constant, double);
-  vtkGetMacro(Constant, double);
+  vtkSetMacro(Constant,double);
+  vtkGetMacro(Constant,double);
   //@}
 
 protected:
   vtkImageLogarithmicScale();
-  ~vtkImageLogarithmicScale() override {}
+  ~vtkImageLogarithmicScale() {}
 
   double Constant;
 
-  void ThreadedExecute(vtkImageData* inData, vtkImageData* outData, int outExt[6], int id) override;
-
+  void ThreadedExecute (vtkImageData *inData, vtkImageData *outData,
+                       int outExt[6], int id);
 private:
-  vtkImageLogarithmicScale(const vtkImageLogarithmicScale&) = delete;
-  void operator=(const vtkImageLogarithmicScale&) = delete;
+  vtkImageLogarithmicScale(const vtkImageLogarithmicScale&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkImageLogarithmicScale&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+
+

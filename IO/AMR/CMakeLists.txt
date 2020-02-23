@@ -1,25 +1,27 @@
-set(classes
-  vtkAMRBaseParticlesReader
-  vtkAMRBaseReader
-  vtkAMRDataSetCache
-  vtkAMREnzoParticlesReader
-  vtkAMREnzoReader
-  vtkAMRFlashParticlesReader
-  vtkAMRFlashReader
-  vtkAMReXParticlesReader
-  vtkAMReXGridReader)
-
-set(sources
+set(Module_SRCS
+  vtkAMRDataSetCache.cxx
+  vtkAMRBaseParticlesReader.cxx
+  vtkAMRBaseReader.cxx
+  vtkAMREnzoParticlesReader.cxx
+  vtkAMREnzoReader.cxx
   vtkAMREnzoReaderInternal.cxx
+  vtkAMRFlashParticlesReader.cxx
+  vtkAMRFlashReader.cxx
   vtkAMRFlashReaderInternal.cxx
-  vtkAMReXGridReaderInternal.cxx)
+  )
 
-set(private_headers
-  vtkAMREnzoReaderInternal.h
-  vtkAMRFlashReaderInternal.h
-  vtkAMReXGridReaderInternal.h)
+set_source_files_properties(
+  vtkAMRBaseReader
+  vtkAMRBaseParticlesReader
+  ABSTRACT
+  )
 
-vtk_module_add_module(VTK::IOAMR
-  CLASSES ${classes}
-  SOURCES ${sources}
-  PRIVATE_HEADERS ${private_headers})
+set_source_files_properties(
+  vtkAMREnzoReaderInternal
+  vtkAMRFlashReaderInternal
+  PROPERTIES
+    WRAP_EXCLUDE 1
+    WRAP_EXCLUDE_PYTHON 1
+  )
+
+vtk_module_library(vtkIOAMR ${Module_SRCS})

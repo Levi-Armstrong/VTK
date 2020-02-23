@@ -19,7 +19,7 @@ PURPOSE.  See the above copyright notice for more information.
   -------------------------------------------------------------------------*/
 /**
  * @class   vtkBoostPrimMinimumSpanningTree
- * @brief   Constructs a minimum spanning
+ * @brief   Contructs a minimum spanning
  *    tree from a graph, start node, and the weighting array
  *
  *
@@ -41,24 +41,23 @@ PURPOSE.  See the above copyright notice for more information.
  *
  * @sa
  * vtkGraph vtkBoostGraphAdapter
- */
+*/
 
 #ifndef vtkBoostPrimMinimumSpanningTree_h
 #define vtkBoostPrimMinimumSpanningTree_h
 
 #include "vtkInfovisBoostGraphAlgorithmsModule.h" // For export macro
-#include "vtkStdString.h"                         // For string type
-#include "vtkVariant.h"                           // For variant type
+#include "vtkStdString.h" // For string type
+#include "vtkVariant.h" // For variant type
 
 #include "vtkTreeAlgorithm.h"
 
-class VTKINFOVISBOOSTGRAPHALGORITHMS_EXPORT vtkBoostPrimMinimumSpanningTree
-  : public vtkTreeAlgorithm
+class VTKINFOVISBOOSTGRAPHALGORITHMS_EXPORT vtkBoostPrimMinimumSpanningTree : public vtkTreeAlgorithm
 {
 public:
-  static vtkBoostPrimMinimumSpanningTree* New();
+  static vtkBoostPrimMinimumSpanningTree *New();
   vtkTypeMacro(vtkBoostPrimMinimumSpanningTree, vtkTreeAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -111,11 +110,15 @@ public:
 
 protected:
   vtkBoostPrimMinimumSpanningTree();
-  ~vtkBoostPrimMinimumSpanningTree() override;
+  ~vtkBoostPrimMinimumSpanningTree();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(
+    vtkInformation *,
+    vtkInformationVector **,
+    vtkInformationVector *);
 
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  int FillInputPortInformation(
+    int port, vtkInformation* info);
 
 private:
   char* EdgeWeightArrayName;
@@ -138,10 +141,11 @@ private:
    * This method is basically a helper function to find
    * the index of a specific value within a specific array
    */
-  vtkIdType GetVertexIndex(vtkAbstractArray* abstract, vtkVariant value);
+  vtkIdType GetVertexIndex(
+    vtkAbstractArray *abstract,vtkVariant value);
 
-  vtkBoostPrimMinimumSpanningTree(const vtkBoostPrimMinimumSpanningTree&) = delete;
-  void operator=(const vtkBoostPrimMinimumSpanningTree&) = delete;
+  vtkBoostPrimMinimumSpanningTree(const vtkBoostPrimMinimumSpanningTree&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkBoostPrimMinimumSpanningTree&) VTK_DELETE_FUNCTION;
 };
 
 #endif

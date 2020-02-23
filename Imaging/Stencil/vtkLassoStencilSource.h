@@ -24,13 +24,14 @@
  * vtkROIStencilSource vtkPolyDataToImageStencil
  * @par Thanks:
  * Thanks to David Gobbi for contributing this class to VTK.
- */
+*/
 
 #ifndef vtkLassoStencilSource_h
 #define vtkLassoStencilSource_h
 
-#include "vtkImageStencilSource.h"
+
 #include "vtkImagingStencilModule.h" // For export macro
+#include "vtkImageStencilSource.h"
 
 class vtkPoints;
 class vtkSpline;
@@ -39,12 +40,11 @@ class vtkLSSPointMap;
 class VTKIMAGINGSTENCIL_EXPORT vtkLassoStencilSource : public vtkImageStencilSource
 {
 public:
-  static vtkLassoStencilSource* New();
+  static vtkLassoStencilSource *New();
   vtkTypeMacro(vtkLassoStencilSource, vtkImageStencilSource);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
-  enum
-  {
+  enum {
     POLYGON = 0,
     SPLINE = 1
   };
@@ -56,9 +56,9 @@ public:
    */
   vtkGetMacro(Shape, int);
   vtkSetClampMacro(Shape, int, POLYGON, SPLINE);
-  void SetShapeToPolygon() { this->SetShape(POLYGON); }
-  void SetShapeToSpline() { this->SetShape(SPLINE); }
-  virtual const char* GetShapeAsString();
+  void SetShapeToPolygon() { this->SetShape(POLYGON); };
+  void SetShapeToSpline() { this->SetShape(SPLINE); };
+  virtual const char *GetShapeAsString();
   //@}
 
   //@{
@@ -67,7 +67,7 @@ public:
    * have to be closed, the last point will automatically be
    * connected to the first point by a straight line segment.
    */
-  virtual void SetPoints(vtkPoints* points);
+  virtual void SetPoints(vtkPoints *points);
   vtkGetObjectMacro(Points, vtkPoints);
   //@}
 
@@ -84,10 +84,10 @@ public:
   /**
    * The points for a particular slice.  This will override the
    * points that were set by calling SetPoints() for the slice.
-   * To clear the setting, call SetSlicePoints(slice, nullptr).
+   * To clear the setting, call SetSlicePoints(slice, NULL).
    */
-  virtual void SetSlicePoints(int i, vtkPoints* points);
-  virtual vtkPoints* GetSlicePoints(int i);
+  virtual void SetSlicePoints(int i, vtkPoints *points);
+  virtual vtkPoints *GetSlicePoints(int i);
   //@}
 
   /**
@@ -98,24 +98,25 @@ public:
   /**
    * Overload GetMTime() to include the timestamp on the points.
    */
-  vtkMTimeType GetMTime() override;
+  vtkMTimeType GetMTime();
 
 protected:
   vtkLassoStencilSource();
-  ~vtkLassoStencilSource() override;
+  ~vtkLassoStencilSource();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int RequestData(vtkInformation *, vtkInformationVector **,
+                          vtkInformationVector *);
 
   int Shape;
   int SliceOrientation;
-  vtkPoints* Points;
-  vtkSpline* SplineX;
-  vtkSpline* SplineY;
-  vtkLSSPointMap* PointMap;
+  vtkPoints *Points;
+  vtkSpline *SplineX;
+  vtkSpline *SplineY;
+  vtkLSSPointMap *PointMap;
 
 private:
-  vtkLassoStencilSource(const vtkLassoStencilSource&) = delete;
-  void operator=(const vtkLassoStencilSource&) = delete;
+  vtkLassoStencilSource(const vtkLassoStencilSource&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkLassoStencilSource&) VTK_DELETE_FUNCTION;
 };
 
 #endif

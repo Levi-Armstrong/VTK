@@ -62,14 +62,14 @@
  *
  * @sa
  * vtk3DWidget vtkBoxWidget vtkPlaneWidget
- */
+*/
 
 #ifndef vtkLineWidget_h
 #define vtkLineWidget_h
 
-#include "vtk3DWidget.h"
 #include "vtkInteractionWidgetsModule.h" // For export macro
-#include "vtkLineSource.h"               // For passing calls to it
+#include "vtk3DWidget.h"
+#include "vtkLineSource.h" // For passing calls to it
 
 class vtkActor;
 class vtkPolyDataMapper;
@@ -90,46 +90,53 @@ public:
   /**
    * Instantiate the object.
    */
-  static vtkLineWidget* New();
+  static vtkLineWidget *New();
 
-  vtkTypeMacro(vtkLineWidget, vtk3DWidget);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkLineWidget,vtk3DWidget);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
    * Methods that satisfy the superclass' API.
    */
-  void SetEnabled(int) override;
-  void PlaceWidget(double bounds[6]) override;
-  void PlaceWidget() override { this->Superclass::PlaceWidget(); }
-  void PlaceWidget(
-    double xmin, double xmax, double ymin, double ymax, double zmin, double zmax) override
-  {
-    this->Superclass::PlaceWidget(xmin, xmax, ymin, ymax, zmin, zmax);
-  }
+  virtual void SetEnabled(int);
+  virtual void PlaceWidget(double bounds[6]);
+  void PlaceWidget()
+    {this->Superclass::PlaceWidget();}
+  void PlaceWidget(double xmin, double xmax, double ymin, double ymax,
+                   double zmin, double zmax)
+    {this->Superclass::PlaceWidget(xmin,xmax,ymin,ymax,zmin,zmax);}
   //@}
 
   /**
    * Set/Get the resolution (number of subdivisions) of the line.
    */
-  void SetResolution(int r) { this->LineSource->SetResolution(r); }
-  int GetResolution() { return this->LineSource->GetResolution(); }
+  void SetResolution(int r)
+    { this->LineSource->SetResolution(r); }
+  int GetResolution()
+    { return this->LineSource->GetResolution(); }
 
   /**
    * Set/Get the position of first end point.
    */
   void SetPoint1(double x, double y, double z);
-  void SetPoint1(double x[3]) { this->SetPoint1(x[0], x[1], x[2]); }
-  double* GetPoint1() VTK_SIZEHINT(3) { return this->LineSource->GetPoint1(); }
-  void GetPoint1(double xyz[3]) { this->LineSource->GetPoint1(xyz); }
+  void SetPoint1(double x[3])
+    {this->SetPoint1(x[0], x[1], x[2]); }
+  double* GetPoint1()
+    {return this->LineSource->GetPoint1();}
+  void GetPoint1(double xyz[3])
+    {this->LineSource->GetPoint1(xyz);}
 
   /**
    * Set position of other end point.
    */
   void SetPoint2(double x, double y, double z);
-  void SetPoint2(double x[3]) { this->SetPoint2(x[0], x[1], x[2]); }
-  double* GetPoint2() VTK_SIZEHINT(3) { return this->LineSource->GetPoint2(); }
-  void GetPoint2(double xyz[3]) { this->LineSource->GetPoint2(xyz); }
+  void SetPoint2(double x[3])
+    {this->SetPoint2(x[0], x[1], x[2]);}
+  double* GetPoint2()
+    {return this->LineSource->GetPoint2();}
+  void GetPoint2(double xyz[3])
+    {this->LineSource->GetPoint2(xyz);}
 
   //@{
   /**
@@ -143,7 +150,7 @@ public:
   void SetAlignToXAxis() { this->SetAlign(XAxis); }
   void SetAlignToYAxis() { this->SetAlign(YAxis); }
   void SetAlignToZAxis() { this->SetAlign(ZAxis); }
-  void SetAlignToNone() { this->SetAlign(None); }
+  void SetAlignToNone()  { this->SetAlign(None); }
   //@}
 
   //@{
@@ -153,9 +160,9 @@ public:
    * invocation, and includes the effect of the PlaceFactor which is used
    * to gram/shrink the bounding box.
    */
-  vtkSetMacro(ClampToBounds, vtkTypeBool);
-  vtkGetMacro(ClampToBounds, vtkTypeBool);
-  vtkBooleanMacro(ClampToBounds, vtkTypeBool);
+  vtkSetMacro(ClampToBounds,int);
+  vtkGetMacro(ClampToBounds,int);
+  vtkBooleanMacro(ClampToBounds,int);
   //@}
 
   /**
@@ -165,7 +172,7 @@ public:
    * InteractionEvent or EndInteraction events are invoked. The user provides
    * the vtkPolyData and the points and polyline are added to it.
    */
-  void GetPolyData(vtkPolyData* pd);
+  void GetPolyData(vtkPolyData *pd);
 
   //@{
   /**
@@ -173,8 +180,8 @@ public:
    * properties of the handles when selected and normal can be
    * manipulated.
    */
-  vtkGetObjectMacro(HandleProperty, vtkProperty);
-  vtkGetObjectMacro(SelectedHandleProperty, vtkProperty);
+  vtkGetObjectMacro(HandleProperty,vtkProperty);
+  vtkGetObjectMacro(SelectedHandleProperty,vtkProperty);
   //@}
 
   //@{
@@ -182,13 +189,13 @@ public:
    * Get the line properties. The properties of the line when selected
    * and unselected can be manipulated.
    */
-  vtkGetObjectMacro(LineProperty, vtkProperty);
-  vtkGetObjectMacro(SelectedLineProperty, vtkProperty);
+  vtkGetObjectMacro(LineProperty,vtkProperty);
+  vtkGetObjectMacro(SelectedLineProperty,vtkProperty);
   //@}
 
 protected:
   vtkLineWidget();
-  ~vtkLineWidget() override;
+  ~vtkLineWidget();
 
   // Manage the state of the widget
   friend class vtkPWCallback;
@@ -196,16 +203,18 @@ protected:
   int State;
   enum WidgetState
   {
-    Start = 0,
+    Start=0,
     MovingHandle,
     MovingLine,
     Scaling,
     Outside
   };
 
-  // handles the events
-  static void ProcessEvents(
-    vtkObject* object, unsigned long event, void* clientdata, void* calldata);
+  //handles the events
+  static void ProcessEvents(vtkObject* object,
+                            unsigned long event,
+                            void* clientdata,
+                            void* calldata);
 
   // ProcessEvents() dispatches to these methods.
   void OnLeftButtonDown();
@@ -219,8 +228,7 @@ protected:
   // controlling ivars
   int Align;
 
-  enum AlignmentState
-  {
+  enum AlignmentState {
     XAxis,
     YAxis,
     ZAxis,
@@ -228,66 +236,66 @@ protected:
   };
 
   // the line
-  vtkActor* LineActor;
-  vtkPolyDataMapper* LineMapper;
-  vtkLineSource* LineSource;
+  vtkActor          *LineActor;
+  vtkPolyDataMapper *LineMapper;
+  vtkLineSource     *LineSource;
   void HighlightLine(int highlight);
 
   // glyphs representing hot spots (e.g., handles)
-  vtkActor** Handle;
-  vtkPolyDataMapper** HandleMapper;
-  vtkSphereSource** HandleGeometry;
+  vtkActor          **Handle;
+  vtkPolyDataMapper **HandleMapper;
+  vtkSphereSource   **HandleGeometry;
 
   void BuildRepresentation();
-  void SizeHandles() override;
+  virtual void SizeHandles();
   void HandlesOn(double length);
   void HandlesOff();
-  int HighlightHandle(vtkProp* prop); // returns cell id
+  int HighlightHandle(vtkProp *prop); //returns cell id
   void HighlightHandles(int highlight);
 
   // Do the picking
-  vtkCellPicker* HandlePicker;
-  vtkCellPicker* LinePicker;
-  vtkActor* CurrentHandle;
+  vtkCellPicker *HandlePicker;
+  vtkCellPicker *LinePicker;
+  vtkActor *CurrentHandle;
   double LastPosition[3];
-  void SetLinePosition(double x[3]);
+  void  SetLinePosition(double x[3]);
 
   // Register internal Pickers within PickingManager
-  void RegisterPickers() override;
+  virtual void RegisterPickers();
 
   // Methods to manipulate the hexahedron.
-  void Scale(double* p1, double* p2, int X, int Y);
+  void Scale(double *p1, double *p2, int X, int Y);
 
   // Initial bounds
-  vtkTypeBool ClampToBounds;
-  void ClampPosition(double x[3]);
-  int InBounds(double x[3]);
+  int   ClampToBounds;
+  void  ClampPosition(double x[3]);
+  int   InBounds(double x[3]);
 
   // Properties used to control the appearance of selected objects and
   // the manipulator in general.
-  vtkProperty* HandleProperty;
-  vtkProperty* SelectedHandleProperty;
-  vtkProperty* LineProperty;
-  vtkProperty* SelectedLineProperty;
+  vtkProperty *HandleProperty;
+  vtkProperty *SelectedHandleProperty;
+  vtkProperty *LineProperty;
+  vtkProperty *SelectedLineProperty;
   void CreateDefaultProperties();
 
   void GenerateLine();
 
   // Methods for managing the point widgets used to control the endpoints
-  vtkPointWidget* PointWidget;
-  vtkPointWidget* PointWidget1;
-  vtkPointWidget* PointWidget2;
-  vtkPWCallback* PWCallback;
-  vtkPW1Callback* PW1Callback;
-  vtkPW2Callback* PW2Callback;
-  vtkPointWidget* CurrentPointWidget;
+  vtkPointWidget *PointWidget;
+  vtkPointWidget *PointWidget1;
+  vtkPointWidget *PointWidget2;
+  vtkPWCallback  *PWCallback;
+  vtkPW1Callback *PW1Callback;
+  vtkPW2Callback *PW2Callback;
+  vtkPointWidget *CurrentPointWidget;
   void EnablePointWidget();
   void DisablePointWidget();
   int ForwardEvent(unsigned long event);
 
 private:
-  vtkLineWidget(const vtkLineWidget&) = delete;
-  void operator=(const vtkLineWidget&) = delete;
+  vtkLineWidget(const vtkLineWidget&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkLineWidget&) VTK_DELETE_FUNCTION;
 };
 
 #endif

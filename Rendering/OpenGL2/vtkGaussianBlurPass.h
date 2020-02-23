@@ -44,16 +44,16 @@
  *
  * @sa
  * vtkRenderPass
- */
+*/
 
 #ifndef vtkGaussianBlurPass_h
 #define vtkGaussianBlurPass_h
 
-#include "vtkImageProcessingPass.h"
 #include "vtkRenderingOpenGL2Module.h" // For export macro
+#include "vtkImageProcessingPass.h"
 
 class vtkDepthPeelingPassLayerList; // Pimpl
-class vtkOpenGLFramebufferObject;
+class vtkFrameBufferObject;
 class vtkOpenGLHelper;
 class vtkOpenGLRenderWindow;
 class vtkTextureObject;
@@ -61,24 +61,24 @@ class vtkTextureObject;
 class VTKRENDERINGOPENGL2_EXPORT vtkGaussianBlurPass : public vtkImageProcessingPass
 {
 public:
-  static vtkGaussianBlurPass* New();
-  vtkTypeMacro(vtkGaussianBlurPass, vtkImageProcessingPass);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkGaussianBlurPass *New();
+  vtkTypeMacro(vtkGaussianBlurPass,vtkImageProcessingPass);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Perform rendering according to a render state \p s.
    * \pre s_exists: s!=0
    */
-  void Render(const vtkRenderState* s) override;
+  virtual void Render(const vtkRenderState *s);
 
   /**
    * Release graphics resources and ask components to release their own
    * resources.
    * \pre w_exists: w!=0
    */
-  void ReleaseGraphicsResources(vtkWindow* w) override;
+  void ReleaseGraphicsResources(vtkWindow *w);
 
-protected:
+ protected:
   /**
    * Default constructor. DelegatePass is set to NULL.
    */
@@ -87,21 +87,24 @@ protected:
   /**
    * Destructor.
    */
-  ~vtkGaussianBlurPass() override;
+  virtual ~vtkGaussianBlurPass();
 
   /**
    * Graphics resources.
    */
-  vtkOpenGLFramebufferObject* FrameBufferObject;
-  vtkTextureObject* Pass1; // render target for the scene
-  vtkTextureObject* Pass2; // render target for the horizontal pass
+  vtkFrameBufferObject *FrameBufferObject;
+  vtkTextureObject *Pass1; // render target for the scene
+  vtkTextureObject *Pass2; // render target for the horizontal pass
 
   // Structures for the various cell types we render.
-  vtkOpenGLHelper* BlurProgram;
+  vtkOpenGLHelper *BlurProgram;
 
-private:
-  vtkGaussianBlurPass(const vtkGaussianBlurPass&) = delete;
-  void operator=(const vtkGaussianBlurPass&) = delete;
+  bool Supported;
+  bool SupportProbed;
+
+ private:
+  vtkGaussianBlurPass(const vtkGaussianBlurPass&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkGaussianBlurPass&) VTK_DELETE_FUNCTION;
 };
 
 #endif

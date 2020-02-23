@@ -27,9 +27,13 @@
 
 vtkStandardNewMacro(vtkCircularLayoutStrategy);
 
-vtkCircularLayoutStrategy::vtkCircularLayoutStrategy() = default;
+vtkCircularLayoutStrategy::vtkCircularLayoutStrategy()
+{
+}
 
-vtkCircularLayoutStrategy::~vtkCircularLayoutStrategy() = default;
+vtkCircularLayoutStrategy::~vtkCircularLayoutStrategy()
+{
+}
 
 void vtkCircularLayoutStrategy::Layout()
 {
@@ -38,8 +42,8 @@ void vtkCircularLayoutStrategy::Layout()
   points->SetNumberOfPoints(numVerts);
   for (vtkIdType i = 0; i < numVerts; i++)
   {
-    double x = cos(2.0 * vtkMath::Pi() * i / numVerts);
-    double y = sin(2.0 * vtkMath::Pi() * i / numVerts);
+    double x = cos(2.0*vtkMath::Pi()*i/numVerts);
+    double y = sin(2.0*vtkMath::Pi()*i/numVerts);
     points->SetPoint(i, x, y, 0);
   }
   this->Graph->SetPoints(points);
@@ -48,5 +52,6 @@ void vtkCircularLayoutStrategy::Layout()
 
 void vtkCircularLayoutStrategy::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 }
+

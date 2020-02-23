@@ -38,13 +38,16 @@ vtkIcicleView::vtkIcicleView()
   strategy->SetReverse(true);
   strategy->SetShrinkPercentage(shrink);
   this->SetLayoutStrategy(strategy);
-  vtkSmartPointer<vtkTreeMapToPolyData> poly = vtkSmartPointer<vtkTreeMapToPolyData>::New();
+  vtkSmartPointer<vtkTreeMapToPolyData> poly =
+    vtkSmartPointer<vtkTreeMapToPolyData>::New();
   this->SetAreaToPolyData(poly);
   this->SetUseRectangularCoordinates(true);
 }
 
 //----------------------------------------------------------------------------
-vtkIcicleView::~vtkIcicleView() = default;
+vtkIcicleView::~vtkIcicleView()
+{
+}
 
 //----------------------------------------------------------------------------
 void vtkIcicleView::SetTopToBottom(bool reversed)
@@ -119,7 +122,8 @@ double vtkIcicleView::GetLayerThickness()
 //----------------------------------------------------------------------------
 void vtkIcicleView::SetUseGradientColoring(bool value)
 {
-  vtkTreeMapToPolyData* tm = vtkTreeMapToPolyData::SafeDownCast(this->GetAreaToPolyData());
+  vtkTreeMapToPolyData* tm =
+    vtkTreeMapToPolyData::SafeDownCast(this->GetAreaToPolyData());
   if (tm)
   {
     tm->SetAddNormals(value);
@@ -129,7 +133,8 @@ void vtkIcicleView::SetUseGradientColoring(bool value)
 //----------------------------------------------------------------------------
 bool vtkIcicleView::GetUseGradientColoring()
 {
-  vtkTreeMapToPolyData* tm = vtkTreeMapToPolyData::SafeDownCast(this->GetAreaToPolyData());
+  vtkTreeMapToPolyData* tm =
+    vtkTreeMapToPolyData::SafeDownCast(this->GetAreaToPolyData());
   if (tm)
   {
     return tm->GetAddNormals();
@@ -140,5 +145,6 @@ bool vtkIcicleView::GetUseGradientColoring()
 //----------------------------------------------------------------------------
 void vtkIcicleView::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 }
+

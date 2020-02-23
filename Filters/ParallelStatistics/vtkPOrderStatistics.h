@@ -35,7 +35,7 @@ PURPOSE.  See the above copyright notice for more information.
  *
  * @par Thanks:
  * Thanks to Philippe Pebay from Sandia National Laboratories for implementing this class.
- */
+*/
 
 #ifndef vtkPOrderStatistics_h
 #define vtkPOrderStatistics_h
@@ -51,10 +51,10 @@ class vtkMultiProcessController;
 
 class VTKFILTERSPARALLELSTATISTICS_EXPORT vtkPOrderStatistics : public vtkOrderStatistics
 {
-public:
+ public:
   static vtkPOrderStatistics* New();
   vtkTypeMacro(vtkPOrderStatistics, vtkOrderStatistics);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -68,32 +68,40 @@ public:
   /**
    * Execute the parallel calculations required by the Learn option.
    */
-  void Learn(vtkTable*, vtkTable*, vtkMultiBlockDataSet*) override;
+  virtual void Learn( vtkTable*,
+                      vtkTable*,
+                      vtkMultiBlockDataSet* );
 
-protected:
+ protected:
   vtkPOrderStatistics();
-  ~vtkPOrderStatistics() override;
+  ~vtkPOrderStatistics();
 
   /**
    * Reduce the collection of local histograms to the global one for data inputs
    */
-  bool Reduce(vtkIdTypeArray*, vtkDataArray*);
+  bool Reduce( vtkIdTypeArray*,
+               vtkDataArray* );
 
   /**
    * Reduce the collection of local histograms to the global one for string inputs
    */
-  bool Reduce(vtkIdTypeArray*, vtkIdType&, char*, std::map<vtkStdString, vtkIdType>&);
+  bool Reduce( vtkIdTypeArray*,
+               vtkIdType&,
+               char*,
+               std::map<vtkStdString,vtkIdType>& );
 
   /**
    * Broadcast reduced histogram to all processes in the case of string inputs
    */
-  bool Broadcast(std::map<vtkStdString, vtkIdType>&, vtkIdTypeArray*, vtkStringArray*, vtkIdType);
+  bool Broadcast( std::map<vtkStdString,vtkIdType>&,
+                  vtkIdTypeArray*,
+                  vtkStringArray*,
+                  vtkIdType );
 
   vtkMultiProcessController* Controller;
-
-private:
-  vtkPOrderStatistics(const vtkPOrderStatistics&) = delete;
-  void operator=(const vtkPOrderStatistics&) = delete;
+ private:
+  vtkPOrderStatistics(const vtkPOrderStatistics&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPOrderStatistics&) VTK_DELETE_FUNCTION;
 };
 
 #endif

@@ -271,6 +271,7 @@ class TestSphereWidget(vtk.test.Testing.vtkTest):
         demMapper.SetInputConnection(normals.GetOutputPort())
         demMapper.SetScalarRange(lo, hi)
         demMapper.SetLookupTable(lut)
+        demMapper.ImmediateModeRenderingOn()
 
         demActor = vtk.vtkActor()
         demActor.SetMapper(demMapper)

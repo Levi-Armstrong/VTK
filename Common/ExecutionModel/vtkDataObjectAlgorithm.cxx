@@ -15,10 +15,10 @@
 #include "vtkDataObjectAlgorithm.h"
 
 #include "vtkCommand.h"
-#include "vtkDataObject.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
 #include "vtkObjectFactory.h"
+#include "vtkDataObject.h"
 #include "vtkStreamingDemandDrivenPipeline.h"
 
 vtkStandardNewMacro(vtkDataObjectAlgorithm);
@@ -33,7 +33,9 @@ vtkDataObjectAlgorithm::vtkDataObjectAlgorithm()
 }
 
 //----------------------------------------------------------------------------
-vtkDataObjectAlgorithm::~vtkDataObjectAlgorithm() = default;
+vtkDataObjectAlgorithm::~vtkDataObjectAlgorithm()
+{
+}
 
 //----------------------------------------------------------------------------
 void vtkDataObjectAlgorithm::PrintSelf(ostream& os, vtkIndent indent)
@@ -70,34 +72,35 @@ vtkDataObject* vtkDataObjectAlgorithm::GetInput(int port)
 {
   if (this->GetNumberOfInputConnections(port) < 1)
   {
-    return nullptr;
+    return 0;
   }
   return this->GetExecutive()->GetInputData(port, 0);
 }
 
 //----------------------------------------------------------------------------
-vtkTypeBool vtkDataObjectAlgorithm::ProcessRequest(
-  vtkInformation* request, vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+int vtkDataObjectAlgorithm::ProcessRequest(vtkInformation* request,
+                                         vtkInformationVector** inputVector,
+                                         vtkInformationVector* outputVector)
 {
   // generate the data
-  if (request->Has(vtkDemandDrivenPipeline::REQUEST_DATA()))
+  if(request->Has(vtkDemandDrivenPipeline::REQUEST_DATA()))
   {
     return this->RequestData(request, inputVector, outputVector);
   }
 
-  if (request->Has(vtkStreamingDemandDrivenPipeline::REQUEST_UPDATE_EXTENT()))
+  if(request->Has(vtkStreamingDemandDrivenPipeline::REQUEST_UPDATE_EXTENT()))
   {
     return this->RequestUpdateExtent(request, inputVector, outputVector);
   }
 
   // Create data object output
-  if (request->Has(vtkDemandDrivenPipeline::REQUEST_DATA_OBJECT()))
+  if(request->Has(vtkDemandDrivenPipeline::REQUEST_DATA_OBJECT()))
   {
     return this->RequestDataObject(request, inputVector, outputVector);
   }
 
   // execute information
-  if (request->Has(vtkDemandDrivenPipeline::REQUEST_INFORMATION()))
+  if(request->Has(vtkDemandDrivenPipeline::REQUEST_INFORMATION()))
   {
     return this->RequestInformation(request, inputVector, outputVector);
   }
@@ -106,7 +109,8 @@ vtkTypeBool vtkDataObjectAlgorithm::ProcessRequest(
 }
 
 //----------------------------------------------------------------------------
-int vtkDataObjectAlgorithm::FillOutputPortInformation(int vtkNotUsed(port), vtkInformation* info)
+int vtkDataObjectAlgorithm::FillOutputPortInformation(
+  int vtkNotUsed(port), vtkInformation* info)
 {
   // now add our info
   info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkDataObject");
@@ -114,15 +118,18 @@ int vtkDataObjectAlgorithm::FillOutputPortInformation(int vtkNotUsed(port), vtkI
 }
 
 //----------------------------------------------------------------------------
-int vtkDataObjectAlgorithm::FillInputPortInformation(int vtkNotUsed(port), vtkInformation* info)
+int vtkDataObjectAlgorithm::FillInputPortInformation(
+  int vtkNotUsed(port), vtkInformation* info)
 {
   info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkDataObject");
   return 1;
 }
 
 //----------------------------------------------------------------------------
-int vtkDataObjectAlgorithm::RequestInformation(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* vtkNotUsed(outputVector))
+int vtkDataObjectAlgorithm::RequestInformation(
+  vtkInformation* vtkNotUsed(request),
+  vtkInformationVector** vtkNotUsed(inputVector),
+  vtkInformationVector* vtkNotUsed(outputVector))
 {
   // do nothing let subclasses handle it
   return 1;

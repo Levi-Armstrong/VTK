@@ -17,41 +17,20 @@
  * @brief   internal class used by
  * vtkGenericDataArray to support LookupValue.
  *
- */
+*/
 
 #ifndef vtkGenericDataArrayLookupHelper_h
 #define vtkGenericDataArrayLookupHelper_h
 
-#include "vtkIdList.h"
 #include <algorithm>
-#include <cmath>
-#include <unordered_map>
-#include <vector>
+#include "vtkIdList.h"
 
 namespace detail
 {
-template <typename T, bool>
-struct has_NaN;
-
-template <typename T>
-struct has_NaN<T, true>
-{
-  static bool isnan(T x) { return std::isnan(x); }
-};
-
-template <typename T>
-struct has_NaN<T, false>
-{
-  static bool isnan(T) { return false; }
-};
-
-template <typename T>
-bool isnan(T x)
-{
-  // Select the correct partially specialized type.
-  return has_NaN<T, std::numeric_limits<T>::has_quiet_NaN>::isnan(x);
+  // this can be removed when C++11 is required.
+  template< class T > struct remove_const { typedef T type; };
+  template< class T > struct remove_const<const T> { typedef T type; };
 }
-} // namespace detail
 
 template <class ArrayTypeT>
 class vtkGenericDataArrayLookupHelper
@@ -60,11 +39,18 @@ public:
   typedef ArrayTypeT ArrayType;
   typedef typename ArrayType::ValueType ValueType;
 
-  vtkGenericDataArrayLookupHelper() = default;
+  // Constructor.
+  vtkGenericDataArrayLookupHelper()
+    : AssociatedArray(NULL),
+    SortedArray(NULL)
+  {
+  }
+  ~vtkGenericDataArrayLookupHelper()
+  {
+    this->ClearLookup();
+  }
 
-  ~vtkGenericDataArrayLookupHelper() { this->ClearLookup(); }
-
-  void SetArray(ArrayTypeT* array)
+  void SetArray(ArrayTypeT *array)
   {
     if (this->AssociatedArray != array)
     {
@@ -76,26 +62,35 @@ public:
   vtkIdType LookupValue(ValueType elem)
   {
     this->UpdateLookup();
-    auto indices = FindIndexVec(elem);
-    if (indices == nullptr)
+    ValueWithIndex temp;
+    temp.Value = elem;
+    ValueWithIndex* pos =
+      std::lower_bound(this->SortedArray,
+                       this->SortedArray + this->SortedArraySize, temp);
+    if (pos == (this->SortedArray + this->SortedArraySize))
     {
       return -1;
     }
-    return indices->front();
+    if (pos->Value != elem)
+    {
+      return -1;
+    }
+    return pos->Index;
   }
 
   void LookupValue(ValueType elem, vtkIdList* ids)
   {
-    ids->Reset();
     this->UpdateLookup();
-    auto indices = FindIndexVec(elem);
-    if (indices)
+    ValueWithIndex temp;
+    temp.Value = elem;
+    std::pair<ValueWithIndex*, ValueWithIndex*> range =
+      std::equal_range(this->SortedArray,
+                       this->SortedArray + this->SortedArraySize, temp);
+    while (range.first != range.second)
     {
-      ids->Allocate(static_cast<vtkIdType>(indices->size()));
-      for (auto index : *indices)
-      {
-        ids->InsertNextId(index);
-      }
+      // assert(range.first->Value == elem);
+      ids->InsertNextId(range.first->Index);
+      ++range.first;
     }
   }
 
@@ -105,56 +100,57 @@ public:
    */
   void ClearLookup()
   {
-    this->ValueMap.clear();
-    this->NanIndices.clear();
+    free(this->SortedArray);
+    this->SortedArray = NULL;
+    this->SortedArraySize = 0;
   }
   //@}
 
 private:
-  vtkGenericDataArrayLookupHelper(const vtkGenericDataArrayLookupHelper&) = delete;
-  void operator=(const vtkGenericDataArrayLookupHelper&) = delete;
+  vtkGenericDataArrayLookupHelper(const vtkGenericDataArrayLookupHelper&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkGenericDataArrayLookupHelper&) VTK_DELETE_FUNCTION;
+
+  struct ValueWithIndex
+  {
+    typename ::detail::remove_const<ValueType>::type Value;
+    vtkIdType Index;
+    inline bool operator<(const ValueWithIndex& other) const
+    {
+      return this->Value < other.Value;
+    }
+  };
 
   void UpdateLookup()
   {
-    if (!this->AssociatedArray || (this->AssociatedArray->GetNumberOfTuples() < 1) ||
-      (!this->ValueMap.empty() || !this->NanIndices.empty()))
+    if (!this->AssociatedArray || this->SortedArray)
     {
       return;
     }
 
-    vtkIdType num = this->AssociatedArray->GetNumberOfValues();
-    this->ValueMap.reserve(num);
-    for (vtkIdType i = 0; i < num; ++i)
+    int numComps = this->AssociatedArray->GetNumberOfComponents();
+    this->SortedArraySize =
+        this->AssociatedArray->GetNumberOfTuples() * numComps;
+
+    if (this->SortedArraySize == 0)
     {
-      auto value = this->AssociatedArray->GetValue(i);
-      if (::detail::isnan(value))
-      {
-        NanIndices.push_back(i);
-      }
-      this->ValueMap[value].push_back(i);
+      return;
     }
+
+    this->SortedArray = reinterpret_cast<ValueWithIndex*>(
+          malloc(this->SortedArraySize * sizeof(ValueWithIndex)));
+    for (vtkIdType cc = 0, max = this->AssociatedArray->GetNumberOfValues();
+         cc < max; ++cc)
+    {
+      ValueWithIndex& item = this->SortedArray[cc];
+      item.Value = this->AssociatedArray->GetValue(cc);
+      item.Index = cc;
+    }
+    std::sort(this->SortedArray, this->SortedArray + this->SortedArraySize);
   }
 
-  // Return a pointer to the relevant vector of indices if specified value was
-  // found in the array.
-  std::vector<vtkIdType>* FindIndexVec(ValueType value)
-  {
-    std::vector<vtkIdType>* indices{ nullptr };
-    if (::detail::isnan(value) && !this->NanIndices.empty())
-    {
-      indices = &this->NanIndices;
-    }
-    const auto& pos = this->ValueMap.find(value);
-    if (pos != this->ValueMap.end())
-    {
-      indices = &pos->second;
-    }
-    return indices;
-  }
-
-  ArrayTypeT* AssociatedArray{ nullptr };
-  std::unordered_map<ValueType, std::vector<vtkIdType> > ValueMap;
-  std::vector<vtkIdType> NanIndices;
+  ArrayTypeT *AssociatedArray;
+  ValueWithIndex* SortedArray;
+  vtkIdType SortedArraySize;
 };
 
 #endif

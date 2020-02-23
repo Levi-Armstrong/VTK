@@ -21,37 +21,37 @@
  *
  * This class can be used to clip the rendering of an item inside a rectangular
  * area.
- */
+*/
 
 #ifndef vtkContextClip_h
 #define vtkContextClip_h
 
-#include "vtkAbstractContextItem.h"
 #include "vtkRenderingContext2DModule.h" // For export macro
-#include "vtkSmartPointer.h"             // Needed for SP ivars.
+#include "vtkAbstractContextItem.h"
+#include "vtkSmartPointer.h" // Needed for SP ivars.
 
 class VTKRENDERINGCONTEXT2D_EXPORT vtkContextClip : public vtkAbstractContextItem
 {
 public:
   vtkTypeMacro(vtkContextClip, vtkAbstractContextItem);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  virtual void PrintSelf(ostream &os, vtkIndent indent);
 
   /**
    * Creates a vtkContextClip object.
    */
-  static vtkContextClip* New();
+  static vtkContextClip *New();
 
   /**
    * Perform any updates to the item that may be necessary before rendering.
    * The scene should take care of calling this on all items before their
    * Paint function is invoked.
    */
-  void Update() override;
+  virtual void Update();
 
   /**
    * Paint event for the item, called whenever the item needs to be drawn.
    */
-  bool Paint(vtkContext2D* painter) override;
+  virtual bool Paint(vtkContext2D *painter);
 
   /**
    * Set the origin, width and height of the clipping rectangle. These are in
@@ -70,13 +70,14 @@ public:
 
 protected:
   vtkContextClip();
-  ~vtkContextClip() override;
+  ~vtkContextClip();
 
   float Dims[4];
 
 private:
-  vtkContextClip(const vtkContextClip&) = delete;
-  void operator=(const vtkContextClip&) = delete;
+  vtkContextClip(const vtkContextClip &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkContextClip &) VTK_DELETE_FUNCTION;
+
 };
 
 inline void vtkContextClip::GetRect(float rect[4])
@@ -87,4 +88,4 @@ inline void vtkContextClip::GetRect(float rect[4])
   rect[3] = this->Dims[3];
 }
 
-#endif // vtkContextClip_h
+#endif //vtkContextClip_h

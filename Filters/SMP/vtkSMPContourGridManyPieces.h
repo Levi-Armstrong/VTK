@@ -21,39 +21,38 @@
  * the input size and number of threads available. See vtkSMPContourGrid is you are
  * interested in a filter that merges the piece. This will probably be merged with
  * vtkContourGrid in the future.
- */
+*/
 
 #ifndef vtkSMPContourGridManyPieces_h
 #define vtkSMPContourGridManyPieces_h
 
-#include "vtkContourGrid.h"
 #include "vtkFiltersSMPModule.h" // For export macro
+#include "vtkContourGrid.h"
 
 class vtkPolyData;
 
-#if !defined(VTK_LEGACY_REMOVE)
 class VTKFILTERSSMP_EXPORT vtkSMPContourGridManyPieces : public vtkContourGrid
 {
 public:
-  vtkTypeMacro(vtkSMPContourGridManyPieces, vtkContourGrid);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkSMPContourGridManyPieces,vtkContourGrid);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Constructor.
    */
-  static vtkSMPContourGridManyPieces* New();
+  static vtkSMPContourGridManyPieces *New();
 
 protected:
   vtkSMPContourGridManyPieces();
-  ~vtkSMPContourGridManyPieces() override;
+  ~vtkSMPContourGridManyPieces();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 
-  int FillOutputPortInformation(int port, vtkInformation* info) override;
+  virtual int FillOutputPortInformation(int port, vtkInformation* info);
 
 private:
-  vtkSMPContourGridManyPieces(const vtkSMPContourGridManyPieces&) = delete;
-  void operator=(const vtkSMPContourGridManyPieces&) = delete;
+  vtkSMPContourGridManyPieces(const vtkSMPContourGridManyPieces&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkSMPContourGridManyPieces&) VTK_DELETE_FUNCTION;
 };
-#endif // VTK_LEGACY_REMOVE
+
 #endif

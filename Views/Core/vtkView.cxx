@@ -28,10 +28,10 @@
 #include "vtkObjectFactory.h"
 #include "vtkSelection.h"
 #include "vtkSelectionNode.h"
-#include "vtkSmartPointer.h"
 #include "vtkStringArray.h"
-#include "vtkTrivialProducer.h"
 #include "vtkViewTheme.h"
+#include "vtkSmartPointer.h"
+#include "vtkTrivialProducer.h"
 
 #include <map>
 #include <string>
@@ -41,18 +41,21 @@
 class vtkView::Command : public vtkCommand
 {
 public:
-  static Command* New() { return new Command(); }
-  void Execute(vtkObject* caller, unsigned long eventId, void* callData) override
+  static Command* New() {  return new Command(); }
+  void Execute(vtkObject *caller, unsigned long eventId,
+                       void *callData) VTK_OVERRIDE
   {
     if (this->Target)
     {
       this->Target->ProcessEvents(caller, eventId, callData);
     }
   }
-  void SetTarget(vtkView* t) { this->Target = t; }
-
+  void SetTarget(vtkView* t)
+  {
+    this->Target = t;
+  }
 private:
-  Command() { this->Target = nullptr; }
+  Command() { this->Target = 0; }
   vtkView* Target;
 };
 
@@ -69,6 +72,7 @@ class vtkView::vtkImplementation
 public:
   std::vector<vtkSmartPointer<vtkDataRepresentation> > Representations;
 };
+
 
 vtkStandardNewMacro(vtkView);
 //----------------------------------------------------------------------------
@@ -91,7 +95,7 @@ vtkView::~vtkView()
 {
   this->RemoveAllRepresentations();
 
-  this->Observer->SetTarget(nullptr);
+  this->Observer->SetTarget(0);
   this->Observer->Delete();
   delete this->Internal;
   delete this->Implementation;
@@ -101,9 +105,9 @@ vtkView::~vtkView()
 bool vtkView::IsRepresentationPresent(vtkDataRepresentation* rep)
 {
   unsigned int i;
-  for (i = 0; i < this->Implementation->Representations.size(); i++)
+  for( i = 0; i < this->Implementation->Representations.size(); i++ )
   {
-    if (this->Implementation->Representations[i] == rep)
+    if( this->Implementation->Representations[i] == rep )
     {
       return true;
     }
@@ -147,8 +151,8 @@ vtkDataRepresentation* vtkView::AddRepresentationFromInputConnection(vtkAlgorith
   if (!rep)
   {
     vtkErrorMacro("Could not add representation from input connection because "
-                  "no default representation was created for the given input connection.");
-    return nullptr;
+      "no default representation was created for the given input connection.");
+    return 0;
   }
 
   this->AddRepresentation(rep);
@@ -168,8 +172,8 @@ vtkDataRepresentation* vtkView::SetRepresentationFromInputConnection(vtkAlgorith
   if (!rep)
   {
     vtkErrorMacro("Could not add representation from input connection because "
-                  "no default representation was created for the given input connection.");
-    return nullptr;
+      "no default representation was created for the given input connection.");
+    return 0;
   }
 
   this->SetRepresentation(rep);
@@ -180,7 +184,7 @@ vtkDataRepresentation* vtkView::SetRepresentationFromInputConnection(vtkAlgorith
 //----------------------------------------------------------------------------
 void vtkView::AddRepresentation(vtkDataRepresentation* rep)
 {
-  if (rep != nullptr && !this->IsRepresentationPresent(rep))
+  if (rep != NULL && !this->IsRepresentationPresent(rep))
   {
     // We add the representation to the internal data-structure before calling
     // AddToView(). This ensures that if the `rep` itself calls
@@ -242,10 +246,11 @@ void vtkView::RemoveRepresentation(vtkDataRepresentation* rep)
 void vtkView::RemoveRepresentation(vtkAlgorithmOutput* conn)
 {
   unsigned int i;
-  for (i = 0; i < this->Implementation->Representations.size(); i++)
+  for( i = 0; i < this->Implementation->Representations.size(); i++ )
   {
     vtkDataRepresentation* rep = this->Implementation->Representations[i];
-    if (rep->GetNumberOfInputPorts() > 0 && rep->GetInputConnection() == conn)
+    if (rep->GetNumberOfInputPorts() > 0 &&
+        rep->GetInputConnection() == conn)
     {
       this->RemoveRepresentation(rep);
     }
@@ -255,7 +260,7 @@ void vtkView::RemoveRepresentation(vtkAlgorithmOutput* conn)
 //----------------------------------------------------------------------------
 void vtkView::RemoveAllRepresentations()
 {
-  while (!this->Implementation->Representations.empty())
+  while (this->Implementation->Representations.size())
   {
     vtkDataRepresentation* rep = this->Implementation->Representations.back();
     this->RemoveRepresentation(rep);
@@ -275,7 +280,7 @@ vtkDataRepresentation* vtkView::GetRepresentation(int index)
   {
     return this->Implementation->Representations[index];
   }
-  return nullptr;
+  return 0;
 }
 
 //----------------------------------------------------------------------------
@@ -285,9 +290,10 @@ vtkCommand* vtkView::GetObserver()
 }
 
 //----------------------------------------------------------------------------
-void vtkView::ProcessEvents(vtkObject* caller, unsigned long eventId, void* callData)
+void vtkView::ProcessEvents(vtkObject* caller, unsigned long eventId,
+  void* callData)
 {
-  vtkDataRepresentation* caller_rep = vtkDataRepresentation::SafeDownCast(caller);
+  vtkDataRepresentation* caller_rep = vtkDataRepresentation::SafeDownCast( caller );
   if (this->IsRepresentationPresent(caller_rep) && eventId == vtkCommand::SelectionChangedEvent)
   {
     this->InvokeEvent(vtkCommand::SelectionChangedEvent);
@@ -309,20 +315,19 @@ void vtkView::ProcessEvents(vtkObject* caller, unsigned long eventId, void* call
       this->Internal->RegisteredProgress.find(caller);
     if (iter != this->Internal->RegisteredProgress.end())
     {
-      ViewProgressEventCallData eventdata(
-        iter->second.c_str(), *(reinterpret_cast<const double*>(callData)));
+      ViewProgressEventCallData eventdata(iter->second.c_str(),
+        *(reinterpret_cast<const double*>(callData)));
       this->InvokeEvent(vtkCommand::ViewProgressEvent, &eventdata);
     }
   }
 }
 
 //----------------------------------------------------------------------------
-void vtkView::RegisterProgress(vtkObject* algorithm, const char* message /*=nullptr*/)
+void vtkView::RegisterProgress(vtkObject* algorithm, const char* message/*=NULL*/)
 {
-  if (algorithm &&
-    this->Internal->RegisteredProgress.find(algorithm) != this->Internal->RegisteredProgress.end())
+  if (algorithm && this->Internal->RegisteredProgress.find(algorithm) != this->Internal->RegisteredProgress.end())
   {
-    const char* used_message = message ? message : algorithm->GetClassName();
+    const char* used_message = message? message : algorithm->GetClassName();
     this->Internal->RegisteredProgress[algorithm] = used_message;
     algorithm->AddObserver(vtkCommand::ProgressEvent, this->Observer);
   }
@@ -347,9 +352,9 @@ void vtkView::UnRegisterProgress(vtkObject* algorithm)
 void vtkView::Update()
 {
   unsigned int i;
-  for (i = 0; i < this->Implementation->Representations.size(); i++)
+  for( i = 0; i < this->Implementation->Representations.size(); i++ )
   {
-    if (this->Implementation->Representations[i])
+    if( this->Implementation->Representations[i] )
     {
       this->Implementation->Representations[i]->Update();
     }
@@ -359,5 +364,5 @@ void vtkView::Update()
 //----------------------------------------------------------------------------
 void vtkView::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 }

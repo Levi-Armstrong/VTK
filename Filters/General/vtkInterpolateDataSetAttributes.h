@@ -28,51 +28,53 @@
  * interpolated data set attributes common to all input data sets. (For
  * example, if one input has scalars and vectors, and another has just
  * scalars, then only scalars will be interpolated and output.)
- */
+*/
 
 #ifndef vtkInterpolateDataSetAttributes_h
 #define vtkInterpolateDataSetAttributes_h
 
-#include "vtkDataSetAlgorithm.h"
 #include "vtkFiltersGeneralModule.h" // For export macro
+#include "vtkDataSetAlgorithm.h"
 
 class vtkDataSetCollection;
 
 class VTKFILTERSGENERAL_EXPORT vtkInterpolateDataSetAttributes : public vtkDataSetAlgorithm
 {
 public:
-  static vtkInterpolateDataSetAttributes* New();
-  vtkTypeMacro(vtkInterpolateDataSetAttributes, vtkDataSetAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkInterpolateDataSetAttributes *New();
+  vtkTypeMacro(vtkInterpolateDataSetAttributes,vtkDataSetAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Return the list of inputs to this filter.
    */
-  vtkDataSetCollection* GetInputList();
+  vtkDataSetCollection *GetInputList();
 
   //@{
   /**
    * Specify interpolation parameter t.
    */
-  vtkSetClampMacro(T, double, 0.0, VTK_DOUBLE_MAX);
-  vtkGetMacro(T, double);
+  vtkSetClampMacro(T,double,0.0,VTK_DOUBLE_MAX);
+  vtkGetMacro(T,double);
   //@}
 
 protected:
   vtkInterpolateDataSetAttributes();
-  ~vtkInterpolateDataSetAttributes() override;
+  ~vtkInterpolateDataSetAttributes() VTK_OVERRIDE;
 
-  void ReportReferences(vtkGarbageCollector*) override;
+  void ReportReferences(vtkGarbageCollector*) VTK_OVERRIDE;
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *) VTK_OVERRIDE;
+  int FillInputPortInformation(int port, vtkInformation *info) VTK_OVERRIDE;
 
-  vtkDataSetCollection* InputList; // list of data sets to interpolate
-  double T;                        // interpolation parameter
+  vtkDataSetCollection *InputList; // list of data sets to interpolate
+  double T; // interpolation parameter
 
 private:
-  vtkInterpolateDataSetAttributes(const vtkInterpolateDataSetAttributes&) = delete;
-  void operator=(const vtkInterpolateDataSetAttributes&) = delete;
+  vtkInterpolateDataSetAttributes(const vtkInterpolateDataSetAttributes&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkInterpolateDataSetAttributes&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+

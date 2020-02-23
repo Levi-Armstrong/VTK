@@ -24,23 +24,23 @@
  * vtkImplicitFunctionToImageStencil vtkLassoStencilSource
  * @par Thanks:
  * Thanks to David Gobbi for contributing this class to VTK.
- */
+*/
 
 #ifndef vtkROIStencilSource_h
 #define vtkROIStencilSource_h
 
-#include "vtkImageStencilSource.h"
+
 #include "vtkImagingStencilModule.h" // For export macro
+#include "vtkImageStencilSource.h"
 
 class VTKIMAGINGSTENCIL_EXPORT vtkROIStencilSource : public vtkImageStencilSource
 {
 public:
-  static vtkROIStencilSource* New();
+  static vtkROIStencilSource *New();
   vtkTypeMacro(vtkROIStencilSource, vtkImageStencilSource);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
-  enum
-  {
+  enum {
     BOX = 0,
     ELLIPSOID = 1,
     CYLINDERX = 2,
@@ -55,12 +55,12 @@ public:
    */
   vtkGetMacro(Shape, int);
   vtkSetClampMacro(Shape, int, BOX, CYLINDERZ);
-  void SetShapeToBox() { this->SetShape(BOX); }
-  void SetShapeToEllipsoid() { this->SetShape(ELLIPSOID); }
-  void SetShapeToCylinderX() { this->SetShape(CYLINDERX); }
-  void SetShapeToCylinderY() { this->SetShape(CYLINDERY); }
-  void SetShapeToCylinderZ() { this->SetShape(CYLINDERZ); }
-  virtual const char* GetShapeAsString();
+  void SetShapeToBox() { this->SetShape(BOX); };
+  void SetShapeToEllipsoid() { this->SetShape(ELLIPSOID); };
+  void SetShapeToCylinderX() { this->SetShape(CYLINDERX); };
+  void SetShapeToCylinderY() { this->SetShape(CYLINDERY); };
+  void SetShapeToCylinderZ() { this->SetShape(CYLINDERZ); };
+  virtual const char *GetShapeAsString();
   //@}
 
   //@{
@@ -74,16 +74,17 @@ public:
 
 protected:
   vtkROIStencilSource();
-  ~vtkROIStencilSource() override;
+  ~vtkROIStencilSource();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int RequestData(vtkInformation *, vtkInformationVector **,
+                          vtkInformationVector *);
 
   int Shape;
   double Bounds[6];
 
 private:
-  vtkROIStencilSource(const vtkROIStencilSource&) = delete;
-  void operator=(const vtkROIStencilSource&) = delete;
+  vtkROIStencilSource(const vtkROIStencilSource&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkROIStencilSource&) VTK_DELETE_FUNCTION;
 };
 
 #endif

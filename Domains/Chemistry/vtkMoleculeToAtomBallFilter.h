@@ -29,7 +29,7 @@
  *
  * @sa
  * vtkMoleculeMapper vtkMoleculeToBondStickFilter
- */
+*/
 
 #ifndef vtkMoleculeToAtomBallFilter_h
 #define vtkMoleculeToAtomBallFilter_h
@@ -39,16 +39,16 @@
 
 class vtkMolecule;
 
-class VTKDOMAINSCHEMISTRY_EXPORT vtkMoleculeToAtomBallFilter : public vtkMoleculeToPolyDataFilter
+class VTKDOMAINSCHEMISTRY_EXPORT vtkMoleculeToAtomBallFilter
+  : public vtkMoleculeToPolyDataFilter
 {
-public:
-  vtkTypeMacro(vtkMoleculeToAtomBallFilter, vtkMoleculeToPolyDataFilter);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+ public:
+  vtkTypeMacro(vtkMoleculeToAtomBallFilter,vtkMoleculeToPolyDataFilter);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
-  static vtkMoleculeToAtomBallFilter* New();
+  static vtkMoleculeToAtomBallFilter *New();
 
-  enum
-  {
+  enum {
     CovalentRadius = 0,
     VDWRadius,
     UnitRadius
@@ -65,17 +65,18 @@ public:
 
 protected:
   vtkMoleculeToAtomBallFilter();
-  ~vtkMoleculeToAtomBallFilter() override;
+  ~vtkMoleculeToAtomBallFilter();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *, vtkInformationVector **,
+                  vtkInformationVector *);
 
   int Resolution;
   double RadiusScale;
   int RadiusSource;
 
 private:
-  vtkMoleculeToAtomBallFilter(const vtkMoleculeToAtomBallFilter&) = delete;
-  void operator=(const vtkMoleculeToAtomBallFilter&) = delete;
+  vtkMoleculeToAtomBallFilter(const vtkMoleculeToAtomBallFilter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkMoleculeToAtomBallFilter&) VTK_DELETE_FUNCTION;
 };
 
 #endif

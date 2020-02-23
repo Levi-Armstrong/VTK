@@ -12,8 +12,6 @@
     PURPOSE.  See the above copyright notice for more information.
 =========================================================================*/
 
-#include "QTestMainWindow.h"
-#include "QVTKWidget2.h"
 #include "vtkActor.h"
 #include "vtkConeSource.h"
 #include "vtkDataSetMapper.h"
@@ -23,6 +21,8 @@
 #include "vtkRegressionTestImage.h"
 #include "vtkRenderer.h"
 #include "vtkSphereSource.h"
+#include "QVTKWidget2.h"
+#include "QTestMainWindow.h"
 
 #include <QApplication>
 #include <QTimer>
@@ -37,26 +37,26 @@ int TestQVTKWidget2(int argc, char* argv[])
   vtkNew<vtkDataSetMapper> sphereMapper;
   sphereMapper->SetInputConnection(sphere->GetOutputPort());
   vtkNew<vtkActor> sphereActor;
-  sphereActor->SetMapper(sphereMapper);
+  sphereActor->SetMapper(sphereMapper.GetPointer());
 
   vtkNew<vtkDataSetMapper> coneMapper;
   coneMapper->SetInputConnection(cone->GetOutputPort());
   vtkNew<vtkActor> coneActor;
-  coneActor->SetMapper(coneMapper);
+  coneActor->SetMapper(coneMapper.GetPointer());
 
   sphereActor->GetProperty()->SetOpacity(0.3);
 
   vtkNew<vtkRenderer> renderer;
-  renderer->AddActor(sphereActor);
-  renderer->AddActor(coneActor);
+  renderer->AddActor(sphereActor.GetPointer());
+  renderer->AddActor(coneActor.GetPointer());
   renderer->ResetCamera();
 
   vtkNew<vtkGenericOpenGLRenderWindow> renWin;
-  renWin->AddRenderer(renderer);
+  renWin->AddRenderer(renderer.GetPointer());
   renWin->SetMultiSamples(0);
 
-  QTestMainWindow* qwindow = new QTestMainWindow(renWin, argc, argv);
-  QVTKWidget2* widget = new QVTKWidget2(renWin);
+  QTestMainWindow* qwindow = new QTestMainWindow(renWin.GetPointer(), argc, argv);
+  QVTKWidget2* widget = new QVTKWidget2(renWin.GetPointer());
   widget->setMinimumSize(QSize(300, 300));
   widget->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   qwindow->setCentralWidget(widget);

@@ -33,18 +33,22 @@ vtkImageMaskBits::vtkImageMaskBits()
   this->Masks[3] = 0xffffffff;
 }
 
+
+
 //----------------------------------------------------------------------------
 // This execute method handles boundaries.
 // it handles boundaries. Pixels are just replicated to get values
 // out of extent.
 template <class T>
-void vtkImageMaskBitsExecute(
-  vtkImageMaskBits* self, vtkImageData* inData, vtkImageData* outData, int outExt[6], int id, T*)
+void vtkImageMaskBitsExecute(vtkImageMaskBits *self,
+                             vtkImageData *inData,
+                             vtkImageData *outData,
+                             int outExt[6], int id, T *)
 {
   vtkImageIterator<T> inIt(inData, outExt);
   vtkImageProgressIterator<T> outIt(outData, outExt, self, id);
   int idxC, maxC;
-  unsigned int* masks;
+  unsigned int *masks;
   int operation;
 
   // find the region to loop over
@@ -116,63 +120,73 @@ void vtkImageMaskBitsExecute(
   }
 }
 
+
 //----------------------------------------------------------------------------
 // This method contains a switch statement that calls the correct
 // templated function for the input data type.  The output data
 // must match input type.  This method does handle boundary conditions.
-void vtkImageMaskBits::ThreadedExecute(
-  vtkImageData* inData, vtkImageData* outData, int outExt[6], int id)
+void vtkImageMaskBits::ThreadedExecute (vtkImageData *inData,
+                                        vtkImageData *outData,
+                                        int outExt[6], int id)
 {
   // this filter expects that input is the same type as output.
   if (inData->GetScalarType() != outData->GetScalarType())
   {
-    vtkErrorMacro(<< "Execute: input ScalarType, " << inData->GetScalarType()
-                  << ", must match out ScalarType " << outData->GetScalarType());
+    vtkErrorMacro(<< "Execute: input ScalarType, "
+                  << inData->GetScalarType()
+                  << ", must match out ScalarType "
+                  << outData->GetScalarType());
     return;
   }
 
   switch (inData->GetScalarType())
   {
     case VTK_INT:
-      vtkImageMaskBitsExecute(this, inData, outData, outExt, id, static_cast<int*>(nullptr));
+      vtkImageMaskBitsExecute(this, inData, outData, outExt, id,
+                              static_cast<int *>(0));
       break;
     case VTK_UNSIGNED_INT:
-      vtkImageMaskBitsExecute(
-        this, inData, outData, outExt, id, static_cast<unsigned int*>(nullptr));
+      vtkImageMaskBitsExecute(this, inData, outData, outExt, id,
+                              static_cast<unsigned int *>(0));
       break;
     case VTK_LONG:
-      vtkImageMaskBitsExecute(this, inData, outData, outExt, id, static_cast<long*>(nullptr));
+      vtkImageMaskBitsExecute(this, inData, outData, outExt, id,
+                              static_cast<long *>(0));
       break;
     case VTK_UNSIGNED_LONG:
-      vtkImageMaskBitsExecute(
-        this, inData, outData, outExt, id, static_cast<unsigned long*>(nullptr));
+      vtkImageMaskBitsExecute(this, inData, outData, outExt, id,
+                              static_cast<unsigned long *>(0));
       break;
     case VTK_SHORT:
-      vtkImageMaskBitsExecute(this, inData, outData, outExt, id, static_cast<short*>(nullptr));
+      vtkImageMaskBitsExecute(this, inData, outData, outExt, id,
+                              static_cast<short *>(0));
       break;
     case VTK_UNSIGNED_SHORT:
-      vtkImageMaskBitsExecute(
-        this, inData, outData, outExt, id, static_cast<unsigned short*>(nullptr));
+      vtkImageMaskBitsExecute(this, inData, outData, outExt, id,
+                              static_cast<unsigned short *>(0));
       break;
     case VTK_CHAR:
-      vtkImageMaskBitsExecute(this, inData, outData, outExt, id, static_cast<char*>(nullptr));
+      vtkImageMaskBitsExecute(this, inData, outData, outExt, id,
+                              static_cast<char *>(0));
       break;
     case VTK_UNSIGNED_CHAR:
-      vtkImageMaskBitsExecute(
-        this, inData, outData, outExt, id, static_cast<unsigned char*>(nullptr));
+      vtkImageMaskBitsExecute(this, inData, outData, outExt, id,
+                              static_cast<unsigned char *>(0));
       break;
     default:
       vtkErrorMacro(<< "Execute: ScalarType can only be [unsigned] char, [unsigned] short, "
-                    << "[unsigned] int, or [unsigned] long.");
+      << "[unsigned] int, or [unsigned] long.");
       return;
   }
 }
 
+
 void vtkImageMaskBits::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 
   os << indent << "Operation: " << this->Operation << "\n";
-  os << indent << "Masks: (" << this->Masks[0] << ", " << this->Masks[1] << ", " << this->Masks[2]
-     << ", " << this->Masks[3] << ")" << endl;
+  os << indent << "Masks: ("
+     << this->Masks[0] << ", " << this->Masks[1] << ", "
+     << this->Masks[2] << ", " << this->Masks[3] << ")" << endl;
 }

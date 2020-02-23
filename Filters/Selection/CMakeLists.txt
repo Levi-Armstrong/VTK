@@ -1,7 +1,7 @@
-set(classes
-  vtkKdTreeSelector
-  vtkLinearSelector
-  vtkCellDistanceSelector)
+set(Module_SRCS
+  vtkKdTreeSelector.cxx
+  vtkLinearSelector.cxx
+  vtkCellDistanceSelector.cxx
+  )
 
-vtk_module_add_module(VTK::FiltersSelection
-  CLASSES ${classes})
+vtk_module_library(vtkFiltersSelection ${Module_SRCS})

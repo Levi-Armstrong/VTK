@@ -34,7 +34,7 @@
  *
  * @sa
  * vtkSQLDatabase vtkSQLQuery vtkPostgreSQLDatabase
- */
+*/
 
 #ifndef vtkPostgreSQLQuery_h
 #define vtkPostgreSQLQuery_h
@@ -51,7 +51,7 @@ class VTKIOPOSTGRESQL_EXPORT vtkPostgreSQLQuery : public vtkSQLQuery
 {
 public:
   static vtkPostgreSQLQuery* New();
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf( ostream& os, vtkIndent indent );
   vtkTypeMacro(vtkPostgreSQLQuery, vtkSQLQuery);
 
   /**
@@ -59,56 +59,56 @@ public:
    * before any field name or data access functions
    * are used.
    */
-  bool Execute() override;
+  bool Execute();
 
   /**
    * The number of fields in the query result.
    */
-  int GetNumberOfFields() override;
+  int GetNumberOfFields();
 
   /**
    * Return the name of the specified query field.
    */
-  const char* GetFieldName(int i) override;
+  const char* GetFieldName( int i );
 
   /**
    * Return the type of the field, using the constants defined in vtkType.h.
    */
-  int GetFieldType(int i) override;
+  int GetFieldType( int i );
 
   /**
    * Advance row, return false if past end.
    */
-  bool NextRow() override;
+  bool NextRow();
 
   /**
    * Return true if there is an error on the current query.
    */
-  bool HasError() override;
+  bool HasError();
 
   //@{
   /**
    * Begin, abort (roll back), or commit a transaction.
    */
-  bool BeginTransaction() override;
-  bool RollbackTransaction() override;
-  bool CommitTransaction() override;
+  bool BeginTransaction();
+  bool RollbackTransaction();
+  bool CommitTransaction();
   //@}
 
   /**
    * Return data in current row, field c
    */
-  vtkVariant DataValue(vtkIdType c) override;
+  vtkVariant DataValue( vtkIdType c );
 
   /**
    * Get the last error text from the query
    */
-  const char* GetLastErrorText() override;
+  const char* GetLastErrorText();
 
   /**
    * Escape a string for inclusion into an SQL query
    */
-  vtkStdString EscapeString(vtkStdString s, bool addSurroundingQuotes = true) override;
+  virtual vtkStdString EscapeString( vtkStdString s, bool addSurroundingQuotes = true );
 
   /**
    * Unlike some databases, Postgres can tell you right away how many
@@ -118,26 +118,27 @@ public:
 
 protected:
   vtkPostgreSQLQuery();
-  ~vtkPostgreSQLQuery() override;
+  ~vtkPostgreSQLQuery();
 
   vtkSetStringMacro(LastErrorText);
 
   bool IsColumnBinary(int whichColumn);
-  const char* GetColumnRawData(int whichColumn);
+  const char *GetColumnRawData(int whichColumn);
 
   bool TransactionInProgress;
-  char* LastErrorText;
+  char *LastErrorText;
   int CurrentRow;
 
-  vtkPostgreSQLQueryPrivate* QueryInternals;
+  vtkPostgreSQLQueryPrivate *QueryInternals;
 
   void DeleteQueryResults();
 
   friend class vtkPostgreSQLDatabase;
 
 private:
-  vtkPostgreSQLQuery(const vtkPostgreSQLQuery&) = delete;
-  void operator=(const vtkPostgreSQLQuery&) = delete;
+  vtkPostgreSQLQuery( const vtkPostgreSQLQuery& ) VTK_DELETE_FUNCTION;
+  void operator = ( const vtkPostgreSQLQuery& ) VTK_DELETE_FUNCTION;
 };
 
 #endif // vtkPostgreSQLQuery_h
+

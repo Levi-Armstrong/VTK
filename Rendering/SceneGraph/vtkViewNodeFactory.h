@@ -20,50 +20,50 @@
  * asked to make a vtkViewNode for a particular renderable. modules for
  * different rendering backends are expected to use this to customize the
  * set of instances for their own purposes
- */
+*/
 
 #ifndef vtkViewNodeFactory_h
 #define vtkViewNodeFactory_h
 
-#include "vtkObject.h"
 #include "vtkRenderingSceneGraphModule.h" // For export macro
+#include "vtkObject.h"
 
 class vtkViewNode;
 
-class VTKRENDERINGSCENEGRAPH_EXPORT vtkViewNodeFactory : public vtkObject
+class VTKRENDERINGSCENEGRAPH_EXPORT vtkViewNodeFactory :
+  public vtkObject
 {
 public:
   static vtkViewNodeFactory* New();
   vtkTypeMacro(vtkViewNodeFactory, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
-   * Give a function pointer to a class that will manufacture a
+   * Give a functin pointer to a class that will manufacture a
    * vtkViewNode when given a class name string.
    */
-  void RegisterOverride(const char* name, vtkViewNode* (*func)());
+  void RegisterOverride(const char *name, vtkViewNode *(*func)());
 
   /**
    * Creates and returns a vtkViewNode for the provided renderable.
    */
-  vtkViewNode* CreateNode(vtkObject*);
+  vtkViewNode *CreateNode(vtkObject *);
 
   /**
-   * @deprecated As of 9.0, No longer equivalent to CreateNode(vtkObject*).
-   * Unused in 8.2.
+   * Creates and returns a vtkViewNode for the provided class name.
    */
-  VTK_LEGACY(vtkViewNode* CreateNode(const char*));
+  vtkViewNode *CreateNode(const char *);
 
 protected:
   vtkViewNodeFactory();
-  ~vtkViewNodeFactory() override;
+  ~vtkViewNodeFactory();
 
 private:
-  vtkViewNodeFactory(const vtkViewNodeFactory&) = delete;
-  void operator=(const vtkViewNodeFactory&) = delete;
+  vtkViewNodeFactory(const vtkViewNodeFactory&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkViewNodeFactory&) VTK_DELETE_FUNCTION;
 
   class vtkInternals;
-  vtkInternals* Internals;
+  vtkInternals *Internals;
 };
 
 #endif

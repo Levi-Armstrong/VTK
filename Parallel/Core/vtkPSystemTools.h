@@ -21,21 +21,21 @@
  * broadcasting the results to other processes. It is built on VTK's
  * SystemTools class and uses the global controller for communication.
  * It uses blocking collective communication operations.
- */
+*/
 
 #ifndef vtkPSystemTools_h
 #define vtkPSystemTools_h
 
-#include "vtkObject.h"
 #include "vtkParallelCoreModule.h" // For export macro
-#include <string>                  // for string functions in SystemTools
+#include "vtkObject.h"
+#include <string> // for string functions in SystemTools
 
 class VTKPARALLELCORE_EXPORT vtkPSystemTools : public vtkObject
 {
-public:
-  static vtkPSystemTools* New();
-  vtkTypeMacro(vtkPSystemTools, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+ public:
+  static vtkPSystemTools *New();
+  vtkTypeMacro(vtkPSystemTools,vtkObject);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Given a string on process proc, broadcast that string to
@@ -53,7 +53,8 @@ public:
    */
 
   static std::string CollapseFullPath(const std::string& in_relative);
-  static std::string CollapseFullPath(const std::string& in_relative, const char* in_base);
+  static std::string CollapseFullPath(const std::string& in_relative,
+                                      const char* in_base);
 
   //@{
   /**
@@ -87,14 +88,17 @@ public:
    * buildDir is a possibly null path to the build directory.
    * installPrefix is a possibly null pointer to the install directory.
    */
-  static bool FindProgramPath(const char* argv0, std::string& pathOut, std::string& errorMsg,
-    const char* exeName = nullptr, const char* buildDir = nullptr,
-    const char* installPrefix = nullptr);
+  static bool FindProgramPath(const char* argv0,
+                              std::string& pathOut,
+                              std::string& errorMsg,
+                              const char* exeName = 0,
+                              const char* buildDir = 0,
+                              const char* installPrefix = 0);
 
   /**
    * Get current working directory CWD
    */
-  static std::string GetCurrentWorkingDirectory(bool collapse = true);
+  static std::string GetCurrentWorkingDirectory(bool collapse =true);
 
   /**
    * Given the path to a program executable, get the directory part of
@@ -105,11 +109,11 @@ public:
 
 protected:
   vtkPSystemTools() {}
-  ~vtkPSystemTools() override {}
+  ~vtkPSystemTools() {}
 
 private:
-  vtkPSystemTools(const vtkPSystemTools&) = delete;
-  void operator=(const vtkPSystemTools&) = delete;
+  vtkPSystemTools(const vtkPSystemTools&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPSystemTools&) VTK_DELETE_FUNCTION;
 };
 
 #endif

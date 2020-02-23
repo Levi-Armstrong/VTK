@@ -36,7 +36,7 @@
  *
  * @sa
  * vtkBMPWriter
- */
+*/
 
 #ifndef vtkBMPReader_h
 #define vtkBMPReader_h
@@ -48,34 +48,40 @@ class vtkLookupTable;
 class VTKIOIMAGE_EXPORT vtkBMPReader : public vtkImageReader
 {
 public:
-  static vtkBMPReader* New();
-  vtkTypeMacro(vtkBMPReader, vtkImageReader);
+  static vtkBMPReader *New();
+  vtkTypeMacro(vtkBMPReader,vtkImageReader);
 
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
    * Returns the depth of the BMP, either 8 or 24.
    */
-  vtkGetMacro(Depth, int);
+  vtkGetMacro(Depth,int);
   //@}
 
   /**
    * Is the given file a BMP file?
    */
-  int CanReadFile(const char* fname) override;
+  virtual int CanReadFile(const char* fname);
 
   /**
    * Get the file extensions for this format.
    * Returns a string with a space separated list of extensions in
    * the format .extension
    */
-  const char* GetFileExtensions() override { return ".bmp"; }
+  virtual const char* GetFileExtensions()
+  {
+      return ".bmp";
+  }
 
   /**
    * Return a descriptive name for the file format that might be useful in a GUI.
    */
-  const char* GetDescriptiveName() override { return "Windows BMP"; }
+  virtual const char* GetDescriptiveName()
+  {
+      return "Windows BMP";
+  }
 
   //@{
   /**
@@ -83,9 +89,9 @@ public:
    * the data will be kept as unsigned chars and a lookuptable will be
    * exported
    */
-  vtkSetMacro(Allow8BitBMP, vtkTypeBool);
-  vtkGetMacro(Allow8BitBMP, vtkTypeBool);
-  vtkBooleanMacro(Allow8BitBMP, vtkTypeBool);
+  vtkSetMacro(Allow8BitBMP,int);
+  vtkGetMacro(Allow8BitBMP,int);
+  vtkBooleanMacro(Allow8BitBMP,int);
   //@}
 
   vtkGetObjectMacro(LookupTable, vtkLookupTable);
@@ -94,24 +100,25 @@ public:
   /**
    * Returns the color lut.
    */
-  vtkGetMacro(Colors, unsigned char*);
+  vtkGetMacro(Colors,unsigned char *);
   //@}
 
 protected:
   vtkBMPReader();
-  ~vtkBMPReader() override;
+  ~vtkBMPReader();
 
-  unsigned char* Colors;
+  unsigned char *Colors;
   short Depth;
-  vtkTypeBool Allow8BitBMP;
-  vtkLookupTable* LookupTable;
+  int Allow8BitBMP;
+  vtkLookupTable *LookupTable;
 
-  void ComputeDataIncrements() override;
-  void ExecuteInformation() override;
-  void ExecuteDataWithInformation(vtkDataObject* out, vtkInformation* outInfo) override;
-
+  virtual void ComputeDataIncrements();
+  virtual void ExecuteInformation();
+  virtual void ExecuteDataWithInformation(vtkDataObject *out, vtkInformation* outInfo);
 private:
-  vtkBMPReader(const vtkBMPReader&) = delete;
-  void operator=(const vtkBMPReader&) = delete;
+  vtkBMPReader(const vtkBMPReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkBMPReader&) VTK_DELETE_FUNCTION;
 };
 #endif
+
+

@@ -15,11 +15,15 @@
 #include "vtkNonLinearCell.h"
 #include "vtkObjectFactory.h"
 
+
 //----------------------------------------------------------------------------
-vtkNonLinearCell::vtkNonLinearCell() = default;
+vtkNonLinearCell::vtkNonLinearCell()
+{
+}
 
 //----------------------------------------------------------------------------
 void vtkNonLinearCell::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 }
+

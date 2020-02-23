@@ -21,19 +21,19 @@
 
 // A class that simulates a reference loop and participates in garbage
 // collection.
-class vtkTestReferenceLoop : public vtkObject
+class vtkTestReferenceLoop: public vtkObject
 {
 public:
   static vtkTestReferenceLoop* New()
   {
-    vtkTestReferenceLoop* ret = new vtkTestReferenceLoop;
+    vtkTestReferenceLoop *ret = new vtkTestReferenceLoop;
     ret->InitializeObjectBase();
     return ret;
   }
   vtkTypeMacro(vtkTestReferenceLoop, vtkObject);
 
-  void Register(vtkObjectBase* o) override { this->RegisterInternal(o, 1); }
-  void UnRegister(vtkObjectBase* o) override { this->UnRegisterInternal(o, 1); }
+  void Register(vtkObjectBase* o) VTK_OVERRIDE { this->RegisterInternal(o, 1); }
+  void UnRegister(vtkObjectBase* o) VTK_OVERRIDE { this->UnRegisterInternal(o, 1); }
 
 protected:
   vtkTestReferenceLoop()
@@ -46,16 +46,16 @@ protected:
     this->Other = other;
     this->Other->Register(this);
   }
-  ~vtkTestReferenceLoop() override
+  ~vtkTestReferenceLoop() VTK_OVERRIDE
   {
-    if (this->Other)
+    if(this->Other)
     {
       this->Other->UnRegister(this);
-      this->Other = nullptr;
+      this->Other = 0;
     }
   }
 
-  void ReportReferences(vtkGarbageCollector* collector) override
+  void ReportReferences(vtkGarbageCollector* collector) VTK_OVERRIDE
   {
     vtkGarbageCollectorReport(collector, this->Other, "Other");
   }
@@ -63,8 +63,8 @@ protected:
   vtkTestReferenceLoop* Other;
 
 private:
-  vtkTestReferenceLoop(const vtkTestReferenceLoop&) = delete;
-  void operator=(const vtkTestReferenceLoop&) = delete;
+  vtkTestReferenceLoop(const vtkTestReferenceLoop&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTestReferenceLoop&) VTK_DELETE_FUNCTION;
 };
 
 // A callback that reports when it is called.
@@ -75,10 +75,11 @@ static void MyDeleteCallback(vtkObject*, unsigned long, void*, void*)
 }
 
 // Main test function.
-int TestGarbageCollector(int, char*[])
+int TestGarbageCollector(int,char *[])
 {
   // Create a callback that reports when it is called.
-  vtkSmartPointer<vtkCallbackCommand> cc = vtkSmartPointer<vtkCallbackCommand>::New();
+  vtkSmartPointer<vtkCallbackCommand> cc =
+    vtkSmartPointer<vtkCallbackCommand>::New();
   cc->SetCallback(MyDeleteCallback);
 
   // Create an object and delete it immediately.  It should be
@@ -87,7 +88,7 @@ int TestGarbageCollector(int, char*[])
   obj->AddObserver(vtkCommand::DeleteEvent, cc);
   called = 0;
   obj->Delete();
-  if (!called)
+  if(!called)
   {
     cerr << "Object not immediately collected." << endl;
     return 1;
@@ -100,7 +101,7 @@ int TestGarbageCollector(int, char*[])
   vtkGarbageCollector::DeferredCollectionPush();
   called = 0;
   obj->Delete();
-  if (called)
+  if(called)
   {
     cerr << "Object collection not deferred." << endl;
     return 1;
@@ -108,7 +109,7 @@ int TestGarbageCollector(int, char*[])
 
   // Disable deferred collection.  The object should be deleted now.
   vtkGarbageCollector::DeferredCollectionPop();
-  if (!called)
+  if(!called)
   {
     cerr << "Deferred collection did not collect object." << endl;
     return 1;

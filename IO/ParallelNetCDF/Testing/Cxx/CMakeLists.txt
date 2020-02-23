@@ -1,13 +1,12 @@
-vtk_add_test_cxx(vtkIOParallelNetCDFCxxTests tests
-  TestPNetCDFPOPReader.cxx
-  )
-vtk_test_cxx_executable(vtkIOParallelNetCDFCxxTests tests)
-
-if(VTK_USE_LARGE_DATA AND TARGET VTK::ParallelMPI)
-  vtk_add_test_mpi(vtkIOParallelNetCDFCxxTests-MPI tests
-    TESTING_DATA
-    PSLACReaderLinear.cxx
-    PSLACReaderQuadratic.cxx
+if(VTK_USE_LARGE_DATA)
+  # Tell ExternalData to fetch test input at build time.
+  ExternalData_Expand_Arguments(VTKData _
+    "DATA{${VTK_TEST_INPUT_DIR}/NetCDF/,REGEX:.*}"
     )
-  vtk_test_cxx_executable(vtkIOParallelNetCDFCxxTests-MPI tests)
+
+  vtk_add_test_cxx(${vtk-module}CxxTests tests
+    TestPNetCDFPOPReader.cxx
+    )
 endif()
+
+vtk_test_cxx_executable(${vtk-module}CxxTests tests)

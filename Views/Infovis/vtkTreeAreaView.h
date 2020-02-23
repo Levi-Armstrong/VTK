@@ -35,13 +35,13 @@
  *
  * @par Thanks:
  * Thanks to Jason Shepherd for implementing this class
- */
+*/
 
 #ifndef vtkTreeAreaView_h
 #define vtkTreeAreaView_h
 
-#include "vtkRenderView.h"
 #include "vtkViewsInfovisModule.h" // For export macro
+#include "vtkRenderView.h"
 
 class vtkAreaLayoutStrategy;
 class vtkGraph;
@@ -53,9 +53,9 @@ class vtkTree;
 class VTKVIEWSINFOVIS_EXPORT vtkTreeAreaView : public vtkRenderView
 {
 public:
-  static vtkTreeAreaView* New();
+  static vtkTreeAreaView *New();
   vtkTypeMacro(vtkTreeAreaView, vtkRenderView);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -226,7 +226,7 @@ public:
 
 protected:
   vtkTreeAreaView();
-  ~vtkTreeAreaView() override;
+  ~vtkTreeAreaView();
 
   //@{
   /**
@@ -252,13 +252,13 @@ protected:
    * Overrides behavior in vtkView to create a vtkRenderedGraphRepresentation
    * by default.
    */
-  vtkDataRepresentation* CreateDefaultRepresentation(vtkAlgorithmOutput* conn) override;
+  virtual vtkDataRepresentation* CreateDefaultRepresentation(vtkAlgorithmOutput* conn);
   virtual vtkRenderedTreeAreaRepresentation* GetTreeAreaRepresentation();
   //@}
 
 private:
-  vtkTreeAreaView(const vtkTreeAreaView&) = delete;
-  void operator=(const vtkTreeAreaView&) = delete;
+  vtkTreeAreaView(const vtkTreeAreaView&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTreeAreaView&) VTK_DELETE_FUNCTION;
 };
 
 #endif

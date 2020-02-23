@@ -27,19 +27,25 @@
 #include "vtkPoints.h"
 #include "vtkSmartPointer.h"
 
-#include <map>
 #include <utility>
 #include <vector>
+#include <map>
 
 vtkStandardNewMacro(vtkPassThroughEdgeStrategy);
 
-vtkPassThroughEdgeStrategy::vtkPassThroughEdgeStrategy() = default;
+vtkPassThroughEdgeStrategy::vtkPassThroughEdgeStrategy()
+{
+}
 
-vtkPassThroughEdgeStrategy::~vtkPassThroughEdgeStrategy() = default;
+vtkPassThroughEdgeStrategy::~vtkPassThroughEdgeStrategy()
+{
+}
 
-void vtkPassThroughEdgeStrategy::Layout() {}
+void vtkPassThroughEdgeStrategy::Layout()
+{
+}
 
 void vtkPassThroughEdgeStrategy::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 }

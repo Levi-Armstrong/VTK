@@ -19,13 +19,13 @@
  * vtkDataArrayCollectionIterator provides an implementation of
  * vtkCollectionIterator which allows the items to be retrieved with
  * the proper subclass pointer type for vtkDataArrayCollection.
- */
+*/
 
 #ifndef vtkDataArrayCollectionIterator_h
 #define vtkDataArrayCollectionIterator_h
 
-#include "vtkCollectionIterator.h"
 #include "vtkCommonCoreModule.h" // For export macro
+#include "vtkCollectionIterator.h"
 
 class vtkDataArray;
 class vtkDataArrayCollection;
@@ -33,15 +33,15 @@ class vtkDataArrayCollection;
 class VTKCOMMONCORE_EXPORT vtkDataArrayCollectionIterator : public vtkCollectionIterator
 {
 public:
-  vtkTypeMacro(vtkDataArrayCollectionIterator, vtkCollectionIterator);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkDataArrayCollectionIterator,vtkCollectionIterator);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
   static vtkDataArrayCollectionIterator* New();
 
   //@{
   /**
    * Set the collection over which to iterate.
    */
-  void SetCollection(vtkCollection*) override;
+  void SetCollection(vtkCollection*) VTK_OVERRIDE;
   void SetCollection(vtkDataArrayCollection*);
   //@}
 
@@ -53,11 +53,11 @@ public:
 
 protected:
   vtkDataArrayCollectionIterator();
-  ~vtkDataArrayCollectionIterator() override;
+  ~vtkDataArrayCollectionIterator() VTK_OVERRIDE;
 
 private:
-  vtkDataArrayCollectionIterator(const vtkDataArrayCollectionIterator&) = delete;
-  void operator=(const vtkDataArrayCollectionIterator&) = delete;
+  vtkDataArrayCollectionIterator(const vtkDataArrayCollectionIterator&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkDataArrayCollectionIterator&) VTK_DELETE_FUNCTION;
 };
 
 #endif

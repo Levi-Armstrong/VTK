@@ -32,21 +32,22 @@
 #include "vtkPointData.h"
 #include "vtkPolyDataMapper.h"
 #include "vtkRect.h"
+#include "vtkRenderer.h"
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
-#include "vtkRenderer.h"
 #include "vtkStripper.h"
 #include "vtkTestUtilities.h"
 #include "vtkTextProperty.h"
 
 //----------------------------------------------------------------------------
-int TestPropItem(int argc, char* argv[])
+int TestPropItem(int argc, char *argv[])
 {
   // Prepare some data for plotting:
-  char* fname = vtkTestUtilities::ExpandDataFileName(argc, argv, "Data/SainteHelens.dem");
+  char* fname =
+    vtkTestUtilities::ExpandDataFileName(argc, argv, "Data/SainteHelens.dem");
   vtkNew<vtkDEMReader> demReader;
   demReader->SetFileName(fname);
-  delete[] fname;
+  delete [] fname;
 
   // Get dataset metadata:
   demReader->Update();
@@ -67,14 +68,14 @@ int TestPropItem(int argc, char* argv[])
   imageLUT->SetSaturationRange(1.0, 0.25);
   imageLUT->SetValueRange(0.5, 1.0);
 
-  imageMapper->SetLookupTable(imageLUT);
+  imageMapper->SetLookupTable(imageLUT.GetPointer());
   imageMapper->SetScalarRange(scalarRange);
 
   vtkNew<vtkActor> imageActor;
-  imageActor->SetMapper(imageMapper);
+  imageActor->SetMapper(imageMapper.GetPointer());
 
   vtkNew<vtkPropItem> imageItem;
-  imageItem->SetPropObject(imageActor);
+  imageItem->SetPropObject(imageActor.GetPointer());
 
   // Contours:
   double range[2];
@@ -95,21 +96,21 @@ int TestPropItem(int argc, char* argv[])
   tprop->SetBold(1);
   tprop->SetFontSize(12);
   tprop->SetColor(1., 1., 1.);
-  contourMapper->SetTextProperty(tprop);
+  contourMapper->SetTextProperty(tprop.GetPointer());
 
   vtkNew<vtkLookupTable> contourLUT;
   contourLUT->SetHueRange(0.6, 0);
   contourLUT->SetSaturationRange(0.75, 1.0);
   contourLUT->SetValueRange(0.25, 0.75);
 
-  contourMapper->GetPolyDataMapper()->SetLookupTable(contourLUT);
+  contourMapper->GetPolyDataMapper()->SetLookupTable(contourLUT.GetPointer());
   contourMapper->GetPolyDataMapper()->SetScalarRange(scalarRange);
 
   vtkNew<vtkActor> contourActor;
-  contourActor->SetMapper(contourMapper);
+  contourActor->SetMapper(contourMapper.GetPointer());
 
   vtkNew<vtkPropItem> contourItem;
-  contourItem->SetPropObject(contourActor);
+  contourItem->SetPropObject(contourActor.GetPointer());
 
   //----------------------------------------------------------------------------
   // Context2D initialization:
@@ -123,8 +124,8 @@ int TestPropItem(int argc, char* argv[])
 
   vtkNew<vtkContextArea> area;
   area->ShowGridOff();
-  area->SetDrawAreaBounds(
-    vtkRectd(bounds.GetBound(0), bounds.GetBound(2), bounds.GetLength(0), bounds.GetLength(1)));
+  area->SetDrawAreaBounds(vtkRectd(bounds.GetBound(0), bounds.GetBound(2),
+                                   bounds.GetLength(0), bounds.GetLength(1)));
 
   area->SetFixedAspect(bounds.GetLength(0) / bounds.GetLength(1));
 
@@ -135,17 +136,17 @@ int TestPropItem(int argc, char* argv[])
 
   for (int i = 0; i < 4; ++i)
   {
-    vtkAxis* axis = area->GetAxis(static_cast<vtkAxis::Location>(i));
+    vtkAxis *axis = area->GetAxis(static_cast<vtkAxis::Location>(i));
     axis->GetLabelProperties()->SetColor(.6, .6, .9);
     axis->GetTitleProperties()->SetColor(.6, .6, .9);
     axis->GetPen()->SetColor(.6 * 255, .6 * 255, .9 * 255, 255);
     axis->GetGridPen()->SetColor(.6 * 255, .6 * 255, .9 * 255, 128);
   }
 
-  area->GetDrawAreaItem()->AddItem(imageItem);
-  area->GetDrawAreaItem()->AddItem(contourItem);
+  area->GetDrawAreaItem()->AddItem(imageItem.GetPointer());
+  area->GetDrawAreaItem()->AddItem(contourItem.GetPointer());
 
-  view->GetScene()->AddItem(area);
+  view->GetScene()->AddItem(area.GetPointer());
 
   view->GetInteractor()->Start();
   return EXIT_SUCCESS;

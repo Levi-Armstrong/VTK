@@ -20,7 +20,7 @@
  * These files consist of a geometry file (.g), a scalar file (.s), a
  * displacement or vector file (.d), and a 2D texture coordinate file
  * (.t).
- */
+*/
 
 #ifndef vtkBYUReader_h
 #define vtkBYUReader_h
@@ -31,10 +31,10 @@
 class VTKIOGEOMETRY_EXPORT vtkBYUReader : public vtkPolyDataAlgorithm
 {
 public:
-  static vtkBYUReader* New();
+  static vtkBYUReader *New();
 
-  vtkTypeMacro(vtkBYUReader, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkBYUReader,vtkPolyDataAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -78,18 +78,18 @@ public:
   /**
    * Turn on/off the reading of the displacement file.
    */
-  vtkSetMacro(ReadDisplacement, vtkTypeBool);
-  vtkGetMacro(ReadDisplacement, vtkTypeBool);
-  vtkBooleanMacro(ReadDisplacement, vtkTypeBool);
+  vtkSetMacro(ReadDisplacement,int);
+  vtkGetMacro(ReadDisplacement,int);
+  vtkBooleanMacro(ReadDisplacement,int);
   //@}
 
   //@{
   /**
    * Turn on/off the reading of the scalar file.
    */
-  vtkSetMacro(ReadScalar, vtkTypeBool);
-  vtkGetMacro(ReadScalar, vtkTypeBool);
-  vtkBooleanMacro(ReadScalar, vtkTypeBool);
+  vtkSetMacro(ReadScalar,int);
+  vtkGetMacro(ReadScalar,int);
+  vtkBooleanMacro(ReadScalar,int);
   //@}
 
   //@{
@@ -97,17 +97,17 @@ public:
    * Turn on/off the reading of the texture coordinate file.
    * Specify name of geometry FileName.
    */
-  vtkSetMacro(ReadTexture, vtkTypeBool);
-  vtkGetMacro(ReadTexture, vtkTypeBool);
-  vtkBooleanMacro(ReadTexture, vtkTypeBool);
+  vtkSetMacro(ReadTexture,int);
+  vtkGetMacro(ReadTexture,int);
+  vtkBooleanMacro(ReadTexture,int);
   //@}
 
   //@{
   /**
    * Set/Get the part number to be read.
    */
-  vtkSetClampMacro(PartNumber, int, 1, VTK_INT_MAX);
-  vtkGetMacro(PartNumber, int);
+  vtkSetClampMacro(PartNumber,int,1,VTK_INT_MAX);
+  vtkGetMacro(PartNumber,int);
   //@}
 
   /**
@@ -116,33 +116,33 @@ public:
    * type, the result is not definitive.  Invalid files may still return 1
    * although a valid file will never return 0.
    */
-  static int CanReadFile(const char* filename);
+  static int CanReadFile(const char *filename);
 
 protected:
   vtkBYUReader();
-  ~vtkBYUReader() override;
+  ~vtkBYUReader();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
   // This source does not know how to generate pieces yet.
-  int ComputeDivisionExtents(vtkDataObject* output, int idx, int numDivisions);
+  int ComputeDivisionExtents(vtkDataObject *output,
+                             int idx, int numDivisions);
 
-  char* GeometryFileName;
-  char* DisplacementFileName;
-  char* ScalarFileName;
-  char* TextureFileName;
-  vtkTypeBool ReadDisplacement;
-  vtkTypeBool ReadScalar;
-  vtkTypeBool ReadTexture;
+  char *GeometryFileName;
+  char *DisplacementFileName;
+  char *ScalarFileName;
+  char *TextureFileName;
+  int ReadDisplacement;
+  int ReadScalar;
+  int ReadTexture;
   int PartNumber;
 
-  void ReadGeometryFile(FILE* fp, int& numPts, vtkInformation* outInfo);
-  void ReadDisplacementFile(int numPts, vtkInformation* outInfo);
-  void ReadScalarFile(int numPts, vtkInformation* outInfo);
-  void ReadTextureFile(int numPts, vtkInformation* outInfo);
-
+  void ReadGeometryFile(FILE *fp, int &numPts, vtkInformation *outInfo);
+  void ReadDisplacementFile(int numPts, vtkInformation *outInfo);
+  void ReadScalarFile(int numPts, vtkInformation *outInfo);
+  void ReadTextureFile(int numPts, vtkInformation *outInfo);
 private:
-  vtkBYUReader(const vtkBYUReader&) = delete;
-  void operator=(const vtkBYUReader&) = delete;
+  vtkBYUReader(const vtkBYUReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkBYUReader&) VTK_DELETE_FUNCTION;
 };
 
 #endif

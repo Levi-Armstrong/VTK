@@ -57,31 +57,32 @@ POSSIBILITY OF SUCH DAMAGES.
  * Z planes.  Other contour orientations are not supported.
  * @sa
  * vtkImageStencil vtkImageAccumulate vtkImageBlend vtkImageReslice
- */
+*/
 
 #ifndef vtkPolyDataToImageStencil_h
 #define vtkPolyDataToImageStencil_h
 
-#include "vtkImageStencilSource.h"
 #include "vtkImagingStencilModule.h" // For export macro
+#include "vtkImageStencilSource.h"
 
 class vtkMergePoints;
 class vtkDataSet;
 class vtkPolyData;
 
-class VTKIMAGINGSTENCIL_EXPORT vtkPolyDataToImageStencil : public vtkImageStencilSource
+class VTKIMAGINGSTENCIL_EXPORT vtkPolyDataToImageStencil :
+  public vtkImageStencilSource
 {
 public:
   static vtkPolyDataToImageStencil* New();
   vtkTypeMacro(vtkPolyDataToImageStencil, vtkImageStencilSource);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
    * Specify the implicit function to convert into a stencil.
    */
   virtual void SetInputData(vtkPolyData*);
-  vtkPolyData* GetInput();
+  vtkPolyData *GetInput();
   //@}
 
   //@{
@@ -98,17 +99,21 @@ public:
 
 protected:
   vtkPolyDataToImageStencil();
-  ~vtkPolyDataToImageStencil() override;
+  ~vtkPolyDataToImageStencil();
 
-  void ThreadedExecute(vtkImageStencilData* output, int extent[6], int threadId);
+  void ThreadedExecute(vtkImageStencilData *output,
+                       int extent[6], int threadId);
 
-  static void PolyDataCutter(vtkPolyData* input, vtkPolyData* output, double z);
+  static void PolyDataCutter(vtkPolyData *input, vtkPolyData *output,
+                             double z);
 
-  static void PolyDataSelector(vtkPolyData* input, vtkPolyData* output, double z, double thickness);
+  static void PolyDataSelector(vtkPolyData *input, vtkPolyData *output,
+                               double z, double thickness);
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int RequestData(vtkInformation *, vtkInformationVector **,
+                          vtkInformationVector *);
 
-  int FillInputPortInformation(int, vtkInformation*) override;
+  virtual int FillInputPortInformation(int, vtkInformation*);
 
   /**
    * The tolerance distance for favoring the inside of the stencil
@@ -116,8 +121,8 @@ protected:
   double Tolerance;
 
 private:
-  vtkPolyDataToImageStencil(const vtkPolyDataToImageStencil&) = delete;
-  void operator=(const vtkPolyDataToImageStencil&) = delete;
+  vtkPolyDataToImageStencil(const vtkPolyDataToImageStencil&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPolyDataToImageStencil&) VTK_DELETE_FUNCTION;
 };
 
 #endif

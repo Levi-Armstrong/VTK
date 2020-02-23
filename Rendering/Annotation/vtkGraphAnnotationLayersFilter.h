@@ -44,25 +44,26 @@
  *
  * @par Thanks:
  * Thanks to Colin Myers, University of Leeds for providing this implementation.
- */
+*/
 
 #ifndef vtkGraphAnnotationLayersFilter_h
 #define vtkGraphAnnotationLayersFilter_h
 
-#include "vtkPolyDataAlgorithm.h"
 #include "vtkRenderingAnnotationModule.h" // For export macro
-#include "vtkSmartPointer.h"              // needed for ivars
+#include "vtkPolyDataAlgorithm.h"
+#include "vtkSmartPointer.h" // needed for ivars
 
 class vtkAppendPolyData;
 class vtkConvexHull2D;
 class vtkRenderer;
 
-class VTKRENDERINGANNOTATION_EXPORT vtkGraphAnnotationLayersFilter : public vtkPolyDataAlgorithm
+
+class VTKRENDERINGANNOTATION_EXPORT vtkGraphAnnotationLayersFilter: public vtkPolyDataAlgorithm
 {
 public:
-  static vtkGraphAnnotationLayersFilter* New();
+  static vtkGraphAnnotationLayersFilter *New();
   vtkTypeMacro(vtkGraphAnnotationLayersFilter, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -108,25 +109,26 @@ public:
   /**
    * The modified time of this filter.
    */
-  vtkMTimeType GetMTime() override;
+  virtual vtkMTimeType GetMTime();
 
 protected:
   vtkGraphAnnotationLayersFilter();
-  ~vtkGraphAnnotationLayersFilter() override;
+  ~vtkGraphAnnotationLayersFilter();
 
   /**
    * This is called by the superclass. This is the method you should override.
    */
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *, vtkInformationVector **,
+    vtkInformationVector *);
 
   /**
    * Set the input to vtkGraph and vtkAnnotationLayers.
    */
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  int FillInputPortInformation(int port, vtkInformation* info);
 
 private:
-  vtkGraphAnnotationLayersFilter(const vtkGraphAnnotationLayersFilter&) = delete;
-  void operator=(const vtkGraphAnnotationLayersFilter&) = delete;
+  vtkGraphAnnotationLayersFilter(const vtkGraphAnnotationLayersFilter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkGraphAnnotationLayersFilter&) VTK_DELETE_FUNCTION;
 
   vtkSmartPointer<vtkAppendPolyData> HullAppend;
   vtkSmartPointer<vtkAppendPolyData> OutlineAppend;

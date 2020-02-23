@@ -57,6 +57,7 @@ demMapper16 = vtk.vtkPolyDataMapper()
 demMapper16.SetInputConnection(normals16.GetOutputPort())
 demMapper16.SetScalarRange(lo, hi)
 demMapper16.SetLookupTable(lut)
+demMapper16.ImmediateModeRenderingOn()
 
 demMapper16.Update()
 demActor.AddLODMapper(demMapper16)

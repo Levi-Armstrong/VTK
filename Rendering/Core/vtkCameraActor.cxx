@@ -16,13 +16,13 @@
 #include "vtkCameraActor.h"
 
 #include "vtkActor.h"
-#include "vtkCamera.h"
-#include "vtkFrustumSource.h"
-#include "vtkMath.h"
-#include "vtkObjectFactory.h"
-#include "vtkPlanes.h"
 #include "vtkPolyDataMapper.h"
+#include "vtkFrustumSource.h"
+#include "vtkCamera.h"
+#include "vtkPlanes.h"
 #include "vtkProperty.h"
+#include "vtkObjectFactory.h"
+#include "vtkMath.h"
 
 vtkStandardNewMacro(vtkCameraActor);
 vtkCxxSetObjectMacro(vtkCameraActor, Camera, vtkCamera);
@@ -30,28 +30,28 @@ vtkCxxSetObjectMacro(vtkCameraActor, Camera, vtkCamera);
 // ----------------------------------------------------------------------------
 vtkCameraActor::vtkCameraActor()
 {
-  this->Camera = nullptr;
-  this->WidthByHeightRatio = 1.0;
-  this->FrustumSource = nullptr;
-  this->FrustumMapper = nullptr;
-  this->FrustumActor = nullptr;
+  this->Camera=0;
+  this->WidthByHeightRatio=1.0;
+  this->FrustumSource=0;
+  this->FrustumMapper=0;
+  this->FrustumActor=0;
 }
 
 // ----------------------------------------------------------------------------
 vtkCameraActor::~vtkCameraActor()
 {
-  this->SetCamera(nullptr);
+  this->SetCamera(0);
 
-  if (this->FrustumActor != nullptr)
+  if(this->FrustumActor!=0)
   {
     this->FrustumActor->Delete();
   }
 
-  if (this->FrustumMapper != nullptr)
-  {
+   if(this->FrustumMapper!=0)
+   {
     this->FrustumMapper->Delete();
-  }
-  if (this->FrustumSource != nullptr)
+   }
+  if(this->FrustumSource!=0)
   {
     this->FrustumSource->Delete();
   }
@@ -60,14 +60,14 @@ vtkCameraActor::~vtkCameraActor()
 // ----------------------------------------------------------------------------
 // Description:
 // Support the standard render methods.
-int vtkCameraActor::RenderOpaqueGeometry(vtkViewport* viewport)
+int vtkCameraActor::RenderOpaqueGeometry(vtkViewport *viewport)
 {
   this->UpdateViewProps();
 
-  int result = 0;
-  if (this->FrustumActor != nullptr && this->FrustumActor->GetMapper() != nullptr)
+  int result=0;
+  if(this->FrustumActor!=0 && this->FrustumActor->GetMapper()!=0)
   {
-    result = this->FrustumActor->RenderOpaqueGeometry(viewport);
+    result=this->FrustumActor->RenderOpaqueGeometry(viewport);
   }
   return result;
 }
@@ -75,15 +75,16 @@ int vtkCameraActor::RenderOpaqueGeometry(vtkViewport* viewport)
 // ----------------------------------------------------------------------------
 // Description:
 // Does this prop have some translucent polygonal geometry? No.
-vtkTypeBool vtkCameraActor::HasTranslucentPolygonalGeometry()
+int vtkCameraActor::HasTranslucentPolygonalGeometry()
 {
   return false;
 }
 
+
 //-----------------------------------------------------------------------------
-void vtkCameraActor::ReleaseGraphicsResources(vtkWindow* window)
+void vtkCameraActor::ReleaseGraphicsResources(vtkWindow *window)
 {
-  if (this->FrustumActor != nullptr)
+  if(this->FrustumActor!=0)
   {
     this->FrustumActor->ReleaseGraphicsResources(window);
   }
@@ -91,7 +92,7 @@ void vtkCameraActor::ReleaseGraphicsResources(vtkWindow* window)
 
 //-------------------------------------------------------------------------
 // Get the bounds for this Actor as (Xmin,Xmax,Ymin,Ymax,Zmin,Zmax).
-double* vtkCameraActor::GetBounds()
+double *vtkCameraActor::GetBounds()
 {
   // we cannot initialize the Bounds the same way vtkBoundingBox does because
   // vtkProp3D::GetLength() does not check if the Bounds are initialized or
@@ -102,7 +103,7 @@ double* vtkCameraActor::GetBounds()
   vtkMath::UninitializeBounds(this->Bounds);
 
   this->UpdateViewProps();
-  if (this->FrustumActor != nullptr && this->FrustumActor->GetUseBounds())
+  if(this->FrustumActor!=0 && this->FrustumActor->GetUseBounds())
   {
     this->FrustumActor->GetBounds(this->Bounds);
   }
@@ -112,14 +113,14 @@ double* vtkCameraActor::GetBounds()
 //-------------------------------------------------------------------------
 vtkMTimeType vtkCameraActor::GetMTime()
 {
-  vtkMTimeType mTime = this->Superclass::GetMTime();
-  if (this->Camera != nullptr)
+  vtkMTimeType mTime=this->Superclass::GetMTime();
+  if(this->Camera!=0)
   {
     vtkMTimeType time;
     time = this->Camera->GetMTime();
-    if (time > mTime)
+    if(time>mTime)
     {
-      mTime = time;
+      mTime=time;
     }
   }
   return mTime;
@@ -128,11 +129,11 @@ vtkMTimeType vtkCameraActor::GetMTime()
 // ----------------------------------------------------------------------------
 // Description:
 // Get property of the internal actor.
-vtkProperty* vtkCameraActor::GetProperty()
+vtkProperty *vtkCameraActor::GetProperty()
 {
-  if (this->FrustumActor == nullptr)
+  if(this->FrustumActor==0)
   {
-    this->FrustumActor = vtkActor::New();
+    this->FrustumActor=vtkActor::New();
   }
 
   return this->FrustumActor->GetProperty();
@@ -141,11 +142,11 @@ vtkProperty* vtkCameraActor::GetProperty()
 // ----------------------------------------------------------------------------
 // Description:
 // Set property of the internal actor.
-void vtkCameraActor::SetProperty(vtkProperty* p)
+void vtkCameraActor::SetProperty(vtkProperty *p)
 {
-  if (this->FrustumActor == nullptr)
+  if(this->FrustumActor==0)
   {
-    this->FrustumActor = vtkActor::New();
+    this->FrustumActor=vtkActor::New();
   }
 
   this->FrustumActor->SetProperty(p);
@@ -154,46 +155,47 @@ void vtkCameraActor::SetProperty(vtkProperty* p)
 // ----------------------------------------------------------------------------
 void vtkCameraActor::UpdateViewProps()
 {
-  if (this->Camera == nullptr)
+  if(this->Camera==0)
   {
     vtkDebugMacro(<< "no camera to represent.");
     return;
   }
 
-  vtkPlanes* planes = nullptr;
-  if (this->FrustumSource == nullptr)
+  vtkPlanes *planes=0;
+  if(this->FrustumSource==0)
   {
-    this->FrustumSource = vtkFrustumSource::New();
-    planes = vtkPlanes::New();
+    this->FrustumSource=vtkFrustumSource::New();
+    planes=vtkPlanes::New();
     this->FrustumSource->SetPlanes(planes);
     planes->Delete();
   }
   else
   {
-    planes = this->FrustumSource->GetPlanes();
+    planes=this->FrustumSource->GetPlanes();
   }
 
   double coefs[24];
-  this->Camera->GetFrustumPlanes(this->WidthByHeightRatio, coefs);
+  this->Camera->GetFrustumPlanes(this->WidthByHeightRatio,coefs);
   planes->SetFrustumPlanes(coefs);
 
   this->FrustumSource->SetShowLines(false);
 
-  if (this->FrustumMapper == nullptr)
+  if(this->FrustumMapper==0)
   {
-    this->FrustumMapper = vtkPolyDataMapper::New();
+    this->FrustumMapper=vtkPolyDataMapper::New();
   }
 
-  this->FrustumMapper->SetInputConnection(this->FrustumSource->GetOutputPort());
+  this->FrustumMapper->SetInputConnection(
+    this->FrustumSource->GetOutputPort());
 
-  if (this->FrustumActor == nullptr)
+  if(this->FrustumActor==0)
   {
-    this->FrustumActor = vtkActor::New();
+    this->FrustumActor=vtkActor::New();
   }
 
   this->FrustumActor->SetMapper(this->FrustumMapper);
 
-  vtkProperty* p = this->FrustumActor->GetProperty();
+  vtkProperty *p=this->FrustumActor->GetProperty();
   p->SetRepresentationToWireframe();
   this->FrustumActor->SetVisibility(1);
 }
@@ -201,17 +203,18 @@ void vtkCameraActor::UpdateViewProps()
 //-------------------------------------------------------------------------
 void vtkCameraActor::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 
   os << indent << "Camera: ";
-  if (this->Camera == nullptr)
+  if(this->Camera==0)
   {
     os << "(none)" << endl;
   }
   else
   {
-    this->Camera->PrintSelf(os, indent);
+    this->Camera->PrintSelf(os,indent);
   }
 
-  os << indent << "WidthByHeightRatio: " << this->WidthByHeightRatio << endl;
+
+  os << indent << "WidthByHeightRatio: " << this->WidthByHeightRatio <<  endl;
 }

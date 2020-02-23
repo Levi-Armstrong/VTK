@@ -32,13 +32,14 @@
  * it->AddIterator(B, 3);
  * </pre>
  * The order of iterators will be A,B,B,B,A,B,B,B,...
- */
+*/
 
 #ifndef vtkLabelHierarchyCompositeIterator_h
 #define vtkLabelHierarchyCompositeIterator_h
 
-#include "vtkLabelHierarchyIterator.h"
+
 #include "vtkRenderingLabelModule.h" // For export macro
+#include "vtkLabelHierarchyIterator.h"
 
 class vtkIdTypeArray;
 class vtkLabelHierarchy;
@@ -48,7 +49,7 @@ class VTKRENDERINGLABEL_EXPORT vtkLabelHierarchyCompositeIterator : public vtkLa
 {
 public:
   vtkTypeMacro(vtkLabelHierarchyCompositeIterator, vtkLabelHierarchyIterator);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
   static vtkLabelHierarchyCompositeIterator* New();
 
   /**
@@ -56,7 +57,8 @@ public:
    * The second optional argument is the number of times to repeat the iterator
    * before moving to the next one round-robin style. Default is 1.
    */
-  virtual void AddIterator(vtkLabelHierarchyIterator* it) { this->AddIterator(it, 1); }
+  virtual void AddIterator(vtkLabelHierarchyIterator* it)
+    { this->AddIterator(it, 1); }
   virtual void AddIterator(vtkLabelHierarchyIterator* it, int count);
 
   /**
@@ -70,27 +72,27 @@ public:
    * This could include labels placed during a previous rendering or
    * a label located under the mouse pointer. You may pass a null pointer.
    */
-  void Begin(vtkIdTypeArray*) override;
+  virtual void Begin( vtkIdTypeArray* );
 
   /**
    * Advance the iterator.
    */
-  void Next() override;
+  virtual void Next();
 
   /**
    * Returns true if the iterator is at the end.
    */
-  bool IsAtEnd() override;
+  virtual bool IsAtEnd();
 
   /**
    * Retrieves the current label id.
    */
-  vtkIdType GetLabelId() override;
+  virtual vtkIdType GetLabelId();
 
   /**
    * Retrieve the current label hierarchy.
    */
-  vtkLabelHierarchy* GetHierarchy() override;
+  virtual vtkLabelHierarchy* GetHierarchy();
 
   /**
    * Retrieve the coordinates of the center of the current hierarchy node
@@ -98,28 +100,28 @@ public:
    * Nodes are n-cubes, so the size is the length of any edge of the cube.
    * This is used by BoxNode().
    */
-  void GetNodeGeometry(double ctr[3], double& size) override;
+  virtual void GetNodeGeometry( double ctr[3], double& size );
 
   /**
    * Not implemented.
    */
-  void BoxNode() override {}
+  virtual void BoxNode() { }
 
   /**
    * Not implemented.
    */
-  void BoxAllNodes(vtkPolyData*) override {}
+  virtual void BoxAllNodes( vtkPolyData* ) { }
 
 protected:
   vtkLabelHierarchyCompositeIterator();
-  ~vtkLabelHierarchyCompositeIterator() override;
+  virtual ~vtkLabelHierarchyCompositeIterator();
 
   class Internal;
   Internal* Implementation;
 
 private:
-  vtkLabelHierarchyCompositeIterator(const vtkLabelHierarchyCompositeIterator&) = delete;
-  void operator=(const vtkLabelHierarchyCompositeIterator&) = delete;
+  vtkLabelHierarchyCompositeIterator( const vtkLabelHierarchyCompositeIterator& ) VTK_DELETE_FUNCTION;
+  void operator = ( const vtkLabelHierarchyCompositeIterator& ) VTK_DELETE_FUNCTION;
 };
 
 #endif // vtkLabelHierarchyCompositeIterator_h

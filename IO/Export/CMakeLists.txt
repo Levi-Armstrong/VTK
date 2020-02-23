@@ -1,25 +1,35 @@
-set(classes
-  vtkExporter
-  vtkGLTFExporter
-  vtkIVExporter
-  vtkJSONDataSetWriter
-  vtkJSONRenderWindowExporter
-  vtkJSONSceneExporter
-  vtkOBJExporter
-  vtkOOGLExporter
-  vtkPOVExporter
-  vtkRIBExporter
-  vtkRIBLight
-  vtkRIBProperty
-  vtkSVGContextDevice2D
-  vtkSVGExporter
-  vtkSingleVTPExporter
-  vtkVRMLExporter
-  vtkX3D
-  vtkX3DExporter
-  vtkX3DExporterFIWriter
-  vtkX3DExporterWriter
-  vtkX3DExporterXMLWriter)
+set(Module_SRCS
+  vtkExporter.cxx
+  vtkGL2PSExporter.cxx
+  vtkIVExporter.cxx
+  vtkOBJExporter.cxx
+  vtkOOGLExporter.cxx
+  vtkPOVExporter.cxx
+  vtkRIBExporter.cxx
+  vtkRIBLight.cxx
+  vtkRIBProperty.cxx
+  vtkVRMLExporter.cxx
+  vtkX3D.cxx
+  vtkX3DExporter.cxx
+  vtkX3DExporterFIWriter.cxx
+  #vtkX3DExporterJavaHelper.cxx Needs JNI
+  vtkX3DExporterWriter.cxx
+  vtkX3DExporterXMLWriter.cxx
+  )
 
-vtk_module_add_module(VTK::IOExport
-  CLASSES ${classes})
+set_source_files_properties(
+  vtkX3D
+  vtkX3DExporterWriter
+  vtkX3DExporterFIWriter
+  vtkX3DExporterXMLWriter
+  WRAP_EXCLUDE
+  )
+
+set_source_files_properties(
+  vtkExporter
+  ABSTRACT
+  )
+
+vtk_module_library(vtkIOExport ${Module_SRCS})
+include(vtkOpenGL)
+vtk_opengl_link(vtkIOExport)

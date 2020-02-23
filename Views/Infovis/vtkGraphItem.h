@@ -23,17 +23,17 @@
  * a set of virtual functions. To influence the rendering of the graph,
  * subclass this item and override the property functions you wish to
  * customize.
- */
+*/
 
 #ifndef vtkGraphItem_h
 #define vtkGraphItem_h
 
-#include "vtkContextItem.h"
 #include "vtkViewsInfovisModule.h" // For export macro
+#include "vtkContextItem.h"
 
-#include "vtkColor.h"  // For color types in API
-#include "vtkNew.h"    // For vtkNew ivars
 #include "vtkVector.h" // For vector types in API
+#include "vtkColor.h" // For color types in API
+#include "vtkNew.h" // For vtkNew ivars
 
 class vtkGraph;
 class vtkImageData;
@@ -44,28 +44,28 @@ class vtkTooltipItem;
 class VTKVIEWSINFOVIS_EXPORT vtkGraphItem : public vtkContextItem
 {
 public:
-  static vtkGraphItem* New();
+  static vtkGraphItem *New();
   vtkTypeMacro(vtkGraphItem, vtkContextItem);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  virtual void PrintSelf(ostream &os, vtkIndent indent);
 
   //@{
   /**
    * The graph that this item draws.
    */
-  virtual void SetGraph(vtkGraph* graph);
+  virtual void SetGraph(vtkGraph *graph);
   vtkGetObjectMacro(Graph, vtkGraph);
   //@}
 
   /**
    * Exposes the incremental graph layout for updating parameters.
    */
-  virtual vtkIncrementalForceLayout* GetLayout();
+  virtual vtkIncrementalForceLayout *GetLayout();
 
   //@{
   /**
    * Begins or ends the layout animation.
    */
-  virtual void StartLayoutAnimation(vtkRenderWindowInteractor* interactor);
+  virtual void StartLayoutAnimation(vtkRenderWindowInteractor *interactor);
   virtual void StopLayoutAnimation();
   //@}
 
@@ -76,13 +76,13 @@ public:
 
 protected:
   vtkGraphItem();
-  ~vtkGraphItem() override;
+  ~vtkGraphItem();
 
   /**
    * Paints the graph. This method will call RebuildBuffers()
    * if the graph is dirty, then call PaintBuffers().
    */
-  bool Paint(vtkContext2D* painter) override;
+  virtual bool Paint(vtkContext2D *painter);
 
   /**
    * Builds a cache of data from the graph by calling the virtual functions
@@ -95,7 +95,7 @@ protected:
    * Efficiently draws the contents of the buffers built in RebuildBuffers.
    * This occurs once per frame.
    */
-  virtual void PaintBuffers(vtkContext2D* painter);
+  virtual void PaintBuffers(vtkContext2D *painter);
 
   /**
    * Returns true if the underlying vtkGraph has been modified since the last
@@ -103,7 +103,7 @@ protected:
    * was modified, it assumes the buffers will be rebuilt, so it updates
    * the modified time of the last build. Override this function if you have
    * a subclass that uses any information in addition to the vtkGraph to determine
-   * visual properties that may be dynamic.
+   * visual propeties that may be dynamic.
    */
   virtual bool IsDirty();
 
@@ -122,7 +122,7 @@ protected:
   /**
    * Returns the number of edge control points for a particular edge. The
    * implementation returns GetNumberOfEdgePoints(edge) + 2 for the specified edge
-   * to incorporate the source and target vertex positions as initial
+   * to incorporate the source and target vertex positions as intial
    * and final edge points.
    */
   virtual vtkIdType NumberOfEdgePoints(vtkIdType edge);
@@ -185,30 +185,30 @@ protected:
   /**
    * Process events and dispatch to the appropriate member functions.
    */
-  static void ProcessEvents(
-    vtkObject* caller, unsigned long event, void* clientData, void* callerData);
+  static void ProcessEvents(vtkObject *caller, unsigned long event,
+                            void *clientData, void *callerData);
 
   /**
    * Return index of hit vertex, or -1 if no hit.
    */
-  virtual vtkIdType HitVertex(const vtkVector2f& pos);
+  virtual vtkIdType HitVertex(const vtkVector2f &pos);
 
   //@{
   /**
    * Handle mouse events.
    */
-  bool MouseMoveEvent(const vtkContextMouseEvent& event) override;
-  bool MouseLeaveEvent(const vtkContextMouseEvent& event) override;
-  bool MouseEnterEvent(const vtkContextMouseEvent& event) override;
-  bool MouseButtonPressEvent(const vtkContextMouseEvent& event) override;
-  bool MouseButtonReleaseEvent(const vtkContextMouseEvent& event) override;
-  bool MouseWheelEvent(const vtkContextMouseEvent& event, int delta) override;
+  virtual bool MouseMoveEvent(const vtkContextMouseEvent &event);
+  virtual bool MouseLeaveEvent(const vtkContextMouseEvent &event);
+  virtual bool MouseEnterEvent(const vtkContextMouseEvent &event);
+  virtual bool MouseButtonPressEvent(const vtkContextMouseEvent &event);
+  virtual bool MouseButtonReleaseEvent(const vtkContextMouseEvent &event);
+  virtual bool MouseWheelEvent(const vtkContextMouseEvent &event, int delta);
   //@}
 
   /**
    * Whether this graph item is hit.
    */
-  bool Hit(const vtkContextMouseEvent& event) override;
+  virtual bool Hit(const vtkContextMouseEvent &event);
 
   /**
    * Change the position of the tooltip based on the vertex hovered.
@@ -216,13 +216,13 @@ protected:
   virtual void PlaceTooltip(vtkIdType v);
 
 private:
-  vtkGraphItem(const vtkGraphItem&) = delete;
-  void operator=(const vtkGraphItem&) = delete;
+  vtkGraphItem(const vtkGraphItem&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkGraphItem&) VTK_DELETE_FUNCTION;
 
   struct Internals;
-  Internals* Internal;
+  Internals *Internal;
 
-  vtkGraph* Graph;
+  vtkGraph *Graph;
   vtkMTimeType GraphBuildTime;
   vtkNew<vtkImageData> Sprite;
   vtkNew<vtkIncrementalForceLayout> Layout;

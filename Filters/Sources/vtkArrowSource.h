@@ -23,7 +23,7 @@
  * The resolution of the cone and shaft can be set and default to 6.
  * The radius of the cone and shaft can be set and default to 0.03 and 0.1.
  * The length of the tip can also be set, and defaults to 0.35.
- */
+*/
 
 #ifndef vtkArrowSource_h
 #define vtkArrowSource_h
@@ -37,19 +37,19 @@ public:
   /**
    * Construct cone with angle of 45 degrees.
    */
-  static vtkArrowSource* New();
+  static vtkArrowSource *New();
 
-  vtkTypeMacro(vtkArrowSource, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkArrowSource,vtkPolyDataAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   //@{
   /**
    * Set the length, and radius of the tip.  They default to 0.35 and 0.1
    */
-  vtkSetClampMacro(TipLength, double, 0.0, 1.0);
-  vtkGetMacro(TipLength, double);
-  vtkSetClampMacro(TipRadius, double, 0.0, 10.0);
-  vtkGetMacro(TipRadius, double);
+  vtkSetClampMacro(TipLength,double,0.0,1.0);
+  vtkGetMacro(TipLength,double);
+  vtkSetClampMacro(TipRadius,double,0.0,10.0);
+  vtkGetMacro(TipRadius,double);
   //@}
 
   //@{
@@ -57,16 +57,16 @@ public:
    * Set the resolution of the tip.  The tip behaves the same as a cone.
    * Resoultion 1 gives a single triangle, 2 gives two crossed triangles.
    */
-  vtkSetClampMacro(TipResolution, int, 1, 128);
-  vtkGetMacro(TipResolution, int);
+  vtkSetClampMacro(TipResolution,int,1,128);
+  vtkGetMacro(TipResolution,int);
   //@}
 
   //@{
   /**
    * Set the radius of the shaft.  Defaults to 0.03.
    */
-  vtkSetClampMacro(ShaftRadius, double, 0.0, 5.0);
-  vtkGetMacro(ShaftRadius, double);
+  vtkSetClampMacro(ShaftRadius,double,0.0,5.0);
+  vtkGetMacro(ShaftRadius,double);
   //@}
 
   //@{
@@ -75,8 +75,8 @@ public:
    * I would like to extend the cone to produce a line,
    * but this is not an option now.
    */
-  vtkSetClampMacro(ShaftResolution, int, 0, 128);
-  vtkGetMacro(ShaftResolution, int);
+  vtkSetClampMacro(ShaftResolution,int,0,128);
+  vtkGetMacro(ShaftResolution,int);
   //@}
 
   //@{
@@ -92,10 +92,9 @@ public:
 
 protected:
   vtkArrowSource();
-  ~vtkArrowSource() override {}
+  ~vtkArrowSource() VTK_OVERRIDE {}
 
-  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *) VTK_OVERRIDE;
 
   int TipResolution;
   double TipLength;
@@ -105,9 +104,12 @@ protected:
   double ShaftRadius;
   bool Invert;
 
+
 private:
-  vtkArrowSource(const vtkArrowSource&) = delete;
-  void operator=(const vtkArrowSource&) = delete;
+  vtkArrowSource(const vtkArrowSource&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkArrowSource&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+

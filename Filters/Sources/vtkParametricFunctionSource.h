@@ -42,7 +42,7 @@
  * vtkParametricEnneper vtkParametricRandomHills vtkParametricSuperEllipsoid
  * vtkParametricSuperToroid vtkParametricTorus
  *
- */
+*/
 
 #ifndef vtkParametricFunctionSource_h
 #define vtkParametricFunctionSource_h
@@ -56,20 +56,20 @@ class vtkParametricFunction;
 class VTKFILTERSSOURCES_EXPORT vtkParametricFunctionSource : public vtkPolyDataAlgorithm
 {
 public:
-  vtkTypeMacro(vtkParametricFunctionSource, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkParametricFunctionSource,vtkPolyDataAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Create a new instance with (50,50,50) points in the (u-v-w) directions.
    */
-  static vtkParametricFunctionSource* New();
+  static vtkParametricFunctionSource *New();
 
   //@{
   /**
    * Specify the parametric function to use to generate the tessellation.
    */
   virtual void SetParametricFunction(vtkParametricFunction*);
-  vtkGetObjectMacro(ParametricFunction, vtkParametricFunction);
+  vtkGetObjectMacro(ParametricFunction,vtkParametricFunction);
   //@}
 
   //@{
@@ -78,8 +78,8 @@ public:
    * direction. Note that the number of tessellant points in the u
    * direction is the UResolution + 1.
    */
-  vtkSetClampMacro(UResolution, int, 2, VTK_INT_MAX);
-  vtkGetMacro(UResolution, int);
+  vtkSetClampMacro(UResolution,int,2,VTK_INT_MAX);
+  vtkGetMacro(UResolution,int);
   //@}
 
   //@{
@@ -88,8 +88,8 @@ public:
    * direction. Note that the number of tessellant points in the v
    * direction is the VResolution + 1.
    */
-  vtkSetClampMacro(VResolution, int, 2, VTK_INT_MAX);
-  vtkGetMacro(VResolution, int);
+  vtkSetClampMacro(VResolution,int,2,VTK_INT_MAX);
+  vtkGetMacro(VResolution,int);
   //@}
 
   //@{
@@ -98,8 +98,8 @@ public:
    * direction. Note that the number of tessellant points in the w
    * direction is the WResolution + 1.
    */
-  vtkSetClampMacro(WResolution, int, 2, VTK_INT_MAX);
-  vtkGetMacro(WResolution, int);
+  vtkSetClampMacro(WResolution,int,2,VTK_INT_MAX);
+  vtkGetMacro(WResolution,int);
   //@}
 
   //@{
@@ -110,9 +110,9 @@ public:
    * whose parametric dimension is 2.
    * Note that texturing may fail in some cases.
    */
-  vtkBooleanMacro(GenerateTextureCoordinates, vtkTypeBool);
-  vtkSetClampMacro(GenerateTextureCoordinates, vtkTypeBool, 0, 1);
-  vtkGetMacro(GenerateTextureCoordinates, vtkTypeBool);
+  vtkBooleanMacro(GenerateTextureCoordinates,int);
+  vtkSetClampMacro(GenerateTextureCoordinates,int,0,1);
+  vtkGetMacro(GenerateTextureCoordinates,int);
   //@}
 
   //@{
@@ -122,9 +122,9 @@ public:
    * Note that this is only applicable to parametric surfaces
    * whose parametric dimension is 2.
    */
-  vtkBooleanMacro(GenerateNormals, vtkTypeBool);
-  vtkSetClampMacro(GenerateNormals, vtkTypeBool, 0, 1);
-  vtkGetMacro(GenerateNormals, vtkTypeBool);
+  vtkBooleanMacro(GenerateNormals,int);
+  vtkSetClampMacro(GenerateNormals,int,0,1);
+  vtkGetMacro(GenerateNormals,int);
   //@}
 
   /**
@@ -154,23 +154,12 @@ public:
    * SCALAR_USER_DEFINED - The scalar is set to the value
    * returned from EvaluateScalar().<br>
    */
-  enum SCALAR_MODE
-  {
-    SCALAR_NONE = 0,
-    SCALAR_U,
-    SCALAR_V,
-    SCALAR_U0,
-    SCALAR_V0,
-    SCALAR_U0V0,
-    SCALAR_MODULUS,
-    SCALAR_PHASE,
-    SCALAR_QUADRANT,
-    SCALAR_X,
-    SCALAR_Y,
-    SCALAR_Z,
-    SCALAR_DISTANCE,
-    SCALAR_FUNCTION_DEFINED
-  };
+  enum SCALAR_MODE { SCALAR_NONE = 0,
+    SCALAR_U, SCALAR_V,
+    SCALAR_U0, SCALAR_V0, SCALAR_U0V0,
+    SCALAR_MODULUS, SCALAR_PHASE, SCALAR_QUADRANT,
+    SCALAR_X, SCALAR_Y, SCALAR_Z, SCALAR_DISTANCE,
+    SCALAR_FUNCTION_DEFINED };
 
   //@{
   /**
@@ -179,26 +168,27 @@ public:
    */
   vtkSetClampMacro(ScalarMode, int, SCALAR_NONE, SCALAR_FUNCTION_DEFINED);
   vtkGetMacro(ScalarMode, int);
-  void SetScalarModeToNone(void) { this->SetScalarMode(SCALAR_NONE); }
-  void SetScalarModeToU(void) { this->SetScalarMode(SCALAR_U); }
-  void SetScalarModeToV(void) { this->SetScalarMode(SCALAR_V); }
-  void SetScalarModeToU0(void) { this->SetScalarMode(SCALAR_U0); }
-  void SetScalarModeToV0(void) { this->SetScalarMode(SCALAR_V0); }
-  void SetScalarModeToU0V0(void) { this->SetScalarMode(SCALAR_U0V0); }
-  void SetScalarModeToModulus(void) { this->SetScalarMode(SCALAR_MODULUS); }
-  void SetScalarModeToPhase(void) { this->SetScalarMode(SCALAR_PHASE); }
-  void SetScalarModeToQuadrant(void) { this->SetScalarMode(SCALAR_QUADRANT); }
-  void SetScalarModeToX(void) { this->SetScalarMode(SCALAR_X); }
-  void SetScalarModeToY(void) { this->SetScalarMode(SCALAR_Y); }
-  void SetScalarModeToZ(void) { this->SetScalarMode(SCALAR_Z); }
-  void SetScalarModeToDistance(void) { this->SetScalarMode(SCALAR_DISTANCE); }
-  void SetScalarModeToFunctionDefined(void) { this->SetScalarMode(SCALAR_FUNCTION_DEFINED); }
+  void SetScalarModeToNone( void ) {this->SetScalarMode(SCALAR_NONE);}
+  void SetScalarModeToU( void ) {this->SetScalarMode(SCALAR_U);}
+  void SetScalarModeToV( void ) {this->SetScalarMode(SCALAR_V);}
+  void SetScalarModeToU0( void ) {this->SetScalarMode(SCALAR_U0);}
+  void SetScalarModeToV0( void ) {this->SetScalarMode(SCALAR_V0);}
+  void SetScalarModeToU0V0( void ) {this->SetScalarMode(SCALAR_U0V0);}
+  void SetScalarModeToModulus( void ) {this->SetScalarMode(SCALAR_MODULUS);}
+  void SetScalarModeToPhase( void ) {this->SetScalarMode(SCALAR_PHASE);}
+  void SetScalarModeToQuadrant( void ) {this->SetScalarMode(SCALAR_QUADRANT);}
+  void SetScalarModeToX( void ) {this->SetScalarMode(SCALAR_X);}
+  void SetScalarModeToY( void ) {this->SetScalarMode(SCALAR_Y);}
+  void SetScalarModeToZ( void ) {this->SetScalarMode(SCALAR_Z);}
+  void SetScalarModeToDistance( void ) {this->SetScalarMode(SCALAR_DISTANCE);}
+  void SetScalarModeToFunctionDefined( void )
+    {this->SetScalarMode(SCALAR_FUNCTION_DEFINED);}
   //@}
 
   /**
    * Return the MTime also considering the parametric function.
    */
-  vtkMTimeType GetMTime() override;
+  vtkMTimeType GetMTime() VTK_OVERRIDE;
 
   //@{
   /**
@@ -206,33 +196,33 @@ public:
    * See the documentation for the vtkAlgorithm::Precision enum for an
    * explanation of the available precision settings.
    */
-  vtkSetMacro(OutputPointsPrecision, int);
-  vtkGetMacro(OutputPointsPrecision, int);
+  vtkSetMacro(OutputPointsPrecision,int);
+  vtkGetMacro(OutputPointsPrecision,int);
   //@}
 
 protected:
   vtkParametricFunctionSource();
-  ~vtkParametricFunctionSource() override;
+  ~vtkParametricFunctionSource() VTK_OVERRIDE;
 
   // Usual data generation method
-  int RequestData(
-    vtkInformation* info, vtkInformationVector** input, vtkInformationVector* output) override;
+  int RequestData(vtkInformation *info, vtkInformationVector **input,
+                  vtkInformationVector *output) VTK_OVERRIDE;
 
   // Variables
-  vtkParametricFunction* ParametricFunction;
+  vtkParametricFunction *ParametricFunction;
 
   int UResolution;
   int VResolution;
   int WResolution;
-  vtkTypeBool GenerateTextureCoordinates;
-  vtkTypeBool GenerateNormals;
+  int GenerateTextureCoordinates;
+  int GenerateNormals;
   int ScalarMode;
   int OutputPointsPrecision;
 
 private:
   // Create output depending on function dimension
-  void Produce1DOutput(vtkInformationVector* output);
-  void Produce2DOutput(vtkInformationVector* output);
+  void Produce1DOutput(vtkInformationVector *output);
+  void Produce2DOutput(vtkInformationVector *output);
 
   /**
    * Generate triangles from an ordered set of points.
@@ -245,10 +235,11 @@ private:
    * VResolution, MinimumU, MaximumU, MinimumV, MaximumV, JoinU, JoinV,
    * TwistU, TwistV, ordering are set appropriately for the parametric function.
    */
-  void MakeTriangles(vtkCellArray* strips, int PtsU, int PtsV);
+  void MakeTriangles ( vtkCellArray * strips, int PtsU, int PtsV );
 
-  vtkParametricFunctionSource(const vtkParametricFunctionSource&) = delete;
-  void operator=(const vtkParametricFunctionSource&) = delete;
+  vtkParametricFunctionSource(const vtkParametricFunctionSource&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkParametricFunctionSource&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif

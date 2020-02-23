@@ -21,7 +21,7 @@
  * the StartElement method.  Each element end tag is sent to the
  * EndElement method.  Subclasses should replace these methods to actually
  * use the tags.
- */
+*/
 
 #ifndef vtkXMLParser_h
 #define vtkXMLParser_h
@@ -39,8 +39,8 @@ extern "C"
 class VTKIOXMLPARSER_EXPORT vtkXMLParser : public vtkObject
 {
 public:
-  vtkTypeMacro(vtkXMLParser, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkXMLParser,vtkObject);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   static vtkXMLParser* New();
 
@@ -112,7 +112,7 @@ public:
 
   //@{
   /**
-   * Set and get the encoding the parser should expect (nullptr defaults to
+   * Set and get the encoding the parser should expect (NULL defaults to
    * Expat's own default encoder, i.e UTF-8).
    * This should be set before parsing (i.e. a call to Parse()) or
    * even initializing the parser (i.e. a call to InitializeParser())
@@ -123,7 +123,7 @@ public:
 
 protected:
   vtkXMLParser();
-  ~vtkXMLParser() override;
+  ~vtkXMLParser();
 
   // Input stream.  Set by user.
   istream* Stream;
@@ -145,7 +145,7 @@ protected:
   // Expat parser structure.  Exists only during call to Parse().
   void* Parser;
 
-  // Create/Allocate the internal parser (can be overridden by subclasses).
+  // Create/Allocate the internal parser (can be overriden by subclasses).
   virtual int CreateParser();
 
   // Called by Parse() to read the stream and call ParseBuffer.  Can
@@ -173,13 +173,15 @@ protected:
   virtual void CharacterDataHandler(const char* data, int length);
 
   // Called by begin handlers to report any stray attribute values.
-  virtual void ReportStrayAttribute(const char* element, const char* attr, const char* value);
+  virtual void ReportStrayAttribute(const char* element, const char* attr,
+                                    const char* value);
 
   // Called by begin handlers to report any missing attribute values.
   virtual void ReportMissingAttribute(const char* element, const char* attr);
 
   // Called by begin handlers to report bad attribute values.
-  virtual void ReportBadAttribute(const char* element, const char* attr, const char* value);
+  virtual void ReportBadAttribute(const char* element, const char* attr,
+                                  const char* value);
 
   // Called by StartElement to report unknown element type.
   virtual void ReportUnknownElement(const char* element);
@@ -207,12 +209,16 @@ protected:
   int IgnoreCharacterData;
 
 private:
-  vtkXMLParser(const vtkXMLParser&) = delete;
-  void operator=(const vtkXMLParser&) = delete;
+  vtkXMLParser(const vtkXMLParser&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkXMLParser&) VTK_DELETE_FUNCTION;
 };
 
 //----------------------------------------------------------------------------
-inline void vtkXMLParserCharacterDataHandler(void* parser, const char* data, int length)
+inline
+void vtkXMLParserCharacterDataHandler(
+        void* parser,
+        const char* data,
+        int length)
 {
   // Character data handler that is registered with the XML_Parser.
   // This just casts the user data to a vtkXMLParser and calls

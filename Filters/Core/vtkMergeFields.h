@@ -16,7 +16,7 @@
  * @class   vtkMergeFields
  * @brief   Merge multiple fields into one.
  *
- * vtkMergeFields is used to merge multiple field into one.
+ * vtkMergeFields is used to merge mutliple field into one.
  * The new field is put in the same field data as the original field.
  * For example
  * @verbatim
@@ -27,18 +27,26 @@
  * @endverbatim
  * will tell vtkMergeFields to use the 2nd component of array1 and
  * the 1st component of array2 to create a 2 component field called foo.
+ * The same can be done using Tcl:
+ * @verbatim
+ * mf SetOutputField foo POINT_DATA
+ * mf Merge 0 array1 1
+ * mf Merge 1 array2 0
+ *
+ * Field locations: DATA_OBJECT, POINT_DATA, CELL_DATA
+ * @endverbatim
  *
  * @sa
  * vtkFieldData vtkDataSet vtkDataObjectToDataSetFilter
  * vtkDataSetAttributes vtkDataArray vtkRearrangeFields
  * vtkSplitField vtkAssignAttribute
- */
+*/
 
 #ifndef vtkMergeFields_h
 #define vtkMergeFields_h
 
-#include "vtkDataSetAlgorithm.h"
 #include "vtkFiltersCoreModule.h" // For export macro
+#include "vtkDataSetAlgorithm.h"
 
 class vtkDataArray;
 class vtkFieldData;
@@ -46,13 +54,13 @@ class vtkFieldData;
 class VTKFILTERSCORE_EXPORT vtkMergeFields : public vtkDataSetAlgorithm
 {
 public:
-  vtkTypeMacro(vtkMergeFields, vtkDataSetAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkMergeFields,vtkDataSetAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Create a new vtkMergeFields.
    */
-  static vtkMergeFields* New();
+  static vtkMergeFields *New();
 
   /**
    * The output field will have the given name and it will be in
@@ -83,9 +91,9 @@ public:
 
   enum FieldLocations
   {
-    DATA_OBJECT = 0,
-    POINT_DATA = 1,
-    CELL_DATA = 2
+    DATA_OBJECT=0,
+    POINT_DATA=1,
+    CELL_DATA=2
   };
 
   struct Component
@@ -93,27 +101,24 @@ public:
     int Index;
     int SourceIndex;
     char* FieldName;
-    Component* Next; // linked list
+    Component* Next;   // linked list
     void SetName(const char* name)
     {
-      delete[] this->FieldName;
-      this->FieldName = nullptr;
-      if (name)
-      {
-        size_t len = strlen(name) + 1;
-        this->FieldName = new char[len];
-#ifdef _MSC_VER
-        strncpy_s(this->FieldName, len, name, len - 1);
-#else
-        strncpy(this->FieldName, name, len);
-#endif
-      }
+        delete[] this->FieldName;
+        this->FieldName = 0;
+        if (name)
+        {
+          size_t len = strlen(name)+1;
+          this->FieldName = new char[len];
+          strncpy(this->FieldName, name, len);
+        }
     }
-    Component() { FieldName = nullptr; }
+    Component() { FieldName = 0; }
     ~Component() { delete[] FieldName; }
   };
 
 protected:
+
   enum FieldType
   {
     NAME,
@@ -121,9 +126,9 @@ protected:
   };
 
   vtkMergeFields();
-  ~vtkMergeFields() override;
+  ~vtkMergeFields() VTK_OVERRIDE;
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *) VTK_OVERRIDE;
 
   char* FieldName;
   int FieldLocation;
@@ -132,6 +137,7 @@ protected:
 
   static char FieldLocationNames[3][12];
 
+
   int MergeArray(vtkDataArray* in, vtkDataArray* out, int inComp, int outComp);
 
   // Components are stored as a linked list.
@@ -139,18 +145,21 @@ protected:
   Component* Tail;
 
   // Methods to browse/modify the linked list.
-  Component* GetNextComponent(Component* op) { return op->Next; }
-  Component* GetFirst() { return this->Head; }
+  Component* GetNextComponent(Component* op)
+    { return op->Next; }
+  Component* GetFirst()
+    { return this->Head; }
   void AddComponent(Component* op);
   Component* FindComponent(int index);
   void DeleteAllComponents();
 
   void PrintComponent(Component* op, ostream& os, vtkIndent indent);
   void PrintAllComponents(ostream& os, vtkIndent indent);
-
 private:
-  vtkMergeFields(const vtkMergeFields&) = delete;
-  void operator=(const vtkMergeFields&) = delete;
+  vtkMergeFields(const vtkMergeFields&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkMergeFields&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+

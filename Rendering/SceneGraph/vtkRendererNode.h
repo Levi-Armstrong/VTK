@@ -17,7 +17,7 @@
  * @brief   vtkViewNode specialized for vtkRenderers
  *
  * State storage and graph traversal for vtkRenderer
- */
+*/
 
 #ifndef vtkRendererNode_h
 #define vtkRendererNode_h
@@ -25,49 +25,35 @@
 #include "vtkRenderingSceneGraphModule.h" // For export macro
 #include "vtkViewNode.h"
 
-class vtkCollection;
+class  vtkCollection;
 
-class VTKRENDERINGSCENEGRAPH_EXPORT vtkRendererNode : public vtkViewNode
+class VTKRENDERINGSCENEGRAPH_EXPORT vtkRendererNode :
+  public vtkViewNode
 {
 public:
   static vtkRendererNode* New();
   vtkTypeMacro(vtkRendererNode, vtkViewNode);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Build containers for our child nodes.
    */
-  void Build(bool prepass) override;
+  virtual void Build(bool prepass);
 
   /**
-   * Get/Set the framebuffer size
+   * Synchronize our state
    */
-  vtkGetVector2Macro(Size, int);
-  vtkSetVector2Macro(Size, int);
-
-  /**
-   * Get/Set the window viewport
-   */
-  vtkGetVector4Macro(Viewport, double);
-  vtkSetVector4Macro(Viewport, double);
-
-  /**
-   * Get/Set the window tile scale
-   */
-  vtkGetVector2Macro(Scale, int);
-  vtkSetVector2Macro(Scale, int);
+  virtual void Synchronize(bool prepass);
 
 protected:
   vtkRendererNode();
-  ~vtkRendererNode() override;
+  ~vtkRendererNode();
 
   int Size[2];
-  double Viewport[4];
-  int Scale[2];
 
 private:
-  vtkRendererNode(const vtkRendererNode&) = delete;
-  void operator=(const vtkRendererNode&) = delete;
+  vtkRendererNode(const vtkRendererNode&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkRendererNode&) VTK_DELETE_FUNCTION;
 };
 
 #endif

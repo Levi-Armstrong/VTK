@@ -18,7 +18,7 @@
  *
  * vtkInformationIdTypeKey is used to represent keys for vtkIdType values
  * in vtkInformation.
- */
+*/
 
 #ifndef vtkInformationIdTypeKey_h
 #define vtkInformationIdTypeKey_h
@@ -31,11 +31,11 @@
 class VTKCOMMONCORE_EXPORT vtkInformationIdTypeKey : public vtkInformationKey
 {
 public:
-  vtkTypeMacro(vtkInformationIdTypeKey, vtkInformationKey);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkInformationIdTypeKey,vtkInformationKey);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   vtkInformationIdTypeKey(const char* name, const char* location);
-  ~vtkInformationIdTypeKey() override;
+  ~vtkInformationIdTypeKey() VTK_OVERRIDE;
 
   /**
    * This method simply returns a new vtkInformationIdTypeKey, given a
@@ -61,12 +61,12 @@ public:
    * object to another.  If there is no entry in the first information
    * object for this key, the value is removed from the second.
    */
-  void ShallowCopy(vtkInformation* from, vtkInformation* to) override;
+  void ShallowCopy(vtkInformation* from, vtkInformation* to) VTK_OVERRIDE;
 
   /**
    * Print the key's value in an information object to a stream.
    */
-  void Print(ostream& os, vtkInformation* info) override;
+  void Print(ostream& os, vtkInformation* info) VTK_OVERRIDE;
 
 protected:
   /**
@@ -77,8 +77,8 @@ protected:
   vtkIdType* GetWatchAddress(vtkInformation* info);
 
 private:
-  vtkInformationIdTypeKey(const vtkInformationIdTypeKey&) = delete;
-  void operator=(const vtkInformationIdTypeKey&) = delete;
+  vtkInformationIdTypeKey(const vtkInformationIdTypeKey&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkInformationIdTypeKey&) VTK_DELETE_FUNCTION;
 };
 
 #endif

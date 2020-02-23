@@ -29,39 +29,40 @@
  *
  * @sa
  * vtkFollower vtkProp3D vtkCamera vtkProp3DAxisFollower
- */
+*/
 
 #ifndef vtkProp3DFollower_h
 #define vtkProp3DFollower_h
 
-#include "vtkProp3D.h"
 #include "vtkRenderingCoreModule.h" // For export macro
+#include "vtkProp3D.h"
 
 class vtkCamera;
 class vtkMapper;
 
+
 class VTKRENDERINGCORE_EXPORT vtkProp3DFollower : public vtkProp3D
 {
-public:
+ public:
   /**
    * Creates a follower with no camera set.
    */
-  static vtkProp3DFollower* New();
+  static vtkProp3DFollower *New();
 
   //@{
   /**
    * Standard VTK methods for type and printing.
    */
-  vtkTypeMacro(vtkProp3DFollower, vtkProp3D);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkProp3DFollower,vtkProp3D);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   //@{
   /**
    * Set/Get the vtkProp3D to control (i.e., face the camera).
    */
-  virtual void SetProp3D(vtkProp3D* prop);
-  virtual vtkProp3D* GetProp3D();
+  virtual void SetProp3D(vtkProp3D *prop);
+  virtual vtkProp3D *GetProp3D();
   //@}
 
   //@{
@@ -79,59 +80,59 @@ public:
    * property, texture map and then mapper. If a property hasn't been
    * assigned, then the actor will create one automatically.
    */
-  int RenderOpaqueGeometry(vtkViewport* viewport) override;
-  int RenderTranslucentPolygonalGeometry(vtkViewport* viewport) override;
-  int RenderVolumetricGeometry(vtkViewport* viewport) override;
+  virtual int RenderOpaqueGeometry(vtkViewport *viewport);
+  virtual int RenderTranslucentPolygonalGeometry(vtkViewport *viewport);
+  virtual int RenderVolumetricGeometry(vtkViewport *viewport);
   //@}
 
   /**
    * Does this prop have some translucent polygonal geometry?
    */
-  vtkTypeBool HasTranslucentPolygonalGeometry() override;
+  virtual int HasTranslucentPolygonalGeometry();
 
   /**
    * Release any graphics resources associated with this vtkProp3DFollower.
    */
-  void ReleaseGraphicsResources(vtkWindow*) override;
+  virtual void ReleaseGraphicsResources(vtkWindow*);
 
   /**
    * Generate the matrix based on ivars. This method overloads its superclasses
    * ComputeMatrix() method due to the special vtkProp3DFollower matrix operations.
    */
-  void ComputeMatrix() override;
+  virtual void ComputeMatrix();
 
   /**
    * Shallow copy of a follower. Overloads the virtual vtkProp method.
    */
-  void ShallowCopy(vtkProp* prop) override;
+  void ShallowCopy(vtkProp *prop);
 
   /**
    * Return the bounds of this vtkProp3D.
    */
-  double* GetBounds() override;
+  virtual double *GetBounds();
 
   //@{
   /**
    * Overload vtkProp's method for setting up assembly paths. See
    * the documentation for vtkProp.
    */
-  void InitPathTraversal() override;
-  vtkAssemblyPath* GetNextPath() override;
+  void InitPathTraversal();
+  virtual vtkAssemblyPath *GetNextPath();
   //@}
 
 protected:
   vtkProp3DFollower();
-  ~vtkProp3DFollower() override;
+  ~vtkProp3DFollower();
 
-  vtkCamera* Camera;
-  vtkProp3D* Device;
+  vtkCamera *Camera;
+  vtkProp3D  *Device;
 
-  // Internal matrices to avoid New/Delete for performance reasons
-  vtkMatrix4x4* InternalMatrix;
+  //Internal matrices to avoid New/Delete for performance reasons
+  vtkMatrix4x4 *InternalMatrix;
 
 private:
-  vtkProp3DFollower(const vtkProp3DFollower&) = delete;
-  void operator=(const vtkProp3DFollower&) = delete;
+  vtkProp3DFollower(const vtkProp3DFollower&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkProp3DFollower&) VTK_DELETE_FUNCTION;
 };
 
 #endif

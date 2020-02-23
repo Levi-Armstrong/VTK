@@ -21,18 +21,18 @@
  * This class contains a matrix of charts. These charts will be of type
  * vtkChartXY by default, but this can be overridden. The class will manage
  * their layout and object lifetime.
- */
+*/
 
 #ifndef vtkScatterPlotMatrix_h
 #define vtkScatterPlotMatrix_h
 
-#include "vtkChartMatrix.h"
 #include "vtkChartsCoreModule.h" // For export macro
-#include "vtkColor.h"            // For member function return
-#include "vtkNew.h"              // For ivars
-#include "vtkSmartPointer.h"     // For ivars
-#include "vtkStdString.h"        // For ivars
-#include "vtkWeakPointer.h"      // For currentPainter
+#include "vtkChartMatrix.h"
+#include "vtkSmartPointer.h" // For ivars
+#include "vtkNew.h"          // For ivars
+#include "vtkColor.h"        // For member function return
+#include "vtkStdString.h"    // For ivars
+#include "vtkWeakPointer.h"  // For currentPainter
 
 class vtkStringArray;
 class vtkTable;
@@ -45,8 +45,7 @@ class vtkRenderWindowInteractor;
 class VTKCHARTSCORE_EXPORT vtkScatterPlotMatrix : public vtkChartMatrix
 {
 public:
-  enum
-  {
+  enum {
     SCATTERPLOT,
     HISTOGRAM,
     ACTIVEPLOT,
@@ -54,24 +53,24 @@ public:
   };
 
   vtkTypeMacro(vtkScatterPlotMatrix, vtkChartMatrix);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  virtual void PrintSelf(ostream &os, vtkIndent indent);
 
   /**
    * Creates a new object.
    */
-  static vtkScatterPlotMatrix* New();
+  static vtkScatterPlotMatrix *New();
 
   /**
    * Perform any updates to the item that may be necessary before rendering.
    */
-  void Update() override;
+  virtual void Update();
 
   /**
    * Paint event for the chart matrix.
    */
-  bool Paint(vtkContext2D* painter) override;
+  virtual bool Paint(vtkContext2D *painter);
 
-  void SetScene(vtkContextScene* scene) override;
+  virtual void SetScene(vtkContextScene *scene);
 
   /**
    * Set the active plot, the one that will be displayed in the top-right.
@@ -79,11 +78,6 @@ public:
    * \return false is the position specified is not valid.
    */
   virtual bool SetActivePlot(const vtkVector2i& position);
-
-  /**
-   * Reset ActivePlotSet flag and call superclass method
-   */
-  void SetSize(const vtkVector2i& size) override;
 
   /**
    * Get the position of the active plot.
@@ -100,7 +94,7 @@ public:
    * Set the input table for the scatter plot matrix. This will cause all
    * columns to be plotted against each other - a square scatter plot matrix.
    */
-  virtual void SetInput(vtkTable* table);
+  virtual void SetInput(vtkTable *table);
 
   /**
    * Set the visibility of the specified column.
@@ -164,29 +158,29 @@ public:
   /**
    * Return true if the supplied x, y coordinate is inside the item.
    */
-  bool Hit(const vtkContextMouseEvent& mouse) override;
+  bool Hit(const vtkContextMouseEvent &mouse);
 
   /**
    * Mouse move event.
    */
-  bool MouseMoveEvent(const vtkContextMouseEvent& mouse) override;
+  bool MouseMoveEvent(const vtkContextMouseEvent &mouse);
 
   /**
    * Mouse button down event
    */
-  bool MouseButtonPressEvent(const vtkContextMouseEvent& mouse) override;
+  bool MouseButtonPressEvent(const vtkContextMouseEvent &mouse);
 
   /**
    * Mouse button release event.
    */
-  bool MouseButtonReleaseEvent(const vtkContextMouseEvent& mouse) override;
+  bool MouseButtonReleaseEvent(const vtkContextMouseEvent &mouse);
 
   //@{
   /**
    * Returns the type of the plot at the given position. The return
    * value is one of: SCATTERPLOT, HISTOGRAM, ACTIVEPLOT, or NOPLOT.
    */
-  int GetPlotType(const vtkVector2i& pos);
+  int GetPlotType(const vtkVector2i &pos);
   int GetPlotType(int row, int column);
   //@}
 
@@ -202,7 +196,7 @@ public:
   /**
    * Set/get the text properties for the chart title, i.e. color, font, size.
    */
-  void SetTitleProperties(vtkTextProperty* prop);
+  void SetTitleProperties(vtkTextProperty *prop);
   vtkTextProperty* GetTitleProperties();
   //@}
 
@@ -258,7 +252,7 @@ public:
    * Set/get the text property for the axis labels of the given plot type,
    * possible types are vtkScatterPlotMatrix::{SCATTERPLOT, HISTOGRAM, ACTIVEPLOT}.
    */
-  void SetAxisLabelProperties(int plotType, vtkTextProperty* prop);
+  void SetAxisLabelProperties(int plotType, vtkTextProperty *prop);
   vtkTextProperty* GetAxisLabelProperties(int plotType);
   //@}
 
@@ -294,7 +288,7 @@ public:
   /**
    * Set the vtkTooltipItem object that will be displayed by the active chart.
    */
-  void SetTooltip(vtkTooltipItem* tooltip);
+  void SetTooltip(vtkTooltipItem *tooltip);
 
   /**
    * Get the vtkTooltipItem object that will be displayed by the active chart.
@@ -304,7 +298,7 @@ public:
   /**
    * Set indexed labels array.
    */
-  void SetIndexedLabels(vtkStringArray* labels);
+  void SetIndexedLabels(vtkStringArray *labels);
 
   /**
    * Get the indexed labels array.
@@ -379,7 +373,7 @@ public:
    * not both. If the proposed move does not satisfy those criteria it will
    * be rejected and the animation path will not be extended.
    */
-  bool AddAnimationPath(const vtkVector2i& move);
+  bool AddAnimationPath(const vtkVector2i &move);
 
   /**
    * Get the number of elements (transitions) in the animation path.
@@ -405,11 +399,11 @@ public:
   /**
    * Get the main plot (the one in the top-right of the matrix.
    */
-  virtual vtkChart* GetMainChart();
+  virtual vtkChart * GetMainChart();
 
 protected:
   vtkScatterPlotMatrix();
-  ~vtkScatterPlotMatrix() override;
+  ~vtkScatterPlotMatrix();
 
   /**
    * Internal helper to do the layout of the charts in the scatter plot matrix.
@@ -451,22 +445,11 @@ protected:
   /**
    * Process events and dispatch to the appropriate member functions.
    */
-  static void ProcessEvents(
-    vtkObject* caller, unsigned long event, void* clientData, void* callerData);
-
-  /**
-   * Called when drawing a chart, does nothing at this level.
-   */
-  virtual void AddSupplementaryPlot(vtkChart* vtkNotUsed(chart), int vtkNotUsed(plotType),
-    vtkStdString vtkNotUsed(row), vtkStdString vtkNotUsed(column), int vtkNotUsed(plotCorner) = 0)
-  {
-  }
+  static void ProcessEvents(vtkObject *caller, unsigned long event,
+                            void *clientData, void *callerData);
 
   // The position of the active plot (defaults to 0, 1).
   vtkVector2i ActivePlot;
-
-  // A flag to show if the ActivePlot vector is valid or not
-  bool ActivePlotValid;
 
   // Weakly owned input data for the scatter plot matrix.
   vtkSmartPointer<vtkTable> Input;
@@ -487,15 +470,12 @@ protected:
   // How many frames should animations consist of, 0 means no transitions.
   int NumberOfFrames;
 
-  // A flag to know if we are animating the scatter plot along an animation path
-  bool Animating;
-
 private:
-  vtkScatterPlotMatrix(const vtkScatterPlotMatrix&) = delete;
-  void operator=(const vtkScatterPlotMatrix&) = delete;
+  vtkScatterPlotMatrix(const vtkScatterPlotMatrix &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkScatterPlotMatrix &) VTK_DELETE_FUNCTION;
 
   class PIMPL;
-  PIMPL* Private;
+  PIMPL *Private;
   friend class PIMPL;
 
   vtkWeakPointer<vtkContext2D> CurrentPainter;
@@ -503,7 +483,8 @@ private:
 
   // Go through the process of calculating axis ranges, etc...
   void UpdateAxes();
-  void ApplyAxisSetting(vtkChart* chart, const vtkStdString& x, const vtkStdString& y);
+  void ApplyAxisSetting(vtkChart *chart, const vtkStdString &x,
+                        const vtkStdString &y);
 };
 
-#endif // vtkScatterPlotMatrix_h
+#endif //vtkScatterPlotMatrix_h

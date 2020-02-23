@@ -16,18 +16,17 @@
 
 #include "vtkSurfaceLICInterface.h"
 
+
 #include "vtkObjectFactory.h"
 #include "vtkOpenGLError.h"
-#include "vtkOpenGLFramebufferObject.h"
-#include "vtkOpenGLRenderWindow.h"
-#include "vtkOpenGLState.h"
-#include "vtkOpenGLVertexBufferObject.h"
-#include "vtkOpenGLVertexBufferObjectGroup.h"
 #include "vtkPainterCommunicator.h"
 #include "vtkPointData.h"
 #include "vtkPolyData.h"
-#include "vtkRenderer.h"
 #include "vtkShaderProgram.h"
+
+#include "vtkOpenGLVertexBufferObject.h"
+#include "vtkOpenGLVertexArrayObject.h"
+#include "vtkOpenGLIndexBufferObject.h"
 
 // use parallel timer for benchmarks and scaling
 // if not defined vtkTimerLOG is used.
@@ -35,7 +34,6 @@
 #if !defined(vtkSurfaceLICMapperTIME)
 #include "vtkTimerLog.h"
 #endif
-#define vtkSurfaceLICMapperDEBUG 0
 
 //----------------------------------------------------------------------------
 vtkObjectFactoryNewMacro(vtkSurfaceLICMapper);
@@ -43,29 +41,34 @@ vtkObjectFactoryNewMacro(vtkSurfaceLICMapper);
 //----------------------------------------------------------------------------
 vtkSurfaceLICMapper::vtkSurfaceLICMapper()
 {
-  this->SetInputArrayToProcess(
-    0, 0, 0, vtkDataObject::FIELD_ASSOCIATION_POINTS, vtkDataSetAttributes::VECTORS);
+  this->SetInputArrayToProcess(0,0,0,
+    vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS,
+    vtkDataSetAttributes::VECTORS);
 
+  this->VectorVBO = vtkOpenGLVertexBufferObject::New();
   this->LICInterface = vtkSurfaceLICInterface::New();
 }
 
 //----------------------------------------------------------------------------
 vtkSurfaceLICMapper::~vtkSurfaceLICMapper()
 {
-#if vtkSurfaceLICMapperDEBUG >= 1
+  #if vtkSurfaceLICMapperDEBUG >= 1
   cerr << "=====vtkSurfaceLICMapper::~vtkSurfaceLICMapper" << endl;
-#endif
+  #endif
 
+  this->VectorVBO->Delete();
+  this->VectorVBO = 0;
   this->LICInterface->Delete();
-  this->LICInterface = nullptr;
+  this->LICInterface = 0;
 }
 
-void vtkSurfaceLICMapper::ShallowCopy(vtkAbstractMapper* mapper)
+void vtkSurfaceLICMapper::ShallowCopy(vtkAbstractMapper *mapper)
 {
-  vtkSurfaceLICMapper* m = vtkSurfaceLICMapper::SafeDownCast(mapper);
+  vtkSurfaceLICMapper *m = vtkSurfaceLICMapper::SafeDownCast(mapper);
   this->LICInterface->ShallowCopy(m->GetLICInterface());
 
-  this->SetInputArrayToProcess(0, m->GetInputArrayInformation(0));
+  this->SetInputArrayToProcess(0,
+    m->GetInputArrayInformation(0));
   this->SetScalarVisibility(m->GetScalarVisibility());
 
   // Now do superclass
@@ -76,36 +79,45 @@ void vtkSurfaceLICMapper::ShallowCopy(vtkAbstractMapper* mapper)
 void vtkSurfaceLICMapper::ReleaseGraphicsResources(vtkWindow* win)
 {
   this->LICInterface->ReleaseGraphicsResources(win);
+  this->VectorVBO->ReleaseGraphicsResources();
   this->Superclass::ReleaseGraphicsResources(win);
 }
 
 void vtkSurfaceLICMapper::ReplaceShaderValues(
-  std::map<vtkShader::Type, vtkShader*> shaders, vtkRenderer* ren, vtkActor* actor)
+    std::map<vtkShader::Type, vtkShader *> shaders,
+    vtkRenderer *ren, vtkActor *actor)
 {
   std::string VSSource = shaders[vtkShader::Vertex]->GetSource();
   std::string FSSource = shaders[vtkShader::Fragment]->GetSource();
 
   // add some code to handle the LIC vectors and mask
-  vtkShaderProgram::Substitute(VSSource, "//VTK::TCoord::Dec",
-    "in vec3 vecsMC;\n"
-    "out vec3 tcoordVCVSOutput;\n");
+  vtkShaderProgram::Substitute(VSSource,
+    "//VTK::TCoord::Dec",
+    "attribute vec3 vecsMC;\n"
+    "varying vec3 tcoordVCVSOutput;\n"
+    );
 
-  vtkShaderProgram::Substitute(VSSource, "//VTK::TCoord::Impl", "tcoordVCVSOutput = vecsMC;");
+  vtkShaderProgram::Substitute(VSSource, "//VTK::TCoord::Impl",
+    "tcoordVCVSOutput = vecsMC;"
+    );
 
-  vtkShaderProgram::Substitute(FSSource, "//VTK::TCoord::Dec",
+  vtkShaderProgram::Substitute(FSSource,
+    "//VTK::TCoord::Dec",
     // 0/1, when 1 V is projected to surface for |V| computation.
     "uniform int uMaskOnSurface;\n"
     "uniform mat3 normalMatrix;\n"
-    "in vec3 tcoordVCVSOutput;");
+    "varying vec3 tcoordVCVSOutput;"
+    );
 
-  vtkShaderProgram::Substitute(FSSource, "//VTK::TCoord::Impl",
+  vtkShaderProgram::Substitute(FSSource,
+    "//VTK::TCoord::Impl",
     // projected vectors
     "  vec3 tcoordLIC = normalMatrix * tcoordVCVSOutput;\n"
     "  vec3 normN = normalize(normalVCVSOutput);\n"
     "  float k = dot(tcoordLIC, normN);\n"
     "  tcoordLIC = (tcoordLIC - k*normN);\n"
     "  gl_FragData[1] = vec4(tcoordLIC.x, tcoordLIC.y, 0.0 , gl_FragCoord.z);\n"
-    //   "  gl_FragData[1] = vec4(tcoordVC.xyz, gl_FragCoord.z);\n"
+ //   "  gl_FragData[1] = vec4(tcoordVC.xyz, gl_FragCoord.z);\n"
     // vectors for fragment masking
     "  if (uMaskOnSurface == 0)\n"
     "    {\n"
@@ -115,32 +127,48 @@ void vtkSurfaceLICMapper::ReplaceShaderValues(
     "    {\n"
     "    gl_FragData[2] = vec4(tcoordLIC.x, tcoordLIC.y, 0.0 , gl_FragCoord.z);\n"
     "    }\n"
-    //   "  gl_FragData[2] = vec4(19.0, 19.0, tcoordVC.x, gl_FragCoord.z);\n"
-    ,
-    false);
+ //   "  gl_FragData[2] = vec4(19.0, 19.0, tcoordVC.x, gl_FragCoord.z);\n"
+    , false);
 
   shaders[vtkShader::Vertex]->SetSource(VSSource);
   shaders[vtkShader::Fragment]->SetSource(FSSource);
 
-  this->Superclass::ReplaceShaderValues(shaders, ren, actor);
+  this->Superclass::ReplaceShaderValues(shaders,ren,actor);
 }
 
 void vtkSurfaceLICMapper::SetMapperShaderParameters(
-  vtkOpenGLHelper& cellBO, vtkRenderer* ren, vtkActor* actor)
+  vtkOpenGLHelper &cellBO,
+  vtkRenderer* ren, vtkActor *actor)
 {
+  if (cellBO.IBO->IndexCount && (this->VBOBuildTime > cellBO.AttributeUpdateTime ||
+      cellBO.ShaderSourceTime > cellBO.AttributeUpdateTime))
+  {
+    cellBO.VAO->Bind();
+    if (!cellBO.VAO->AddAttributeArray(cellBO.Program, this->VectorVBO,
+        "vecsMC", this->VectorVBO->TCoordOffset,
+         this->VectorVBO->Stride, VTK_FLOAT, this->VectorVBO->TCoordComponents,
+         false))
+    {
+      vtkErrorMacro(<< "Error setting 'vecsMC' in shader VAO.");
+    }
+  }
+
   this->Superclass::SetMapperShaderParameters(cellBO, ren, actor);
-  cellBO.Program->SetUniformi("uMaskOnSurface", this->LICInterface->GetMaskOnSurface());
+  cellBO.Program->SetUniformi("uMaskOnSurface",
+    this->LICInterface->GetMaskOnSurface());
 }
 
 //----------------------------------------------------------------------------
-void vtkSurfaceLICMapper::RenderPiece(vtkRenderer* renderer, vtkActor* actor)
+void vtkSurfaceLICMapper::RenderPiece(
+        vtkRenderer *renderer,
+        vtkActor *actor)
 {
-#ifdef vtkSurfaceLICMapperTIME
+  #ifdef vtkSurfaceLICMapperTIME
   this->StartTimerEvent("vtkSurfaceLICMapper::RenderInternal");
-#else
+  #else
   vtkSmartPointer<vtkTimerLog> timer = vtkSmartPointer<vtkTimerLog>::New();
   timer->StartTimer();
-#endif
+  #endif
 
   vtkOpenGLClearErrorMacro();
 
@@ -148,7 +176,7 @@ void vtkSurfaceLICMapper::RenderPiece(vtkRenderer* renderer, vtkActor* actor)
 
   this->LICInterface->UpdateCommunicator(renderer, actor, this->GetInput());
 
-  vtkPainterCommunicator* comm = this->LICInterface->GetCommunicator();
+  vtkPainterCommunicator *comm = this->LICInterface->GetCommunicator();
 
   if (comm->GetIsNull())
   {
@@ -158,8 +186,9 @@ void vtkSurfaceLICMapper::RenderPiece(vtkRenderer* renderer, vtkActor* actor)
   }
 
   this->CurrentInput = this->GetInput();
-  vtkDataArray* vectors = this->GetInputArrayToProcess(0, this->CurrentInput);
-  this->LICInterface->SetHasVectors(vectors != nullptr ? true : false);
+  vtkDataArray *vectors = NULL;
+  vectors = this->GetInputArrayToProcess(0, this->CurrentInput);
+  this->LICInterface->SetHasVectors(vectors != NULL ? true : false);
 
   if (!this->LICInterface->CanRenderSurfaceLIC(actor))
   {
@@ -167,21 +196,11 @@ void vtkSurfaceLICMapper::RenderPiece(vtkRenderer* renderer, vtkActor* actor)
     // requisite opengl extensions are not available. pass control on
     // to delegate renderer and return.
     this->Superclass::RenderPiece(renderer, actor);
-#ifdef vtkSurfaceLICMapperTIME
+    #ifdef vtkSurfaceLICMapperTIME
     this->EndTimerEvent("vtkSurfaceLICMapper::RenderInternal");
-#endif
+    #endif
     return;
   }
-
-  // Before start rendering LIC, capture some essential state so we can restore
-  // it.
-  vtkOpenGLRenderWindow* rw = vtkOpenGLRenderWindow::SafeDownCast(renderer->GetRenderWindow());
-  vtkOpenGLState* ostate = rw->GetState();
-  vtkOpenGLState::ScopedglEnableDisable bsaver(ostate, GL_BLEND);
-
-  vtkNew<vtkOpenGLFramebufferObject> fbo;
-  fbo->SetContext(rw);
-  ostate->PushFramebufferBindings();
 
   // allocate rendering resources, initialize or update
   // textures and shaders.
@@ -191,6 +210,7 @@ void vtkSurfaceLICMapper::RenderPiece(vtkRenderer* renderer, vtkActor* actor)
   this->LICInterface->PrepareForGeometry();
   this->RenderPieceStart(renderer, actor);
   this->RenderPieceDraw(renderer, actor);
+  this->RenderEdges(renderer,actor);
   this->RenderPieceFinish(renderer, actor);
   this->LICInterface->CompletedGeometry();
 
@@ -206,32 +226,65 @@ void vtkSurfaceLICMapper::RenderPiece(vtkRenderer* renderer, vtkActor* actor)
   // ----------------------------------------------- depth test and copy to screen
   this->LICInterface->CopyToScreen();
 
-  ostate->PopFramebufferBindings();
-
   // clear opengl error flags and be absolutely certain that nothing failed.
   vtkOpenGLCheckErrorMacro("failed during surface lic painter");
 
-#ifdef vtkSurfaceLICMapperTIME
+  #ifdef vtkSurfaceLICMapperTIME
   this->EndTimerEvent("vtkSurfaceLICMapper::RenderInternal");
-#else
+  #else
   timer->StopTimer();
-#endif
+  #endif
 }
 
 //-------------------------------------------------------------------------
-void vtkSurfaceLICMapper::BuildBufferObjects(vtkRenderer* ren, vtkActor* act)
+void vtkSurfaceLICMapper::BuildBufferObjects(vtkRenderer *ren, vtkActor *act)
 {
-  if (this->LICInterface->GetHasVectors())
+  this->Superclass::BuildBufferObjects(ren,act);
+
+  if (!this->LICInterface->GetHasVectors())
   {
-    vtkDataArray* vectors = this->GetInputArrayToProcess(0, this->CurrentInput);
-    this->VBOs->CacheDataArray("vecsMC", vectors, ren, VTK_FLOAT);
+    return;
   }
 
-  this->Superclass::BuildBufferObjects(ren, act);
+  vtkDataArray *vectors = NULL;
+  vectors = this->GetInputArrayToProcess(0, this->CurrentInput);
+
+  int numComp = vectors->GetNumberOfComponents();
+  this->VectorVBO->VertexCount = vectors->GetNumberOfTuples();
+  this->VectorVBO->TCoordComponents = numComp;
+  this->VectorVBO->TCoordOffset = 0;
+  this->VectorVBO->Stride = this->VectorVBO->TCoordComponents*sizeof(float);
+
+  if (vectors->GetDataType() != VTK_FLOAT)
+  {
+    float *data = new float[vectors->GetNumberOfTuples()*numComp];
+    double *tuple = new double [numComp];
+    for (int i = 0; i < vectors->GetNumberOfTuples(); i++)
+    {
+      vectors->GetTuple(i,tuple);
+      for (int j = 0; j < numComp; j++)
+      {
+        data[i*numComp+j] = tuple[j];
+      }
+    }
+    this->VectorVBO->Upload(data,
+      vectors->GetNumberOfTuples()*numComp,
+      vtkOpenGLBufferObject::ArrayBuffer);
+    delete [] data;
+    delete [] tuple;
+  }
+  else
+  {
+    // and add our vector VBO
+    this->VectorVBO->Upload(static_cast<float *>(vectors->GetVoidPointer(0)),
+      vectors->GetNumberOfTuples()*numComp,
+      vtkOpenGLBufferObject::ArrayBuffer);
+  }
 }
 
+
 //----------------------------------------------------------------------------
-void vtkSurfaceLICMapper::PrintSelf(ostream& os, vtkIndent indent)
+void vtkSurfaceLICMapper::PrintSelf(ostream & os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 }

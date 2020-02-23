@@ -23,13 +23,13 @@
  * @sa
  * vtkContourRepresentation vtkContourWidget vtkPointPlacer
  * vtkContourLineInterpolator
- */
+*/
 
 #ifndef vtkOrientedGlyphContourRepresentation_h
 #define vtkOrientedGlyphContourRepresentation_h
 
-#include "vtkContourRepresentation.h"
 #include "vtkInteractionWidgetsModule.h" // For export macro
+#include "vtkContourRepresentation.h"
 
 class vtkProperty;
 class vtkActor;
@@ -38,21 +38,20 @@ class vtkPolyData;
 class vtkGlyph3D;
 class vtkPoints;
 
-class VTKINTERACTIONWIDGETS_EXPORT vtkOrientedGlyphContourRepresentation
-  : public vtkContourRepresentation
+class VTKINTERACTIONWIDGETS_EXPORT vtkOrientedGlyphContourRepresentation : public vtkContourRepresentation
 {
 public:
   /**
    * Instantiate this class.
    */
-  static vtkOrientedGlyphContourRepresentation* New();
+  static vtkOrientedGlyphContourRepresentation *New();
 
   //@{
   /**
    * Standard methods for instances of this class.
    */
-  vtkTypeMacro(vtkOrientedGlyphContourRepresentation, vtkContourRepresentation);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkOrientedGlyphContourRepresentation,vtkContourRepresentation);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   //@{
@@ -61,8 +60,8 @@ public:
    * aligned with the constraining plane by orienting it such that
    * the x axis of the geometry lies along the normal of the plane.
    */
-  void SetCursorShape(vtkPolyData* cursorShape);
-  vtkPolyData* GetCursorShape();
+  void SetCursorShape(vtkPolyData *cursorShape);
+  vtkPolyData *GetCursorShape();
   //@}
 
   //@{
@@ -71,8 +70,8 @@ public:
    * This is the geometry that will be used when the mouse is
    * close to the handle or if the user is manipulating the handle.
    */
-  void SetActiveCursorShape(vtkPolyData* activeShape);
-  vtkPolyData* GetActiveCursorShape();
+  void SetActiveCursorShape(vtkPolyData *activeShape);
+  vtkPolyData *GetActiveCursorShape();
   //@}
 
   //@{
@@ -80,7 +79,7 @@ public:
    * This is the property used when the handle is not active
    * (the mouse is not near the handle)
    */
-  vtkGetObjectMacro(Property, vtkProperty);
+  vtkGetObjectMacro(Property,vtkProperty);
   //@}
 
   //@{
@@ -88,14 +87,14 @@ public:
    * This is the property used when the user is interacting
    * with the handle.
    */
-  vtkGetObjectMacro(ActiveProperty, vtkProperty);
+  vtkGetObjectMacro(ActiveProperty,vtkProperty);
   //@}
 
   //@{
   /**
    * This is the property used by the lines.
    */
-  vtkGetObjectMacro(LinesProperty, vtkProperty);
+  vtkGetObjectMacro(LinesProperty,vtkProperty);
   //@}
 
   //@{
@@ -104,29 +103,29 @@ public:
    * are the methods that the widget and its representation use to
    * communicate with each other.
    */
-  void SetRenderer(vtkRenderer* ren) override;
-  void BuildRepresentation() override;
-  void StartWidgetInteraction(double eventPos[2]) override;
-  void WidgetInteraction(double eventPos[2]) override;
-  int ComputeInteractionState(int X, int Y, int modified = 0) override;
+  virtual void SetRenderer(vtkRenderer *ren);
+  virtual void BuildRepresentation();
+  virtual void StartWidgetInteraction(double eventPos[2]);
+  virtual void WidgetInteraction(double eventPos[2]);
+  virtual int ComputeInteractionState(int X, int Y, int modified=0);
   //@}
 
   //@{
   /**
    * Methods to make this class behave as a vtkProp.
    */
-  void GetActors(vtkPropCollection*) override;
-  void ReleaseGraphicsResources(vtkWindow*) override;
-  int RenderOverlay(vtkViewport* viewport) override;
-  int RenderOpaqueGeometry(vtkViewport* viewport) override;
-  int RenderTranslucentPolygonalGeometry(vtkViewport* viewport) override;
-  vtkTypeBool HasTranslucentPolygonalGeometry() override;
+  virtual void GetActors(vtkPropCollection *);
+  virtual void ReleaseGraphicsResources(vtkWindow *);
+  virtual int RenderOverlay(vtkViewport *viewport);
+  virtual int RenderOpaqueGeometry(vtkViewport *viewport);
+  virtual int RenderTranslucentPolygonalGeometry(vtkViewport *viewport);
+  virtual int HasTranslucentPolygonalGeometry();
   //@}
 
   /**
    * Get the points in this contour as a vtkPolyData.
    */
-  vtkPolyData* GetContourRepresentationAsPolyData() override;
+  virtual vtkPolyData * GetContourRepresentationAsPolyData();
 
   //@{
   /**
@@ -135,9 +134,9 @@ public:
    * Depth buffer tests while rendering the contour).
    * Default is to set it to false.
    */
-  vtkSetMacro(AlwaysOnTop, vtkTypeBool);
-  vtkGetMacro(AlwaysOnTop, vtkTypeBool);
-  vtkBooleanMacro(AlwaysOnTop, vtkTypeBool);
+  vtkSetMacro( AlwaysOnTop, int );
+  vtkGetMacro( AlwaysOnTop, int );
+  vtkBooleanMacro( AlwaysOnTop, int );
   //@}
 
   /**
@@ -150,42 +149,42 @@ public:
    * A flag to indicate whether to show the Selected nodes
    * Default is to set it to false.
    */
-  void SetShowSelectedNodes(vtkTypeBool) override;
+  virtual void SetShowSelectedNodes(int);
 
   /**
    * Return the bounds of the representation
    */
-  double* GetBounds() override;
+  virtual double *GetBounds();
 
 protected:
   vtkOrientedGlyphContourRepresentation();
-  ~vtkOrientedGlyphContourRepresentation() override;
+  ~vtkOrientedGlyphContourRepresentation();
 
   // Render the cursor
-  vtkActor* Actor;
-  vtkPolyDataMapper* Mapper;
-  vtkGlyph3D* Glypher;
-  vtkActor* ActiveActor;
-  vtkPolyDataMapper* ActiveMapper;
-  vtkGlyph3D* ActiveGlypher;
-  vtkPolyData* CursorShape;
-  vtkPolyData* ActiveCursorShape;
-  vtkPolyData* FocalData;
-  vtkPoints* FocalPoint;
-  vtkPolyData* ActiveFocalData;
-  vtkPoints* ActiveFocalPoint;
+  vtkActor             *Actor;
+  vtkPolyDataMapper    *Mapper;
+  vtkGlyph3D           *Glypher;
+  vtkActor             *ActiveActor;
+  vtkPolyDataMapper    *ActiveMapper;
+  vtkGlyph3D           *ActiveGlypher;
+  vtkPolyData          *CursorShape;
+  vtkPolyData          *ActiveCursorShape;
+  vtkPolyData          *FocalData;
+  vtkPoints            *FocalPoint;
+  vtkPolyData          *ActiveFocalData;
+  vtkPoints            *ActiveFocalPoint;
 
-  vtkPolyData* SelectedNodesData;
-  vtkPoints* SelectedNodesPoints;
-  vtkActor* SelectedNodesActor;
-  vtkPolyDataMapper* SelectedNodesMapper;
-  vtkGlyph3D* SelectedNodesGlypher;
-  vtkPolyData* SelectedNodesCursorShape;
+  vtkPolyData          *SelectedNodesData;
+  vtkPoints            *SelectedNodesPoints;
+  vtkActor             *SelectedNodesActor;
+  vtkPolyDataMapper    *SelectedNodesMapper;
+  vtkGlyph3D           *SelectedNodesGlypher;
+  vtkPolyData          *SelectedNodesCursorShape;
   void CreateSelectedNodesRepresentation();
 
-  vtkPolyData* Lines;
-  vtkPolyDataMapper* LinesMapper;
-  vtkActor* LinesActor;
+  vtkPolyData          *Lines;
+  vtkPolyDataMapper    *LinesMapper;
+  vtkActor             *LinesActor;
 
   // Support picking
   double LastPickPosition[3];
@@ -201,22 +200,23 @@ protected:
 
   // Properties used to control the appearance of selected objects and
   // the manipulator in general.
-  vtkProperty* Property;
-  vtkProperty* ActiveProperty;
-  vtkProperty* LinesProperty;
-  void CreateDefaultProperties();
+  vtkProperty   *Property;
+  vtkProperty   *ActiveProperty;
+  vtkProperty   *LinesProperty;
+  void           CreateDefaultProperties();
+
 
   // Distance between where the mouse event happens and where the
   // widget is focused - maintain this distance during interaction.
   double InteractionOffset[2];
 
-  vtkTypeBool AlwaysOnTop;
+  int AlwaysOnTop;
 
-  void BuildLines() override;
+  virtual void BuildLines();
 
 private:
-  vtkOrientedGlyphContourRepresentation(const vtkOrientedGlyphContourRepresentation&) = delete;
-  void operator=(const vtkOrientedGlyphContourRepresentation&) = delete;
+  vtkOrientedGlyphContourRepresentation(const vtkOrientedGlyphContourRepresentation&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkOrientedGlyphContourRepresentation&) VTK_DELETE_FUNCTION;
 };
 
 #endif

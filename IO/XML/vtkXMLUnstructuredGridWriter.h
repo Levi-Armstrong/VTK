@@ -25,7 +25,7 @@
  *
  * @sa
  * vtkXMLPUnstructuredGridWriter
- */
+*/
 
 #ifndef vtkXMLUnstructuredGridWriter_h
 #define vtkXMLUnstructuredGridWriter_h
@@ -33,13 +33,14 @@
 #include "vtkIOXMLModule.h" // For export macro
 #include "vtkXMLUnstructuredDataWriter.h"
 
+
 class vtkUnstructuredGridBase;
 
 class VTKIOXML_EXPORT vtkXMLUnstructuredGridWriter : public vtkXMLUnstructuredDataWriter
 {
 public:
-  vtkTypeMacro(vtkXMLUnstructuredGridWriter, vtkXMLUnstructuredDataWriter);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkXMLUnstructuredGridWriter,vtkXMLUnstructuredDataWriter);
+  void PrintSelf(ostream& os, vtkIndent indent);
   static vtkXMLUnstructuredGridWriter* New();
 
   /**
@@ -50,37 +51,37 @@ public:
   /**
    * Get the default file extension for files written by this writer.
    */
-  const char* GetDefaultFileExtension() override;
+  const char* GetDefaultFileExtension();
 
 protected:
   vtkXMLUnstructuredGridWriter();
-  ~vtkXMLUnstructuredGridWriter() override;
+  ~vtkXMLUnstructuredGridWriter();
 
   // see algorithm for more info
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  virtual int FillInputPortInformation(int port, vtkInformation* info);
 
-  void AllocatePositionArrays() override;
-  void DeletePositionArrays() override;
+  virtual void AllocatePositionArrays();
+  virtual void DeletePositionArrays();
 
-  const char* GetDataSetName() override;
+  const char* GetDataSetName();
 
-  void WriteInlinePieceAttributes() override;
-  void WriteInlinePiece(vtkIndent indent) override;
+  void WriteInlinePieceAttributes();
+  void WriteInlinePiece(vtkIndent indent);
 
-  void WriteAppendedPieceAttributes(int index) override;
-  void WriteAppendedPiece(int index, vtkIndent indent) override;
-  void WriteAppendedPieceData(int index) override;
+  void WriteAppendedPieceAttributes(int index);
+  void WriteAppendedPiece(int index, vtkIndent indent);
+  void WriteAppendedPieceData(int index);
 
-  vtkIdType GetNumberOfInputCells() override;
+  virtual vtkIdType GetNumberOfInputCells();
   void CalculateSuperclassFraction(float* fractions);
 
   // Positions of attributes for each piece.
   vtkTypeInt64* NumberOfCellsPositions;
-  OffsetsManagerArray* CellsOM; // one per piece
+  OffsetsManagerArray *CellsOM; //one per piece
 
 private:
-  vtkXMLUnstructuredGridWriter(const vtkXMLUnstructuredGridWriter&) = delete;
-  void operator=(const vtkXMLUnstructuredGridWriter&) = delete;
+  vtkXMLUnstructuredGridWriter(const vtkXMLUnstructuredGridWriter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkXMLUnstructuredGridWriter&) VTK_DELETE_FUNCTION;
 };
 
 #endif

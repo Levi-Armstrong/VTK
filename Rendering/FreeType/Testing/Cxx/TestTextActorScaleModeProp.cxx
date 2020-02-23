@@ -22,7 +22,7 @@
 #include "vtkTextProperty.h"
 
 //----------------------------------------------------------------------------
-int TestTextActorScaleModeProp(int, char*[])
+int TestTextActorScaleModeProp(int, char *[])
 {
   // Test PROP scale mode actor with a text property that's instantiated first
   // See VTK bug 15412
@@ -36,11 +36,11 @@ int TestTextActorScaleModeProp(int, char*[])
 
   vtkNew<vtkTextActor> textActor;
   textActor->GetPositionCoordinate()->SetCoordinateSystemToDisplay();
-  textActor->GetPositionCoordinate()->SetReferenceCoordinate(nullptr);
+  textActor->GetPositionCoordinate()->SetReferenceCoordinate(NULL);
   textActor->GetPosition2Coordinate()->SetCoordinateSystemToDisplay();
-  textActor->GetPosition2Coordinate()->SetReferenceCoordinate(nullptr);
+  textActor->GetPosition2Coordinate()->SetReferenceCoordinate(NULL);
   textActor->SetTextScaleModeToProp();
-  textActor->SetTextProperty(textProperty);
+  textActor->SetTextProperty(textProperty.GetPointer());
   textActor->SetInput("15412");
 
   textActor->GetPositionCoordinate()->SetValue(20.0, 20.0, 0.0);
@@ -48,14 +48,14 @@ int TestTextActorScaleModeProp(int, char*[])
 
   vtkNew<vtkRenderer> ren;
   vtkNew<vtkRenderWindow> win;
-  win->AddRenderer(ren);
+  win->AddRenderer(ren.GetPointer());
   vtkNew<vtkRenderWindowInteractor> iren;
-  iren->SetRenderWindow(win);
+  iren->SetRenderWindow(win.GetPointer());
 
   ren->SetBackground(0.1, 0.1, 0.1);
   win->SetSize(300, 300);
 
-  ren->AddActor2D(textActor);
+  ren->AddActor2D(textActor.GetPointer());
 
   win->SetMultiSamples(0);
   win->GetInteractor()->Initialize();

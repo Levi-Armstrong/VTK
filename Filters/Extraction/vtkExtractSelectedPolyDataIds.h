@@ -20,7 +20,7 @@
  * vtkPolyData.
  * @sa
  * vtkSelection
- */
+*/
 
 #ifndef vtkExtractSelectedPolyDataIds_h
 #define vtkExtractSelectedPolyDataIds_h
@@ -33,22 +33,24 @@ class vtkSelection;
 class VTKFILTERSEXTRACTION_EXPORT vtkExtractSelectedPolyDataIds : public vtkPolyDataAlgorithm
 {
 public:
-  vtkTypeMacro(vtkExtractSelectedPolyDataIds, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
-  static vtkExtractSelectedPolyDataIds* New();
+  vtkTypeMacro(vtkExtractSelectedPolyDataIds,vtkPolyDataAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
+  static vtkExtractSelectedPolyDataIds *New();
 
 protected:
   vtkExtractSelectedPolyDataIds();
-  ~vtkExtractSelectedPolyDataIds() override;
+  ~vtkExtractSelectedPolyDataIds();
 
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  int FillInputPortInformation(int port, vtkInformation* info);
 
   // Usual data generation method
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *,
+                  vtkInformationVector **,
+                  vtkInformationVector *);
 
 private:
-  vtkExtractSelectedPolyDataIds(const vtkExtractSelectedPolyDataIds&) = delete;
-  void operator=(const vtkExtractSelectedPolyDataIds&) = delete;
+  vtkExtractSelectedPolyDataIds(const vtkExtractSelectedPolyDataIds&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkExtractSelectedPolyDataIds&) VTK_DELETE_FUNCTION;
 };
 
 #endif

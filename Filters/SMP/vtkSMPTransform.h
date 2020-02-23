@@ -22,7 +22,7 @@
  * framework.
  * @sa
  * vtkTransform
- */
+*/
 
 #ifndef vtkSMPTransform_h
 #define vtkSMPTransform_h
@@ -30,48 +30,49 @@
 #include "vtkFiltersSMPModule.h" // For export macro
 #include "vtkTransform.h"
 
-#if !defined(VTK_LEGACY_REMOVE)
 class VTKFILTERSSMP_EXPORT vtkSMPTransform : public vtkTransform
 {
-public:
-  static vtkSMPTransform* New();
+ public:
+  static vtkSMPTransform *New();
   vtkTypeMacro(vtkSMPTransform, vtkTransform);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Apply the transformation to a series of points, and append the
    * results to outPts.
    */
-  void TransformPoints(vtkPoints* inPts, vtkPoints* outPts) override;
+  void TransformPoints(vtkPoints *inPts, vtkPoints *outPts);
 
   /**
    * Apply the transformation to a series of normals, and append the
    * results to outNms.
    */
-  void TransformNormals(vtkDataArray* inNms, vtkDataArray* outNms) override;
+  virtual void TransformNormals(vtkDataArray *inNms, vtkDataArray *outNms);
 
   /**
    * Apply the transformation to a series of vectors, and append the
    * results to outVrs.
    */
-  void TransformVectors(vtkDataArray* inVrs, vtkDataArray* outVrs) override;
+  virtual void TransformVectors(vtkDataArray *inVrs, vtkDataArray *outVrs);
 
   /**
    * Apply the transformation to a combination of points, normals
    * and vectors.
    */
-  void TransformPointsNormalsVectors(vtkPoints* inPts, vtkPoints* outPts, vtkDataArray* inNms,
-    vtkDataArray* outNms, vtkDataArray* inVrs, vtkDataArray* outVrs, int nOptionalVectors = 0,
-    vtkDataArray** inVrsArr = nullptr, vtkDataArray** outVrsArr = nullptr) override;
+  void TransformPointsNormalsVectors(vtkPoints *inPts,
+                                     vtkPoints *outPts,
+                                     vtkDataArray *inNms,
+                                     vtkDataArray *outNms,
+                                     vtkDataArray *inVrs,
+                                     vtkDataArray *outVrs);
 
 protected:
-  vtkSMPTransform();
-  ~vtkSMPTransform() override {}
+  vtkSMPTransform () {}
+  ~vtkSMPTransform () {}
 
 private:
-  vtkSMPTransform(const vtkSMPTransform&) = delete;
-  void operator=(const vtkSMPTransform&) = delete;
+  vtkSMPTransform (const vtkSMPTransform&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkSMPTransform&) VTK_DELETE_FUNCTION;
 };
 
-#endif // VTK_LEGACY_REMOVE
 #endif

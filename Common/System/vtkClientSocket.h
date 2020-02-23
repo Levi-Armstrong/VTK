@@ -15,7 +15,7 @@
 /**
  * @class   vtkClientSocket
  * @brief   Encapsulates a client socket.
- */
+*/
 
 #ifndef vtkClientSocket_h
 #define vtkClientSocket_h
@@ -29,7 +29,7 @@ class VTKCOMMONSYSTEM_EXPORT vtkClientSocket : public vtkSocket
 public:
   static vtkClientSocket* New();
   vtkTypeMacro(vtkClientSocket, vtkSocket);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Connects to host. Returns 0 on success, -1 on error.
@@ -48,15 +48,17 @@ public:
 
 protected:
   vtkClientSocket();
-  ~vtkClientSocket() override;
+  ~vtkClientSocket() VTK_OVERRIDE;
 
   vtkSetMacro(ConnectingSide, bool);
   bool ConnectingSide;
   friend class vtkServerSocket;
-
 private:
-  vtkClientSocket(const vtkClientSocket&) = delete;
-  void operator=(const vtkClientSocket&) = delete;
+  vtkClientSocket(const vtkClientSocket&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkClientSocket&) VTK_DELETE_FUNCTION;
+
 };
 
+
 #endif
+

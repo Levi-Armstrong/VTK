@@ -26,7 +26,7 @@
  *
  * @sa
  * vtkTreeBFSIterator vtkTreeDFSIterator
- */
+*/
 
 #ifndef vtkTreeIterator_h
 #define vtkTreeIterator_h
@@ -40,7 +40,7 @@ class VTKCOMMONDATAMODEL_EXPORT vtkTreeIterator : public vtkObject
 {
 public:
   vtkTypeMacro(vtkTreeIterator, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   //@{
   /**
@@ -77,7 +77,7 @@ public:
 
 protected:
   vtkTreeIterator();
-  ~vtkTreeIterator() override;
+  ~vtkTreeIterator() VTK_OVERRIDE;
 
   virtual void Initialize() = 0;
   virtual vtkIdType NextInternal() = 0;
@@ -87,8 +87,8 @@ protected:
   vtkIdType NextId;
 
 private:
-  vtkTreeIterator(const vtkTreeIterator&) = delete;
-  void operator=(const vtkTreeIterator&) = delete;
+  vtkTreeIterator(const vtkTreeIterator &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTreeIterator &) VTK_DELETE_FUNCTION;
 };
 
 #endif

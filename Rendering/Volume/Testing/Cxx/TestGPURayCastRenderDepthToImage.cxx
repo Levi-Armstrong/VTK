@@ -26,6 +26,7 @@
 #include "vtkImageMapper3D.h"
 #include "vtkLookupTable.h"
 #include "vtkNew.h"
+#include "vtkOpenGLGPUVolumeRayCastMapper.h"
 #include "vtkPiecewiseFunction.h"
 #include "vtkRegressionTestImage.h"
 #include "vtkRenderWindow.h"
@@ -35,19 +36,19 @@
 #include "vtkVolume16Reader.h"
 #include "vtkVolumeProperty.h"
 
-int TestGPURayCastRenderDepthToImage(int argc, char* argv[])
+int TestGPURayCastRenderDepthToImage(int argc, char *argv[])
 {
   cout << "CTEST_FULL_OUTPUT (Avoid ctest truncation of output)" << endl;
 
   char* fname = vtkTestUtilities::ExpandDataFileName(argc, argv, "Data/headsq/quarter");
 
   vtkNew<vtkVolume16Reader> reader;
-  reader->SetDataDimensions(64, 64);
+  reader->SetDataDimensions( 64, 64);
   reader->SetDataByteOrderToLittleEndian();
-  reader->SetImageRange(1, 93);
-  reader->SetDataSpacing(3.2, 3.2, 1.5);
-  reader->SetFilePrefix(fname);
-  reader->SetDataMask(0x7fff);
+  reader->SetImageRange( 1, 93);
+  reader->SetDataSpacing( 3.2, 3.2, 1.5);
+  reader->SetFilePrefix( fname );
+  reader->SetDataMask( 0x7fff);
 
   delete[] fname;
 
@@ -56,7 +57,7 @@ int TestGPURayCastRenderDepthToImage(int argc, char* argv[])
   volumeMapper->RenderToImageOn();
 
   vtkNew<vtkColorTransferFunction> colorFunction;
-  colorFunction->AddRGBPoint(900.0, 198 / 255.0, 134 / 255.0, 66 / 255.0);
+  colorFunction->AddRGBPoint(900.0, 198/255.0, 134/255.0, 66/255.0);
 
   vtkNew<vtkPiecewiseFunction> scalarOpacity;
   scalarOpacity->AddPoint(0, 0.0);
@@ -70,13 +71,13 @@ int TestGPURayCastRenderDepthToImage(int argc, char* argv[])
   vtkNew<vtkVolumeProperty> volumeProperty;
   volumeProperty->ShadeOn();
   volumeProperty->SetInterpolationType(VTK_LINEAR_INTERPOLATION);
-  volumeProperty->SetColor(colorFunction);
-  volumeProperty->SetScalarOpacity(scalarOpacity);
+  volumeProperty->SetColor(colorFunction.GetPointer());
+  volumeProperty->SetScalarOpacity(scalarOpacity.GetPointer());
 
   // Setup volume actor
   vtkNew<vtkVolume> volume;
-  volume->SetMapper(volumeMapper);
-  volume->SetProperty(volumeProperty);
+  volume->SetMapper(volumeMapper.GetPointer());
+  volume->SetProperty(volumeProperty.GetPointer());
 
   // Testing prefers image comparison with small images
   vtkNew<vtkRenderWindow> renWin;
@@ -84,12 +85,12 @@ int TestGPURayCastRenderDepthToImage(int argc, char* argv[])
   renWin->SetSize(401, 399);
 
   vtkNew<vtkRenderer> ren;
-  renWin->AddRenderer(ren);
+  renWin->AddRenderer(ren.GetPointer());
 
   vtkNew<vtkRenderWindowInteractor> iren;
-  iren->SetRenderWindow(renWin);
+  iren->SetRenderWindow(renWin.GetPointer());
 
-  ren->AddVolume(volume);
+  ren->AddVolume(volume.GetPointer());
   ren->GetActiveCamera()->Azimuth(90);
   ren->GetActiveCamera()->Roll(90);
   ren->GetActiveCamera()->Azimuth(-90);
@@ -100,10 +101,10 @@ int TestGPURayCastRenderDepthToImage(int argc, char* argv[])
   vtkNew<vtkImageData> im;
 
   // Get color texture as image
-  volumeMapper->GetColorImage(im);
+  volumeMapper->GetColorImage(im.GetPointer());
 
   // Get depth texture as image
-  volumeMapper->GetDepthImage(im);
+  volumeMapper->GetDepthImage(im.GetPointer());
 
   // Create a grayscale lookup table
   vtkNew<vtkLookupTable> lut;
@@ -115,14 +116,14 @@ int TestGPURayCastRenderDepthToImage(int argc, char* argv[])
 
   // Map the pixel values of the image with the lookup table
   vtkNew<vtkImageMapToColors> imageMap;
-  imageMap->SetInputData(im);
-  imageMap->SetLookupTable(lut);
+  imageMap->SetInputData(im.GetPointer());
+  imageMap->SetLookupTable(lut.GetPointer());
 
   // Render the image in the scene
   vtkNew<vtkImageActor> ia;
   ia->GetMapper()->SetInputConnection(imageMap->GetOutputPort());
-  ren->AddActor(ia);
-  ren->RemoveVolume(volume);
+  ren->AddActor(ia.GetPointer());
+  ren->RemoveVolume(volume.GetPointer());
   ren->GetActiveCamera()->SetPosition(0, 0, -1);
   ren->GetActiveCamera()->SetFocalPoint(0, 0, 1);
   ren->GetActiveCamera()->SetViewUp(0, 1, 0);
@@ -131,8 +132,8 @@ int TestGPURayCastRenderDepthToImage(int argc, char* argv[])
 
   iren->Initialize();
 
-  int retVal = vtkRegressionTestImage(renWin);
-  if (retVal == vtkRegressionTester::DO_INTERACTOR)
+  int retVal = vtkRegressionTestImage( renWin.GetPointer() );
+  if( retVal == vtkRegressionTester::DO_INTERACTOR)
   {
     iren->Start();
   }

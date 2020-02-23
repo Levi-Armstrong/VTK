@@ -41,7 +41,7 @@
  *
  * @warning
  * No SelectionList is created by default. It should be assigned.
- */
+*/
 
 #ifndef vtkSelectionNode_h
 #define vtkSelectionNode_h
@@ -61,8 +61,8 @@ class vtkTable;
 class VTKCOMMONDATAMODEL_EXPORT vtkSelectionNode : public vtkObject
 {
 public:
-  vtkTypeMacro(vtkSelectionNode, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkSelectionNode,vtkObject);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
   static vtkSelectionNode* New();
 
   /**
@@ -108,36 +108,39 @@ public:
   /**
    * Return the MTime taking into account changes to the properties
    */
-  vtkMTimeType GetMTime() override;
+  vtkMTimeType GetMTime() VTK_OVERRIDE;
 
   // vtkSelectionNode specific keys follow:
   /**
    * Get the (primary) property that describes the content of a selection
-   * node's data. This key takes on values from the SelectionContent enum.
+   * node's data. Other auxiliary description properties follow.
+   * GLOBALIDS means that the selection list contains values from the
+   * vtkDataSetAttribute array of the same name.
+   * PEDIGREEIDS means that the selection list contains values from the
+   * vtkDataSetAttribute array of the same name.
+   * VALUES means the the selection list contains values from an
+   * arbitrary attribute array (ignores any globalids attribute)
+   * INDICES means that the selection list contains indexes into the
+   * cell or point arrays.
+   * FRUSTUM means the set of points and cells inside a frustum
+   * LOCATIONS means the set of points and cells near a set of positions
+   * THRESHOLDS means the points and cells with values within a set of ranges
    * GetContentType() returns -1 if the content type is not set.
-   *
-   * \sa vtkSelectionNode::SelectionContent
    */
   static vtkInformationIntegerKey* CONTENT_TYPE();
 
-  /**
-   * Indicate the means by which data is selected.
-   * In some cases this implies the type of data selected.
-   */
   enum SelectionContent
   {
-    SELECTIONS,  //!< Deprecated.
-    GLOBALIDS,   //!< Select entities called out by their globally-unique IDs.
-    PEDIGREEIDS, //!< Select entities that have some identifiable pedigree.
-    VALUES,      //!< Select entities that take on specific array values.
-    INDICES,     //!< Select entities by their offsets into the dataset.
-    FRUSTUM,     //!< Select entities contained within a viewing frustum.
-    LOCATIONS,   //!< Select entities near the supplied world coordinates.
-    THRESHOLDS,  //!< Select entities whose array values fall within a given threshold.
-    BLOCKS,      //!< Select blocks within a composite dataset by their flat index.
-    QUERY,       //!< Select entities with a text query.
-    USER,        //!< Select entities with user-supplied, application-specific logic.
-    NUM_CONTENT_TYPES
+    SELECTIONS,  // Deprecated.
+    GLOBALIDS,
+    PEDIGREEIDS,
+    VALUES,
+    INDICES,
+    FRUSTUM,
+    LOCATIONS,
+    THRESHOLDS,
+    BLOCKS,       // used to select blocks within a composite dataset.
+    QUERY
   };
 
   //@{
@@ -150,11 +153,6 @@ public:
   //@}
 
   /**
-   * Get the content type as a string.
-   */
-  static const char* GetContentTypeAsString(int type);
-
-  /**
    * Controls whether cell, point, or field data determine what is inside and out.
    * The default is CELL.
    * Vertex and edge types are also available for graph classes.
@@ -162,16 +160,14 @@ public:
    */
   static vtkInformationIntegerKey* FIELD_TYPE();
 
-  /// Indicate the types of entities to which the selection-data applies.
   enum SelectionField
   {
-    CELL,   //!< The selection data provided is cell-data.
-    POINT,  //!< The selection data provided is point-data.
-    FIELD,  //!< The selection data provided is field-data.
-    VERTEX, //!< The selection data provided is graph vertex-data.
-    EDGE,   //!< The selection data provided is graph edge-data.
-    ROW,    //!< The selection data provided is table row-data.
-    NUM_FIELD_TYPES
+    CELL,
+    POINT,
+    FIELD,
+    VERTEX,
+    EDGE,
+    ROW
   };
 
   //@{
@@ -182,11 +178,6 @@ public:
   virtual void SetFieldType(int type);
   virtual int GetFieldType();
   //@}
-
-  /**
-   * Get the field type as a string.
-   */
-  static const char* GetFieldTypeAsString(int type);
 
   //@{
   /**
@@ -211,22 +202,10 @@ public:
   static vtkInformationDoubleKey* EPSILON();
 
   /**
-   * If present, closest zbuffer value of this selection
-   */
-  static vtkInformationDoubleKey* ZBUFFER_VALUE();
-
-  /**
    * This flag tells the extraction filter, when FIELD_TYPE==POINT, that
    * it should also extract the cells that contain any of the extracted points.
    */
   static vtkInformationIntegerKey* CONTAINING_CELLS();
-
-  /**
-   * When specified, this indicates how many layers of *connected* elements
-   * in addition to those chosen explicitly are being selected. Currently,
-   * this is only supported for cells and points.
-   */
-  static vtkInformationIntegerKey* CONNECTED_LAYERS();
 
   /**
    * When ContentType==THRESHOLDS  or ContentType==VALUES
@@ -311,25 +290,20 @@ public:
   /**
    * Compares Properties of self and other to ensure that they are exactly same.
    */
-  bool EqualProperties(vtkSelectionNode* other, bool fullcompare = true);
+  bool EqualProperties(vtkSelectionNode* other, bool fullcompare=true);
 
 protected:
   vtkSelectionNode();
-  ~vtkSelectionNode() override;
+  ~vtkSelectionNode() VTK_OVERRIDE;
 
   vtkInformation* Properties;
   vtkDataSetAttributes* SelectionData;
   char* QueryString;
 
-  // Map from content type to content type name
-  static const char ContentTypeNames[SelectionContent::NUM_CONTENT_TYPES][14];
-
-  // Map from integer field type to field type name
-  static const char FieldTypeNames[SelectionField::NUM_FIELD_TYPES][8];
-
 private:
-  vtkSelectionNode(const vtkSelectionNode&) = delete;
-  void operator=(const vtkSelectionNode&) = delete;
+  vtkSelectionNode(const vtkSelectionNode&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkSelectionNode&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif

@@ -44,7 +44,7 @@
  *
  * @sa
  * vtkInteractorObserver vtkInteractorStyle vtk3DWidget
- */
+*/
 
 #ifndef vtkInteractorStyleTerrain_h
 #define vtkInteractorStyleTerrain_h
@@ -62,56 +62,56 @@ public:
   /**
    * Instantiate the object.
    */
-  static vtkInteractorStyleTerrain* New();
+  static vtkInteractorStyleTerrain *New();
 
-  vtkTypeMacro(vtkInteractorStyleTerrain, vtkInteractorStyle);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkInteractorStyleTerrain,vtkInteractorStyle);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
    * Event bindings controlling the effects of pressing mouse buttons
    * or moving the mouse.
    */
-  void OnMouseMove() override;
-  void OnLeftButtonDown() override;
-  void OnLeftButtonUp() override;
-  void OnMiddleButtonDown() override;
-  void OnMiddleButtonUp() override;
-  void OnRightButtonDown() override;
-  void OnRightButtonUp() override;
+  virtual void OnMouseMove();
+  virtual void OnLeftButtonDown();
+  virtual void OnLeftButtonUp();
+  virtual void OnMiddleButtonDown();
+  virtual void OnMiddleButtonUp();
+  virtual void OnRightButtonDown();
+  virtual void OnRightButtonUp();
   //@}
 
   /**
    * Override the "fly-to" (f keypress) for images.
    */
-  void OnChar() override;
+  virtual void OnChar();
 
   // These methods for the different interactions in different modes
   // are overridden in subclasses to perform the correct motion.
-  void Rotate() override;
-  void Pan() override;
-  void Dolly() override;
+  virtual void Rotate();
+  virtual void Pan();
+  virtual void Dolly();
 
   //@{
   /**
    * Turn on/off the latitude/longitude lines.
    */
-  vtkSetMacro(LatLongLines, vtkTypeBool);
-  vtkGetMacro(LatLongLines, vtkTypeBool);
-  vtkBooleanMacro(LatLongLines, vtkTypeBool);
+  vtkSetMacro(LatLongLines,int);
+  vtkGetMacro(LatLongLines,int);
+  vtkBooleanMacro(LatLongLines,int);
   //@}
 
 protected:
   vtkInteractorStyleTerrain();
-  ~vtkInteractorStyleTerrain() override;
+  ~vtkInteractorStyleTerrain();
 
   // Internal helper attributes
-  vtkTypeBool LatLongLines;
+  int LatLongLines;
 
-  vtkSphereSource* LatLongSphere;
-  vtkPolyDataMapper* LatLongMapper;
-  vtkActor* LatLongActor;
-  vtkExtractEdges* LatLongExtractEdges;
+  vtkSphereSource *LatLongSphere;
+  vtkPolyDataMapper *LatLongMapper;
+  vtkActor *LatLongActor;
+  vtkExtractEdges *LatLongExtractEdges;
 
   void SelectRepresentation();
   void CreateLatLong();
@@ -119,8 +119,10 @@ protected:
   double MotionFactor;
 
 private:
-  vtkInteractorStyleTerrain(const vtkInteractorStyleTerrain&) = delete;
-  void operator=(const vtkInteractorStyleTerrain&) = delete;
+  vtkInteractorStyleTerrain(const vtkInteractorStyleTerrain&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkInteractorStyleTerrain&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif
+

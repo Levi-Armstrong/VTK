@@ -1,76 +1,90 @@
-project(VTKExamples)
+cmake_minimum_required(VERSION 2.8.8 FATAL_ERROR)
+if(POLICY CMP0020)
+  cmake_policy(SET CMP0020 NEW)
+endif()
+if(POLICY CMP0025)
+  cmake_policy(SET CMP0025 NEW) # CMake 3.0
+endif()
+if(POLICY CMP0053)
+  cmake_policy(SET CMP0053 NEW) # CMake 3.1
+endif()
 
-if (VTK_BINARY_DIR)
-  function (add_example dir)
-    add_test(
-      NAME    "VTKExample-${dir}"
-      COMMAND "${CMAKE_CTEST_COMMAND}"
-              --build-generator
-                "${CMAKE_GENERATOR}"
-              --build-and-test
-                "${CMAKE_CURRENT_SOURCE_DIR}/${dir}"
-                "${CMAKE_CURRENT_BINARY_DIR}/${dir}"
-              --build-options
-                "-DBUILD_TESTING=ON"
-                "-DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}"
-                "-DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS}"
-                "-DVTK_DIR=${vtk_cmake_build_dir}"
-                "-DQt5_DIR=${Qt5_DIR}"
-              --test-command
-                "${CMAKE_CTEST_COMMAND}"
-                  -C $<CONFIGURATION>)
-    if (WIN32)
-      set(example_path "$ENV{PATH};${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
-      string(REPLACE ";" "\;" example_path "${example_path}")
-      set_property(TEST "VTKExample-${dir}" APPEND
-        PROPERTY
-          ENVIRONMENT "PATH=${example_path}")
-    endif ()
-  endfunction ()
-else ()
-  macro (add_example dir)
-    add_subdirectory("${dir}")
-  endmacro ()
-endif ()
+PROJECT(VTKExamples)
+include_regular_expression("^.*$")
+
+if(NOT VTK_BINARY_DIR)
+  find_package(VTK REQUIRED)
+else()
+  set(VTK_DIR ${VTK_BINARY_DIR})
+  find_package(VTK REQUIRED)
+endif()
 
 if (ANDROID)
-  #add_example(Android)
+  add_subdirectory(Android)
 elseif (APPLE_IOS)
-  #add_example(iOS)
-else ()
-  add_example(AMR/Cxx)
-  add_example(Annotation/Cxx/LabeledMesh)
-  #add_example(Array/Cxx)
-  #add_example(Build/vtkLocal)
-  add_example(Build/vtkMy)
-  add_example(Charts/Cxx)
-  add_example(DataManipulation/Cxx)
-  add_example(GUI/Qt/FourPaneViewer)
-  add_example(GUI/Qt/GraphicsView)
-  add_example(GUI/Qt/ImageViewer)
-  add_example(GUI/Qt/SimpleView)
-  add_example(GUI/Qt/TouchGestureViewer)
-  add_example(IO/Cxx)
-  add_example(ImageProcessing/Cxx)
-  add_example(Infovis/Cxx)
-  add_example(Medical/Cxx)
-  add_example(Modelling/Cxx)
-  add_example(MultiBlock/Cxx)
-  add_example(ParallelProcessing/Generic/Cxx)
-  #add_example(Rendering/Cxx)
-  #add_example(Tutorial/Step1/Cxx)
-  #add_example(Tutorial/Step2/Cxx)
-  #add_example(Tutorial/Step3/Cxx)
-  #add_example(Tutorial/Step4/Cxx)
-  #add_example(Tutorial/Step5/Cxx)
-  #add_example(Tutorial/Step6/Cxx)
-  #add_example(VisualizationAlgorithms/Cxx)
-  #add_example(VolumeRendering/Cxx)
-  #add_example(Widgets/Cxx)
+  add_subdirectory(iOS)
+else()
+  if (NOT vtkRenderingCore_LOADED)
+    message(STATUS "vtkRenderingCore not found. No examples will be built")
+  else()
+    if (vtkTestingCore_LOADED)
+      add_subdirectory(AMR/Cxx)
+      add_subdirectory(ImageProcessing/Cxx)
+      add_subdirectory(IO/Cxx)
+      add_subdirectory(Medical/Cxx)
+      add_subdirectory(Modelling/Cxx)
+      add_subdirectory(MultiBlock/Cxx)
+      add_subdirectory(VisualizationAlgorithms/Cxx)
+      add_subdirectory(Widgets/Cxx)
+    endif()
+    add_subdirectory(Annotation/Cxx/LabeledMesh)
+    add_subdirectory(DataManipulation/Cxx)
+    add_subdirectory(Rendering/Cxx)
+    add_subdirectory(Tutorial/Step1/Cxx)
+    add_subdirectory(Tutorial/Step2/Cxx)
+    add_subdirectory(Tutorial/Step3/Cxx)
+    add_subdirectory(Tutorial/Step4/Cxx)
+    add_subdirectory(Tutorial/Step5/Cxx)
+    add_subdirectory(Tutorial/Step6/Cxx)
+    add_subdirectory(VolumeRendering/Cxx)
 
-  if (WIN32)
-    #add_example(GUI/Win32/SimpleCxx)
-    #add_example(GUI/Win32/SampleMFC)
-    #add_example(GUI/Win32/vtkMFC)
-  endif ()
-endif ()
+    if(VTK_RENDERING_BACKEND STREQUAL "OpenGL" AND vtkTestingCore_LOADED)
+      add_subdirectory(LIC/Cxx)
+    endif()
+ if(vtkParallelMPI_LOADED AND vtkRenderingParallel_LOADED)
+  add_subdirectory(ParallelProcessing/Generic)
+ endif()
+    # This may have been already built as part of the VTK build.
+    # If so we cannot create the target "vtkLocalExample" because
+    # an imported target of the same name already exists in the
+    # VTK build.
+    if(NOT vtkLocalExample_LOADED)
+      add_subdirectory(Build/vtkLocal)
+    endif()
+    if(TARGET vtkGUISupportQt AND vtkTestingCore_LOADED)
+      add_subdirectory(GUI/Qt)
+    endif()
+  endif()
+
+
+   add_subdirectory(Build/vtkMy)
+
+   add_subdirectory(Infovis/Cxx)
+#  add_subdirectory(GUI/Motif)
+#
+#  IF(VTK_USE_INFOVIS)
+#    IF(VTK_USE_CHARTS)
+#      add_subdirectory(Charts/Cxx)
+#    ENDIF()
+#    IF(VTK_USE_N_WAY_ARRAYS)
+#      add_subdirectory(Array/Cxx)
+#    ENDIF()
+#  ENDIF()
+#   IF(WIN32)
+#    add_subdirectory(GUI/Win32/SimpleCxx)
+#     IF(VTK_USE_MFC)
+#      add_subdirectory(GUI/Win32/SampleMFC)
+#      add_subdirectory(GUI/Win32/vtkMFC)
+#    ENDIF()
+#  ENDIF()
+endif()

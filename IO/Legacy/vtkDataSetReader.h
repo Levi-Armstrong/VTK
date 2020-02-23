@@ -29,13 +29,13 @@
  * @sa
  * vtkDataReader vtkPolyDataReader vtkRectilinearGridReader
  * vtkStructuredPointsReader vtkStructuredGridReader vtkUnstructuredGridReader
- */
+*/
 
 #ifndef vtkDataSetReader_h
 #define vtkDataSetReader_h
 
-#include "vtkDataReader.h"
 #include "vtkIOLegacyModule.h" // For export macro
+#include "vtkDataReader.h"
 
 class vtkDataSet;
 class vtkPolyData;
@@ -47,31 +47,31 @@ class vtkUnstructuredGrid;
 class VTKIOLEGACY_EXPORT vtkDataSetReader : public vtkDataReader
 {
 public:
-  static vtkDataSetReader* New();
-  vtkTypeMacro(vtkDataSetReader, vtkDataReader);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkDataSetReader *New();
+  vtkTypeMacro(vtkDataSetReader,vtkDataReader);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
    * Get the output of this filter
    */
-  vtkDataSet* GetOutput();
-  vtkDataSet* GetOutput(int idx);
+  vtkDataSet *GetOutput();
+  vtkDataSet *GetOutput(int idx);
   //@}
 
   //@{
   /**
    * Get the output as various concrete types. This method is typically used
    * when you know exactly what type of data is being read.  Otherwise, use
-   * the general GetOutput() method. If the wrong type is used nullptr is
+   * the general GetOutput() method. If the wrong type is used NULL is
    * returned.  (You must also set the filename of the object prior to
    * getting the output.)
    */
-  vtkPolyData* GetPolyDataOutput();
-  vtkStructuredPoints* GetStructuredPointsOutput();
-  vtkStructuredGrid* GetStructuredGridOutput();
-  vtkUnstructuredGrid* GetUnstructuredGridOutput();
-  vtkRectilinearGrid* GetRectilinearGridOutput();
+  vtkPolyData *GetPolyDataOutput();
+  vtkStructuredPoints *GetStructuredPointsOutput();
+  vtkStructuredGrid *GetStructuredGridOutput();
+  vtkUnstructuredGrid *GetUnstructuredGridOutput();
+  vtkRectilinearGrid *GetRectilinearGridOutput();
   //@}
 
   /**
@@ -80,27 +80,23 @@ public:
    */
   virtual int ReadOutputType();
 
-  /**
-   * Read metadata from file.
-   */
-  int ReadMetaDataSimple(const std::string& fname, vtkInformation* metadata) override;
-
-  /**
-   * Actual reading happens here
-   */
-  int ReadMeshSimple(const std::string& fname, vtkDataObject* output) override;
-
 protected:
   vtkDataSetReader();
-  ~vtkDataSetReader() override;
+  ~vtkDataSetReader();
 
-  vtkDataObject* CreateOutput(vtkDataObject* currentOutput) override;
-
-  int FillOutputPortInformation(int, vtkInformation*) override;
+  virtual int ProcessRequest(vtkInformation *, vtkInformationVector **,
+                             vtkInformationVector *);
+  virtual int RequestData(vtkInformation *, vtkInformationVector **,
+                          vtkInformationVector *);
+  virtual int RequestDataObject(vtkInformation *, vtkInformationVector **,
+                                vtkInformationVector *);
+  virtual int FillOutputPortInformation(int, vtkInformation *);
+  virtual int RequestInformation(vtkInformation *, vtkInformationVector **,
+                                 vtkInformationVector *);
 
 private:
-  vtkDataSetReader(const vtkDataSetReader&) = delete;
-  void operator=(const vtkDataSetReader&) = delete;
+  vtkDataSetReader(const vtkDataSetReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkDataSetReader&) VTK_DELETE_FUNCTION;
 };
 
 #endif

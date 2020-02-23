@@ -13,18 +13,18 @@
 
 =========================================================================*/
 
-#include "vtkContext2D.h"
-#include "vtkContextItem.h"
-#include "vtkContextScene.h"
-#include "vtkContextView.h"
-#include "vtkFreeTypeTools.h"
-#include "vtkNew.h"
-#include "vtkObjectFactory.h"
-#include "vtkOpenGLContextDevice2D.h"
+#include "vtkRenderer.h"
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
-#include "vtkRenderer.h"
+#include "vtkContext2D.h"
+#include "vtkContextItem.h"
+#include "vtkContextView.h"
+#include "vtkContextScene.h"
+#include "vtkFreeTypeTools.h"
 #include "vtkTextProperty.h"
+#include "vtkObjectFactory.h"
+#include "vtkOpenGLContextDevice2D.h"
+#include "vtkNew.h"
 
 #include "vtkRegressionTestImage.h"
 
@@ -32,25 +32,25 @@
 class SystemFontRenderTest : public vtkContextItem
 {
 public:
-  static SystemFontRenderTest* New();
+  static SystemFontRenderTest *New();
   vtkTypeMacro(SystemFontRenderTest, vtkContextItem);
   // Paint event for the chart, called whenever the chart needs to be drawn
-  bool Paint(vtkContext2D* painter) override;
+  virtual bool Paint(vtkContext2D *painter);
 };
 
 //----------------------------------------------------------------------------
-int TestSystemFontRendering(int, char*[])
+int TestSystemFontRendering( int, char * [] )
 {
   // Set up a 2D context view, context test object and add it to the scene
   vtkNew<vtkContextView> view;
   view->GetRenderer()->SetBackground(1.0, 1.0, 1.0);
   view->GetRenderWindow()->SetSize(580, 360);
   vtkNew<SystemFontRenderTest> test;
-  view->GetScene()->AddItem(test);
+  view->GetScene()->AddItem(test.GetPointer());
 
   // Force the use of the freetype based rendering strategy
   vtkOpenGLContextDevice2D::SafeDownCast(view->GetContext()->GetDevice())
-    ->SetStringRendererToFreeType();
+      ->SetStringRendererToFreeType();
 
   // Use the FontConfig font lookup
   vtkFreeTypeTools::GetInstance()->ForceCompiledFontsOff();
@@ -63,7 +63,7 @@ int TestSystemFontRendering(int, char*[])
 
 // Make our new derived class to draw a diagram
 vtkStandardNewMacro(SystemFontRenderTest);
-bool SystemFontRenderTest::Paint(vtkContext2D* painter)
+bool SystemFontRenderTest::Paint(vtkContext2D *painter)
 {
   painter->GetTextProp()->SetColor(0.0, 0.0, 0.0);
   painter->GetTextProp()->SetFontSize(24);
@@ -72,7 +72,8 @@ bool SystemFontRenderTest::Paint(vtkContext2D* painter)
 
   painter->GetTextProp()->SetFontFamilyToArial();
 
-  const char* testString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ\xce\xb1\xce\xb2\xce\xb3\xce\xb4";
+  const char *testString =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZ\xce\xb1\xce\xb2\xce\xb3\xce\xb4";
 
   y -= 30;
   painter->GetTextProp()->SetBold(false);

@@ -21,7 +21,7 @@
  *
  * @par Thanks:
  * Dr. Jean M. Favre who developed and contributed this class
- */
+*/
 
 #ifndef vtkPDBReader_h
 #define vtkPDBReader_h
@@ -29,23 +29,24 @@
 #include "vtkIOGeometryModule.h" // For export macro
 #include "vtkMoleculeReaderBase.h"
 
+
 class VTKIOGEOMETRY_EXPORT vtkPDBReader : public vtkMoleculeReaderBase
 {
 public:
-  vtkTypeMacro(vtkPDBReader, vtkMoleculeReaderBase);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkPDBReader,vtkMoleculeReaderBase);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
-  static vtkPDBReader* New();
+  static vtkPDBReader *New();
 
 protected:
   vtkPDBReader();
-  ~vtkPDBReader() override;
+  ~vtkPDBReader();
 
-  void ReadSpecificMolecule(FILE* fp) override;
+  void ReadSpecificMolecule(FILE* fp);
 
 private:
-  vtkPDBReader(const vtkPDBReader&) = delete;
-  void operator=(const vtkPDBReader&) = delete;
+  vtkPDBReader(const vtkPDBReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPDBReader&) VTK_DELETE_FUNCTION;
 };
 
 #endif

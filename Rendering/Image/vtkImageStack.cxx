@@ -14,12 +14,12 @@
 =========================================================================*/
 
 #include "vtkImageStack.h"
+#include "vtkImageSliceCollection.h"
+#include "vtkImageProperty.h"
+#include "vtkImageMapper3D.h"
+#include "vtkMatrix4x4.h"
 #include "vtkAssemblyPath.h"
 #include "vtkAssemblyPaths.h"
-#include "vtkImageMapper3D.h"
-#include "vtkImageProperty.h"
-#include "vtkImageSliceCollection.h"
-#include "vtkMatrix4x4.h"
 #include "vtkObjectFactory.h"
 
 vtkStandardNewMacro(vtkImageStack);
@@ -28,7 +28,7 @@ vtkStandardNewMacro(vtkImageStack);
 vtkImageStack::vtkImageStack()
 {
   this->Images = vtkImageSliceCollection::New();
-  this->ImageMatrices = nullptr;
+  this->ImageMatrices = NULL;
   this->ActiveLayer = 0;
 }
 
@@ -39,8 +39,8 @@ vtkImageStack::~vtkImageStack()
   {
     vtkCollectionSimpleIterator pit;
     this->Images->InitTraversal(pit);
-    vtkImageSlice* image = nullptr;
-    while ((image = this->Images->GetNextImage(pit)) != nullptr)
+    vtkImageSlice *image = 0;
+    while ( (image = this->Images->GetNextImage(pit)) != 0)
     {
       image->RemoveConsumer(this);
     }
@@ -55,16 +55,16 @@ vtkImageStack::~vtkImageStack()
 }
 
 //----------------------------------------------------------------------------
-vtkImageSlice* vtkImageStack::GetActiveImage()
+vtkImageSlice *vtkImageStack::GetActiveImage()
 {
-  vtkImageSlice* activeImage = nullptr;
+  vtkImageSlice *activeImage = 0;
 
   vtkCollectionSimpleIterator pit;
   this->Images->InitTraversal(pit);
-  vtkImageSlice* image = nullptr;
-  while ((image = this->Images->GetNextImage(pit)) != nullptr)
+  vtkImageSlice *image = 0;
+  while ( (image = this->Images->GetNextImage(pit)) != 0)
   {
-    vtkImageProperty* p = image->GetProperty();
+    vtkImageProperty *p = image->GetProperty();
     if (p->GetLayerNumber() == this->ActiveLayer)
     {
       activeImage = image;
@@ -75,9 +75,10 @@ vtkImageSlice* vtkImageStack::GetActiveImage()
 }
 
 //----------------------------------------------------------------------------
-void vtkImageStack::AddImage(vtkImageSlice* prop)
+void vtkImageStack::AddImage(vtkImageSlice *prop)
 {
-  if (!this->Images->IsItemPresent(prop) && !vtkImageStack::SafeDownCast(prop))
+  if (!this->Images->IsItemPresent(prop) &&
+      !vtkImageStack::SafeDownCast(prop))
   {
     this->Images->AddItem(prop);
     prop->AddConsumer(this);
@@ -86,7 +87,7 @@ void vtkImageStack::AddImage(vtkImageSlice* prop)
 }
 
 //----------------------------------------------------------------------------
-void vtkImageStack::RemoveImage(vtkImageSlice* prop)
+void vtkImageStack::RemoveImage(vtkImageSlice *prop)
 {
   if (this->Images->IsItemPresent(prop))
   {
@@ -97,35 +98,35 @@ void vtkImageStack::RemoveImage(vtkImageSlice* prop)
 }
 
 //----------------------------------------------------------------------------
-int vtkImageStack::HasImage(vtkImageSlice* prop)
+int vtkImageStack::HasImage(vtkImageSlice *prop)
 {
   return this->Images->IsItemPresent(prop);
 }
 
 //----------------------------------------------------------------------------
-void vtkImageStack::GetImages(vtkPropCollection* vc)
+void vtkImageStack::GetImages(vtkPropCollection *vc)
 {
   vtkCollectionSimpleIterator pit;
   this->Images->InitTraversal(pit);
-  vtkImageSlice* image = nullptr;
-  while ((image = this->Images->GetNextImage(pit)) != nullptr)
+  vtkImageSlice *image = 0;
+  while ( (image = this->Images->GetNextImage(pit)) != 0)
   {
     image->GetImages(vc);
   }
 }
 
 //----------------------------------------------------------------------------
-void vtkImageStack::ShallowCopy(vtkProp* prop)
+void vtkImageStack::ShallowCopy(vtkProp *prop)
 {
-  vtkImageStack* v = vtkImageStack::SafeDownCast(prop);
+  vtkImageStack *v = vtkImageStack::SafeDownCast(prop);
 
-  if (v != nullptr)
+  if (v != NULL)
   {
     this->Images->RemoveAllItems();
     vtkCollectionSimpleIterator pit;
     v->Images->InitTraversal(pit);
-    vtkImageSlice* image = nullptr;
-    while ((image = v->Images->GetNextImage(pit)) != nullptr)
+    vtkImageSlice *image = 0;
+    while ( (image = v->Images->GetNextImage(pit)) != 0)
     {
       this->Images->AddItem(image);
     }
@@ -137,23 +138,23 @@ void vtkImageStack::ShallowCopy(vtkProp* prop)
 }
 
 //----------------------------------------------------------------------------
-void vtkImageStack::SetProperty(vtkImageProperty*)
+void vtkImageStack::SetProperty(vtkImageProperty *)
 {
   // do nothing
 }
 
 //----------------------------------------------------------------------------
-vtkImageProperty* vtkImageStack::GetProperty()
+vtkImageProperty *vtkImageStack::GetProperty()
 {
   // Get the property with the active layer number
-  vtkImageSlice* image = this->GetActiveImage();
+  vtkImageSlice *image = this->GetActiveImage();
   if (image)
   {
     return image->GetProperty();
   }
 
-  // Return a dummy property, can't return nullptr.
-  if (this->Property == nullptr)
+  // Return a dummy property, can't return NULL.
+  if (this->Property == 0)
   {
     this->Property = vtkImageProperty::New();
     this->Property->Register(this);
@@ -163,26 +164,26 @@ vtkImageProperty* vtkImageStack::GetProperty()
 }
 
 //----------------------------------------------------------------------------
-void vtkImageStack::SetMapper(vtkImageMapper3D*)
+void vtkImageStack::SetMapper(vtkImageMapper3D *)
 {
   // do nothing
 }
 
 //----------------------------------------------------------------------------
-vtkImageMapper3D* vtkImageStack::GetMapper()
+vtkImageMapper3D *vtkImageStack::GetMapper()
 {
   // Get the mapper with the active layer number
-  vtkImageSlice* image = this->GetActiveImage();
+  vtkImageSlice *image = this->GetActiveImage();
   if (image)
   {
     return image->GetMapper();
   }
 
-  return nullptr;
+  return NULL;
 }
 
 //----------------------------------------------------------------------------
-double* vtkImageStack::GetBounds()
+double *vtkImageStack::GetBounds()
 {
   this->UpdatePaths();
 
@@ -203,10 +204,10 @@ double* vtkImageStack::GetBounds()
 
   vtkCollectionSimpleIterator pit;
   this->Images->InitTraversal(pit);
-  vtkImageSlice* image = nullptr;
-  while ((image = this->Images->GetNextImage(pit)) != nullptr)
+  vtkImageSlice *image = 0;
+  while ( (image = this->Images->GetNextImage(pit)) != 0)
   {
-    const double* b = image->GetBounds();
+    double *b = image->GetBounds();
     if (b)
     {
       nobounds = false;
@@ -221,12 +222,12 @@ double* vtkImageStack::GetBounds()
 
   if (!this->IsIdentity)
   {
-    this->PokeMatrices(nullptr);
+    this->PokeMatrices(NULL);
   }
 
   if (nobounds)
   {
-    return nullptr;
+    return 0;
   }
 
   this->Bounds[0] = bounds[0];
@@ -241,12 +242,12 @@ double* vtkImageStack::GetBounds()
 
 //----------------------------------------------------------------------------
 // Does this prop have some translucent polygonal geometry?
-vtkTypeBool vtkImageStack::HasTranslucentPolygonalGeometry()
+int vtkImageStack::HasTranslucentPolygonalGeometry()
 {
   vtkCollectionSimpleIterator pit;
   this->Images->InitTraversal(pit);
-  vtkImageSlice* image = nullptr;
-  while ((image = this->Images->GetNextImage(pit)) != nullptr)
+  vtkImageSlice *image = 0;
+  while ( (image = this->Images->GetNextImage(pit)) != 0)
   {
     if (image->HasTranslucentPolygonalGeometry())
     {
@@ -259,9 +260,9 @@ vtkTypeBool vtkImageStack::HasTranslucentPolygonalGeometry()
 
 //----------------------------------------------------------------------------
 // Assembly-like behavior
-void vtkImageStack::PokeMatrices(vtkMatrix4x4* matrix)
+void vtkImageStack::PokeMatrices(vtkMatrix4x4 *matrix)
 {
-  if (this->ImageMatrices == nullptr)
+  if (this->ImageMatrices == NULL)
   {
     this->ImageMatrices = vtkCollection::New();
   }
@@ -270,10 +271,10 @@ void vtkImageStack::PokeMatrices(vtkMatrix4x4* matrix)
   {
     vtkCollectionSimpleIterator pit;
     this->Images->InitTraversal(pit);
-    vtkImageSlice* image = nullptr;
-    while ((image = this->Images->GetNextImage(pit)) != nullptr)
+    vtkImageSlice *image = 0;
+    while ( (image = this->Images->GetNextImage(pit)) != 0)
     {
-      vtkMatrix4x4* propMatrix = vtkMatrix4x4::New();
+      vtkMatrix4x4 *propMatrix = vtkMatrix4x4::New();
       propMatrix->Multiply4x4(image->GetMatrix(), matrix, propMatrix);
       image->PokeMatrix(propMatrix);
       this->ImageMatrices->AddItem(propMatrix);
@@ -284,10 +285,10 @@ void vtkImageStack::PokeMatrices(vtkMatrix4x4* matrix)
   {
     vtkCollectionSimpleIterator pit;
     this->Images->InitTraversal(pit);
-    vtkImageSlice* image = nullptr;
-    while ((image = this->Images->GetNextImage(pit)) != nullptr)
+    vtkImageSlice *image = 0;
+    while ( (image = this->Images->GetNextImage(pit)) != 0)
     {
-      image->PokeMatrix(nullptr);
+      image->PokeMatrix(NULL);
     }
     this->ImageMatrices->RemoveAllItems();
   }
@@ -308,21 +309,21 @@ int vtkImageStack::RenderOpaqueGeometry(vtkViewport* viewport)
   }
 
   int rendered = 0;
-  vtkImageSlice* image = nullptr;
+  vtkImageSlice *image = 0;
   vtkCollectionSimpleIterator pit;
   vtkIdType n = 0;
   this->Images->InitTraversal(pit);
-  while ((image = this->Images->GetNextImage(pit)) != nullptr)
+  while ( (image = this->Images->GetNextImage(pit)) != 0)
   {
     n += (image->GetVisibility() != 0);
   }
-  double renderTime = this->AllocatedRenderTime / (n + (n == 0));
+  double renderTime = this->AllocatedRenderTime/(n + (n == 0));
 
   if (n == 1)
   {
     // no multi-pass if only one image
     this->Images->InitTraversal(pit);
-    while ((image = this->Images->GetNextImage(pit)) != nullptr)
+    while ( (image = this->Images->GetNextImage(pit)) != 0)
     {
       if (image->GetVisibility())
       {
@@ -336,7 +337,7 @@ int vtkImageStack::RenderOpaqueGeometry(vtkViewport* viewport)
     for (int pass = 0; pass < 3; pass++)
     {
       this->Images->InitTraversal(pit);
-      while ((image = this->Images->GetNextImage(pit)) != nullptr)
+      while ( (image = this->Images->GetNextImage(pit)) != 0)
       {
         if (image->GetVisibility())
         {
@@ -351,7 +352,7 @@ int vtkImageStack::RenderOpaqueGeometry(vtkViewport* viewport)
 
   if (!this->IsIdentity)
   {
-    this->PokeMatrices(nullptr);
+    this->PokeMatrices(NULL);
   }
 
   return rendered;
@@ -368,21 +369,21 @@ int vtkImageStack::RenderTranslucentPolygonalGeometry(vtkViewport* viewport)
   }
 
   int rendered = 0;
-  vtkImageSlice* image = nullptr;
+  vtkImageSlice *image = 0;
   vtkCollectionSimpleIterator pit;
   vtkIdType n = 0;
   this->Images->InitTraversal(pit);
-  while ((image = this->Images->GetNextImage(pit)) != nullptr)
+  while ( (image = this->Images->GetNextImage(pit)) != 0)
   {
     n += (image->GetVisibility() != 0);
   }
-  double renderTime = this->AllocatedRenderTime / (n + (n == 0));
+  double renderTime = this->AllocatedRenderTime/(n + (n == 0));
 
   if (n == 1)
   {
     // no multi-pass if only one image
     this->Images->InitTraversal(pit);
-    while ((image = this->Images->GetNextImage(pit)) != nullptr)
+    while ( (image = this->Images->GetNextImage(pit)) != 0)
     {
       if (image->GetVisibility())
       {
@@ -396,7 +397,7 @@ int vtkImageStack::RenderTranslucentPolygonalGeometry(vtkViewport* viewport)
     for (int pass = 1; pass < 3; pass++)
     {
       this->Images->InitTraversal(pit);
-      while ((image = this->Images->GetNextImage(pit)) != nullptr)
+      while ( (image = this->Images->GetNextImage(pit)) != 0)
       {
         if (image->GetVisibility())
         {
@@ -411,7 +412,7 @@ int vtkImageStack::RenderTranslucentPolygonalGeometry(vtkViewport* viewport)
 
   if (!this->IsIdentity)
   {
-    this->PokeMatrices(nullptr);
+    this->PokeMatrices(NULL);
   }
 
   return rendered;
@@ -428,21 +429,21 @@ int vtkImageStack::RenderOverlay(vtkViewport* viewport)
   }
 
   int rendered = 0;
-  vtkImageSlice* image = nullptr;
+  vtkImageSlice *image = 0;
   vtkCollectionSimpleIterator pit;
   vtkIdType n = 0;
   this->Images->InitTraversal(pit);
-  while ((image = this->Images->GetNextImage(pit)) != nullptr)
+  while ( (image = this->Images->GetNextImage(pit)) != 0)
   {
     n += (image->GetVisibility() != 0);
   }
-  double renderTime = this->AllocatedRenderTime / (n + (n == 0));
+  double renderTime = this->AllocatedRenderTime/(n + (n == 0));
 
   if (n == 1)
   {
     // no multi-pass if only one image
     this->Images->InitTraversal(pit);
-    while ((image = this->Images->GetNextImage(pit)) != nullptr)
+    while ( (image = this->Images->GetNextImage(pit)) != 0)
     {
       if (image->GetVisibility())
       {
@@ -456,7 +457,7 @@ int vtkImageStack::RenderOverlay(vtkViewport* viewport)
     for (int pass = 1; pass < 3; pass++)
     {
       this->Images->InitTraversal(pit);
-      while ((image = this->Images->GetNextImage(pit)) != nullptr)
+      while ( (image = this->Images->GetNextImage(pit)) != 0)
       {
         if (image->GetVisibility())
         {
@@ -471,19 +472,19 @@ int vtkImageStack::RenderOverlay(vtkViewport* viewport)
 
   if (!this->IsIdentity)
   {
-    this->PokeMatrices(nullptr);
+    this->PokeMatrices(NULL);
   }
 
   return rendered;
 }
 
 //----------------------------------------------------------------------------
-void vtkImageStack::ReleaseGraphicsResources(vtkWindow* win)
+void vtkImageStack::ReleaseGraphicsResources(vtkWindow *win)
 {
   vtkCollectionSimpleIterator pit;
   this->Images->InitTraversal(pit);
-  vtkImageSlice* image = nullptr;
-  while ((image = this->Images->GetNextImage(pit)) != nullptr)
+  vtkImageSlice *image = 0;
+  while ( (image = this->Images->GetNextImage(pit)) != 0)
   {
     image->ReleaseGraphicsResources(win);
   }
@@ -498,8 +499,8 @@ vtkMTimeType vtkImageStack::GetMTime()
   // Get the max mtime of all the images
   vtkCollectionSimpleIterator pit;
   this->Images->InitTraversal(pit);
-  vtkImageSlice* image = nullptr;
-  while ((image = this->Images->GetNextImage(pit)) != nullptr)
+  vtkImageSlice *image = 0;
+  while ( (image = this->Images->GetNextImage(pit)) != 0)
   {
     t = image->GetMTime();
     mTime = (t < mTime ? mTime : t);
@@ -518,8 +519,8 @@ vtkMTimeType vtkImageStack::GetRedrawMTime()
   // Get the max mtime of all the images
   vtkCollectionSimpleIterator pit;
   this->Images->InitTraversal(pit);
-  vtkImageSlice* image = nullptr;
-  while ((image = this->Images->GetNextImage(pit)) != nullptr)
+  vtkImageSlice *image = 0;
+  while ( (image = this->Images->GetNextImage(pit)) != 0)
   {
     t = image->GetRedrawMTime();
     mTime = (t < mTime ? mTime : t);
@@ -536,13 +537,13 @@ void vtkImageStack::InitPathTraversal()
 }
 
 //----------------------------------------------------------------------------
-vtkAssemblyPath* vtkImageStack::GetNextPath()
+vtkAssemblyPath *vtkImageStack::GetNextPath()
 {
   if (this->Paths)
   {
     return this->Paths->GetNextItem();
   }
-  return nullptr;
+  return NULL;
 }
 
 //----------------------------------------------------------------------------
@@ -556,7 +557,7 @@ int vtkImageStack::GetNumberOfPaths()
 void vtkImageStack::UpdatePaths()
 {
   if (this->GetMTime() > this->PathTime ||
-    (this->Paths && this->Paths->GetMTime() > this->PathTime))
+      (this->Paths && this->Paths->GetMTime() > this->PathTime))
   {
     if (this->Paths)
     {
@@ -565,13 +566,13 @@ void vtkImageStack::UpdatePaths()
 
     // Create the list to hold all the paths
     this->Paths = vtkAssemblyPaths::New();
-    vtkAssemblyPath* path = vtkAssemblyPath::New();
+    vtkAssemblyPath *path = vtkAssemblyPath::New();
 
     // Add ourselves to the path to start things off
     path->AddNode(this, this->GetMatrix());
 
     // Add the active image
-    vtkImageSlice* image = this->GetActiveImage();
+    vtkImageSlice *image = this->GetActiveImage();
 
     if (image)
     {
@@ -586,10 +587,10 @@ void vtkImageStack::UpdatePaths()
 }
 
 //----------------------------------------------------------------------------
-void vtkImageStack::BuildPaths(vtkAssemblyPaths* paths, vtkAssemblyPath* path)
+void vtkImageStack::BuildPaths(vtkAssemblyPaths *paths, vtkAssemblyPath *path)
 {
   // the path consists only of the active image
-  vtkImageSlice* image = this->GetActiveImage();
+  vtkImageSlice *image = this->GetActiveImage();
 
   if (image)
   {
@@ -602,7 +603,7 @@ void vtkImageStack::BuildPaths(vtkAssemblyPaths* paths, vtkAssemblyPath* path)
 //----------------------------------------------------------------------------
 void vtkImageStack::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 
   os << indent << "Images: " << this->Images << "\n";
   os << indent << "ActiveLayer: " << this->ActiveLayer << "\n";

@@ -58,21 +58,21 @@
  *      lookup table icon for the data value of the element.
  * <li> Otherwise it will be glyphed with the default icon.
  * </ol>
- */
+*/
 
 #ifndef vtkApplyIcons_h
 #define vtkApplyIcons_h
 
-#include "vtkPassInputTypeAlgorithm.h"
-#include "vtkVariant.h"            // For variant arguments.
 #include "vtkViewsInfovisModule.h" // For export macro
+#include "vtkPassInputTypeAlgorithm.h"
+#include "vtkVariant.h" // For variant arguments.
 
 class VTKVIEWSINFOVIS_EXPORT vtkApplyIcons : public vtkPassInputTypeAlgorithm
 {
 public:
-  static vtkApplyIcons* New();
+  static vtkApplyIcons *New();
   vtkTypeMacro(vtkApplyIcons, vtkPassInputTypeAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -80,8 +80,10 @@ public:
    * input array 0 is set and UsePointLookupTable is on.
    */
   void SetIconType(vtkVariant v, int icon);
-  void SetIconType(double v, int icon) { this->SetIconType(vtkVariant(v), icon); }
-  void SetIconType(const char* v, int icon) { this->SetIconType(vtkVariant(v), icon); }
+  void SetIconType(double v, int icon)
+    { this->SetIconType(vtkVariant(v), icon); }
+  void SetIconType(const char* v, int icon)
+    { this->SetIconType(vtkVariant(v), icon); }
   void ClearAllIconTypes();
   //@}
 
@@ -143,10 +145,14 @@ public:
    */
   vtkSetMacro(SelectionMode, int);
   vtkGetMacro(SelectionMode, int);
-  virtual void SetSelectionModeToSelectedIcon() { this->SetSelectionMode(SELECTED_ICON); }
-  virtual void SetSelectionModeToSelectedOffset() { this->SetSelectionMode(SELECTED_OFFSET); }
-  virtual void SetSelectionModeToAnnotationIcon() { this->SetSelectionMode(ANNOTATION_ICON); }
-  virtual void SetSelectionModeToIgnoreSelection() { this->SetSelectionMode(IGNORE_SELECTION); }
+  virtual void SetSelectionModeToSelectedIcon()
+    { this->SetSelectionMode(SELECTED_ICON); }
+  virtual void SetSelectionModeToSelectedOffset()
+    { this->SetSelectionMode(SELECTED_OFFSET); }
+  virtual void SetSelectionModeToAnnotationIcon()
+    { this->SetSelectionMode(ANNOTATION_ICON); }
+  virtual void SetSelectionModeToIgnoreSelection()
+    { this->SetSelectionMode(IGNORE_SELECTION); }
   //@}
 
   //@{
@@ -162,17 +168,18 @@ public:
 
 protected:
   vtkApplyIcons();
-  ~vtkApplyIcons() override;
+  ~vtkApplyIcons();
 
   /**
    * Convert the vtkGraph into vtkPolyData.
    */
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(
+    vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 
   /**
    * Set the input type of the algorithm to vtkGraph.
    */
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  int FillInputPortInformation(int port, vtkInformation* info);
 
   int DefaultIcon;
   int SelectedIcon;
@@ -185,8 +192,8 @@ protected:
   Internals* Implementation;
 
 private:
-  vtkApplyIcons(const vtkApplyIcons&) = delete;
-  void operator=(const vtkApplyIcons&) = delete;
+  vtkApplyIcons(const vtkApplyIcons&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkApplyIcons&) VTK_DELETE_FUNCTION;
 };
 
 #endif

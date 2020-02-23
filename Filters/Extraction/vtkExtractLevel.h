@@ -19,7 +19,7 @@
  *
  * vtkExtractLevel filter extracts the levels between (and including) the user
  * specified min and max levels.
- */
+*/
 
 #ifndef vtkExtractLevel_h
 #define vtkExtractLevel_h
@@ -27,12 +27,14 @@
 #include "vtkFiltersExtractionModule.h" // For export macro
 #include "vtkMultiBlockDataSetAlgorithm.h"
 
-class VTKFILTERSEXTRACTION_EXPORT vtkExtractLevel : public vtkMultiBlockDataSetAlgorithm
+class VTKFILTERSEXTRACTION_EXPORT vtkExtractLevel :
+  public vtkMultiBlockDataSetAlgorithm
 {
 public:
   static vtkExtractLevel* New();
   vtkTypeMacro(vtkExtractLevel, vtkMultiBlockDataSetAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
+
 
   //@{
   /**
@@ -46,22 +48,27 @@ public:
 
 protected:
   vtkExtractLevel();
-  ~vtkExtractLevel() override;
+  ~vtkExtractLevel();
 
-  int RequestUpdateExtent(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int RequestUpdateExtent(vtkInformation*, vtkInformationVector**,vtkInformationVector* );
 
   /// Implementation of the algorithm.
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int RequestData(vtkInformation *,
+                          vtkInformationVector **,
+                          vtkInformationVector *);
 
-  int FillInputPortInformation(int port, vtkInformation* info) override;
-  int FillOutputPortInformation(int port, vtkInformation* info) override;
+  virtual int FillInputPortInformation(int port,vtkInformation *info);
+  virtual int FillOutputPortInformation(int port,vtkInformation *info);
 
 private:
-  vtkExtractLevel(const vtkExtractLevel&) = delete;
-  void operator=(const vtkExtractLevel&) = delete;
+  vtkExtractLevel(const vtkExtractLevel&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkExtractLevel&) VTK_DELETE_FUNCTION;
 
   class vtkSet;
   vtkSet* Levels;
+
 };
 
 #endif
+
+

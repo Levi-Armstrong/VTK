@@ -27,25 +27,25 @@
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
 #include "vtkConvertSelection.h"
-#include "vtkDataArray.h"
-#include "vtkFloatArray.h"
+#include "vtkMath.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
-#include "vtkMath.h"
 #include "vtkObjectFactory.h"
 #include "vtkPointData.h"
+#include "vtkFloatArray.h"
+#include "vtkDataArray.h"
 #include "vtkSelection.h"
 #include "vtkSelectionNode.h"
 #include "vtkSmartPointer.h"
-#include "vtkStreamingDemandDrivenPipeline.h"
 #include "vtkStringArray.h"
+#include "vtkStreamingDemandDrivenPipeline.h"
 
 #include "vtkBoostGraphAdapter.h"
 #include "vtkDirectedGraph.h"
 #include "vtkUndirectedGraph.h"
 
-#include <boost/graph/breadth_first_search.hpp>
 #include <boost/graph/visitors.hpp>
+#include <boost/graph/breadth_first_search.hpp>
 #include <boost/pending/queue.hpp>
 
 #include <utility> // for pair
@@ -60,14 +60,9 @@ template <typename DistanceMap>
 class my_distance_recorder : public default_bfs_visitor
 {
 public:
-  my_distance_recorder() {}
+  my_distance_recorder() { }
   my_distance_recorder(DistanceMap dist, vtkIdType* far)
-    : d(dist)
-    , far_vertex(far)
-    , far_dist(-1)
-  {
-    *far_vertex = -1;
-  }
+    : d(dist), far_vertex(far), far_dist(-1) { *far_vertex = -1; }
 
   template <typename Vertex, typename Graph>
   void examine_vertex(Vertex v, const Graph& vtkNotUsed(g))
@@ -82,7 +77,8 @@ public:
   template <typename Edge, typename Graph>
   void tree_edge(Edge e, const Graph& g)
   {
-    typename graph_traits<Graph>::vertex_descriptor u = source(e, g), v = target(e, g);
+    typename graph_traits<Graph>::vertex_descriptor
+    u = source(e, g), v = target(e, g);
     put(d, v, get(d, u) + 1);
   }
 
@@ -126,7 +122,7 @@ void vtkBoostBreadthFirstSearch::SetOriginSelection(vtkSelection* s)
 void vtkBoostBreadthFirstSearch::SetOriginVertex(vtkIdType index)
 {
   this->OriginVertexIndex = index;
-  this->InputArrayName = nullptr; // Reset any origin set by another method
+  this->InputArrayName = NULL; // Reset any origin set by another method
   this->Modified();
 }
 
@@ -136,27 +132,30 @@ void vtkBoostBreadthFirstSearch::SetOriginVertex(vtkIdType index)
 // but allows the application to simply specify
 // an array name and value, instead of having to
 // know the specific index of the vertex.
-void vtkBoostBreadthFirstSearch::SetOriginVertex(vtkStdString arrayName, vtkVariant value)
+void vtkBoostBreadthFirstSearch::SetOriginVertex(
+  vtkStdString arrayName, vtkVariant value)
 {
   this->SetInputArrayName(arrayName);
   this->OriginValue = value;
   this->Modified();
 }
 
-void vtkBoostBreadthFirstSearch::SetOriginVertexString(char* arrayName, char* value)
+void vtkBoostBreadthFirstSearch::SetOriginVertexString(
+  char* arrayName, char* value)
 {
   this->SetOriginVertex(arrayName, value);
 }
 
-vtkIdType vtkBoostBreadthFirstSearch::GetVertexIndex(vtkAbstractArray* abstract, vtkVariant value)
+vtkIdType vtkBoostBreadthFirstSearch::GetVertexIndex(
+  vtkAbstractArray *abstract,vtkVariant value)
 {
 
   // Okay now what type of array is it
   if (abstract->IsNumeric())
   {
-    vtkDataArray* dataArray = vtkArrayDownCast<vtkDataArray>(abstract);
+    vtkDataArray *dataArray = vtkArrayDownCast<vtkDataArray>(abstract);
     int intValue = value.ToInt();
-    for (int i = 0; i < dataArray->GetNumberOfTuples(); ++i)
+    for(int i=0; i<dataArray->GetNumberOfTuples(); ++i)
     {
       if (intValue == static_cast<int>(dataArray->GetTuple1(i)))
       {
@@ -166,9 +165,9 @@ vtkIdType vtkBoostBreadthFirstSearch::GetVertexIndex(vtkAbstractArray* abstract,
   }
   else
   {
-    vtkStringArray* stringArray = vtkArrayDownCast<vtkStringArray>(abstract);
+    vtkStringArray *stringArray = vtkArrayDownCast<vtkStringArray>(abstract);
     vtkStdString stringValue(value.ToString());
-    for (int i = 0; i < stringArray->GetNumberOfTuples(); ++i)
+    for(int i=0; i<stringArray->GetNumberOfTuples(); ++i)
     {
       if (stringValue == stringArray->GetValue(i))
       {
@@ -182,16 +181,21 @@ vtkIdType vtkBoostBreadthFirstSearch::GetVertexIndex(vtkAbstractArray* abstract,
   return 0;
 }
 
-int vtkBoostBreadthFirstSearch::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+
+int vtkBoostBreadthFirstSearch::RequestData(
+  vtkInformation *vtkNotUsed(request),
+  vtkInformationVector **inputVector,
+  vtkInformationVector *outputVector)
 {
   // get the info objects
-  vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
-  vtkInformation* outInfo = outputVector->GetInformationObject(0);
+  vtkInformation *inInfo = inputVector[0]->GetInformationObject(0);
+  vtkInformation *outInfo = outputVector->GetInformationObject(0);
 
   // get the input and output
-  vtkGraph* input = vtkGraph::SafeDownCast(inInfo->Get(vtkDataObject::DATA_OBJECT()));
-  vtkGraph* output = vtkGraph::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
+  vtkGraph *input = vtkGraph::SafeDownCast(
+    inInfo->Get(vtkDataObject::DATA_OBJECT()));
+  vtkGraph *output = vtkGraph::SafeDownCast(
+    outInfo->Get(vtkDataObject::DATA_OBJECT()));
 
   // Send the data to output.
   output->ShallowCopy(input);
@@ -200,19 +204,20 @@ int vtkBoostBreadthFirstSearch::RequestData(vtkInformation* vtkNotUsed(request),
   // The Boost BFS likes to crash on empty datasets
   if (input->GetNumberOfVertices() == 0)
   {
-    // vtkWarningMacro("Empty input into " << this->GetClassName());
+    //vtkWarningMacro("Empty input into " << this->GetClassName());
     return 1;
   }
 
   if (this->OriginFromSelection)
   {
     vtkSelection* selection = vtkSelection::GetData(inputVector[1], 0);
-    if (selection == nullptr)
+    if (selection == NULL)
     {
       vtkErrorMacro("OriginFromSelection set but selection input undefined.");
       return 0;
     }
-    vtkSmartPointer<vtkIdTypeArray> idArr = vtkSmartPointer<vtkIdTypeArray>::New();
+    vtkSmartPointer<vtkIdTypeArray> idArr =
+      vtkSmartPointer<vtkIdTypeArray>::New();
     vtkConvertSelection::GetSelectedVertices(selection, input, idArr);
     if (idArr->GetNumberOfTuples() == 0)
     {
@@ -230,13 +235,13 @@ int vtkBoostBreadthFirstSearch::RequestData(vtkInformation* vtkNotUsed(request),
       vtkAbstractArray* abstract = input->GetVertexData()->GetAbstractArray(this->InputArrayName);
 
       // Does the array exist at all?
-      if (abstract == nullptr)
+      if (abstract == NULL)
       {
         vtkErrorMacro("Could not find array named " << this->InputArrayName);
         return 0;
       }
 
-      this->OriginVertexIndex = this->GetVertexIndex(abstract, this->OriginValue);
+      this->OriginVertexIndex = this->GetVertexIndex(abstract,this->OriginValue);
     }
   }
 
@@ -253,9 +258,9 @@ int vtkBoostBreadthFirstSearch::RequestData(vtkInformation* vtkNotUsed(request),
   BFSArray->SetNumberOfTuples(output->GetNumberOfVertices());
 
   // Initialize the BFS array to all 0's
-  for (int i = 0; i < BFSArray->GetNumberOfTuples(); ++i)
+  for(int i=0;i< BFSArray->GetNumberOfTuples(); ++i)
   {
-    BFSArray->SetValue(i, VTK_INT_MAX);
+      BFSArray->SetValue(i, VTK_INT_MAX);
   }
 
   vtkIdType maxFromRootVertex = this->OriginVertexIndex;
@@ -274,12 +279,12 @@ int vtkBoostBreadthFirstSearch::RequestData(vtkInformation* vtkNotUsed(request),
   // Is the graph directed or undirected
   if (vtkDirectedGraph::SafeDownCast(output))
   {
-    vtkDirectedGraph* g = vtkDirectedGraph::SafeDownCast(output);
+    vtkDirectedGraph *g = vtkDirectedGraph::SafeDownCast(output);
     breadth_first_search(g, this->OriginVertexIndex, Q, bfsVisitor, color);
   }
   else
   {
-    vtkUndirectedGraph* g = vtkUndirectedGraph::SafeDownCast(output);
+    vtkUndirectedGraph *g = vtkUndirectedGraph::SafeDownCast(output);
     breadth_first_search(g, this->OriginVertexIndex, Q, bfsVisitor, color);
   }
 
@@ -293,7 +298,7 @@ int vtkBoostBreadthFirstSearch::RequestData(vtkInformation* vtkNotUsed(request),
     vtkIdTypeArray* ids = vtkIdTypeArray::New();
 
     // Set the output based on the output selection type
-    if (!strcmp(OutputSelectionType, "MAX_DIST_FROM_ROOT"))
+    if (!strcmp(OutputSelectionType,"MAX_DIST_FROM_ROOT"))
     {
       ids->InsertNextValue(maxFromRootVertex);
     }
@@ -315,24 +320,27 @@ void vtkBoostBreadthFirstSearch::PrintSelf(ostream& os, vtkIndent indent)
 
   os << indent << "OriginVertexIndex: " << this->OriginVertexIndex << endl;
 
-  os << indent << "InputArrayName: " << (this->InputArrayName ? this->InputArrayName : "(none)")
-     << endl;
+  os << indent << "InputArrayName: "
+     << (this->InputArrayName ? this->InputArrayName : "(none)") << endl;
 
-  os << indent << "OutputArrayName: " << (this->OutputArrayName ? this->OutputArrayName : "(none)")
-     << endl;
+  os << indent << "OutputArrayName: "
+     << (this->OutputArrayName ? this->OutputArrayName : "(none)") << endl;
 
   os << indent << "OriginValue: " << this->OriginValue.ToString() << endl;
 
-  os << indent << "OutputSelection: " << (this->OutputSelection ? "on" : "off") << endl;
+  os << indent << "OutputSelection: "
+     << (this->OutputSelection ? "on" : "off") << endl;
 
-  os << indent << "OriginFromSelection: " << (this->OriginFromSelection ? "on" : "off") << endl;
+  os << indent << "OriginFromSelection: "
+     << (this->OriginFromSelection ? "on" : "off") << endl;
 
   os << indent << "OutputSelectionType: "
      << (this->OutputSelectionType ? this->OutputSelectionType : "(none)") << endl;
 }
 
 //----------------------------------------------------------------------------
-int vtkBoostBreadthFirstSearch::FillInputPortInformation(int port, vtkInformation* info)
+int vtkBoostBreadthFirstSearch::FillInputPortInformation(
+  int port, vtkInformation* info)
 {
   // now add our info
   if (port == 0)
@@ -348,7 +356,8 @@ int vtkBoostBreadthFirstSearch::FillInputPortInformation(int port, vtkInformatio
 }
 
 //----------------------------------------------------------------------------
-int vtkBoostBreadthFirstSearch::FillOutputPortInformation(int port, vtkInformation* info)
+int vtkBoostBreadthFirstSearch::FillOutputPortInformation(
+  int port, vtkInformation* info)
 {
   // now add our info
   if (port == 0)
@@ -361,3 +370,4 @@ int vtkBoostBreadthFirstSearch::FillOutputPortInformation(int port, vtkInformati
   }
   return 1;
 }
+

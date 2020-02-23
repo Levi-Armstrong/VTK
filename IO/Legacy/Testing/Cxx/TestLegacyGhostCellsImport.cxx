@@ -26,16 +26,16 @@
 #include "vtkPoints.h"
 #include "vtkPolyDataMapper.h"
 #include "vtkRegressionTestImage.h"
+#include "vtkRenderer.h"
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
-#include "vtkRenderer.h"
 #include "vtkSmartPointer.h"
 #include "vtkTesting.h"
 #include "vtkUnsignedCharArray.h"
 #include "vtkUnstructuredGrid.h"
 #include "vtkUnstructuredGridReader.h"
 
-int TestLegacyGhostCellsImport(int argc, char* argv[])
+int TestLegacyGhostCellsImport(int argc, char *argv[])
 {
   vtkNew<vtkTesting> testing;
   testing->AddArguments(argc, argv);
@@ -54,24 +54,24 @@ int TestLegacyGhostCellsImport(int argc, char* argv[])
   mapper->SetInputConnection(surfaces->GetOutputPort());
 
   vtkNew<vtkActor> actor;
-  actor->SetMapper(mapper);
+  actor->SetMapper(mapper.GetPointer());
 
   vtkNew<vtkRenderer> renderer;
-  renderer->AddActor(actor);
+  renderer->AddActor(actor.GetPointer());
 
   vtkNew<vtkRenderWindow> renwin;
-  renwin->AddRenderer(renderer);
+  renwin->AddRenderer(renderer.GetPointer());
   renwin->SetSize(300, 300);
 
   vtkNew<vtkRenderWindowInteractor> iren;
-  iren->SetRenderWindow(renwin);
+  iren->SetRenderWindow(renwin.GetPointer());
   iren->Initialize();
 
   renwin->Render();
 
-  int retVal = vtkRegressionTestImage(renwin);
+  int retVal = vtkRegressionTestImage( renwin.GetPointer() );
 
-  if (retVal == vtkRegressionTester::DO_INTERACTOR)
+  if ( retVal == vtkRegressionTester::DO_INTERACTOR)
   {
     iren->Start();
   }

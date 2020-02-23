@@ -15,8 +15,8 @@
 #pragma warning(disable:4702)
 #endif
 
-#include <cctype>
-#include <cstdio>
+#include <stdio.h>
+#include <ctype.h>
 #include <string>
 
 #if (METAIO_USE_NAMESPACE)
@@ -90,7 +90,7 @@ CopyInfo(const MetaObject * _object)
 
 /** Clear gaussian information */
 void MetaGaussian::
-Clear()
+Clear(void)
 {
   if(META_DEBUG) METAIO_STREAM::cout << "MetaGaussian: Clear" << METAIO_STREAM::endl;
   MetaObject::Clear();
@@ -101,14 +101,14 @@ Clear()
 
 /** Destroy gaussian information */
 void MetaGaussian::
-M_Destroy()
+M_Destroy(void)
 {
   MetaObject::M_Destroy();
 }
 
 /** Set Read fields */
 void MetaGaussian::
-M_SetupReadFields()
+M_SetupReadFields(void)
 {
   if(META_DEBUG) METAIO_STREAM::cout << "MetaGaussian: M_SetupReadFields" << METAIO_STREAM::endl;
 
@@ -133,7 +133,7 @@ M_SetupReadFields()
 }
 
 void MetaGaussian::
-M_SetupWriteFields()
+M_SetupWriteFields(void)
 {
   strcpy(m_ObjectTypeName,"Gaussian");
   MetaObject::M_SetupWriteFields();
@@ -156,7 +156,7 @@ M_SetupWriteFields()
 
 
 bool MetaGaussian::
-M_Read()
+M_Read(void)
 {
   if(META_DEBUG) METAIO_STREAM::cout << "MetaGaussian: M_Read: Loading Header"
                            << METAIO_STREAM::endl;

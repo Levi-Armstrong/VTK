@@ -29,13 +29,13 @@
  *
  * @sa
  * vtkRenderPass
- */
+*/
 
 #ifndef vtkDefaultPass_h
 #define vtkDefaultPass_h
 
-#include "vtkRenderPass.h"
 #include "vtkRenderingOpenGL2Module.h" // For export macro
+#include "vtkRenderPass.h"
 
 class vtkOpenGLRenderWindow;
 class vtkDefaultPassLayerList; // Pimpl
@@ -43,9 +43,9 @@ class vtkDefaultPassLayerList; // Pimpl
 class VTKRENDERINGOPENGL2_EXPORT vtkDefaultPass : public vtkRenderPass
 {
 public:
-  static vtkDefaultPass* New();
-  vtkTypeMacro(vtkDefaultPass, vtkRenderPass);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkDefaultPass *New();
+  vtkTypeMacro(vtkDefaultPass,vtkRenderPass);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Perform rendering according to a render state \p s.
@@ -53,9 +53,9 @@ public:
    * RenderVolumetricGeometry(), RenderOverlay()
    * \pre s_exists: s!=0
    */
-  void Render(const vtkRenderState* s) override;
+  virtual void Render(const vtkRenderState *s);
 
-protected:
+ protected:
   /**
    * Default constructor.
    */
@@ -64,59 +64,60 @@ protected:
   /**
    * Destructor.
    */
-  ~vtkDefaultPass() override;
+  virtual ~vtkDefaultPass();
 
   /**
    * Opaque pass without key checking.
    * \pre s_exists: s!=0
    */
-  virtual void RenderOpaqueGeometry(const vtkRenderState* s);
+  virtual void RenderOpaqueGeometry(const vtkRenderState *s);
 
   /**
    * Opaque pass with key checking.
    * \pre s_exists: s!=0
    */
-  virtual void RenderFilteredOpaqueGeometry(const vtkRenderState* s);
+  virtual void RenderFilteredOpaqueGeometry(const vtkRenderState *s);
 
   /**
    * Translucent pass without key checking.
    * \pre s_exists: s!=0
    */
-  virtual void RenderTranslucentPolygonalGeometry(const vtkRenderState* s);
+  virtual void RenderTranslucentPolygonalGeometry(const vtkRenderState *s);
 
   /**
    * Translucent pass with key checking.
    * \pre s_exists: s!=0
    */
-  virtual void RenderFilteredTranslucentPolygonalGeometry(const vtkRenderState* s);
+  virtual void RenderFilteredTranslucentPolygonalGeometry(
+    const vtkRenderState *s);
 
   /**
    * Volume pass without key checking.
    * \pre s_exists: s!=0
    */
-  virtual void RenderVolumetricGeometry(const vtkRenderState* s);
+  virtual void RenderVolumetricGeometry(const vtkRenderState *s);
 
   /**
    * Translucent pass with key checking.
    * \pre s_exists: s!=0
    */
-  virtual void RenderFilteredVolumetricGeometry(const vtkRenderState* s);
+  virtual void RenderFilteredVolumetricGeometry(const vtkRenderState *s);
 
   /**
    * Overlay pass without key checking.
    * \pre s_exists: s!=0
    */
-  virtual void RenderOverlay(const vtkRenderState* s);
+  virtual void RenderOverlay(const vtkRenderState *s);
 
   /**
    * Overlay pass with key checking.
    * \pre s_exists: s!=0
    */
-  virtual void RenderFilteredOverlay(const vtkRenderState* s);
+  virtual void RenderFilteredOverlay(const vtkRenderState *s);
 
-private:
-  vtkDefaultPass(const vtkDefaultPass&) = delete;
-  void operator=(const vtkDefaultPass&) = delete;
+ private:
+  vtkDefaultPass(const vtkDefaultPass&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkDefaultPass&) VTK_DELETE_FUNCTION;
 };
 
 #endif

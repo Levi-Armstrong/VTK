@@ -31,7 +31,7 @@
  *
  * @sa
  * vtkGenericCellTessellator vtkGenericSubdivisionErrorMetric
- */
+*/
 
 #ifndef vtkGenericDataSetTessellator_h
 #define vtkGenericDataSetTessellator_h
@@ -49,9 +49,10 @@ public:
   /**
    * Standard VTK methods.
    */
-  static vtkGenericDataSetTessellator* New();
-  vtkTypeMacro(vtkGenericDataSetTessellator, vtkUnstructuredGridAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkGenericDataSetTessellator *New();
+  vtkTypeMacro(vtkGenericDataSetTessellator,
+                       vtkUnstructuredGridAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   //@{
@@ -61,10 +62,11 @@ public:
    * cells).
    * The name of the data array is "OriginalIds". It is true by default.
    */
-  vtkSetMacro(KeepCellIds, vtkTypeBool);
-  vtkGetMacro(KeepCellIds, vtkTypeBool);
-  vtkBooleanMacro(KeepCellIds, vtkTypeBool);
+  vtkSetMacro(KeepCellIds, int);
+  vtkGetMacro(KeepCellIds, int);
+  vtkBooleanMacro(KeepCellIds, int);
   //@}
+
 
   //@{
   /**
@@ -72,9 +74,9 @@ public:
    * on, points with different point attributes (e.g., normals) are merged,
    * which may cause rendering artifacts.
    */
-  vtkSetMacro(Merging, vtkTypeBool);
-  vtkGetMacro(Merging, vtkTypeBool);
-  vtkBooleanMacro(Merging, vtkTypeBool);
+  vtkSetMacro(Merging,int);
+  vtkGetMacro(Merging,int);
+  vtkBooleanMacro(Merging,int);
   //@}
 
   //@{
@@ -82,8 +84,8 @@ public:
    * Set / get a spatial locator for merging points. By
    * default an instance of vtkMergePoints is used.
    */
-  void SetLocator(vtkIncrementalPointLocator* locator);
-  vtkGetObjectMacro(Locator, vtkIncrementalPointLocator);
+  void SetLocator(vtkIncrementalPointLocator *locator);
+  vtkGetObjectMacro(Locator,vtkIncrementalPointLocator);
   //@}
 
   /**
@@ -94,28 +96,28 @@ public:
   /**
    * Return the MTime also considering the locator.
    */
-  vtkMTimeType GetMTime() override;
+  vtkMTimeType GetMTime();
 
 protected:
   vtkGenericDataSetTessellator();
-  ~vtkGenericDataSetTessellator() override;
+  ~vtkGenericDataSetTessellator();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 
-  int FillInputPortInformation(int, vtkInformation*) override;
+  int FillInputPortInformation(int, vtkInformation*);
 
   // See Set/Get KeepCellIds() for explanations.
-  vtkTypeBool KeepCellIds;
+  int KeepCellIds;
 
   // Used internal by vtkGenericAdaptorCell::Tessellate()
-  vtkPointData* InternalPD;
+  vtkPointData *InternalPD;
 
-  vtkTypeBool Merging;
-  vtkIncrementalPointLocator* Locator;
+  int Merging;
+  vtkIncrementalPointLocator *Locator;
 
 private:
-  vtkGenericDataSetTessellator(const vtkGenericDataSetTessellator&) = delete;
-  void operator=(const vtkGenericDataSetTessellator&) = delete;
+  vtkGenericDataSetTessellator(const vtkGenericDataSetTessellator&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkGenericDataSetTessellator&) VTK_DELETE_FUNCTION;
 };
 
 #endif

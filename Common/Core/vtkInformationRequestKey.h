@@ -18,7 +18,7 @@
  *
  * vtkInformationRequestKey is used to represent keys for pointer
  * to pointer values in vtkInformation.h
- */
+*/
 
 #ifndef vtkInformationRequestKey_h
 #define vtkInformationRequestKey_h
@@ -31,11 +31,11 @@
 class VTKCOMMONCORE_EXPORT vtkInformationRequestKey : public vtkInformationKey
 {
 public:
-  vtkTypeMacro(vtkInformationRequestKey, vtkInformationKey);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkInformationRequestKey,vtkInformationKey);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   vtkInformationRequestKey(const char* name, const char* location);
-  ~vtkInformationRequestKey() override;
+  ~vtkInformationRequestKey() VTK_OVERRIDE;
 
   /**
    * This method simply returns a new vtkInformationRequestKey, given a
@@ -53,8 +53,8 @@ public:
    * information object.
    */
   void Set(vtkInformation* info);
-  void Remove(vtkInformation* info) override;
-  int Has(vtkInformation* info) override;
+  void Remove(vtkInformation* info) VTK_OVERRIDE;
+  int Has(vtkInformation* info) VTK_OVERRIDE;
   //@}
 
   /**
@@ -62,16 +62,16 @@ public:
    * object to another.  If there is no entry in the first information
    * object for this key, the value is removed from the second.
    */
-  void ShallowCopy(vtkInformation* from, vtkInformation* to) override;
+  void ShallowCopy(vtkInformation* from, vtkInformation* to) VTK_OVERRIDE;
 
   /**
    * Print the key's value in an information object to a stream.
    */
-  void Print(ostream& os, vtkInformation* info) override;
+  void Print(ostream& os, vtkInformation* info) VTK_OVERRIDE;
 
 private:
-  vtkInformationRequestKey(const vtkInformationRequestKey&) = delete;
-  void operator=(const vtkInformationRequestKey&) = delete;
+  vtkInformationRequestKey(const vtkInformationRequestKey&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkInformationRequestKey&) VTK_DELETE_FUNCTION;
 };
 
 #endif

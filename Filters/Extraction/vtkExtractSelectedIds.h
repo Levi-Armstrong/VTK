@@ -26,13 +26,13 @@
  * position (tuple id or number) within the cell or point array.
  * @sa
  * vtkSelection vtkExtractSelection
- */
+*/
 
 #ifndef vtkExtractSelectedIds_h
 #define vtkExtractSelectedIds_h
 
-#include "vtkExtractSelectionBase.h"
 #include "vtkFiltersExtractionModule.h" // For export macro
+#include "vtkExtractSelectionBase.h"
 
 class vtkSelection;
 class vtkSelectionNode;
@@ -40,26 +40,31 @@ class vtkSelectionNode;
 class VTKFILTERSEXTRACTION_EXPORT vtkExtractSelectedIds : public vtkExtractSelectionBase
 {
 public:
-  static vtkExtractSelectedIds* New();
+  static vtkExtractSelectedIds *New();
   vtkTypeMacro(vtkExtractSelectedIds, vtkExtractSelectionBase);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
 protected:
   vtkExtractSelectedIds();
-  ~vtkExtractSelectedIds() override;
+  ~vtkExtractSelectedIds();
 
   // Overridden to indicate that the input must be a vtkDataSet.
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  virtual int FillInputPortInformation(int port, vtkInformation* info);
 
   // Usual data generation method
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int RequestData(vtkInformation *,
+                          vtkInformationVector **,
+                          vtkInformationVector *);
 
-  int ExtractCells(vtkSelectionNode* sel, vtkDataSet* input, vtkDataSet* output);
-  int ExtractPoints(vtkSelectionNode* sel, vtkDataSet* input, vtkDataSet* output);
+
+  int ExtractCells(vtkSelectionNode *sel, vtkDataSet *input,
+                   vtkDataSet *output);
+  int ExtractPoints(vtkSelectionNode *sel, vtkDataSet *input,
+                    vtkDataSet *output);
 
 private:
-  vtkExtractSelectedIds(const vtkExtractSelectedIds&) = delete;
-  void operator=(const vtkExtractSelectedIds&) = delete;
+  vtkExtractSelectedIds(const vtkExtractSelectedIds&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkExtractSelectedIds&) VTK_DELETE_FUNCTION;
 };
 
 #endif

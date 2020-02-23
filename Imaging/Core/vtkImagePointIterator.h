@@ -26,14 +26,15 @@
  * start position and point count within an image row.
  * @sa
  * vtkImageData vtkImageStencilData vtkImageProgressIterator
- */
+*/
 
 #ifndef vtkImagePointIterator_h
 #define vtkImagePointIterator_h
 
 #include "vtkImagePointDataIterator.h"
 
-class VTKIMAGINGCORE_EXPORT vtkImagePointIterator : public vtkImagePointDataIterator
+class VTKIMAGINGCORE_EXPORT vtkImagePointIterator :
+  public vtkImagePointDataIterator
 {
 public:
   /**
@@ -50,14 +51,20 @@ public:
    * a pointer to the algorithm is provided, then progress events will
    * provided by the algorithm if threadId is zero.
    */
-  vtkImagePointIterator(vtkImageData* image, const int extent[6] = nullptr,
-    vtkImageStencilData* stencil = nullptr, vtkAlgorithm* algorithm = nullptr, int threadId = 0);
+  vtkImagePointIterator(vtkImageData *image,
+                        const int extent[6] = 0,
+                        vtkImageStencilData *stencil=0,
+                        vtkAlgorithm *algorithm=0,
+                        int threadId=0);
 
   /**
    * Initialize an iterator.  See constructor for more details.
    */
-  void Initialize(vtkImageData* image, const int extent[6] = nullptr,
-    vtkImageStencilData* stencil = nullptr, vtkAlgorithm* algorithm = nullptr, int threadId = 0);
+  void Initialize(vtkImageData *image,
+                  const int extent[6] = 0,
+                  vtkImageStencilData *stencil=0,
+                  vtkAlgorithm *algorithm=0,
+                  int threadId=0);
 
   //@{
   /**
@@ -87,7 +94,7 @@ public:
     else
     {
       this->Index[0]++;
-      this->Position[0] = this->Origin[0] + this->Index[0] * this->Spacing[0];
+      this->Position[0] = this->Origin[0] + this->Index[0]*this->Spacing[0];
     }
   }
   //@}
@@ -95,12 +102,18 @@ public:
   /**
    * Test if the iterator has completed iterating over the entire extent.
    */
-  bool IsAtEnd() { return this->vtkImagePointDataIterator::IsAtEnd(); }
+  bool IsAtEnd()
+  {
+    return this->vtkImagePointDataIterator::IsAtEnd();
+  }
 
   /**
    * Get the current position.
    */
-  double* GetPosition() VTK_SIZEHINT(3) { return this->Position; }
+  double *GetPosition()
+  {
+    return this->Position;
+  }
 
   //@{
   /**
@@ -127,15 +140,16 @@ public:
   //@}
 
 protected:
+
   //@{
   /**
    * Helper method to update the position coordinate from the index.
    */
   void UpdatePosition()
   {
-    this->Position[0] = this->Origin[0] + this->Index[0] * this->Spacing[0];
-    this->Position[1] = this->Origin[1] + this->Index[1] * this->Spacing[1];
-    this->Position[2] = this->Origin[2] + this->Index[2] * this->Spacing[2];
+    this->Position[0] = this->Origin[0] + this->Index[0]*this->Spacing[0];
+    this->Position[1] = this->Origin[1] + this->Index[1]*this->Spacing[1];
+    this->Position[2] = this->Origin[2] + this->Index[2]*this->Spacing[2];
   }
   //@}
 

@@ -18,13 +18,8 @@
 
 uniform int PrimitiveIDOffset;
 
-//VTK::CustomUniforms::Dec
-
 // VC position of this fragment
 //VTK::PositionVC::Dec
-
-// Camera prop
-//VTK::Camera::Dec
 
 // optional color passed in from the vertex shader, vertexColor
 //VTK::Color::Dec
@@ -34,9 +29,6 @@ uniform int PrimitiveIDOffset;
 
 // extra lighting parameters
 //VTK::Light::Dec
-
-// Texture maps
-//VTK::TMap::Dec
 
 // Texture coordinates
 //VTK::TCoord::Dec
@@ -80,8 +72,6 @@ void main()
   //VTK::PrimID::Impl
 
   //VTK::Clip::Impl
-
-  //VTK::ValuePass::Impl
 
   //VTK::Color::Impl
 

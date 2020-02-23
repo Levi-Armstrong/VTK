@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import vtk
+from vtk.test import Testing
 from vtk.util.misc import vtkGetDataRoot
 VTK_DATA_ROOT = vtkGetDataRoot()
 
@@ -54,8 +55,6 @@ mapper2.SetInputConnection(edges.GetOutputPort())
 mapper2.SetPiece(PIECE)
 mapper2.SetNumberOfPieces(NUMBER_OF_PIECES)
 mapper2.GetInput().RemoveGhostCells()
-mapper2.SetResolveCoincidentTopologyToPolygonOffset()
-mapper2.SetResolveCoincidentTopologyLineOffsetParameters(0,-7)
 actor1 = vtk.vtkActor()
 actor1.SetMapper(mapper1)
 actor2 = vtk.vtkActor()

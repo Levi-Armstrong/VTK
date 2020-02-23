@@ -20,45 +20,29 @@
  * files. The output of this source object is polygonal data.
  * @sa
  * vtkOBJImporter
- */
+*/
 
 #ifndef vtkOBJReader_h
 #define vtkOBJReader_h
 
-#include "vtkAbstractPolyDataReader.h"
 #include "vtkIOGeometryModule.h" // For export macro
+#include "vtkAbstractPolyDataReader.h"
 
 class VTKIOGEOMETRY_EXPORT vtkOBJReader : public vtkAbstractPolyDataReader
 {
 public:
-  static vtkOBJReader* New();
-  vtkTypeMacro(vtkOBJReader, vtkAbstractPolyDataReader);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
-
-  //@{
-  /**
-   * Get first comment in the file.
-   * Comment may be multiple lines. # and leading spaces are removed.
-   */
-  vtkGetStringMacro(Comment);
-  //@}
+  static vtkOBJReader *New();
+  vtkTypeMacro(vtkOBJReader,vtkAbstractPolyDataReader);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
 protected:
   vtkOBJReader();
-  ~vtkOBJReader() override;
+  ~vtkOBJReader();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-
-  /**
-   * Set comment string. Internal use only.
-   */
-  vtkSetStringMacro(Comment);
-
-  char* Comment;
-
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 private:
-  vtkOBJReader(const vtkOBJReader&) = delete;
-  void operator=(const vtkOBJReader&) = delete;
+  vtkOBJReader(const vtkOBJReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkOBJReader&) VTK_DELETE_FUNCTION;
 };
 
 #endif

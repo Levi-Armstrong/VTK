@@ -23,7 +23,7 @@
  * @sa
  * vtkPointInterpolator vtkInterpolationKernel vtkGeneralizedKernel
  * vtkGaussianKernel vtkLinearKernel vtkShepardKernel
- */
+*/
 
 #ifndef vtkLinearKernel_h
 #define vtkLinearKernel_h
@@ -34,6 +34,7 @@
 class vtkIdList;
 class vtkDoubleArray;
 
+
 class VTKFILTERSPOINTS_EXPORT vtkLinearKernel : public vtkGeneralizedKernel
 {
 public:
@@ -41,9 +42,9 @@ public:
   /**
    * Standard methods for instantiation, obtaining type information, and printing.
    */
-  static vtkLinearKernel* New();
-  vtkTypeMacro(vtkLinearKernel, vtkGeneralizedKernel);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkLinearKernel *New();
+  vtkTypeMacro(vtkLinearKernel,vtkGeneralizedKernel);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   // Re-use any superclass signatures that we don't override.
@@ -60,19 +61,19 @@ public:
    * invoke ComputeWeights() and provide the interpolation basis points pIds
    * directly. The probably weighting prob are numbers 0<=prob<=1 which are
    * multiplied against the interpolation weights before normalization. They
-   * are estimates of local confidence of weights. The prob may be nullptr in
+   * are estimates of local confidence of weights. The prob may be NULL in
    * which all probabilities are considered =1.
    */
-  vtkIdType ComputeWeights(
-    double x[3], vtkIdList* pIds, vtkDoubleArray* prob, vtkDoubleArray* weights) override;
+  virtual vtkIdType ComputeWeights(double x[3], vtkIdList *pIds,
+                                   vtkDoubleArray *prob, vtkDoubleArray *weights);
 
 protected:
   vtkLinearKernel();
-  ~vtkLinearKernel() override;
+  ~vtkLinearKernel();
 
 private:
-  vtkLinearKernel(const vtkLinearKernel&) = delete;
-  void operator=(const vtkLinearKernel&) = delete;
+  vtkLinearKernel(const vtkLinearKernel&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkLinearKernel&) VTK_DELETE_FUNCTION;
 };
 
 #endif

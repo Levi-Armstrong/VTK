@@ -33,128 +33,137 @@
 
 namespace
 {
-// Data type used to store a 3-tuple of doubles.
-template <class T, int N>
-class vtkTuple
-{
-public:
-  T Data[N];
-  vtkTuple()
+  // Data type used to store a 3-tuple of doubles.
+  template <class T, int N> class vtkTuple
   {
-    for (int cc = 0; cc < N; cc++)
+  public:
+    T Data[N];
+    vtkTuple()
     {
-      this->Data[cc] = 0;
+      for (int cc=0; cc < N; cc++)
+      {
+        this->Data[cc] = 0;
+      }
     }
-  }
-  operator T*() { return this->Data; }
-};
+    operator T* ()
+    {
+      return this->Data;
+    }
+  };
 
-typedef vtkTuple<double, 3> vtkSpacingType;
+  typedef vtkTuple<double, 3> vtkSpacingType;
 
-// Helper routine to parse the XML to collect information about the AMR.
-bool vtkReadMetaData(vtkXMLDataElement* ePrimary, std::vector<unsigned int>& blocks_per_level,
-  std::vector<vtkSpacingType>& level_spacing, std::vector<std::vector<vtkAMRBox> >& amr_boxes)
-{
-  unsigned int numElems = ePrimary->GetNumberOfNestedElements();
-  for (unsigned int cc = 0; cc < numElems; cc++)
+  // Helper routine to parse the XML to collect information about the AMR.
+  bool vtkReadMetaData(
+    vtkXMLDataElement* ePrimary,
+    std::vector<unsigned int> &blocks_per_level,
+    std::vector<vtkSpacingType> &level_spacing,
+    std::vector<std::vector<vtkAMRBox> > &amr_boxes)
   {
-    vtkXMLDataElement* blockXML = ePrimary->GetNestedElement(cc);
-    if (!blockXML || !blockXML->GetName() || strcmp(blockXML->GetName(), "Block") != 0)
+    unsigned int numElems = ePrimary->GetNumberOfNestedElements();
+    for (unsigned int cc=0; cc < numElems; cc++)
     {
-      continue;
-    }
-
-    int level = 0;
-    if (!blockXML->GetScalarAttribute("level", level))
-    {
-      vtkGenericWarningMacro("Missing 'level' on 'Block' element in XML. Skipping");
-      continue;
-    }
-    if (level < 0)
-    {
-      // sanity check.
-      continue;
-    }
-    if (blocks_per_level.size() <= static_cast<size_t>(level))
-    {
-      blocks_per_level.resize(level + 1, 0);
-      level_spacing.resize(level + 1);
-      amr_boxes.resize(level + 1);
-    }
-
-    double spacing[3];
-    if (blockXML->GetVectorAttribute("spacing", 3, spacing))
-    {
-      level_spacing[level][0] = spacing[0];
-      level_spacing[level][1] = spacing[1];
-      level_spacing[level][2] = spacing[2];
-    }
-
-    // now read the <DataSet/> elements for boxes and counting the number of
-    // nodes per level.
-    int numDatasets = blockXML->GetNumberOfNestedElements();
-    for (int kk = 0; kk < numDatasets; kk++)
-    {
-      vtkXMLDataElement* datasetXML = blockXML->GetNestedElement(kk);
-      if (!datasetXML || !datasetXML->GetName() || strcmp(datasetXML->GetName(), "DataSet") != 0)
+      vtkXMLDataElement* blockXML = ePrimary->GetNestedElement(cc);
+      if (!blockXML || !blockXML->GetName() ||
+        strcmp(blockXML->GetName(), "Block") != 0)
       {
         continue;
       }
 
-      int index = 0;
-      if (!datasetXML->GetScalarAttribute("index", index))
+      int level = 0;
+      if (!blockXML->GetScalarAttribute("level", level))
       {
-        vtkGenericWarningMacro("Missing 'index' on 'DataSet' element in XML. Skipping");
+        vtkGenericWarningMacro("Missing 'level' on 'Block' element in XML. Skipping");
         continue;
       }
-      if (index >= static_cast<int>(blocks_per_level[level]))
+      if (level < 0)
       {
-        blocks_per_level[level] = index + 1;
-      }
-      if (static_cast<size_t>(index) >= amr_boxes[level].size())
-      {
-        amr_boxes[level].resize(index + 1);
-      }
-      int box[6];
-      // note: amr-box is not provided for non-overlapping AMR.
-      if (!datasetXML->GetVectorAttribute("amr_box", 6, box))
-      {
+        // sanity check.
         continue;
       }
-      // box is xLo, xHi, yLo, yHi, zLo, zHi.
-      amr_boxes[level][index] = vtkAMRBox(box);
+      if (blocks_per_level.size() <= static_cast<size_t>(level))
+      {
+        blocks_per_level.resize(level+1, 0);
+        level_spacing.resize(level+1);
+        amr_boxes.resize(level+1);
+      }
+
+      double spacing[3];
+      if (blockXML->GetVectorAttribute("spacing", 3, spacing))
+      {
+        level_spacing[level][0] = spacing[0];
+        level_spacing[level][1] = spacing[1];
+        level_spacing[level][2] = spacing[2];
+      }
+
+      // now read the <DataSet/> elements for boxes and counting the number of
+      // nodes per level.
+      int numDatasets = blockXML->GetNumberOfNestedElements();
+      for (int kk=0; kk < numDatasets; kk++)
+      {
+        vtkXMLDataElement* datasetXML = blockXML->GetNestedElement(kk);
+        if (!datasetXML || !datasetXML->GetName() ||
+          strcmp(datasetXML->GetName(), "DataSet") != 0)
+        {
+          continue;
+        }
+
+        int index = 0;
+        if (!datasetXML->GetScalarAttribute("index", index))
+        {
+          vtkGenericWarningMacro("Missing 'index' on 'DataSet' element in XML. Skipping");
+          continue;
+        }
+        if (index >= static_cast<int>(blocks_per_level[level]))
+        {
+          blocks_per_level[level] = index+1;
+        }
+        if (static_cast<size_t>(index) >= amr_boxes[level].size())
+        {
+          amr_boxes[level].resize(index + 1);
+        }
+        int box[6];
+        // note: amr-box is not provided for non-overlapping AMR.
+        if (!datasetXML->GetVectorAttribute("amr_box", 6, box))
+        {
+          continue;
+        }
+        // box is xLo, xHi, yLo, yHi, zLo, zHi.
+        amr_boxes[level][index] = vtkAMRBox(box);
+      }
     }
+    return true;
   }
-  return true;
-}
 
-bool vtkReadMetaData(vtkXMLDataElement* ePrimary, std::vector<unsigned int>& blocks_per_level)
-{
-  std::vector<vtkSpacingType> spacings;
-  std::vector<std::vector<vtkAMRBox> > amr_boxes;
-  return vtkReadMetaData(ePrimary, blocks_per_level, spacings, amr_boxes);
-}
+  bool vtkReadMetaData(vtkXMLDataElement* ePrimary,
+    std::vector<unsigned int> &blocks_per_level)
+  {
+    std::vector<vtkSpacingType> spacings;
+    std::vector<std::vector<vtkAMRBox> > amr_boxes;
+    return vtkReadMetaData(ePrimary, blocks_per_level, spacings, amr_boxes);
+  }
 }
 
 vtkStandardNewMacro(vtkXMLUniformGridAMRReader);
 //----------------------------------------------------------------------------
 vtkXMLUniformGridAMRReader::vtkXMLUniformGridAMRReader()
 {
-  this->OutputDataType = nullptr;
+  this->OutputDataType = NULL;
   this->MaximumLevelsToReadByDefault = 1;
 }
 
 //----------------------------------------------------------------------------
 vtkXMLUniformGridAMRReader::~vtkXMLUniformGridAMRReader()
 {
-  this->SetOutputDataType(nullptr);
+  this->SetOutputDataType(NULL);
 }
 
 //----------------------------------------------------------------------------
 void vtkXMLUniformGridAMRReader::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
-  os << indent << "MaximumLevelsToReadByDefault: " << this->MaximumLevelsToReadByDefault << endl;
+  os << indent << "MaximumLevelsToReadByDefault: " <<
+    this->MaximumLevelsToReadByDefault << endl;
 }
 
 //----------------------------------------------------------------------------
@@ -172,12 +181,10 @@ const char* vtkXMLUniformGridAMRReader::GetDataSetName()
 //----------------------------------------------------------------------------
 int vtkXMLUniformGridAMRReader::CanReadFileWithDataType(const char* dsname)
 {
-  return (dsname &&
-           (strcmp(dsname, "vtkOverlappingAMR") == 0 ||
-             strcmp(dsname, "vtkNonOverlappingAMR") == 0 ||
-             strcmp(dsname, "vtkHierarchicalBoxDataSet") == 0))
-    ? 1
-    : 0;
+  return (dsname && (
+          strcmp(dsname, "vtkOverlappingAMR") == 0 ||
+          strcmp(dsname, "vtkNonOverlappingAMR") == 0 ||
+          strcmp(dsname, "vtkHierarchicalBoxDataSet") == 0))? 1 : 0;
 }
 
 //----------------------------------------------------------------------------
@@ -189,11 +196,13 @@ int vtkXMLUniformGridAMRReader::ReadVTKFile(vtkXMLDataElement* eVTKFile)
 
   // NOTE: eVTKFile maybe totally invalid, so proceed with caution.
   const char* type = eVTKFile->GetAttribute("type");
-  if (type == nullptr ||
-    (strcmp(type, "vtkHierarchicalBoxDataSet") != 0 && strcmp(type, "vtkOverlappingAMR") != 0 &&
-      strcmp(type, "vtkNonOverlappingAMR") != 0))
+  if (type == NULL ||
+    (strcmp(type, "vtkHierarchicalBoxDataSet") != 0 &&
+     strcmp(type, "vtkOverlappingAMR") != 0 &&
+     strcmp(type, "vtkNonOverlappingAMR") != 0))
   {
-    vtkErrorMacro("Invalid 'type' specified in the file: " << (type ? type : "(none)"));
+    vtkErrorMacro(
+      "Invalid 'type' specified in the file: " << (type? type : "(none)"));
     return 0;
   }
 
@@ -213,7 +222,7 @@ int vtkXMLUniformGridAMRReader::ReadPrimaryElement(vtkXMLDataElement* ePrimary)
   {
     // for old files, we don't support providing meta-data for
     // RequestInformation() pass.
-    this->Metadata = nullptr;
+    this->Metadata = NULL;
     return 1;
   }
 
@@ -221,7 +230,7 @@ int vtkXMLUniformGridAMRReader::ReadPrimaryElement(vtkXMLDataElement* ePrimary)
   {
     // this is a non-overlapping AMR. We don't have meta-data for
     // non-overlapping AMRs.
-    this->Metadata = nullptr;
+    this->Metadata = NULL;
     return 1;
   }
 
@@ -234,13 +243,14 @@ int vtkXMLUniformGridAMRReader::ReadPrimaryElement(vtkXMLDataElement* ePrimary)
   std::vector<std::vector<vtkAMRBox> > amr_boxes;
   vtkReadMetaData(ePrimary, blocks_per_level, level_spacing, amr_boxes);
 
-  if (!blocks_per_level.empty())
+  if (blocks_per_level.size() > 0)
   {
     // initialize vtkAMRInformation.
     this->Metadata->Initialize(
-      static_cast<int>(blocks_per_level.size()), reinterpret_cast<int*>(&blocks_per_level[0]));
+      static_cast<int>(blocks_per_level.size()),
+      reinterpret_cast<int*>(&blocks_per_level[0]));
 
-    double origin[3] = { 0, 0, 0 };
+    double origin[3] = {0, 0, 0};
     if (!ePrimary->GetVectorAttribute("origin", 3, origin))
     {
       vtkWarningMacro("Missing 'origin'. Using (0, 0, 0).");
@@ -264,20 +274,22 @@ int vtkXMLUniformGridAMRReader::ReadPrimaryElement(vtkXMLDataElement* ePrimary)
     this->Metadata->SetGridDescription(iGridDescription);
 
     // pass refinement ratios.
-    for (size_t cc = 0; cc < level_spacing.size(); cc++)
+    for (size_t cc=0; cc < level_spacing.size(); cc++)
     {
-      this->Metadata->GetAMRInfo()->SetSpacing(static_cast<unsigned int>(cc), level_spacing[cc]);
+      this->Metadata->GetAMRInfo()->SetSpacing(
+        static_cast<unsigned int>(cc), level_spacing[cc]);
     }
     //  pass amr boxes.
-    for (size_t level = 0; level < amr_boxes.size(); level++)
+    for (size_t level=0; level < amr_boxes.size(); level++)
     {
-      for (size_t index = 0; index < amr_boxes[level].size(); index++)
+      for (size_t index=0; index < amr_boxes[level].size(); index++)
       {
         const vtkAMRBox& box = amr_boxes[level][index];
         if (!box.Empty())
         {
           this->Metadata->GetAMRInfo()->SetAMRBox(
-            static_cast<unsigned int>(level), static_cast<unsigned int>(index), box);
+            static_cast<unsigned int>(level),
+            static_cast<unsigned int>(index), box);
         }
       }
     }
@@ -288,8 +300,10 @@ int vtkXMLUniformGridAMRReader::ReadPrimaryElement(vtkXMLDataElement* ePrimary)
 }
 
 //----------------------------------------------------------------------------
-int vtkXMLUniformGridAMRReader::RequestDataObject(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector)
+int vtkXMLUniformGridAMRReader::RequestDataObject(
+  vtkInformation *vtkNotUsed(request),
+  vtkInformationVector **vtkNotUsed(inputVector),
+  vtkInformationVector *outputVector)
 {
   if (!this->ReadXMLInformation())
   {
@@ -302,7 +316,8 @@ int vtkXMLUniformGridAMRReader::RequestDataObject(vtkInformation* vtkNotUsed(req
     vtkDataObject* newDO = vtkDataObjectTypes::NewDataObject(this->OutputDataType);
     if (newDO)
     {
-      outputVector->GetInformationObject(0)->Set(vtkDataObject::DATA_OBJECT(), newDO);
+      outputVector->GetInformationObject(0)->Set(
+        vtkDataObject::DATA_OBJECT(), newDO);
       newDO->FastDelete();
       return 1;
     }
@@ -312,8 +327,8 @@ int vtkXMLUniformGridAMRReader::RequestDataObject(vtkInformation* vtkNotUsed(req
 }
 
 //----------------------------------------------------------------------------
-int vtkXMLUniformGridAMRReader::RequestInformation(
-  vtkInformation* request, vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+int vtkXMLUniformGridAMRReader::RequestInformation(vtkInformation *request,
+  vtkInformationVector **inputVector, vtkInformationVector *outputVector)
 {
   if (!this->Superclass::RequestInformation(request, inputVector, outputVector))
   {
@@ -323,7 +338,8 @@ int vtkXMLUniformGridAMRReader::RequestInformation(
   if (this->Metadata)
   {
     outputVector->GetInformationObject(0)->Set(
-      vtkCompositeDataPipeline::COMPOSITE_DATA_META_DATA(), this->Metadata);
+      vtkCompositeDataPipeline::COMPOSITE_DATA_META_DATA(),
+      this->Metadata);
   }
   else
   {
@@ -335,7 +351,8 @@ int vtkXMLUniformGridAMRReader::RequestInformation(
 
 //----------------------------------------------------------------------------
 void vtkXMLUniformGridAMRReader::ReadComposite(vtkXMLDataElement* element,
-  vtkCompositeDataSet* composite, const char* filePath, unsigned int& dataSetIndex)
+  vtkCompositeDataSet* composite, const char* filePath,
+  unsigned int &dataSetIndex)
 {
   vtkUniformGridAMR* amr = vtkUniformGridAMR::SafeDownCast(composite);
   if (!amr)
@@ -346,16 +363,18 @@ void vtkXMLUniformGridAMRReader::ReadComposite(vtkXMLDataElement* element,
 
   if (this->GetFileMajorVersion() == -1 && this->GetFileMinorVersion() == -1)
   {
-    vtkErrorMacro("Version not supported. Use vtkXMLHierarchicalBoxDataReader instead.");
+    vtkErrorMacro(
+      "Version not supported. Use vtkXMLHierarchicalBoxDataReader instead.");
     return;
   }
 
   vtkInformation* outinfo = this->GetCurrentOutputInformation();
-  bool has_block_requests = outinfo->Has(vtkCompositeDataPipeline::LOAD_REQUESTED_BLOCKS()) != 0;
+  bool has_block_requests =
+    outinfo->Has(vtkCompositeDataPipeline::LOAD_REQUESTED_BLOCKS()) != 0;
 
   vtkOverlappingAMR* oamr = vtkOverlappingAMR::SafeDownCast(amr);
   vtkNonOverlappingAMR* noamr = vtkNonOverlappingAMR::SafeDownCast(amr);
-  assert(oamr != nullptr || noamr != nullptr);
+  assert(oamr != NULL || noamr != NULL);
 
   if (oamr)
   {
@@ -369,16 +388,18 @@ void vtkXMLUniformGridAMRReader::ReadComposite(vtkXMLDataElement* element,
     std::vector<unsigned int> blocks_per_level;
     vtkReadMetaData(element, blocks_per_level);
     noamr->Initialize(
-      static_cast<int>(blocks_per_level.size()), reinterpret_cast<int*>(&blocks_per_level[0]));
+      static_cast<int>(blocks_per_level.size()),
+      reinterpret_cast<int*>(&blocks_per_level[0]));
   }
 
   // Now, simply scan the xml for dataset elements and read them as needed.
 
   unsigned int numElems = element->GetNumberOfNestedElements();
-  for (unsigned int cc = 0; cc < numElems; cc++)
+  for (unsigned int cc=0; cc < numElems; cc++)
   {
     vtkXMLDataElement* blockXML = element->GetNestedElement(cc);
-    if (!blockXML || !blockXML->GetName() || strcmp(blockXML->GetName(), "Block") != 0)
+    if (!blockXML || !blockXML->GetName() ||
+      strcmp(blockXML->GetName(), "Block") != 0)
     {
       continue;
     }
@@ -392,10 +413,11 @@ void vtkXMLUniformGridAMRReader::ReadComposite(vtkXMLDataElement* element,
     // now read the <DataSet/> elements for boxes and counting the number of
     // nodes per level.
     int numDatasets = blockXML->GetNumberOfNestedElements();
-    for (int kk = 0; kk < numDatasets; kk++)
+    for (int kk=0; kk < numDatasets; kk++)
     {
       vtkXMLDataElement* datasetXML = blockXML->GetNestedElement(kk);
-      if (!datasetXML || !datasetXML->GetName() || strcmp(datasetXML->GetName(), "DataSet") != 0)
+      if (!datasetXML || !datasetXML->GetName() ||
+        strcmp(datasetXML->GetName(), "DataSet") != 0)
       {
         continue;
       }
@@ -410,8 +432,9 @@ void vtkXMLUniformGridAMRReader::ReadComposite(vtkXMLDataElement* element,
       {
         // if has_block_requests==false, then we don't read any blocks greater
         // than the MaximumLevelsToReadByDefault.
-        if (has_block_requests == false && this->MaximumLevelsToReadByDefault > 0 &&
-          static_cast<unsigned int>(level) >= this->MaximumLevelsToReadByDefault)
+        if (has_block_requests == false &&
+            this->MaximumLevelsToReadByDefault > 0 &&
+            static_cast<unsigned int>(level) >= this->MaximumLevelsToReadByDefault)
         {
           // don't actually read the data.
         }
@@ -425,8 +448,9 @@ void vtkXMLUniformGridAMRReader::ReadComposite(vtkXMLDataElement* element,
           }
           else
           {
-            amr->SetDataSet(static_cast<unsigned int>(level), static_cast<unsigned int>(index),
-              vtkUniformGrid::SafeDownCast(ds));
+            amr->SetDataSet(
+              static_cast<unsigned int>(level), static_cast<unsigned int>(index),
+              vtkUniformGrid::SafeDownCast(ds.GetPointer()));
           }
         }
       }
@@ -434,7 +458,7 @@ void vtkXMLUniformGridAMRReader::ReadComposite(vtkXMLDataElement* element,
     }
   }
 
-  if ((oamr != nullptr) && !has_block_requests)
+  if( (oamr != NULL) && !has_block_requests )
   {
     vtkAMRUtilities::BlankCells(oamr);
   }

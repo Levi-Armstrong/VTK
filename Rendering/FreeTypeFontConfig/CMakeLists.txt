@@ -1,21 +1,27 @@
-vtk_object_factory_declare(
-  BASE vtkFreeTypeTools
-  OVERRIDE vtkFontConfigFreeTypeTools)
+find_package(FontConfig REQUIRED)
 
-vtk_object_factory_configure(
-  SOURCE_FILE vtk_object_factory_source
-  HEADER_FILE vtk_object_factory_header
-  EXPORT_MACRO "VTKRENDERINGFREETYPEFONTCONFIG_EXPORT")
+include_directories(${FONTCONFIG_INCLUDE_DIR})
 
-set(classes
-  vtkFontConfigFreeTypeTools)
+include(vtkObjectFactory)
 
-vtk_module_add_module(VTK::RenderingFreeTypeFontConfig
-  CLASSES ${classes}
-  SOURCES ${vtk_object_factory_source}
-  PRIVATE_HEADERS ${vtk_object_factory_header})
+set(Module_SRCS
+  vtkFontConfigFreeTypeTools.cxx
+  ${CMAKE_CURRENT_BINARY_DIR}/vtkRenderingFreeTypeFontConfigObjectFactory.cxx
+)
 
-vtk_module_find_package(PACKAGE FontConfig)
-vtk_module_link(VTK::RenderingFreeTypeFontConfig
-  PRIVATE
-    FontConfig::FontConfig)
+set_source_files_properties(
+  vtkFontConfigFreeTypeTools
+  vtkRenderingFreeTypeFontConfigObjectFactory
+  PROPERTIES
+    WRAP_EXCLUDE 1
+    WRAP_EXCLUDE_PYTHON 1
+  )
+
+# Setup overrides
+list(APPEND vtk_module_overrides "vtkFreeTypeTools")
+set(vtk_module_vtkFreeTypeTools_override "vtkFontConfigFreeTypeTools")
+vtk_object_factory_configure("${vtk_module_overrides}")
+
+vtk_module_library(${vtk-module} ${Module_SRCS})
+
+vtk_module_link_libraries(${vtk-module} LINK_PRIVATE ${FONTCONFIG_LIBRARIES})

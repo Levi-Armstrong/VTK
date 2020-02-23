@@ -21,7 +21,7 @@
  *
  * @sa
  * vtkGenericDataObjectReader
- */
+*/
 
 #ifndef vtkXMLGenericDataObjectReader_h
 #define vtkXMLGenericDataObjectReader_h
@@ -30,6 +30,7 @@
 #include "vtkXMLDataReader.h"
 
 class vtkHierarchicalBoxDataSet;
+class vtkHyperOctree;
 class vtkMultiBlockDataSet;
 class vtkImageData;
 class vtkPolyData;
@@ -40,78 +41,84 @@ class vtkUnstructuredGrid;
 class VTKIOXML_EXPORT vtkXMLGenericDataObjectReader : public vtkXMLDataReader
 {
 public:
-  vtkTypeMacro(vtkXMLGenericDataObjectReader, vtkXMLDataReader);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
-  static vtkXMLGenericDataObjectReader* New();
+  vtkTypeMacro(vtkXMLGenericDataObjectReader,vtkXMLDataReader);
+  void PrintSelf(ostream& os, vtkIndent indent);
+  static vtkXMLGenericDataObjectReader *New();
 
   //@{
   /**
    * Get the reader's output.
    */
-  vtkDataObject* GetOutput();
-  vtkDataObject* GetOutput(int idx);
+  vtkDataObject *GetOutput();
+  vtkDataObject *GetOutput(int idx);
   //@}
 
   //@{
   /**
    * Get the output as various concrete types. This method is typically used
    * when you know exactly what type of data is being read.  Otherwise, use
-   * the general GetOutput() method. If the wrong type is used nullptr is
+   * the general GetOutput() method. If the wrong type is used NULL is
    * returned.  (You must also set the filename of the object prior to
    * getting the output.)
    */
-  vtkHierarchicalBoxDataSet* GetHierarchicalBoxDataSetOutput();
-  vtkImageData* GetImageDataOutput();
-  vtkMultiBlockDataSet* GetMultiBlockDataSetOutput();
-  vtkPolyData* GetPolyDataOutput();
-  vtkRectilinearGrid* GetRectilinearGridOutput();
-  vtkStructuredGrid* GetStructuredGridOutput();
-  vtkUnstructuredGrid* GetUnstructuredGridOutput();
+  vtkHierarchicalBoxDataSet *GetHierarchicalBoxDataSetOutput();
+  vtkHyperOctree *GetHyperOctreeOutput();
+  vtkImageData *GetImageDataOutput();
+  vtkMultiBlockDataSet *GetMultiBlockDataSetOutput();
+  vtkPolyData *GetPolyDataOutput();
+  vtkRectilinearGrid *GetRectilinearGridOutput();
+  vtkStructuredGrid *GetStructuredGridOutput();
+  vtkUnstructuredGrid *GetUnstructuredGridOutput();
   //@}
 
   /**
    * Overridden method.
    */
-  vtkIdType GetNumberOfPoints() override;
+  vtkIdType GetNumberOfPoints();
 
   /**
    * Overridden method.
    */
-  vtkIdType GetNumberOfCells() override;
+  vtkIdType GetNumberOfCells();
 
   /**
    * Overridden method. Not Used. Delegated.
    */
-  void SetupEmptyOutput() override;
+  void SetupEmptyOutput();
 
   /**
    * This method can be used to find out the type of output expected without
    * needing to read the whole file.
    */
-  virtual int ReadOutputType(const char* name, bool& parallel);
+  virtual int ReadOutputType(const char *name, bool &parallel);
 
 protected:
   vtkXMLGenericDataObjectReader();
-  ~vtkXMLGenericDataObjectReader() override;
+  ~vtkXMLGenericDataObjectReader();
 
   /**
    * Overridden method. Not used. Return "vtkDataObject".
    */
-  const char* GetDataSetName() override;
+  const char* GetDataSetName();
 
-  int RequestDataObject(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  virtual int RequestUpdateExtent(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector);
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int FillOutputPortInformation(int, vtkInformation*) override;
+  virtual int RequestDataObject(vtkInformation *, vtkInformationVector **,
+                                vtkInformationVector *);
+  virtual int RequestInformation(vtkInformation *, vtkInformationVector **,
+                                 vtkInformationVector *);
+  virtual int RequestUpdateExtent(vtkInformation *request,
+                                  vtkInformationVector **inputVector,
+                                  vtkInformationVector *outputVector);
 
-  vtkXMLReader* Reader; // actual reader
+  virtual int RequestData(vtkInformation *, vtkInformationVector **,
+                          vtkInformationVector *);
+  virtual int FillOutputPortInformation(int, vtkInformation *);
+
+  vtkXMLReader *Reader; // actual reader
 
 private:
-  vtkXMLGenericDataObjectReader(const vtkXMLGenericDataObjectReader&) = delete;
-  void operator=(const vtkXMLGenericDataObjectReader&) = delete;
+  vtkXMLGenericDataObjectReader(const vtkXMLGenericDataObjectReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkXMLGenericDataObjectReader&) VTK_DELETE_FUNCTION;
 };
 
 #endif

@@ -23,29 +23,26 @@
  * @sa
  * vtkScalarsToColorsItem
  * vtkPiecewiseControlPointsItem
- */
+*/
 
 #ifndef vtkControlPointsItem_h
 #define vtkControlPointsItem_h
 
 #include "vtkChartsCoreModule.h" // For export macro
-#include "vtkCommand.h"          // For vtkCommand enum
+#include "vtkCommand.h" // For vtkCommand enum
 #include "vtkPlot.h"
-#include "vtkSmartPointer.h" // for SmartPointer
-#include "vtkVector.h"       // For vtkVector2f
+#include "vtkVector.h" // For vtkVector2f
 
 class vtkCallbackCommand;
 class vtkContext2D;
-class vtkControlPointsAddPointItem;
-class vtkPiecewisePointHandleItem;
 class vtkPoints2D;
 class vtkTransform2D;
 
-class VTKCHARTSCORE_EXPORT vtkControlPointsItem : public vtkPlot
+class VTKCHARTSCORE_EXPORT vtkControlPointsItem: public vtkPlot
 {
 public:
   vtkTypeMacro(vtkControlPointsItem, vtkPlot);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  virtual void PrintSelf(ostream &os, vtkIndent indent);
 
   // Events fires by this class (and subclasses).
   // \li CurrentPointChangedEvent is fired when the current point index is changed.
@@ -53,8 +50,7 @@ public:
   // edit the current point.
   // \li vtkCommand::StartEvent and vtkCommand::EndEvent is fired
   // to mark groups of changes to control points.
-  enum
-  {
+  enum {
     CurrentPointChangedEvent = vtkCommand::UserEvent,
     CurrentPointEditEvent
   };
@@ -63,7 +59,7 @@ public:
    * Bounds of the item, typically the bound of all the control points
    * except if custom bounds have been set \sa SetUserBounds.
    */
-  void GetBounds(double bounds[4]) override;
+  virtual void GetBounds(double bounds[4]);
 
   //@{
   /**
@@ -99,7 +95,7 @@ public:
    * on the scene zoom factor. Selected and unselected points are drawn
    * with a different color.
    */
-  bool Paint(vtkContext2D* painter) override;
+  virtual bool Paint(vtkContext2D *painter);
 
   /**
    * Select a point by its ID
@@ -151,12 +147,12 @@ public:
   /**
    * Select all points in the specified rectangle.
    */
-  bool SelectPoints(const vtkVector2f& min, const vtkVector2f& max) override;
+  virtual bool SelectPoints(const vtkVector2f& min, const vtkVector2f& max);
 
   /**
    * Return the number of selected points.
    */
-  vtkIdType GetNumberOfSelectedPoints() const;
+  vtkIdType GetNumberOfSelectedPoints()const;
 
   /**
    * Returns the vtkIdType of the point given its coordinates and a tolerance
@@ -181,7 +177,8 @@ public:
    * Typically: [0, 1, 2, ... n -1] where n is the point count
    * Can exclude the first and last point ids from the array.
    */
-  void GetControlPointsIds(vtkIdTypeArray* ids, bool excludeFirstAndLast = false) const;
+  void GetControlPointsIds(vtkIdTypeArray* ids,
+                           bool excludeFirstAndLast = false)const;
 
   //@{
   /**
@@ -218,7 +215,7 @@ public:
   //@{
   /**
    * If EndPointsRemovable is false, the two end points will not
-   * be removed. True by default.
+   * be be removed. True by default.
    */
   vtkSetMacro(EndPointsRemovable, bool);
   vtkGetMacro(EndPointsRemovable, bool);
@@ -269,20 +266,20 @@ public:
   /**
    * Returns the total number of points
    */
-  virtual vtkIdType GetNumberOfPoints() const = 0;
+  virtual vtkIdType GetNumberOfPoints()const = 0;
 
   /**
    * Returns the x and y coordinates as well as the midpoint and sharpness
    * of the control point corresponding to the index.
    * point must be a double array of size 4.
    */
-  virtual void GetControlPoint(vtkIdType index, double* point) const = 0;
+  virtual void GetControlPoint(vtkIdType index, double *point)const = 0;
 
   /**
    * Sets the x and y coordinates as well as the midpoint and sharpness
    * of the control point corresponding to the index.
    */
-  virtual void SetControlPoint(vtkIdType index, double* point) = 0;
+  virtual void SetControlPoint(vtkIdType index, double *point) = 0;
 
   /**
    * Move the points referred by pointIds by a given translation.
@@ -322,7 +319,7 @@ public:
    * Returns the current point ID selected or -1 if there is no point current.
    * No current point by default.
    */
-  vtkIdType GetCurrentPoint() const;
+  vtkIdType GetCurrentPoint()const;
 
   /**
    * Sets the current point selected.
@@ -344,24 +341,6 @@ public:
   vtkGetObjectMacro(SelectedPointBrush, vtkBrush);
   //@}
 
-  //@{
-  /**
-   * When enabled, a dedicated item is used to determine if a point should
-   * be added when clicking anywhere.
-   * This item can be recovered with GetAddPointItem and can this be placed
-   * below all other items. False by default.
-   */
-  vtkGetMacro(UseAddPointItem, bool);
-  vtkSetMacro(UseAddPointItem, bool);
-  vtkBooleanMacro(UseAddPointItem, bool);
-  //@}
-
-  /**
-   * Item dedicated to add point, to be added below all other items.
-   * Used only if UseAddPointItem is set to true.
-   */
-  vtkPlot* GetAddPointItem();
-
   /**
    * Recompute the bounds next time they are requested.
    * You shouldn't have to call it but it is provided for rare cases.
@@ -370,21 +349,23 @@ public:
 
   //@{
   /**
-   * Mouse and key events.
+   * Mouse button down event.
    */
-  bool MouseButtonPressEvent(const vtkContextMouseEvent& mouse) override;
-  bool MouseDoubleClickEvent(const vtkContextMouseEvent& mouse) override;
-  bool MouseButtonReleaseEvent(const vtkContextMouseEvent& mouse) override;
-  bool MouseMoveEvent(const vtkContextMouseEvent& mouse) override;
-  bool KeyPressEvent(const vtkContextKeyEvent& key) override;
-  bool KeyReleaseEvent(const vtkContextKeyEvent& key) override;
+  virtual bool MouseButtonPressEvent(const vtkContextMouseEvent &mouse);
+  virtual bool MouseDoubleClickEvent(const vtkContextMouseEvent &mouse);
   //@}
+
+  /**
+   * Mouse move event.
+   */
+  virtual bool MouseMoveEvent(const vtkContextMouseEvent &mouse);
+
+  virtual bool KeyPressEvent(const vtkContextKeyEvent &key);
+  virtual bool KeyReleaseEvent(const vtkContextKeyEvent &key);
 
 protected:
   vtkControlPointsItem();
-  ~vtkControlPointsItem() override;
-
-  friend class vtkPiecewisePointHandleItem;
+  virtual ~vtkControlPointsItem();
 
   void StartChanges();
   void EndChanges();
@@ -392,11 +373,10 @@ protected:
   void StartInteractionIfNotStarted();
   void Interaction();
   void EndInteraction();
-  int GetInteractionsCount() const;
-  virtual void emitEvent(unsigned long event, void* params = nullptr) = 0;
+  int GetInteractionsCount()const;
+  virtual void emitEvent(unsigned long event, void* params = 0) = 0;
 
-  static void CallComputePoints(
-    vtkObject* sender, unsigned long event, void* receiver, void* params);
+  static void CallComputePoints(vtkObject* sender, unsigned long event, void* receiver, void* params);
 
   //@{
   /**
@@ -404,23 +384,30 @@ protected:
    * It's subclass responsibility to call ComputePoints() via the callback
    */
   virtual void ComputePoints();
-  virtual vtkMTimeType GetControlPointsMTime() = 0;
+  virtual vtkMTimeType GetControlPointsMTime() =0;
   //@}
 
   /**
-   * Returns true if the supplied x, y are within the bounds or on a control point.
-   * If UseAddPointItem is true,
-   * returns true only if the supplied x, y are on a control point.
+   * Returns true if the supplied x, y coordinate is on a control point.
    */
-  bool Hit(const vtkContextMouseEvent& mouse) override;
+  virtual bool Hit(const vtkContextMouseEvent &mouse);
+
+  //@{
+  /**
+   * Transform the mouse event in the control-points space. This is needed when
+   * ColorTransferFunction is using log-scale.
+   */
+  virtual void TransformScreenToData(const vtkVector2f& in, vtkVector2f& out);
+  virtual void TransformDataToScreen(const vtkVector2f& in, vtkVector2f& out);
+  //@}
 
   //@{
   /**
    * Clamp the given 2D pos into the bounds of the function.
    * Return true if the pos has been clamped, false otherwise.
    */
-  bool ClampValidDataPos(double pos[2]);
-  bool ClampValidScreenPos(double pos[2]);
+  virtual bool ClampPos(double pos[2], double bounds[4]);
+  bool ClampValidPos(double pos[2]);
   //@}
 
   //@{
@@ -438,11 +425,15 @@ protected:
   void MoveCurrentPoint(const vtkVector2f& translation);
   vtkIdType MovePoint(vtkIdType point, const vtkVector2f& translation);
 
-  inline vtkVector2f GetSelectionCenterOfMass() const;
-  vtkVector2f GetCenterOfMass(vtkIdTypeArray* pointIDs) const;
+  inline vtkVector2f GetSelectionCenterOfMass()const;
+  vtkVector2f GetCenterOfMass(vtkIdTypeArray* pointIDs)const;
 
   void Stroke(const vtkVector2f& newPos);
   virtual void EditPoint(float vtkNotUsed(tX), float vtkNotUsed(tY));
+  /**
+   * Mouse button release event.
+   */
+  virtual bool MouseButtonReleaseEvent(const vtkContextMouseEvent &mouse);
 
   /**
    * Generate label for a control point.
@@ -470,46 +461,49 @@ protected:
    */
   virtual void ComputeBounds(double* bounds);
 
+  /**
+   * Returns true if control points are to be rendered in log-space. This is
+   * true when vtkScalarsToColors is using log-scale, for example. Default
+   * implementation always return false.
+   */
+  virtual bool UsingLogScale() { return false; }
+
   vtkCallbackCommand* Callback;
-  vtkPen* SelectedPointPen;
-  vtkBrush* SelectedPointBrush;
-  int BlockUpdates;
-  int StartedInteractions;
-  int StartedChanges;
-  vtkIdType CurrentPoint;
+  vtkPen*             SelectedPointPen;
+  vtkBrush*           SelectedPointBrush;
+  int                 BlockUpdates;
+  int                 StartedInteractions;
+  int                 StartedChanges;
+  vtkIdType           CurrentPoint;
 
-  double Bounds[4];
-  double UserBounds[4];
-  double ValidBounds[4];
+  double              Bounds[4];
+  double              UserBounds[4];
+  double              ValidBounds[4];
 
-  vtkTransform2D* Transform;
-  float ScreenPointRadius;
+  vtkTransform2D*     Transform;
+  float               ScreenPointRadius;
 
-  bool StrokeMode;
-  bool SwitchPointsMode;
-  bool MouseMoved;
-  bool EnforceValidFunction;
-  vtkIdType PointToDelete;
-  bool PointAboutToBeDeleted;
-  vtkIdType PointToToggle;
-  bool PointAboutToBeToggled;
-  bool InvertShadow;
-  bool EndPointsXMovable;
-  bool EndPointsYMovable;
-  bool EndPointsRemovable;
-  bool ShowLabels;
-  char* LabelFormat;
-
+  bool                StrokeMode;
+  bool                SwitchPointsMode;
+  bool                MouseMoved;
+  bool                EnforceValidFunction;
+  vtkIdType           PointToDelete;
+  bool                PointAboutToBeDeleted;
+  vtkIdType           PointToToggle;
+  bool                PointAboutToBeToggled;
+  bool                InvertShadow;
+  bool                EndPointsXMovable;
+  bool                EndPointsYMovable;
+  bool                EndPointsRemovable;
+  bool                ShowLabels;
+  char*               LabelFormat;
 private:
-  vtkControlPointsItem(const vtkControlPointsItem&) = delete;
-  void operator=(const vtkControlPointsItem&) = delete;
+  vtkControlPointsItem(const vtkControlPointsItem &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkControlPointsItem &) VTK_DELETE_FUNCTION;
 
-  void ComputeBounds();
+  void      ComputeBounds();
 
   vtkIdType RemovePointId(vtkIdType removedPointId);
-
-  bool UseAddPointItem = false;
-  vtkNew<vtkControlPointsAddPointItem> AddPointItem;
 };
 
 //-----------------------------------------------------------------------------
@@ -519,7 +513,7 @@ void vtkControlPointsItem::RemoveCurrentPoint()
 }
 
 //-----------------------------------------------------------------------------
-vtkVector2f vtkControlPointsItem::GetSelectionCenterOfMass() const
+vtkVector2f vtkControlPointsItem::GetSelectionCenterOfMass()const
 {
   return this->GetCenterOfMass(this->Selection);
 }

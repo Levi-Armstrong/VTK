@@ -25,22 +25,26 @@
 vtkStandardNewMacro(vtkOpenGLContextActor);
 
 //----------------------------------------------------------------------------
-vtkOpenGLContextActor::vtkOpenGLContextActor() = default;
-
-//----------------------------------------------------------------------------
-vtkOpenGLContextActor::~vtkOpenGLContextActor() = default;
-
-//----------------------------------------------------------------------------
-void vtkOpenGLContextActor::ReleaseGraphicsResources(vtkWindow* window)
+vtkOpenGLContextActor::vtkOpenGLContextActor()
 {
-  vtkOpenGLContextDevice2D* device =
-    vtkOpenGLContextDevice2D::SafeDownCast(this->Context->GetDevice());
+}
+
+//----------------------------------------------------------------------------
+vtkOpenGLContextActor::~vtkOpenGLContextActor()
+{
+}
+
+//----------------------------------------------------------------------------
+void vtkOpenGLContextActor::ReleaseGraphicsResources(vtkWindow *window)
+{
+  vtkOpenGLContextDevice2D *device =
+      vtkOpenGLContextDevice2D::SafeDownCast(this->Context->GetDevice());
   if (device)
   {
     device->ReleaseGraphicsResources(window);
   }
 
-  if (this->Scene)
+  if(this->Scene.GetPointer())
   {
     this->Scene->ReleaseGraphicsResources();
   }
@@ -52,7 +56,7 @@ int vtkOpenGLContextActor::RenderOverlay(vtkViewport* viewport)
 {
   vtkDebugMacro(<< "vtkContextActor::RenderOverlay");
 
-  if (!this->Context)
+  if (!this->Context.GetPointer())
   {
     vtkErrorMacro(<< "vtkContextActor::Render - No painter set");
     return 0;
@@ -63,51 +67,40 @@ int vtkOpenGLContextActor::RenderOverlay(vtkViewport* viewport)
     this->Initialize(viewport);
   }
 
-  vtkOpenGLContextDevice3D::SafeDownCast(this->Context3D->GetDevice())->Begin(viewport);
+  vtkOpenGLContextDevice3D::SafeDownCast(
+    this->Context3D->GetDevice())->Begin(viewport);
 
   return this->Superclass::RenderOverlay(viewport);
 }
 
+
 //----------------------------------------------------------------------------
 void vtkOpenGLContextActor::Initialize(vtkViewport* viewport)
 {
-  vtkContextDevice2D* dev2D = nullptr;
-  vtkDebugMacro("Using OpenGL 2 for 2D rendering.");
-  if (this->ForceDevice)
+  vtkOpenGLContextDevice2D *device = NULL;
+  vtkDebugMacro("Using OpenGL 2 for 2D rendering.")
+  device = vtkOpenGLContextDevice2D::New();
+  if (device)
   {
-    dev2D = this->ForceDevice;
-    dev2D->Register(this);
-  }
-  else
-  {
-    dev2D = vtkOpenGLContextDevice2D::New();
-  }
+    this->Context->Begin(device);
 
-  if (dev2D)
-  {
-    this->Context->Begin(dev2D);
+    vtkOpenGLContextDevice3D *dev = vtkOpenGLContextDevice3D::New();
+    dev->Initialize(vtkRenderer::SafeDownCast(viewport), device);
+    this->Context3D->Begin(dev);
+    dev->Delete();
 
-    vtkOpenGLContextDevice2D* oglDev2D = vtkOpenGLContextDevice2D::SafeDownCast(dev2D);
-    if (oglDev2D)
-    {
-      vtkOpenGLContextDevice3D* dev3D = vtkOpenGLContextDevice3D::New();
-      dev3D->Initialize(vtkRenderer::SafeDownCast(viewport), oglDev2D);
-      this->Context3D->Begin(dev3D);
-      dev3D->Delete();
-    }
-
-    dev2D->Delete();
+    device->Delete();
     this->Initialized = true;
   }
   else
   {
     // Failed
-    vtkErrorMacro("Error: failed to initialize the render device.");
+    vtkErrorMacro("Error: failed to initialize the render device.")
   }
 }
 
 //----------------------------------------------------------------------------
 void vtkOpenGLContextActor::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 }

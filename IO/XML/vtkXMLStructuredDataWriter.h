@@ -18,7 +18,7 @@
  *
  * vtkXMLStructuredDataWriter provides VTK XML writing functionality that
  * is common among all the structured data formats.
- */
+*/
 
 #ifndef vtkXMLStructuredDataWriter_h
 #define vtkXMLStructuredDataWriter_h
@@ -33,8 +33,8 @@ class vtkInformationVector;
 class VTKIOXML_EXPORT vtkXMLStructuredDataWriter : public vtkXMLWriter
 {
 public:
-  vtkTypeMacro(vtkXMLStructuredDataWriter, vtkXMLWriter);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkXMLStructuredDataWriter,vtkXMLWriter);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -74,14 +74,14 @@ public:
 
 protected:
   vtkXMLStructuredDataWriter();
-  ~vtkXMLStructuredDataWriter() override;
+  ~vtkXMLStructuredDataWriter();
 
   // Writing drivers defined by subclasses.
-  void WritePrimaryElementAttributes(ostream& os, vtkIndent indent) override;
+  virtual void WritePrimaryElementAttributes(ostream &os, vtkIndent indent);
   virtual void WriteAppendedPiece(int index, vtkIndent indent);
   virtual void WriteAppendedPieceData(int index);
   virtual void WriteInlinePiece(vtkIndent indent);
-  virtual void GetInputExtent(int* extent) = 0;
+  virtual void GetInputExtent(int* extent)=0;
 
   virtual int WriteHeader();
   virtual int WriteAPiece();
@@ -91,16 +91,16 @@ protected:
   virtual void DeletePositionArrays();
 
   virtual int WriteInlineMode(vtkIndent indent);
-  vtkIdType GetStartTuple(int* extent, vtkIdType* increments, int i, int j, int k);
+  vtkIdType GetStartTuple(int* extent, vtkIdType* increments,
+                          int i, int j, int k);
   void CalculatePieceFractions(float* fractions);
 
   void SetInputUpdateExtent(int piece);
-  vtkTypeBool ProcessRequest(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  int ProcessRequest(vtkInformation* request,
+                     vtkInformationVector** inputVector,
+                     vtkInformationVector* outputVector);
 
   vtkSetVector6Macro(InternalWriteExtent, int);
-
-  static vtkIdType GetNumberOfValues(vtkDataSet* input);
 
   // The extent of the input to write, as specified by user
   int WriteExtent[6];
@@ -123,12 +123,12 @@ protected:
 
   // Appended data offsets of point and cell data arrays.
   // Store offset position (add TimeStep support)
-  OffsetsManagerArray* PointDataOM;
-  OffsetsManagerArray* CellDataOM;
+  OffsetsManagerArray *PointDataOM;
+  OffsetsManagerArray *CellDataOM;
 
 private:
-  vtkXMLStructuredDataWriter(const vtkXMLStructuredDataWriter&) = delete;
-  void operator=(const vtkXMLStructuredDataWriter&) = delete;
+  vtkXMLStructuredDataWriter(const vtkXMLStructuredDataWriter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkXMLStructuredDataWriter&) VTK_DELETE_FUNCTION;
 };
 
 #endif

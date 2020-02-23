@@ -23,46 +23,38 @@
  * @sa
  * vtkInteractorStyleTrackballActor vtkInteractorStyleJoystickCamera
  * vtkInteractorStyleJoystickActor
- */
+*/
 
 #ifndef vtkInteractorStyleMultiTouchCamera_h
 #define vtkInteractorStyleMultiTouchCamera_h
 
 #include "vtkInteractionStyleModule.h" // For export macro
-#include "vtkInteractorStyleTrackballCamera.h"
 #include "vtkRenderWindowInteractor.h" // for max pointers
+#include "vtkInteractorStyleTrackballCamera.h"
 
-class VTKINTERACTIONSTYLE_EXPORT vtkInteractorStyleMultiTouchCamera
-  : public vtkInteractorStyleTrackballCamera
+class VTKINTERACTIONSTYLE_EXPORT vtkInteractorStyleMultiTouchCamera : public vtkInteractorStyleTrackballCamera
 {
 public:
-  static vtkInteractorStyleMultiTouchCamera* New();
-  vtkTypeMacro(vtkInteractorStyleMultiTouchCamera, vtkInteractorStyleTrackballCamera);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkInteractorStyleMultiTouchCamera *New();
+  vtkTypeMacro(vtkInteractorStyleMultiTouchCamera,vtkInteractorStyleTrackballCamera);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
    * Event bindings for gestures
    */
-  void OnStartRotate() override;
-  void OnRotate() override;
-  void OnEndRotate() override;
-  void OnStartPinch() override;
-  void OnPinch() override;
-  void OnEndPinch() override;
-  void OnStartPan() override;
-  void OnPan() override;
-  void OnEndPan() override;
-
+  virtual void OnRotate();
+  virtual void OnPinch();
+  virtual void OnPan();
   //@}
 
 protected:
   vtkInteractorStyleMultiTouchCamera();
-  ~vtkInteractorStyleMultiTouchCamera() override;
+  ~vtkInteractorStyleMultiTouchCamera();
 
 private:
-  vtkInteractorStyleMultiTouchCamera(const vtkInteractorStyleMultiTouchCamera&) = delete;
-  void operator=(const vtkInteractorStyleMultiTouchCamera&) = delete;
+  vtkInteractorStyleMultiTouchCamera(const vtkInteractorStyleMultiTouchCamera&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkInteractorStyleMultiTouchCamera&) VTK_DELETE_FUNCTION;
 };
 
 #endif

@@ -26,23 +26,9 @@
  * This filter is specialized to volumes. If you are interested in
  * contouring other types of data, use the general vtkContourFilter. If you
  * want to contour an image (i.e., a volume slice), use vtkMarchingSquares.
- *
  * @sa
- * Much faster implementations for isocontouring are available. In
- * particular, vtkFlyingEdges3D and vtkFlyingEdges2D are much faster
- * and if built with the right options, multithreaded, and scale well
- * with additional processors.
- *
- * @sa
- * If you are interested in extracting surfaces from label maps,
- * consider using vtkDiscreteFlyingEdges3D, vtkDiscreteFlyingEdges2D, or
- * vtkDiscreteMarchingCubes.
- *
- * @sa
- * vtkFlyingEdges3D vtkFlyingEdges2D vtkSynchronizedTemplates3D
- * vtkSynchronizedTemplates2D vtkContourFilter vtkSliceCubes
- * vtkMarchingSquares vtkDividingCubes vtkDiscreteMarchingCubes
- */
+ * vtkContourFilter vtkSliceCubes vtkMarchingSquares vtkDividingCubes
+*/
 
 #ifndef vtkMarchingCubes_h
 #define vtkMarchingCubes_h
@@ -57,22 +43,22 @@ class vtkIncrementalPointLocator;
 class VTKFILTERSCORE_EXPORT vtkMarchingCubes : public vtkPolyDataAlgorithm
 {
 public:
-  static vtkMarchingCubes* New();
-  vtkTypeMacro(vtkMarchingCubes, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkMarchingCubes *New();
+  vtkTypeMacro(vtkMarchingCubes,vtkPolyDataAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   // Methods to set contour values
   void SetValue(int i, double value);
   double GetValue(int i);
-  double* GetValues();
-  void GetValues(double* contourValues);
+  double *GetValues();
+  void GetValues(double *contourValues);
   void SetNumberOfContours(int number);
-  vtkIdType GetNumberOfContours();
+  int GetNumberOfContours();
   void GenerateValues(int numContours, double range[2]);
   void GenerateValues(int numContours, double rangeStart, double rangeEnd);
 
   // Because we delegate to vtkContourValues
-  vtkMTimeType GetMTime() override;
+  vtkMTimeType GetMTime() VTK_OVERRIDE;
 
   //@{
   /**
@@ -81,9 +67,9 @@ public:
    * processed by filters that modify topology or geometry, it may be
    * wise to turn Normals and Gradients off.
    */
-  vtkSetMacro(ComputeNormals, vtkTypeBool);
-  vtkGetMacro(ComputeNormals, vtkTypeBool);
-  vtkBooleanMacro(ComputeNormals, vtkTypeBool);
+  vtkSetMacro(ComputeNormals,int);
+  vtkGetMacro(ComputeNormals,int);
+  vtkBooleanMacro(ComputeNormals,int);
   //@}
 
   //@{
@@ -95,27 +81,27 @@ public:
    * will be processed by filters that modify topology or geometry, it
    * may be wise to turn Normals and Gradients off.
    */
-  vtkSetMacro(ComputeGradients, vtkTypeBool);
-  vtkGetMacro(ComputeGradients, vtkTypeBool);
-  vtkBooleanMacro(ComputeGradients, vtkTypeBool);
+  vtkSetMacro(ComputeGradients,int);
+  vtkGetMacro(ComputeGradients,int);
+  vtkBooleanMacro(ComputeGradients,int);
   //@}
 
   //@{
   /**
    * Set/Get the computation of scalars.
    */
-  vtkSetMacro(ComputeScalars, vtkTypeBool);
-  vtkGetMacro(ComputeScalars, vtkTypeBool);
-  vtkBooleanMacro(ComputeScalars, vtkTypeBool);
+  vtkSetMacro(ComputeScalars,int);
+  vtkGetMacro(ComputeScalars,int);
+  vtkBooleanMacro(ComputeScalars,int);
   //@}
 
   //@{
   /**
-   * override the default locator.  Useful for changing the number of
+   * Overide the default locator.  Useful for changing the number of
    * bins for performance or specifying a more aggressive locator.
    */
-  void SetLocator(vtkIncrementalPointLocator* locator);
-  vtkGetObjectMacro(Locator, vtkIncrementalPointLocator);
+  void SetLocator(vtkIncrementalPointLocator *locator);
+  vtkGetObjectMacro(Locator,vtkIncrementalPointLocator);
   //@}
 
   /**
@@ -126,20 +112,19 @@ public:
 
 protected:
   vtkMarchingCubes();
-  ~vtkMarchingCubes() override;
+  ~vtkMarchingCubes() VTK_OVERRIDE;
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *) VTK_OVERRIDE;
+  int FillInputPortInformation(int port, vtkInformation *info) VTK_OVERRIDE;
 
-  vtkContourValues* ContourValues;
-  vtkTypeBool ComputeNormals;
-  vtkTypeBool ComputeGradients;
-  vtkTypeBool ComputeScalars;
-  vtkIncrementalPointLocator* Locator;
-
+  vtkContourValues *ContourValues;
+  int ComputeNormals;
+  int ComputeGradients;
+  int ComputeScalars;
+  vtkIncrementalPointLocator *Locator;
 private:
-  vtkMarchingCubes(const vtkMarchingCubes&) = delete;
-  void operator=(const vtkMarchingCubes&) = delete;
+  vtkMarchingCubes(const vtkMarchingCubes&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkMarchingCubes&) VTK_DELETE_FUNCTION;
 };
 
 /**
@@ -147,36 +132,28 @@ private:
  * between 0<=i<NumberOfContours.
  */
 inline void vtkMarchingCubes::SetValue(int i, double value)
-{
-  this->ContourValues->SetValue(i, value);
-}
+{this->ContourValues->SetValue(i,value);}
 
 /**
  * Get the ith contour value.
  */
 inline double vtkMarchingCubes::GetValue(int i)
-{
-  return this->ContourValues->GetValue(i);
-}
+{return this->ContourValues->GetValue(i);}
 
 /**
  * Get a pointer to an array of contour values. There will be
  * GetNumberOfContours() values in the list.
  */
-inline double* vtkMarchingCubes::GetValues()
-{
-  return this->ContourValues->GetValues();
-}
+inline double *vtkMarchingCubes::GetValues()
+{return this->ContourValues->GetValues();}
 
 /**
  * Fill a supplied list with contour values. There will be
  * GetNumberOfContours() values in the list. Make sure you allocate
  * enough memory to hold the list.
  */
-inline void vtkMarchingCubes::GetValues(double* contourValues)
-{
-  this->ContourValues->GetValues(contourValues);
-}
+inline void vtkMarchingCubes::GetValues(double *contourValues)
+{this->ContourValues->GetValues(contourValues);}
 
 /**
  * Set the number of contours to place into the list. You only really
@@ -184,34 +161,27 @@ inline void vtkMarchingCubes::GetValues(double* contourValues)
  * will automatically increase list size as needed.
  */
 inline void vtkMarchingCubes::SetNumberOfContours(int number)
-{
-  this->ContourValues->SetNumberOfContours(number);
-}
+{this->ContourValues->SetNumberOfContours(number);}
 
 /**
  * Get the number of contours in the list of contour values.
  */
-inline vtkIdType vtkMarchingCubes::GetNumberOfContours()
-{
-  return this->ContourValues->GetNumberOfContours();
-}
+inline int vtkMarchingCubes::GetNumberOfContours()
+{return this->ContourValues->GetNumberOfContours();}
 
 /**
  * Generate numContours equally spaced contour values between specified
  * range. Contour values will include min/max range values.
  */
 inline void vtkMarchingCubes::GenerateValues(int numContours, double range[2])
-{
-  this->ContourValues->GenerateValues(numContours, range);
-}
+{this->ContourValues->GenerateValues(numContours, range);}
 
 /**
  * Generate numContours equally spaced contour values between specified
  * range. Contour values will include min/max range values.
  */
-inline void vtkMarchingCubes::GenerateValues(int numContours, double rangeStart, double rangeEnd)
-{
-  this->ContourValues->GenerateValues(numContours, rangeStart, rangeEnd);
-}
+inline void vtkMarchingCubes::GenerateValues(int numContours, double
+                                             rangeStart, double rangeEnd)
+{this->ContourValues->GenerateValues(numContours, rangeStart, rangeEnd);}
 
 #endif

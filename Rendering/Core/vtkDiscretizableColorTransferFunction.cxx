@@ -27,12 +27,12 @@
 class vtkDiscretizableColorTransferFunction::vtkInternals
 {
 public:
-  std::vector<vtkTuple<double, 4> > IndexedColors;
+  std::vector<vtkTuple<double, 3> > IndexedColors;
 };
 
 vtkStandardNewMacro(vtkDiscretizableColorTransferFunction);
-vtkCxxSetObjectMacro(
-  vtkDiscretizableColorTransferFunction, ScalarOpacityFunction, vtkPiecewiseFunction);
+vtkCxxSetObjectMacro(vtkDiscretizableColorTransferFunction,
+  ScalarOpacityFunction, vtkPiecewiseFunction);
 //-----------------------------------------------------------------------------
 vtkDiscretizableColorTransferFunction::vtkDiscretizableColorTransferFunction()
   : Internals(new vtkInternals())
@@ -44,7 +44,7 @@ vtkDiscretizableColorTransferFunction::vtkDiscretizableColorTransferFunction()
 
   this->UseLogScale = 0;
 
-  this->ScalarOpacityFunction = nullptr;
+  this->ScalarOpacityFunction = 0;
   this->EnableOpacityMapping = false;
 }
 
@@ -53,11 +53,11 @@ vtkDiscretizableColorTransferFunction::~vtkDiscretizableColorTransferFunction()
 {
   // this removes any observer we may have setup for the
   // ScalarOpacityFunction.
-  this->SetScalarOpacityFunction(nullptr);
+  this->SetScalarOpacityFunction(NULL);
   this->LookupTable->Delete();
 
   delete this->Internals;
-  this->Internals = nullptr;
+  this->Internals = NULL;
 }
 
 //-----------------------------------------------------------------------------
@@ -67,23 +67,24 @@ vtkMTimeType vtkDiscretizableColorTransferFunction::GetMTime()
   if (this->ScalarOpacityFunction)
   {
     vtkMTimeType somtime = this->ScalarOpacityFunction->GetMTime();
-    mtime = somtime > mtime ? somtime : mtime;
+    mtime = somtime > mtime? somtime : mtime;
   }
   if (this->LookupTable)
   {
     vtkMTimeType ltmtime = this->LookupTable->GetMTime();
-    mtime = ltmtime > mtime ? ltmtime : mtime;
+    mtime = ltmtime > mtime? ltmtime : mtime;
   }
 
   return mtime;
 }
 
 //-----------------------------------------------------------------------------
-void vtkDiscretizableColorTransferFunction::SetNumberOfIndexedColors(unsigned int count)
+void vtkDiscretizableColorTransferFunction::SetNumberOfIndexedColors(
+  unsigned int count)
 {
   if (static_cast<unsigned int>(this->Internals->IndexedColors.size()) != count)
   {
-    this->Internals->IndexedColors.resize(count, vtkTuple<double, 4>(0.0));
+    this->Internals->IndexedColors.resize(count);
     this->Modified();
   }
 }
@@ -96,37 +97,34 @@ unsigned int vtkDiscretizableColorTransferFunction::GetNumberOfIndexedColors()
 
 //-----------------------------------------------------------------------------
 void vtkDiscretizableColorTransferFunction::SetIndexedColor(
-  unsigned int index, double r, double g, double b, double a)
+  unsigned int index, double r, double g, double b)
 {
   if (static_cast<unsigned int>(this->Internals->IndexedColors.size()) <= index)
   {
     // resize and fill all new colors with the same color as specified.
     size_t old_size = this->Internals->IndexedColors.size();
-    size_t new_size = static_cast<size_t>(index + 1);
+    size_t new_size = static_cast<size_t>(index+1);
     this->Internals->IndexedColors.resize(new_size);
 
     for (size_t cc = old_size; cc < new_size; cc++)
     {
-      double* data = this->Internals->IndexedColors[cc].GetData();
+      double *data = this->Internals->IndexedColors[cc].GetData();
       data[0] = r;
       data[1] = g;
       data[2] = b;
-      data[3] = a;
     }
 
     this->Modified();
   }
   else if (this->Internals->IndexedColors[index].GetData()[0] != r ||
-    this->Internals->IndexedColors[index].GetData()[1] != g ||
-    this->Internals->IndexedColors[index].GetData()[2] != b ||
-    this->Internals->IndexedColors[index].GetData()[3] != a)
+           this->Internals->IndexedColors[index].GetData()[1] != g ||
+           this->Internals->IndexedColors[index].GetData()[2] != b )
   {
     // color has changed, change it.
-    double* data = this->Internals->IndexedColors[index].GetData();
+    double *data = this->Internals->IndexedColors[index].GetData();
     data[0] = r;
     data[1] = g;
     data[2] = b;
-    data[3] = a;
 
     this->Modified();
   }
@@ -148,10 +146,10 @@ void vtkDiscretizableColorTransferFunction::GetIndexedColor(vtkIdType i, double 
 //-----------------------------------------------------------------------------
 void vtkDiscretizableColorTransferFunction::SetUseLogScale(int useLogScale)
 {
-  if (this->UseLogScale != useLogScale)
+  if(this->UseLogScale != useLogScale)
   {
     this->UseLogScale = useLogScale;
-    if (this->UseLogScale)
+    if(this->UseLogScale)
     {
       this->LookupTable->SetScaleToLog10();
       this->SetScaleToLog10();
@@ -172,27 +170,12 @@ int vtkDiscretizableColorTransferFunction::IsOpaque()
   return !this->EnableOpacityMapping;
 }
 
-int vtkDiscretizableColorTransferFunction::IsOpaque(
-  vtkAbstractArray* scalars, int colorMode, int component)
-{
-  // use superclass logic?
-  vtkDataArray* dataArray = vtkArrayDownCast<vtkDataArray>(scalars);
-  if ((colorMode == VTK_COLOR_MODE_DEFAULT &&
-        vtkArrayDownCast<vtkUnsignedCharArray>(dataArray) != nullptr) ||
-    (colorMode == VTK_COLOR_MODE_DIRECT_SCALARS && dataArray))
-  {
-    return this->Superclass::IsOpaque(scalars, colorMode, component);
-  }
-  // otherwise look at our basic approach
-  return this->IsOpaque();
-}
-
 //-----------------------------------------------------------------------------
 void vtkDiscretizableColorTransferFunction::Build()
 {
   this->Superclass::Build();
 
-  if (this->LookupTableUpdateTime > this->GetMTime())
+  if (this->BuildTime > this->GetMTime())
   {
     // no need to rebuild anything.
     return;
@@ -213,10 +196,10 @@ void vtkDiscretizableColorTransferFunction::Build()
   rgba[3] = 1.0;
   this->LookupTable->SetAboveRangeColor(rgba);
 
-  // this is essential since other the LookupTable doesn't update the
+  // this  is essential since other the LookupTable doesn't update the
   // annotations map. That's a bug in the implementation of
   // vtkScalarsToColors::SetAnnotations(..,..);
-  this->LookupTable->SetAnnotations(nullptr, nullptr);
+  this->LookupTable->SetAnnotations(NULL, NULL);
   this->LookupTable->SetAnnotations(this->AnnotatedValues, this->Annotations);
 
   if (this->IndexedLookup)
@@ -226,13 +209,13 @@ void vtkDiscretizableColorTransferFunction::Build()
       // Use the specified indexed-colors.
       vtkIdType count = this->GetNumberOfAnnotatedValues();
       this->LookupTable->SetNumberOfTableValues(count);
-      for (size_t cc = 0;
-           cc < this->Internals->IndexedColors.size() && cc < static_cast<size_t>(count); cc++)
+      for (size_t cc=0; cc < this->Internals->IndexedColors.size() &&
+                        cc < static_cast<size_t>(count); cc++)
       {
         rgba[0] = this->Internals->IndexedColors[cc].GetData()[0];
         rgba[1] = this->Internals->IndexedColors[cc].GetData()[1];
         rgba[2] = this->Internals->IndexedColors[cc].GetData()[2];
-        rgba[3] = this->Internals->IndexedColors[cc].GetData()[3];
+        rgba[3] = 1.0;
         this->LookupTable->SetTableValue(static_cast<int>(cc), rgba);
       }
     }
@@ -240,13 +223,13 @@ void vtkDiscretizableColorTransferFunction::Build()
     {
       // old logic for backwards compatibility.
       int nv = this->GetSize();
-      this->LookupTable->SetNumberOfTableValues(nv);
+      this->LookupTable->SetNumberOfTableValues( nv );
       double nodeVal[6];
-      for (int i = 0; i < nv; ++i)
+      for ( int i = 0; i < nv; ++ i )
       {
-        this->GetNodeValue(i, nodeVal);
+        this->GetNodeValue( i, nodeVal );
         nodeVal[4] = 1.;
-        this->LookupTable->SetTableValue(i, &nodeVal[1]);
+        this->LookupTable->SetTableValue( i, &nodeVal[1] );
       }
     }
   }
@@ -255,7 +238,8 @@ void vtkDiscretizableColorTransferFunction::Build()
     // Do not omit the LookupTable->SetNumberOfTableValues call:
     // WritePointer does not update the NumberOfColors ivar.
     this->LookupTable->SetNumberOfTableValues(this->NumberOfValues);
-    unsigned char* lut_ptr = this->LookupTable->WritePointer(0, this->NumberOfValues);
+    unsigned char* lut_ptr = this->LookupTable->WritePointer(0,
+      this->NumberOfValues);
     double* table = new double[this->NumberOfValues * 3];
     double range[2];
     this->GetRange(range);
@@ -263,33 +247,34 @@ void vtkDiscretizableColorTransferFunction::Build()
     if (this->UseLogScale)
     {
       logRangeValid = range[0] > 0.0 || range[1] < 0.0;
-      if (!logRangeValid && this->LookupTable->GetScale() == VTK_SCALE_LOG10)
+      if(!logRangeValid && this->LookupTable->GetScale() == VTK_SCALE_LOG10)
       {
         this->LookupTable->SetScaleToLinear();
       }
     }
 
     this->LookupTable->SetRange(range);
-    if (this->UseLogScale && logRangeValid && this->LookupTable->GetScale() == VTK_SCALE_LINEAR)
+    if(this->UseLogScale && logRangeValid &&
+        this->LookupTable->GetScale() == VTK_SCALE_LINEAR)
     {
       this->LookupTable->SetScaleToLog10();
     }
 
     this->GetTable(range[0], range[1], this->NumberOfValues, table);
     // Now, convert double to unsigned chars and fill the LUT.
-    for (int cc = 0; cc < this->NumberOfValues; cc++)
+    for (int cc=0; cc < this->NumberOfValues; cc++)
     {
-      lut_ptr[4 * cc] = (unsigned char)(255.0 * table[3 * cc] + 0.5);
-      lut_ptr[4 * cc + 1] = (unsigned char)(255.0 * table[3 * cc + 1] + 0.5);
-      lut_ptr[4 * cc + 2] = (unsigned char)(255.0 * table[3 * cc + 2] + 0.5);
-      lut_ptr[4 * cc + 3] = 255;
+      lut_ptr[4*cc]   = (unsigned char)(255.0*table[3*cc] + 0.5);
+      lut_ptr[4*cc+1] = (unsigned char)(255.0*table[3*cc+1] + 0.5);
+      lut_ptr[4*cc+2] = (unsigned char)(255.0*table[3*cc+2] + 0.5);
+      lut_ptr[4*cc+3] = 255;
     }
-    delete[] table;
+    delete [] table;
   }
 
   this->LookupTable->BuildSpecialColors();
 
-  this->LookupTableUpdateTime.Modified();
+  this->BuildTime.Modified();
 }
 
 //-----------------------------------------------------------------------------
@@ -302,21 +287,12 @@ void vtkDiscretizableColorTransferFunction::SetAlpha(double alpha)
 //-----------------------------------------------------------------------------
 void vtkDiscretizableColorTransferFunction::SetNanColor(double r, double g, double b)
 {
-  this->LookupTable->SetNanColor(r, g, b, this->GetNanOpacity());
+  this->LookupTable->SetNanColor(r, g, b, 1.0);
   this->Superclass::SetNanColor(r, g, b);
 }
 
 //-----------------------------------------------------------------------------
-void vtkDiscretizableColorTransferFunction::SetNanOpacity(double a)
-{
-  double color[3];
-  this->GetNanColor(color);
-  this->LookupTable->SetNanColor(color[0], color[1], color[2], a);
-  this->Superclass::SetNanOpacity(a);
-}
-
-//-----------------------------------------------------------------------------
-const unsigned char* vtkDiscretizableColorTransferFunction::MapValue(double v)
+unsigned char* vtkDiscretizableColorTransferFunction::MapValue(double v)
 {
   this->Build();
   if (this->Discretize || this->IndexedLookup)
@@ -344,87 +320,162 @@ void vtkDiscretizableColorTransferFunction::GetColor(double v, double rgb[3])
 //-----------------------------------------------------------------------------
 double vtkDiscretizableColorTransferFunction::GetOpacity(double v)
 {
-  if (this->IndexedLookup || !this->EnableOpacityMapping || !this->ScalarOpacityFunction)
+  if (
+    this->IndexedLookup ||
+    !this->EnableOpacityMapping ||
+    !this->ScalarOpacityFunction)
   {
     return this->Superclass::GetOpacity(v);
   }
   return this->ScalarOpacityFunction->GetValue(v);
 }
 
-//----------------------------------------------------------------------------
-// Internal mapping of the opacity value through the lookup table
-template <class T>
-static void vtkDiscretizableColorTransferFunctionMapOpacity(
-  vtkDiscretizableColorTransferFunction* self, T* input, unsigned char* output, int length,
-  int inIncr, int outFormat)
+//-----------------------------------------------------------------------------
+vtkUnsignedCharArray* vtkDiscretizableColorTransferFunction::MapScalars(
+  vtkDataArray *scalars, int colorMode, int component)
 {
-  double x;
-  int i = length;
-  unsigned char* optr = output;
-  T* iptr = input;
+  return this->MapScalars(static_cast<vtkAbstractArray*>(scalars), colorMode, component);
+}
 
-  if (self->GetScalarOpacityFunction()->GetSize() == 0)
+//-----------------------------------------------------------------------------
+vtkUnsignedCharArray* vtkDiscretizableColorTransferFunction::MapScalars(
+  vtkAbstractArray *scalars, int colorMode, int component)
+{
+  this->Build();
+
+  // if direct scalar mapping is enabled (and possible), the LUT is not used for
+  // color and we won't use it for opacity either.
+  bool direct_scalar_mapping =
+    ((colorMode == VTK_COLOR_MODE_DEFAULT &&
+      vtkArrayDownCast<vtkUnsignedCharArray>(scalars) != NULL) ||
+     colorMode == VTK_COLOR_MODE_DIRECT_SCALARS);
+
+  vtkUnsignedCharArray *colors = (this->Discretize || this->IndexedLookup) ?
+    this->LookupTable->MapScalars(scalars, colorMode, component):
+    this->Superclass::MapScalars(scalars, colorMode, component);
+
+  // calculate alpha values
+  if (colors &&
+     (colors->GetNumberOfComponents() == 4) &&
+     (direct_scalar_mapping == false) &&
+     (this->IndexedLookup == false) && //  we don't change alpha for IndexedLookup.
+     (this->EnableOpacityMapping == true) &&
+     (this->ScalarOpacityFunction.GetPointer() != NULL))
   {
-    vtkGenericWarningMacro("Transfer Function Has No Points!");
-    return;
+    vtkDataArray* da = vtkArrayDownCast<vtkDataArray>(scalars);
+    this->MapDataArrayToOpacity(da, component, colors);
   }
+  return colors;
+}
 
-  if (outFormat != VTK_RGBA && outFormat != VTK_LUMINANCE_ALPHA)
+template<typename T>
+struct VectorComponentGetter
+{
+  double Get(
+    T* scalars, int component, int numberOfComponents, vtkIdType tuple)
   {
-    return;
+    double value = *(scalars + tuple * numberOfComponents + component);
+    return value;
   }
+};
 
-  // opacity component stride
-  unsigned int stride = (outFormat == VTK_RGBA ? 4 : 2);
-
-  optr += stride - 1; // Move to first alpha value
-  // Iterate through color components
-  while (--i >= 0)
+template<typename T>
+struct VectorMagnitudeGetter
+{
+  double Get(
+    T* scalars, int component, int numberOfComponents, vtkIdType tuple)
   {
-    x = static_cast<double>(*iptr);
-    double alpha = self->GetScalarOpacityFunction()->GetValue(x);
-    *(optr) = static_cast<unsigned char>(alpha * 255.0 + 0.5);
-    optr += stride;
-    iptr += inIncr;
+    (void)component;
+    double v = 0.0;
+    for (int j = 0; j < numberOfComponents; ++j)
+    {
+      double u = *(scalars + tuple * numberOfComponents + j);
+      v += u * u;
+    }
+    v = sqrt (v);
+    return v;
+  }
+};
+
+//-----------------------------------------------------------------------------
+template<typename T, typename VectorGetter>
+void vtkDiscretizableColorTransferFunction::MapVectorToOpacity (
+  VectorGetter getter, T* scalars, int component,
+  int numberOfComponents, vtkIdType numberOfTuples, unsigned char* colors)
+{
+  for(vtkIdType i = 0; i < numberOfTuples; i++)
+  {
+    double value = getter.Get (scalars, component, numberOfComponents, i);
+    double alpha = this->ScalarOpacityFunction->GetValue(value);
+    *(colors + i * 4 + 3) = static_cast<unsigned char>(alpha * 255.0 + 0.5);
   }
 }
 
-//----------------------------------------------------------------------------
-void vtkDiscretizableColorTransferFunction::MapScalarsThroughTable2(void* input,
-  unsigned char* output, int inputDataType, int numberOfValues, int inputIncrement,
-  int outputFormat)
+//-----------------------------------------------------------------------------
+template<template<class> class VectorGetter>
+void vtkDiscretizableColorTransferFunction::AllTypesMapVectorToOpacity (
+  int scalarType,
+  void* scalarPtr, int component,
+  int numberOfComponents, vtkIdType numberOfTuples, unsigned char* colorPtr)
 {
-  // Calculate RGB values
-  if (this->Discretize || this->IndexedLookup)
+  switch (scalarType)
   {
-    this->LookupTable->MapScalarsThroughTable2(
-      input, output, inputDataType, numberOfValues, inputIncrement, outputFormat);
+    vtkTemplateAliasMacro(
+      MapVectorToOpacity(
+        VectorGetter<VTK_TT>(),
+        static_cast<VTK_TT*>(scalarPtr), component, numberOfComponents,
+        numberOfTuples, colorPtr));
+  }
+}
+
+//-----------------------------------------------------------------------------
+void vtkDiscretizableColorTransferFunction::MapDataArrayToOpacity(
+  vtkDataArray *scalars, int component, vtkUnsignedCharArray* colors)
+{
+  int scalarType = scalars->GetDataType ();
+  void* scalarPtr = scalars->GetVoidPointer(0);
+  unsigned char* colorPtr = static_cast<unsigned char*> (
+    colors->GetVoidPointer(0));
+  int numberOfComponents = scalars->GetNumberOfComponents ();
+  vtkIdType numberOfTuples = scalars->GetNumberOfTuples ();
+  if (component >= numberOfComponents)
+  {
+    vtkWarningMacro(
+      << "Clamping component: " << component
+      << " to numberOfComponents - 1: " << (numberOfComponents - 1));
+    component = numberOfComponents - 1;
+  }
+  if (component < 0)
+  {
+    AllTypesMapVectorToOpacity<VectorMagnitudeGetter> (
+      scalarType, scalarPtr,
+      component, numberOfComponents, numberOfTuples, colorPtr);
   }
   else
   {
-    this->Superclass::MapScalarsThroughTable2(
-      input, output, inputDataType, numberOfValues, inputIncrement, outputFormat);
-  }
-
-  // Calculate alpha values
-  if (this->IndexedLookup == false && // don't change alpha for IndexedLookup.
-    this->EnableOpacityMapping == true && this->ScalarOpacityFunction.GetPointer() != nullptr)
-  {
-    switch (inputDataType)
-    {
-      vtkTemplateMacro(vtkDiscretizableColorTransferFunctionMapOpacity(
-        this, static_cast<VTK_TT*>(input), output, numberOfValues, inputIncrement, outputFormat));
-      default:
-        vtkErrorMacro(<< "MapImageThroughTable: Unknown input ScalarType");
-        return;
-    }
+    AllTypesMapVectorToOpacity<VectorComponentGetter> (
+      scalarType, scalarPtr,
+      component, numberOfComponents, numberOfTuples, colorPtr);
   }
 }
+
+#ifndef VTK_LEGACY_REMOVE
+//-----------------------------------------------------------------------------
+double* vtkDiscretizableColorTransferFunction::GetRGBPoints()
+{
+  // This method is redundant with
+  // vtkColorTransferFunction::GetDataPointer(), so we simply call
+  // that method here.
+  VTK_LEGACY_REPLACED_BODY(vtkDiscretizableColorTransferFunction::GetRGBPoints,
+    "VTK 6.2", "vtkDiscretizableColorTransferFunction::GetDataPointer()" );
+  return this->Superclass::GetDataPointer();
+}
+#endif
 
 //----------------------------------------------------------------------------
 vtkIdType vtkDiscretizableColorTransferFunction::GetNumberOfAvailableColors()
 {
-  if (this->Discretize == false)
+  if(this->Discretize == false)
   {
     return 16777216; // 2^24
   }

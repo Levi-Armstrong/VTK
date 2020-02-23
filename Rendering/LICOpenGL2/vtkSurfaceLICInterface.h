@@ -42,7 +42,7 @@
  * DEP   - depth test and copy to back buffer
  *
  * The result of each stage is cached in a texture so that during interaction
- * a stage may be skipped if the user has not modified its parameters or input
+ * a stage may be skipped if the user has not modified its paramters or input
  * data.
  *
  * The parallel parts of algorithm are implemented in vtkPSurfaceLICInterface.
@@ -51,13 +51,13 @@
  *
  * @sa
  * vtkLineIntegralConvolution2D
- */
+*/
 
 #ifndef vtkSurfaceLICInterface_h
 #define vtkSurfaceLICInterface_h
 
-#include "vtkOpenGLPolyDataMapper.h"
 #include "vtkRenderingLICOpenGL2Module.h" // For export macro
+#include "vtkOpenGLPolyDataMapper.h"
 
 class vtkRenderWindow;
 class vtkRenderer;
@@ -73,15 +73,15 @@ class VTKRENDERINGLICOPENGL2_EXPORT vtkSurfaceLICInterface : public vtkObject
 public:
   static vtkSurfaceLICInterface* New();
   vtkTypeMacro(vtkSurfaceLICInterface, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
-  //@{
-  /**
-   * Get/Set the number of integration steps in each direction.
-   */
+    //@{
+    /**
+     * Get/Set the number of integration steps in each direction.
+     */
   void SetNumberOfSteps(int val);
   vtkGetMacro(NumberOfSteps, int);
-  //@}
+    //@}
 
   //@{
   /**
@@ -123,7 +123,7 @@ public:
   /**
    * The MaskThreshold controls the rendering of fragments in stagnant
    * regions of flow.  // In these regions LIC noise texture will be masked,
-   * where |V| < MaskThreshold is satisfied. The masking process blends a
+   * where |V| < MaskThreshold is satisifed. The masking process blends a
    * the MaskColor with the scalar color of the surface proportional to
    * MaskIntesnsity. See MaskIntensity for more information on the blending
    * algorithm. This blending allows one control over the masking process
@@ -146,12 +146,9 @@ public:
    * makes the masked fragments look similar to the LIC'd fragments. The mask
    * color is applied only when MaskIntensity > 0.
    */
-  void SetMaskColor(double* val);
+  void SetMaskColor(double *val);
   void SetMaskColor(double r, double g, double b)
-  {
-    double rgb[3] = { r, g, b };
-    this->SetMaskColor(rgb);
-  }
+    { double rgb[3]={r,g,b}; this->SetMaskColor(rgb); }
   vtkGetVector3Macro(MaskColor, double);
   //@}
 
@@ -186,7 +183,7 @@ public:
    * vtkLineINtegralComvolution2D) and after the scalar colors have been
    * combined with the LIC.
 
-   * The best approach for using this feature is to enable LIC enhancement,
+   * The best appraoch for using this feature is to enable LIC enhancement,
    * and only if the image is to dark or dull enable COLOR enhancement.
 
    * Both stages are implemented by a histogram stretching algorithm. During
@@ -202,7 +199,7 @@ public:
    * of m and M are the min and max taken over all fragments.
 
    * This increase the dynamic range and contrast in the LIC'd image, both of
-   * which are natuarly attenuated by the convolution process.
+   * which are natuarly attenuated by the convolution proccess.
 
    * Values
 
@@ -213,12 +210,11 @@ public:
 
    * This feature is disabled by default.
    */
-  enum
-  {
-    ENHANCE_CONTRAST_OFF = 0,
-    ENHANCE_CONTRAST_LIC = 1,
-    ENHANCE_CONTRAST_COLOR = 3,
-    ENHANCE_CONTRAST_BOTH = 4
+  enum {
+    ENHANCE_CONTRAST_OFF=0,
+    ENHANCE_CONTRAST_LIC=1,
+    ENHANCE_CONTRAST_COLOR=3,
+    ENHANCE_CONTRAST_BOTH=4
   };
   void SetEnhanceContrast(int val);
   vtkGetMacro(EnhanceContrast, int);
@@ -268,15 +264,14 @@ public:
   /**
    * Set/Get the color mode. The color mode controls how scalar colors are
    * combined with the LIC in the final image. The BLEND mode combines scalar
-   * colors with LIC intensities with proportional blending controlled by the
+   * colors with LIC intensities with proportional blending controled by the
    * LICIntensity parameter. The MAP mode combines scalar colors with LIC,
    * by multiplication the HSL represntation of color's lightness.
 
    * The default is COLOR_MODE_BLEND.
    */
-  enum
-  {
-    COLOR_MODE_BLEND = 0,
+  enum {
+    COLOR_MODE_BLEND=0,
     COLOR_MODE_MAP
   };
   void SetColorMode(int val);
@@ -315,8 +310,8 @@ public:
    * array will be converted into a texture for use as noise in the LIC process.
    * Noise datasets are expected to be gray scale.
    */
-  void SetNoiseDataSet(vtkImageData* data);
-  vtkImageData* GetNoiseDataSet();
+  void SetNoiseDataSet(vtkImageData *data);
+  vtkImageData *GetNoiseDataSet();
   //@}
 
   //@{
@@ -349,11 +344,10 @@ public:
    * With uniform noise there is greater control over the range of values
    * in the noise texture. The Default is NOISE_TYPE_GAUSSIAN.
    */
-  enum
-  {
-    NOISE_TYPE_UNIFORM = 0,
-    NOISE_TYPE_GAUSSIAN = 1,
-    NOISE_TYPE_PERLIN = 2
+  enum {
+    NOISE_TYPE_UNIFORM=0,
+    NOISE_TYPE_GAUSSIAN=1,
+    NOISE_TYPE_PERLIN=2
   };
   void SetNoiseType(int type);
   vtkGetMacro(NoiseType, int);
@@ -400,8 +394,8 @@ public:
 
   //@{
   /**
-   * Control the density of the noise. A value of 1.0 produces uniform random
-   * noise while values < 1.0 produce impulse noise with the given probability.
+   * Control the density of of the noise. A value of 1.0 produces uniform random
+   * noise while values < 1.0 produce impulse noise with the given probabilty.
    */
   void SetImpulseNoiseProbability(double val);
   vtkGetMacro(ImpulseNoiseProbability, double);
@@ -427,12 +421,11 @@ public:
   /**
    * Control the screen space decomposition where LIC is computed.
    */
-  enum
-  {
-    COMPOSITE_INPLACE = 0,
-    COMPOSITE_INPLACE_DISJOINT = 1,
-    COMPOSITE_BALANCED = 2,
-    COMPOSITE_AUTO = 3
+  enum {
+    COMPOSITE_INPLACE=0,
+    COMPOSITE_INPLACE_DISJOINT=1,
+    COMPOSITE_BALANCED=2,
+    COMPOSITE_AUTO=3
   };
   void SetCompositeStrategy(int val);
   vtkGetMacro(CompositeStrategy, int);
@@ -442,7 +435,7 @@ public:
    * Returns true if the rendering context supports extensions needed by this
    * painter.
    */
-  static bool IsSupported(vtkRenderWindow* context);
+  static bool IsSupported(vtkRenderWindow *context);
 
   /**
    * Methods used for parallel benchmarks. Use cmake to define
@@ -450,29 +443,29 @@ public:
    * update timing information is stored, it can be written to
    * disk by calling WriteLog.
    */
-  virtual void WriteTimerLog(const char*) {}
+  virtual void WriteTimerLog(const char *){}
 
   /**
    * Make a shallow copy of this interface
    */
-  void ShallowCopy(vtkSurfaceLICInterface* m);
+  void ShallowCopy(vtkSurfaceLICInterface *m);
 
   /**
    * Release any graphics resources that are being consumed by this mapper.
    * The parameter window could be used to determine which graphic
    * resources to release. In this case, releases the display lists.
    */
-  virtual void ReleaseGraphicsResources(vtkWindow* win);
+  virtual void ReleaseGraphicsResources(vtkWindow * win);
 
   /**
    * Returns true when rendering LIC is possible.
    */
-  bool CanRenderSurfaceLIC(vtkActor* actor);
+  bool CanRenderSurfaceLIC(vtkActor *actor);
 
   /**
    * Look for changes that would trigger stage updates
    */
-  void ValidateContext(vtkRenderer* renderer);
+  void ValidateContext(vtkRenderer *renderer);
 
   /**
    * Creates a new communicator with/without the calling processes
@@ -480,21 +473,22 @@ public:
    * is included in the new communicator. In parallel this call is mpi
    * collective on the world communicator. In serial this is a no-op.
    */
-  virtual vtkPainterCommunicator* CreateCommunicator(int);
+  virtual vtkPainterCommunicator *CreateCommunicator(int);
 
   /**
    * Creates a new communicator for internal use based on this
    * rank's visible data.
    */
-  void CreateCommunicator(vtkRenderer*, vtkActor*, vtkDataObject* data);
+  void CreateCommunicator(vtkRenderer *, vtkActor *, vtkDataObject *data);
 
-  vtkPainterCommunicator* GetCommunicator();
+  vtkPainterCommunicator *GetCommunicator();
 
   /**
    * Called from a mapper, does what is needed to make sure
    * the communicators are ready
    */
-  void UpdateCommunicator(vtkRenderer* renderer, vtkActor* actor, vtkDataObject* data);
+  void UpdateCommunicator(vtkRenderer *renderer,
+    vtkActor *actor, vtkDataObject *data);
 
   //@{
   /**
@@ -521,7 +515,7 @@ public:
    * In serial operation this is a no-op, in parallel it
    * is a global collective reduction.
    */
-  virtual void GetGlobalMinMax(vtkPainterCommunicator*, float&, float&) {}
+  virtual void GetGlobalMinMax(vtkPainterCommunicator*, float&, float&){}
 
   //@{
   /**
@@ -534,19 +528,19 @@ public:
 
 protected:
   vtkSurfaceLICInterface();
-  ~vtkSurfaceLICInterface() override;
+  ~vtkSurfaceLICInterface();
 
   /**
    * Updates the noise texture, downsampling by the requested sample rate.
    */
-  void UpdateNoiseImage(vtkRenderWindow* renWin);
+  void UpdateNoiseImage(vtkRenderWindow *renWin);
 
   //@{
   /**
    * Return false if stage can be skipped
    */
   virtual bool NeedToUpdateCommunicator();
-  bool NeedToRenderGeometry(vtkRenderer* renderer, vtkActor* actor);
+  bool NeedToRenderGeometry(vtkRenderer *renderer, vtkActor *actor);
   bool NeedToGatherVectors();
   bool NeedToComputeLIC();
   bool NeedToColorLIC();
@@ -556,46 +550,50 @@ protected:
   int Enable;
 
   // Unit is a pixel length.
-  int NumberOfSteps;
-  double StepSize;
-  int NormalizeVectors;
+  int     NumberOfSteps;
+  double  StepSize;
+  int     NormalizeVectors;
 
-  int EnhancedLIC;
-  int EnhanceContrast;
-  double LowLICContrastEnhancementFactor;
-  double HighLICContrastEnhancementFactor;
-  double LowColorContrastEnhancementFactor;
-  double HighColorContrastEnhancementFactor;
-  int AntiAlias;
+  int     EnhancedLIC;
+  int     EnhanceContrast;
+  double  LowLICContrastEnhancementFactor;
+  double  HighLICContrastEnhancementFactor;
+  double  LowColorContrastEnhancementFactor;
+  double  HighColorContrastEnhancementFactor;
+  int     AntiAlias;
 
-  int MaskOnSurface;
-  double MaskThreshold;
-  double MaskIntensity;
-  double MaskColor[3];
+  int     MaskOnSurface;
+  double  MaskThreshold;
+  double  MaskIntensity;
+  double  MaskColor[3];
 
-  int ColorMode;
-  double LICIntensity;
-  double MapModeBias;
+  int     ColorMode;
+  double  LICIntensity;
+  double  MapModeBias;
 
-  int GenerateNoiseTexture;
-  int NoiseType;
-  int NoiseTextureSize;
-  int NoiseGrainSize;
-  double MinNoiseValue;
-  double MaxNoiseValue;
-  int NumberOfNoiseLevels;
-  double ImpulseNoiseProbability;
-  double ImpulseNoiseBackgroundValue;
-  int NoiseGeneratorSeed;
+  int     GenerateNoiseTexture;
+  int     NoiseType;
+  int     NoiseTextureSize;
+  int     NoiseGrainSize;
+  double  MinNoiseValue;
+  double  MaxNoiseValue;
+  int     NumberOfNoiseLevels;
+  double  ImpulseNoiseProbability;
+  double  ImpulseNoiseBackgroundValue;
+  int     NoiseGeneratorSeed;
 
-  int AlwaysUpdate;
-  int CompositeStrategy;
+  int     AlwaysUpdate;
+  int     CompositeStrategy;
 
   vtkSurfaceLICHelper* Internals;
 
+  // save the active fbo and its draw buffer
+  int PrevDrawBuf;
+  int PrevFbo;
+
 private:
-  vtkSurfaceLICInterface(const vtkSurfaceLICInterface&) = delete;
-  void operator=(const vtkSurfaceLICInterface&) = delete;
+  vtkSurfaceLICInterface(const vtkSurfaceLICInterface&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkSurfaceLICInterface&) VTK_DELETE_FUNCTION;
 };
 
 #endif

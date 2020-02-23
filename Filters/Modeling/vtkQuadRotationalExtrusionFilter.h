@@ -57,7 +57,7 @@ PURPOSE.  See the above copyright notice for more information.
  * @par Thanks:
  * This class was initially developed by Daniel Aguilera, CEA/DIF
  * Ported and modified by Philippe Pebay, Kitware, 2011
- */
+*/
 
 #ifndef vtkQuadRotationalExtrusionFilter_h
 #define vtkQuadRotationalExtrusionFilter_h
@@ -69,25 +69,24 @@ PURPOSE.  See the above copyright notice for more information.
 class vtkPoints;
 class vtkPointData;
 
-class VTKFILTERSMODELING_EXPORT vtkQuadRotationalExtrusionFilter
-  : public vtkMultiBlockDataSetAlgorithm
+class VTKFILTERSMODELING_EXPORT vtkQuadRotationalExtrusionFilter : public vtkMultiBlockDataSetAlgorithm
 {
-public:
-  vtkTypeMacro(vtkQuadRotationalExtrusionFilter, vtkMultiBlockDataSetAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+ public:
+  vtkTypeMacro(vtkQuadRotationalExtrusionFilter,vtkMultiBlockDataSetAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Create object with capping on, angle of 360 degrees, resolution = 12, and
    * no translation along z-axis.
    * vector (0,0,1), and point (0,0,0).
    */
-  static vtkQuadRotationalExtrusionFilter* New();
+  static vtkQuadRotationalExtrusionFilter *New();
 
   enum RotationAxis
   {
-    USE_X = 0,
-    USE_Y = 1,
-    USE_Z = 2
+      USE_X = 0,
+      USE_Y = 1,
+      USE_Z = 2
   };
 
   //@{
@@ -96,9 +95,9 @@ public:
    */
   vtkSetClampMacro(Axis, int, 0, 2);
   vtkGetMacro(Axis, int);
-  void SetAxisToX() { this->SetAxis(USE_X); }
-  void SetAxisToY() { this->SetAxis(USE_Y); }
-  void SetAxisToZ() { this->SetAxis(USE_Z); }
+  void SetAxisToX() { this->SetAxis(USE_X); };
+  void SetAxisToY() { this->SetAxis(USE_Y); };
+  void SetAxisToZ() { this->SetAxis(USE_Z); };
   //@}
 
   //@{
@@ -106,25 +105,25 @@ public:
    * Set/Get resolution of sweep operation. Resolution controls the number
    * of intermediate node points.
    */
-  vtkSetClampMacro(Resolution, int, 1, VTK_INT_MAX);
-  vtkGetMacro(Resolution, int);
+  vtkSetClampMacro(Resolution,int,1,VTK_INT_MAX);
+  vtkGetMacro(Resolution,int);
   //@}
 
   //@{
   /**
    * Turn on/off the capping of the skirt.
    */
-  vtkSetMacro(Capping, vtkTypeBool);
-  vtkGetMacro(Capping, vtkTypeBool);
-  vtkBooleanMacro(Capping, vtkTypeBool);
+  vtkSetMacro(Capping,int);
+  vtkGetMacro(Capping,int);
+  vtkBooleanMacro(Capping,int);
   //@}
 
   //@{
   /**
    * Set/Get angle of rotation.
    */
-  vtkSetMacro(DefaultAngle, double);
-  vtkGetMacro(DefaultAngle, double);
+  vtkSetMacro(DefaultAngle,double);
+  vtkGetMacro(DefaultAngle,double);
   //@}
 
   //@{
@@ -139,38 +138,45 @@ public:
   /**
    * Set/Get total amount of translation along the z-axis.
    */
-  vtkSetMacro(Translation, double);
-  vtkGetMacro(Translation, double);
+  vtkSetMacro(Translation,double);
+  vtkGetMacro(Translation,double);
   //@}
 
   //@{
   /**
    * Set/Get change in radius during sweep process.
    */
-  vtkSetMacro(DeltaRadius, double);
-  vtkGetMacro(DeltaRadius, double);
+  vtkSetMacro(DeltaRadius,double);
+  vtkGetMacro(DeltaRadius,double);
   //@}
 
-protected:
+ protected:
   vtkQuadRotationalExtrusionFilter();
-  ~vtkQuadRotationalExtrusionFilter() override {}
+  ~vtkQuadRotationalExtrusionFilter() {}
 
-  int FillInputPortInformation(int, vtkInformation*) override;
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int FillInputPortInformation( int , vtkInformation* );
+  int RequestData( vtkInformation*,
+                   vtkInformationVector**,
+                   vtkInformationVector* );
 
-  int RotateAroundAxis(double, vtkIdType, vtkPoints*, vtkPoints*, vtkPointData*, vtkPointData*);
+  int RotateAroundAxis( double,
+                        vtkIdType,
+                        vtkPoints*,
+                        vtkPoints*,
+                        vtkPointData*,
+                        vtkPointData* );
   int Axis;
   int Resolution;
-  vtkTypeBool Capping;
+  int Capping;
   double DefaultAngle;
   double Translation;
   double DeltaRadius;
 
-  std::map<vtkIdType, double> PerBlockAngles;
+  std::map<vtkIdType,double> PerBlockAngles;
 
-private:
-  vtkQuadRotationalExtrusionFilter(const vtkQuadRotationalExtrusionFilter&) = delete;
-  void operator=(const vtkQuadRotationalExtrusionFilter&) = delete;
+ private:
+  vtkQuadRotationalExtrusionFilter(const vtkQuadRotationalExtrusionFilter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkQuadRotationalExtrusionFilter&) VTK_DELETE_FUNCTION;
 };
 
 #endif

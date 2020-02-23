@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import vtk
+from vtk.test import Testing
 from vtk.util.misc import vtkGetDataRoot
 VTK_DATA_ROOT = vtkGetDataRoot()
 
@@ -62,5 +63,4 @@ cam.SetClippingRange(1.12294,16.6226)
 renWin.SetSize(300,200)
 iren.Initialize()
 # interact with data
-iren.Start()
 # --- end of script --

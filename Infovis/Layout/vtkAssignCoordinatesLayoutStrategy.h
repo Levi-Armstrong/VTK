@@ -23,23 +23,23 @@
  *
  *
  * Uses vtkAssignCoordinates to use values from arrays as the x, y, and z coordinates.
- */
+*/
 
 #ifndef vtkAssignCoordinatesLayoutStrategy_h
 #define vtkAssignCoordinatesLayoutStrategy_h
 
-#include "vtkGraphLayoutStrategy.h"
 #include "vtkInfovisLayoutModule.h" // For export macro
-#include "vtkSmartPointer.h"        // For SP ivars
+#include "vtkGraphLayoutStrategy.h"
+#include "vtkSmartPointer.h" // For SP ivars
 
 class vtkAssignCoordinates;
 
 class VTKINFOVISLAYOUT_EXPORT vtkAssignCoordinatesLayoutStrategy : public vtkGraphLayoutStrategy
 {
 public:
-  static vtkAssignCoordinatesLayoutStrategy* New();
+  static vtkAssignCoordinatesLayoutStrategy *New();
   vtkTypeMacro(vtkAssignCoordinatesLayoutStrategy, vtkGraphLayoutStrategy);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -68,17 +68,18 @@ public:
   /**
    * Perform the random layout.
    */
-  void Layout() override;
+  void Layout();
 
 protected:
   vtkAssignCoordinatesLayoutStrategy();
-  ~vtkAssignCoordinatesLayoutStrategy() override;
+  ~vtkAssignCoordinatesLayoutStrategy();
 
   vtkSmartPointer<vtkAssignCoordinates> AssignCoordinates;
 
 private:
-  vtkAssignCoordinatesLayoutStrategy(const vtkAssignCoordinatesLayoutStrategy&) = delete;
-  void operator=(const vtkAssignCoordinatesLayoutStrategy&) = delete;
+  vtkAssignCoordinatesLayoutStrategy(const vtkAssignCoordinatesLayoutStrategy&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkAssignCoordinatesLayoutStrategy&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

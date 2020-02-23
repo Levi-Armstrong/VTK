@@ -25,16 +25,16 @@ using std::ostringstream;
 vtkOStrStreamWrapper::vtkOStrStreamWrapper()
   : vtkOStreamWrapper(*(new ostringstream))
 {
-  this->Result = nullptr;
+  this->Result = 0;
   this->Frozen = 0;
 }
 
 //----------------------------------------------------------------------------
 vtkOStrStreamWrapper::~vtkOStrStreamWrapper()
 {
-  if (!this->Frozen)
+  if(!this->Frozen)
   {
-    delete[] this->Result;
+    delete [] this->Result;
   }
   delete &this->ostr;
 }
@@ -42,10 +42,10 @@ vtkOStrStreamWrapper::~vtkOStrStreamWrapper()
 //----------------------------------------------------------------------------
 char* vtkOStrStreamWrapper::str()
 {
-  if (!this->Result)
+  if(!this->Result)
   {
     std::string s = static_cast<ostringstream*>(&this->ostr)->str();
-    this->Result = new char[s.length() + 1];
+    this->Result = new char[s.length()+1];
     strcpy(this->Result, s.c_str());
     this->freeze();
   }

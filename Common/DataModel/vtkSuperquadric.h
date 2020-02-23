@@ -37,7 +37,7 @@
  * The Size and Thickness parameters control coefficients of superquadric
  * generation, and may do not exactly describe the size of the superquadric.
  *
- */
+*/
 
 #ifndef vtkSuperquadric_h
 #define vtkSuperquadric_h
@@ -45,7 +45,7 @@
 #include "vtkCommonDataModelModule.h" // For export macro
 #include "vtkImplicitFunction.h"
 
-#define VTK_MIN_SUPERQUADRIC_THICKNESS 1e-4
+#define VTK_MIN_SUPERQUADRIC_THICKNESS  1e-4
 
 class VTKCOMMONDATAMODEL_EXPORT vtkSuperquadric : public vtkImplicitFunction
 {
@@ -54,30 +54,31 @@ public:
    * Construct with superquadric radius of 0.5, toroidal off, center at 0.0,
    * scale (1,1,1), size 0.5, phi roundness 1.0, and theta roundness 0.0.
    */
-  static vtkSuperquadric* New();
+  static vtkSuperquadric *New();
 
-  vtkTypeMacro(vtkSuperquadric, vtkImplicitFunction);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkSuperquadric,vtkImplicitFunction);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   // ImplicitFunction interface
-  using vtkImplicitFunction::EvaluateFunction;
-  double EvaluateFunction(double x[3]) override;
-  void EvaluateGradient(double x[3], double g[3]) override;
+  double EvaluateFunction(double x[3]) VTK_OVERRIDE;
+  double EvaluateFunction(double x, double y, double z)
+    {return this->vtkImplicitFunction::EvaluateFunction(x, y, z); } ;
+  void EvaluateGradient(double x[3], double g[3]) VTK_OVERRIDE;
 
   //@{
   /**
    * Set the center of the superquadric. Default is 0,0,0.
    */
-  vtkSetVector3Macro(Center, double);
-  vtkGetVectorMacro(Center, double, 3);
+  vtkSetVector3Macro(Center,double);
+  vtkGetVectorMacro(Center,double,3);
   //@}
 
   //@{
   /**
    * Set the scale factors of the superquadric. Default is 1,1,1.
    */
-  vtkSetVector3Macro(Scale, double);
-  vtkGetVectorMacro(Scale, double, 3);
+  vtkSetVector3Macro(Scale,double);
+  vtkGetVectorMacro(Scale,double,3);
   //@}
 
   //@{
@@ -85,8 +86,8 @@ public:
    * Set/Get Superquadric ring thickness (toroids only).
    * Changing thickness maintains the outside diameter of the toroid.
    */
-  vtkGetMacro(Thickness, double);
-  vtkSetClampMacro(Thickness, double, VTK_MIN_SUPERQUADRIC_THICKNESS, 1.0);
+  vtkGetMacro(Thickness,double);
+  vtkSetClampMacro(Thickness,double,VTK_MIN_SUPERQUADRIC_THICKNESS,1.0);
   //@}
 
   //@{
@@ -94,7 +95,7 @@ public:
    * Set/Get Superquadric north/south roundness.
    * Values range from 0 (rectangular) to 1 (circular) to higher orders.
    */
-  vtkGetMacro(PhiRoundness, double);
+  vtkGetMacro(PhiRoundness,double);
   void SetPhiRoundness(double e);
   //@}
 
@@ -103,7 +104,7 @@ public:
    * Set/Get Superquadric east/west roundness.
    * Values range from 0 (rectangular) to 1 (circular) to higher orders.
    */
-  vtkGetMacro(ThetaRoundness, double);
+  vtkGetMacro(ThetaRoundness,double);
   void SetThetaRoundness(double e);
   //@}
 
@@ -111,34 +112,35 @@ public:
   /**
    * Set/Get Superquadric isotropic size.
    */
-  vtkSetMacro(Size, double);
-  vtkGetMacro(Size, double);
+  vtkSetMacro(Size,double);
+  vtkGetMacro(Size,double);
   //@}
 
   //@{
   /**
    * Set/Get whether or not the superquadric is toroidal (1) or ellipsoidal (0).
    */
-  vtkBooleanMacro(Toroidal, vtkTypeBool);
-  vtkGetMacro(Toroidal, vtkTypeBool);
-  vtkSetMacro(Toroidal, vtkTypeBool);
+  vtkBooleanMacro(Toroidal,int);
+  vtkGetMacro(Toroidal,int);
+  vtkSetMacro(Toroidal,int);
   //@}
 
 protected:
   vtkSuperquadric();
-  ~vtkSuperquadric() override {}
+  ~vtkSuperquadric() VTK_OVERRIDE {}
 
-  vtkTypeBool Toroidal;
+  int Toroidal;
   double Thickness;
   double Size;
   double PhiRoundness;
   double ThetaRoundness;
   double Center[3];
   double Scale[3];
-
 private:
-  vtkSuperquadric(const vtkSuperquadric&) = delete;
-  void operator=(const vtkSuperquadric&) = delete;
+  vtkSuperquadric(const vtkSuperquadric&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkSuperquadric&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+

@@ -3,12 +3,14 @@
 #
 # Here is where you can add the name of your local unsorted classes.
 #
-set(classes
-  vtkBar2
+
+set (Unsorted_SRCS
+  vtkBar2.cxx
 )
 
-#
+# --------------------------------------------------------------------------
+# You probably do not need to modify anything below this line
+
 # Create the vtkmyUnsorted C++ library.
-#
-vtk_module_add_module(VTKMY::Unsorted
-  CLASSES ${classes})
+add_library (vtkmyUnsorted ${Unsorted_SRCS})
+target_link_libraries (vtkmyUnsorted ${VTK_LIBRARIES})

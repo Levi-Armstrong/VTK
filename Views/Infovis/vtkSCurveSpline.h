@@ -28,49 +28,48 @@
  *
  * @sa
  * vtkSpline vtkKochanekSpline
- */
+*/
 
 #ifndef vtkSCurveSpline_h
 #define vtkSCurveSpline_h
 
-#include "vtkSpline.h"
 #include "vtkViewsInfovisModule.h" // For export macro
+#include "vtkSpline.h"
 
 class VTKVIEWSINFOVIS_EXPORT vtkSCurveSpline : public vtkSpline
 {
 public:
-  static vtkSCurveSpline* New();
+  static vtkSCurveSpline *New();
 
-  vtkTypeMacro(vtkSCurveSpline, vtkSpline);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkSCurveSpline,vtkSpline);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Compute SCurve Splines for each dependent variable
    */
-  void Compute() override;
+  void Compute ();
 
   /**
    * Evaluate a 1D SCurve spline.
    */
-  double Evaluate(double t) override;
+  virtual double Evaluate (double t);
 
   /**
    * Deep copy of SCurve spline data.
    */
-  void DeepCopy(vtkSpline* s) override;
+  virtual void DeepCopy(vtkSpline *s);
 
-  vtkSetMacro(NodeWeight, double);
-  vtkGetMacro(NodeWeight, double);
-
+  vtkSetMacro(NodeWeight,double);
+  vtkGetMacro(NodeWeight,double);
 protected:
   vtkSCurveSpline();
-  ~vtkSCurveSpline() override {}
+  ~vtkSCurveSpline() {}
 
   double NodeWeight;
 
 private:
-  vtkSCurveSpline(const vtkSCurveSpline&) = delete;
-  void operator=(const vtkSCurveSpline&) = delete;
+  vtkSCurveSpline(const vtkSCurveSpline&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkSCurveSpline&) VTK_DELETE_FUNCTION;
 };
 
 #endif

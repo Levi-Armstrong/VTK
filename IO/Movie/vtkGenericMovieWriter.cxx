@@ -14,20 +14,21 @@
 =========================================================================*/
 #include "vtkGenericMovieWriter.h"
 
-#include "vtkErrorCode.h"
 #include "vtkImageData.h"
+#include "vtkErrorCode.h"
+
 
 //---------------------------------------------------------------------------
 vtkGenericMovieWriter::vtkGenericMovieWriter()
 {
-  this->FileName = nullptr;
+  this->FileName = NULL;
   this->Error = 0;
 }
 
 //---------------------------------------------------------------------------
 vtkGenericMovieWriter::~vtkGenericMovieWriter()
 {
-  this->SetFileName(nullptr);
+  this->SetFileName(0);
 }
 
 //----------------------------------------------------------------------------
@@ -35,19 +36,26 @@ void vtkGenericMovieWriter::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 
-  os << indent << "FileName: " << (this->FileName ? this->FileName : "(none)") << endl;
+  os << indent << "FileName: "
+     << (this->FileName ? this->FileName : "(none)") << endl;
   os << indent << "Error: " << this->Error << endl;
 }
 
 //----------------------------------------------------------------------------
-static const char* vtkMovieWriterErrorStrings[] = { "Unassigned Error", "Initialize Error",
-  "No Input Error", "Can Not Compress Error", "Can Not Format Error", "Changed Resolution Error",
-  nullptr };
+static const char *vtkMovieWriterErrorStrings[] = {
+  "Unassigned Error",
+  "Initialize Error",
+  "No Input Error",
+  "Can Not Compress Error",
+  "Can Not Format Error",
+  "Changed Resolution Error",
+  NULL
+};
 
-const char* vtkGenericMovieWriter::GetStringFromErrorCode(unsigned long error)
+const char *vtkGenericMovieWriter::GetStringFromErrorCode(unsigned long error)
 {
   static unsigned long numerrors = 0;
-  if (error < UserError)
+  if(error < UserError)
   {
     return vtkErrorCode::GetStringFromErrorCode(error);
   }
@@ -58,7 +66,7 @@ const char* vtkGenericMovieWriter::GetStringFromErrorCode(unsigned long error)
 
   if (!numerrors)
   {
-    while (vtkMovieWriterErrorStrings[numerrors] != nullptr)
+    while (vtkMovieWriterErrorStrings[numerrors] != NULL)
     {
       numerrors++;
     }
@@ -73,3 +81,5 @@ const char* vtkGenericMovieWriter::GetStringFromErrorCode(unsigned long error)
     return "Unknown Error";
   }
 }
+
+

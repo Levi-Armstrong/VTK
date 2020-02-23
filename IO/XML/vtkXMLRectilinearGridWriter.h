@@ -24,7 +24,7 @@
  *
  * @sa
  * vtkXMLPRectilinearGridWriter
- */
+*/
 
 #ifndef vtkXMLRectilinearGridWriter_h
 #define vtkXMLRectilinearGridWriter_h
@@ -38,8 +38,8 @@ class VTKIOXML_EXPORT vtkXMLRectilinearGridWriter : public vtkXMLStructuredDataW
 {
 public:
   static vtkXMLRectilinearGridWriter* New();
-  vtkTypeMacro(vtkXMLRectilinearGridWriter, vtkXMLStructuredDataWriter);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkXMLRectilinearGridWriter,vtkXMLStructuredDataWriter);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Get/Set the writer's input.
@@ -49,32 +49,32 @@ public:
   /**
    * Get the default file extension for files written by this writer.
    */
-  const char* GetDefaultFileExtension() override;
+  const char* GetDefaultFileExtension();
 
 protected:
   vtkXMLRectilinearGridWriter();
-  ~vtkXMLRectilinearGridWriter() override;
+  ~vtkXMLRectilinearGridWriter();
 
   // see algorithm for more info
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  virtual int FillInputPortInformation(int port, vtkInformation* info);
 
   int WriteAppendedMode(vtkIndent indent);
-  void WriteAppendedPiece(int index, vtkIndent indent) override;
-  void WriteAppendedPieceData(int index) override;
-  void WriteInlinePiece(vtkIndent indent) override;
-  void GetInputExtent(int* extent) override;
-  const char* GetDataSetName() override;
+  void WriteAppendedPiece(int index, vtkIndent indent);
+  void WriteAppendedPieceData(int index);
+  void WriteInlinePiece(vtkIndent indent);
+  void GetInputExtent(int* extent);
+  const char* GetDataSetName();
   void CalculateSuperclassFraction(float* fractions);
 
   // Coordinate array appended data positions.
-  OffsetsManagerArray* CoordinateOM;
+  OffsetsManagerArray *CoordinateOM;
 
-  void AllocatePositionArrays() override;
-  void DeletePositionArrays() override;
+  virtual void AllocatePositionArrays();
+  virtual void DeletePositionArrays();
 
 private:
-  vtkXMLRectilinearGridWriter(const vtkXMLRectilinearGridWriter&) = delete;
-  void operator=(const vtkXMLRectilinearGridWriter&) = delete;
+  vtkXMLRectilinearGridWriter(const vtkXMLRectilinearGridWriter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkXMLRectilinearGridWriter&) VTK_DELETE_FUNCTION;
 };
 
 #endif

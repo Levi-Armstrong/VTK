@@ -20,7 +20,8 @@
 
 // Subclass vector so we can directly call constructor.  This works
 // around problems on Borland C++.
-struct vtkCommonInformationKeyManagerKeysType : public std::vector<vtkInformationKey*>
+struct vtkCommonInformationKeyManagerKeysType:
+  public std::vector<vtkInformationKey*>
 {
   typedef std::vector<vtkInformationKey*> Superclass;
   typedef Superclass::iterator iterator;
@@ -35,7 +36,7 @@ static vtkCommonInformationKeyManagerKeysType* vtkCommonInformationKeyManagerKey
 //----------------------------------------------------------------------------
 vtkCommonInformationKeyManager::vtkCommonInformationKeyManager()
 {
-  if (++vtkCommonInformationKeyManagerCount == 1)
+  if(++vtkCommonInformationKeyManagerCount == 1)
   {
     vtkCommonInformationKeyManager::ClassInitialize();
   }
@@ -44,7 +45,7 @@ vtkCommonInformationKeyManager::vtkCommonInformationKeyManager()
 //----------------------------------------------------------------------------
 vtkCommonInformationKeyManager::~vtkCommonInformationKeyManager()
 {
-  if (--vtkCommonInformationKeyManagerCount == 0)
+  if(--vtkCommonInformationKeyManagerCount == 0)
   {
     vtkCommonInformationKeyManager::ClassFinalize();
   }
@@ -67,18 +68,19 @@ void vtkCommonInformationKeyManager::ClassInitialize()
   // initialization to occur in other translation units immediately,
   // which then may try to access the vector before it is set here.
   void* keys = malloc(sizeof(vtkCommonInformationKeyManagerKeysType));
-  vtkCommonInformationKeyManagerKeys = new (keys) vtkCommonInformationKeyManagerKeysType;
+  vtkCommonInformationKeyManagerKeys =
+    new (keys) vtkCommonInformationKeyManagerKeysType;
 }
 
 //----------------------------------------------------------------------------
 void vtkCommonInformationKeyManager::ClassFinalize()
 {
-  if (vtkCommonInformationKeyManagerKeys)
+  if(vtkCommonInformationKeyManagerKeys)
   {
     // Delete information keys.
-    for (vtkCommonInformationKeyManagerKeysType::iterator i =
-           vtkCommonInformationKeyManagerKeys->begin();
-         i != vtkCommonInformationKeyManagerKeys->end(); ++i)
+    for(vtkCommonInformationKeyManagerKeysType::iterator i =
+          vtkCommonInformationKeyManagerKeys->begin();
+        i != vtkCommonInformationKeyManagerKeys->end(); ++i)
     {
       vtkInformationKey* key = *i;
       delete key;
@@ -89,6 +91,6 @@ void vtkCommonInformationKeyManager::ClassFinalize()
     // delete.
     vtkCommonInformationKeyManagerKeys->~vtkCommonInformationKeyManagerKeysType();
     free(vtkCommonInformationKeyManagerKeys);
-    vtkCommonInformationKeyManagerKeys = nullptr;
+    vtkCommonInformationKeyManagerKeys = 0;
   }
 }

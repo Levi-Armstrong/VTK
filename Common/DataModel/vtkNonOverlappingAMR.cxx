@@ -18,13 +18,19 @@
 vtkStandardNewMacro(vtkNonOverlappingAMR);
 
 //------------------------------------------------------------------------------
-vtkNonOverlappingAMR::vtkNonOverlappingAMR() = default;
-
-//------------------------------------------------------------------------------
-vtkNonOverlappingAMR::~vtkNonOverlappingAMR() = default;
-
-//------------------------------------------------------------------------------
-void vtkNonOverlappingAMR::PrintSelf(ostream& os, vtkIndent indent)
+vtkNonOverlappingAMR::vtkNonOverlappingAMR()
 {
-  this->Superclass::PrintSelf(os, indent);
+
+}
+
+//------------------------------------------------------------------------------
+vtkNonOverlappingAMR::~vtkNonOverlappingAMR()
+{
+
+}
+
+//------------------------------------------------------------------------------
+void vtkNonOverlappingAMR::PrintSelf(ostream& os, vtkIndent indent )
+{
+  this->Superclass::PrintSelf(os,indent);
 }

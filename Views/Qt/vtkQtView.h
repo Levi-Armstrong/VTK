@@ -18,24 +18,23 @@
  * into the VTK view framework. Not much here yet, but in the future there
  * could be methods around selection, event-handling, drag-and-drop, etc.
  *
- */
+*/
 
 #ifndef vtkQtView_h
 #define vtkQtView_h
 
-#include "vtkView.h"
 #include "vtkViewsQtModule.h" // For export macro
+#include "vtkView.h"
 
 #include <QObject> // Needed to hook into Qt
 
-class VTKVIEWSQT_EXPORT vtkQtView
-  : public QObject
-  , public vtkView
+class VTKVIEWSQT_EXPORT vtkQtView : public QObject, public vtkView
 {
-  Q_OBJECT
+Q_OBJECT
 public:
+
   vtkTypeMacro(vtkQtView, vtkView);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Get the main container of this view (a  QWidget).
@@ -43,7 +42,7 @@ public:
    * to GetWidget(): something like this
    * this->ui->box->layout()->addWidget(this->View->GetWidget());
    */
-  virtual QWidget* GetWidget() = 0;
+  virtual QWidget* GetWidget()=0;
 
   /**
    * Calls QApplication::processEvents().  This is useful if you are using QWidgets
@@ -67,12 +66,12 @@ public:
 
 protected:
   vtkQtView();
-  ~vtkQtView() override;
+  ~vtkQtView();
 
 private:
-  vtkQtView(const vtkQtView&) = delete;
-  void operator=(const vtkQtView&) = delete;
+  vtkQtView(const vtkQtView&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkQtView&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif
-// VTK-HeaderTest-Exclude: vtkQtView.h

@@ -33,15 +33,19 @@
 //----------------------------------------------------------------------------
 vtkStandardNewMacro(vtkUndirectedGraph);
 //----------------------------------------------------------------------------
-vtkUndirectedGraph::vtkUndirectedGraph() = default;
-
-//----------------------------------------------------------------------------
-vtkUndirectedGraph::~vtkUndirectedGraph() = default;
-
-//----------------------------------------------------------------------------
-void vtkUndirectedGraph::GetInEdges(vtkIdType v, const vtkInEdgeType*& edges, vtkIdType& nedges)
+vtkUndirectedGraph::vtkUndirectedGraph()
 {
-  const vtkOutEdgeType* outEdges;
+}
+
+//----------------------------------------------------------------------------
+vtkUndirectedGraph::~vtkUndirectedGraph()
+{
+}
+
+//----------------------------------------------------------------------------
+void vtkUndirectedGraph::GetInEdges(vtkIdType v, const vtkInEdgeType *& edges, vtkIdType & nedges)
+{
+  const vtkOutEdgeType *outEdges;
   this->GetOutEdges(v, outEdges, nedges);
   edges = reinterpret_cast<const vtkInEdgeType*>(outEdges);
 }
@@ -61,19 +65,19 @@ vtkIdType vtkUndirectedGraph::GetInDegree(vtkIdType v)
 }
 
 //----------------------------------------------------------------------------
-vtkUndirectedGraph* vtkUndirectedGraph::GetData(vtkInformation* info)
+vtkUndirectedGraph *vtkUndirectedGraph::GetData(vtkInformation *info)
 {
-  return info ? vtkUndirectedGraph::SafeDownCast(info->Get(DATA_OBJECT())) : nullptr;
+  return info? vtkUndirectedGraph::SafeDownCast(info->Get(DATA_OBJECT())) : 0;
 }
 
 //----------------------------------------------------------------------------
-vtkUndirectedGraph* vtkUndirectedGraph::GetData(vtkInformationVector* v, int i)
+vtkUndirectedGraph *vtkUndirectedGraph::GetData(vtkInformationVector *v, int i)
 {
   return vtkUndirectedGraph::GetData(v->GetInformationObject(i));
 }
 
 //----------------------------------------------------------------------------
-bool vtkUndirectedGraph::IsStructureValid(vtkGraph* g)
+bool vtkUndirectedGraph::IsStructureValid(vtkGraph *g)
 {
   if (!g)
   {
@@ -90,7 +94,8 @@ bool vtkUndirectedGraph::IsStructureValid(vtkGraph* g)
   // Loop edges should be in exactly one edge list.
   std::vector<vtkIdType> place(g->GetNumberOfEdges(), -1);
   std::vector<vtkIdType> count(g->GetNumberOfEdges(), 0);
-  vtkSmartPointer<vtkOutEdgeIterator> outIter = vtkSmartPointer<vtkOutEdgeIterator>::New();
+  vtkSmartPointer<vtkOutEdgeIterator> outIter =
+    vtkSmartPointer<vtkOutEdgeIterator>::New();
   for (vtkIdType v = 0; v < g->GetNumberOfVertices(); ++v)
   {
     if (g->GetInDegree(v) > 0)
@@ -128,5 +133,5 @@ bool vtkUndirectedGraph::IsStructureValid(vtkGraph* g)
 //----------------------------------------------------------------------------
 void vtkUndirectedGraph::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 }

@@ -19,10 +19,10 @@
 #include "vtkGenericRenderWindowInteractor.h"
 #include "vtkInteractorObserver.h"
 #include "vtkObjectFactory.h"
+#include "vtkRendererCollection.h"
+#include "vtkRenderer.h"
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
-#include "vtkRenderer.h"
-#include "vtkRendererCollection.h"
 
 vtkStandardNewMacro(vtkRenderViewBase);
 
@@ -39,7 +39,9 @@ vtkRenderViewBase::vtkRenderViewBase()
   this->SetInteractor(iren);
 }
 
-vtkRenderViewBase::~vtkRenderViewBase() = default;
+vtkRenderViewBase::~vtkRenderViewBase()
+{
+}
 
 vtkRenderer* vtkRenderViewBase::GetRenderer()
 {
@@ -51,11 +53,11 @@ void vtkRenderViewBase::SetRenderer(vtkRenderer* newren)
   vtkRendererCollection* rens = this->RenderWindow->GetRenderers();
   vtkCollectionSimpleIterator cookie;
   rens->InitTraversal(cookie);
-  while (vtkRenderer* ren = rens->GetNextRenderer(cookie))
+  while(vtkRenderer *ren = rens->GetNextRenderer(cookie))
   {
-    if (ren->GetLayer() < 2)
+    if (ren->GetLayer()<2)
     {
-      ren->SetRenderWindow(nullptr);
+      ren->SetRenderWindow(NULL);
       this->RenderWindow->RemoveRenderer(ren);
     }
   }
@@ -80,16 +82,16 @@ void vtkRenderViewBase::SetRenderWindow(vtkRenderWindow* win)
 
   // move renderers to new window
   vtkRendererCollection* rens = this->RenderWindow->GetRenderers();
-  while (rens->GetNumberOfItems())
+  while(rens->GetNumberOfItems())
   {
     vtkRenderer* ren = rens->GetFirstRenderer();
-    ren->SetRenderWindow(nullptr);
+    ren->SetRenderWindow(NULL);
     win->AddRenderer(ren);
     this->RenderWindow->RemoveRenderer(ren);
   }
 
-  vtkSmartPointer<vtkInteractorObserver> style =
-    this->GetInteractor() ? this->GetInteractor()->GetInteractorStyle() : nullptr;
+  vtkSmartPointer<vtkInteractorObserver> style = this->GetInteractor()?
+        this->GetInteractor()->GetInteractorStyle() : NULL;
   this->RenderWindow = win;
   if (this->GetInteractor())
   {
@@ -97,7 +99,8 @@ void vtkRenderViewBase::SetRenderWindow(vtkRenderWindow* win)
   }
   else if (style)
   {
-    vtkGenericRenderWindowInteractor* iren = vtkGenericRenderWindowInteractor::New();
+    vtkGenericRenderWindowInteractor* iren =
+        vtkGenericRenderWindowInteractor::New();
     win->SetInteractor(iren);
     iren->SetInteractorStyle(style);
     iren->Delete();
@@ -116,8 +119,8 @@ void vtkRenderViewBase::SetInteractor(vtkRenderWindowInteractor* interactor)
     return;
   }
 
-  vtkSmartPointer<vtkInteractorObserver> style =
-    this->GetInteractor() ? this->GetInteractor()->GetInteractorStyle() : nullptr;
+  vtkSmartPointer<vtkInteractorObserver> style = this->GetInteractor() ?
+        this->GetInteractor()->GetInteractorStyle() : NULL;
   this->RenderWindow->SetInteractor(interactor);
 
   if (this->GetInteractor())
@@ -126,7 +129,8 @@ void vtkRenderViewBase::SetInteractor(vtkRenderWindowInteractor* interactor)
   }
   else if (style && this->RenderWindow)
   {
-    vtkGenericRenderWindowInteractor* iren = vtkGenericRenderWindowInteractor::New();
+    vtkGenericRenderWindowInteractor* iren =
+        vtkGenericRenderWindowInteractor::New();
     this->RenderWindow->SetInteractor(iren);
     iren->SetInteractorStyle(style);
     iren->Delete();

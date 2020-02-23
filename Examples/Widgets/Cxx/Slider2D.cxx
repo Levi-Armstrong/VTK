@@ -1,19 +1,19 @@
-#include <vtkActor.h>
-#include <vtkCallbackCommand.h>
-#include <vtkCommand.h>
-#include <vtkInteractorStyleTrackballCamera.h>
-#include <vtkPolyData.h>
-#include <vtkPolyDataMapper.h>
-#include <vtkProperty.h>
-#include <vtkRenderWindow.h>
-#include <vtkRenderWindowInteractor.h>
-#include <vtkRenderer.h>
-#include <vtkSliderRepresentation2D.h>
-#include <vtkSliderWidget.h>
-#include <vtkSmartPointer.h>
 #include <vtkSphereSource.h>
+#include <vtkSmartPointer.h>
+#include <vtkPolyData.h>
+#include <vtkSliderWidget.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkActor.h>
+#include <vtkRenderWindow.h>
+#include <vtkRenderer.h>
+#include <vtkRenderWindowInteractor.h>
+#include <vtkCommand.h>
 #include <vtkWidgetEvent.h>
+#include <vtkCallbackCommand.h>
 #include <vtkWidgetEventTranslator.h>
+#include <vtkInteractorStyleTrackballCamera.h>
+#include <vtkSliderRepresentation2D.h>
+#include <vtkProperty.h>
 
 // The callback does the work.
 // The callback keeps a pointer to the sphere whose resolution is
@@ -23,23 +23,23 @@
 class vtkSliderCallback : public vtkCommand
 {
 public:
-  static vtkSliderCallback* New() { return new vtkSliderCallback; }
-  void Execute(vtkObject* caller, unsigned long, void*) override
+  static vtkSliderCallback *New()
   {
-    vtkSliderWidget* sliderWidget = reinterpret_cast<vtkSliderWidget*>(caller);
-    int value = static_cast<int>(
-      static_cast<vtkSliderRepresentation*>(sliderWidget->GetRepresentation())->GetValue());
-    this->SphereSource->SetPhiResolution(value / 2);
+    return new vtkSliderCallback;
+  }
+  void Execute(vtkObject *caller, unsigned long, void*) VTK_OVERRIDE
+  {
+    vtkSliderWidget *sliderWidget =
+      reinterpret_cast<vtkSliderWidget*>(caller);
+    int value = static_cast<int>(static_cast<vtkSliderRepresentation *>(sliderWidget->GetRepresentation())->GetValue());
+    this->SphereSource->SetPhiResolution(value/2);
     this->SphereSource->SetThetaResolution(value);
   }
-  vtkSliderCallback()
-    : SphereSource(nullptr)
-  {
-  }
-  vtkSphereSource* SphereSource;
+  vtkSliderCallback():SphereSource(0) {}
+  vtkSphereSource *SphereSource;
 };
 
-int main(int, char*[])
+int main (int, char *[])
 {
   // A sphere
   vtkSmartPointer<vtkSphereSource> sphereSource = vtkSmartPointer<vtkSphereSource>::New();
@@ -61,8 +61,7 @@ int main(int, char*[])
   renderWindow->AddRenderer(renderer);
 
   // An interactor
-  vtkSmartPointer<vtkRenderWindowInteractor> renderWindowInteractor =
-    vtkSmartPointer<vtkRenderWindowInteractor>::New();
+  vtkSmartPointer<vtkRenderWindowInteractor> renderWindowInteractor = vtkSmartPointer<vtkRenderWindowInteractor>::New();
   renderWindowInteractor->SetRenderWindow(renderWindow);
 
   // Add the actors to the scene
@@ -72,8 +71,7 @@ int main(int, char*[])
   renderWindow->Render();
 
   // Here we describe the representation of the widget.
-  vtkSmartPointer<vtkSliderRepresentation2D> sliderRep =
-    vtkSmartPointer<vtkSliderRepresentation2D>::New();
+  vtkSmartPointer<vtkSliderRepresentation2D> sliderRep = vtkSmartPointer<vtkSliderRepresentation2D>::New();
   sliderRep->SetMinimumValue(3.0);
   sliderRep->SetMaximumValue(20.0);
   sliderRep->SetValue(sphereSource->GetThetaResolution());
@@ -83,7 +81,7 @@ int main(int, char*[])
   // slider will stay in the same proportionate location if the window
   // is resized.
   sliderRep->GetPoint1Coordinate()->SetCoordinateSystemToNormalizedDisplay();
-  sliderRep->GetPoint1Coordinate()->SetValue(.1, .1);
+  sliderRep->GetPoint1Coordinate()->SetValue(.1 ,.1);
   sliderRep->GetPoint2Coordinate()->SetCoordinateSystemToNormalizedDisplay();
   sliderRep->GetPoint2Coordinate()->SetValue(.3, .1);
 
@@ -101,7 +99,7 @@ int main(int, char*[])
   // Observe the interaction events of the widget. If the computation
   // in the callback is time consuming, observe the
   // EndInteractionEvent instead.
-  sliderWidget->AddObserver(vtkCommand::InteractionEvent, callback);
+  sliderWidget->AddObserver(vtkCommand::InteractionEvent,callback);
 
   renderWindowInteractor->Initialize();
   renderWindow->Render();

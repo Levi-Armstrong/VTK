@@ -20,7 +20,7 @@
  * The output of this reader is a single vtkTable data object.
  * @sa
  * vtkTable vtkTableReader vtkDataReader
- */
+*/
 
 #ifndef vtkBiomTableReader_h
 #define vtkBiomTableReader_h
@@ -34,29 +34,33 @@ class vtkVariant;
 class VTKIOINFOVIS_EXPORT vtkBiomTableReader : public vtkTableReader
 {
 public:
-  static vtkBiomTableReader* New();
-  vtkTypeMacro(vtkBiomTableReader, vtkTableReader);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkBiomTableReader *New();
+  vtkTypeMacro(vtkBiomTableReader,vtkTableReader);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
    * Get the output of this reader.
    */
-  vtkTable* GetOutput();
-  vtkTable* GetOutput(int idx);
-  void SetOutput(vtkTable* output);
+  vtkTable *GetOutput();
+  vtkTable *GetOutput(int idx);
+  void SetOutput(vtkTable *output);
   //@}
-
-  /**
-   * Actual reading happens here
-   */
-  int ReadMeshSimple(const std::string& fname, vtkDataObject* output) override;
 
 protected:
   vtkBiomTableReader();
-  ~vtkBiomTableReader() override;
+  ~vtkBiomTableReader();
 
-  int FillOutputPortInformation(int, vtkInformation*) override;
+  virtual int RequestData(vtkInformation *, vtkInformationVector **,
+                          vtkInformationVector *);
+
+  // Since the Outputs[0] has the same UpdateExtent format
+  // as the generic DataObject we can copy the UpdateExtent
+  // as a default behavior.
+  virtual int RequestUpdateExtent(vtkInformation *, vtkInformationVector **,
+                                  vtkInformationVector *);
+
+  virtual int FillOutputPortInformation(int, vtkInformation*);
   void ParseShape();
   void ParseDataType();
   void ParseSparseness();
@@ -64,7 +68,7 @@ protected:
   void FillData(vtkVariant v);
   void ParseSparseData();
   void ParseDenseData();
-  void InsertValue(int row, int col, const std::string& value);
+  void InsertValue(int row, int col, std::string value);
   void ParseId();
   void ParseColumns();
   void ParseRows();
@@ -75,8 +79,8 @@ private:
   int NumberOfColumns;
   int DataType;
   bool Sparse;
-  vtkBiomTableReader(const vtkBiomTableReader&) = delete;
-  void operator=(const vtkBiomTableReader&) = delete;
+  vtkBiomTableReader(const vtkBiomTableReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkBiomTableReader&) VTK_DELETE_FUNCTION;
 };
 
 #endif

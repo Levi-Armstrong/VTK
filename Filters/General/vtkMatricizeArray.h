@@ -31,20 +31,20 @@
  *
  * @par Thanks:
  * Developed by Timothy M. Shead (tshead@sandia.gov) at Sandia National Laboratories.
- */
+*/
 
 #ifndef vtkMatricizeArray_h
 #define vtkMatricizeArray_h
 
-#include "vtkArrayDataAlgorithm.h"
 #include "vtkFiltersGeneralModule.h" // For export macro
+#include "vtkArrayDataAlgorithm.h"
 
 class VTKFILTERSGENERAL_EXPORT vtkMatricizeArray : public vtkArrayDataAlgorithm
 {
 public:
   static vtkMatricizeArray* New();
   vtkTypeMacro(vtkMatricizeArray, vtkArrayDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   //@{
   /**
@@ -62,13 +62,16 @@ public:
 
 protected:
   vtkMatricizeArray();
-  ~vtkMatricizeArray() override;
+  ~vtkMatricizeArray() VTK_OVERRIDE;
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(
+    vtkInformation*,
+    vtkInformationVector**,
+    vtkInformationVector*) VTK_OVERRIDE;
 
 private:
-  vtkMatricizeArray(const vtkMatricizeArray&) = delete;
-  void operator=(const vtkMatricizeArray&) = delete;
+  vtkMatricizeArray(const vtkMatricizeArray&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkMatricizeArray&) VTK_DELETE_FUNCTION;
 
   class Generator;
 
@@ -76,3 +79,4 @@ private:
 };
 
 #endif
+

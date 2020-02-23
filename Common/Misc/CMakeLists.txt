@@ -1,10 +1,15 @@
-set(classes
-  vtkContourValues
-  vtkErrorCode
-  vtkFunctionParser
-  vtkHeap
-  vtkPolygonBuilder
-  vtkResourceFileLocator)
+set(Module_SRCS
+  vtkContourValues.cxx
+  vtkErrorCode.cxx
+  vtkFunctionParser.cxx
+  vtkHeap.cxx
+  vtkPolygonBuilder.cxx
+  )
 
-vtk_module_add_module(VTK::CommonMisc
-  CLASSES ${classes})
+set_source_files_properties(
+  vtkErrorCode.cxx
+  vtkPolygonBuilder.cxx
+  WRAP_EXCLUDE
+  )
+
+vtk_module_library(vtkCommonMisc ${Module_SRCS})

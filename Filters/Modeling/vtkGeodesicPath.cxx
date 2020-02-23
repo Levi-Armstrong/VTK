@@ -14,11 +14,12 @@
 =========================================================================*/
 #include "vtkGeodesicPath.h"
 
-#include "vtkExecutive.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
 #include "vtkObjectFactory.h"
 #include "vtkPolyData.h"
+#include "vtkExecutive.h"
+
 
 //-----------------------------------------------------------------------------
 vtkGeodesicPath::vtkGeodesicPath()
@@ -27,10 +28,13 @@ vtkGeodesicPath::vtkGeodesicPath()
 }
 
 //-----------------------------------------------------------------------------
-vtkGeodesicPath::~vtkGeodesicPath() = default;
+vtkGeodesicPath::~vtkGeodesicPath()
+{
+}
 
 //-----------------------------------------------------------------------------
-int vtkGeodesicPath::FillInputPortInformation(int port, vtkInformation* info)
+int vtkGeodesicPath::FillInputPortInformation(int port,
+                                              vtkInformation *info)
 {
   if (port == 0)
   {
@@ -43,5 +47,6 @@ int vtkGeodesicPath::FillInputPortInformation(int port, vtkInformation* info)
 //-----------------------------------------------------------------------------
 void vtkGeodesicPath::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 }
+

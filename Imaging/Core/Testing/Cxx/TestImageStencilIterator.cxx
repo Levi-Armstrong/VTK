@@ -26,33 +26,34 @@
 static unsigned char VoxelValue(int i, int j, int k)
 {
   static bool seeded = false;
-  static unsigned int randseq[127];
+  static int randseq[127];
   if (!seeded)
   {
-    unsigned int seed = 230981U;
-    for (unsigned int c = 0; c < 127; c++)
+    int seed = 230981;
+    for (int c = 0; c < 127; c++)
     {
-      randseq[c] = 1664525U * seed + 1013904223U;
+      randseq[c] = 1664525*seed + 1013904223;
       seed = randseq[c];
     }
     seeded = true;
   }
 
-  unsigned int l = (k * 127 * 127 + j * 127 + i) % (4 * 127);
-  unsigned int m = l / 4;
-  unsigned int n = l % 4;
-  return static_cast<unsigned char>(randseq[m] >> (8 * n));
+  int l = (k*127*127 + j*127 + i) % (4*127);
+  int m = l / 4;
+  int n = l % 4;
+  return static_cast<unsigned char>(randseq[m] >> (8*n));
 }
 
 //----------------------------------------------------------------------------
 // Generate a test image
-static void GenerateImage(vtkImageData* image, int extent[6])
+static void GenerateImage(vtkImageData *image, int extent[6])
 {
   image->Initialize();
   image->SetExtent(extent);
   image->AllocateScalars(VTK_UNSIGNED_CHAR, 1);
 
-  unsigned char* ptr = static_cast<unsigned char*>(image->GetScalarPointer());
+  unsigned char *ptr =
+    static_cast<unsigned char *>(image->GetScalarPointer());
 
   for (int k = extent[4]; k <= extent[5]; k++)
   {
@@ -68,7 +69,7 @@ static void GenerateImage(vtkImageData* image, int extent[6])
 
 //----------------------------------------------------------------------------
 // Generate a test stencil
-static void GenerateStencil(vtkImageStencilData* stencil, int extent[6])
+static void GenerateStencil(vtkImageStencilData *stencil, int extent[6])
 {
   stencil->Initialize();
   stencil->SetExtent(extent);
@@ -92,16 +93,17 @@ static void GenerateStencil(vtkImageStencilData* stencil, int extent[6])
 
 //----------------------------------------------------------------------------
 // check that stencil and image match over the given extents
-static bool CheckStencilExtents(int imageExt[6], int stencilExt[6], int extent[6])
+static bool CheckStencilExtents(
+  int imageExt[6], int stencilExt[6], int extent[6])
 {
   vtkNew<vtkImageData> image;
-  GenerateImage(image, imageExt);
+  GenerateImage(image.Get(), imageExt);
 
   vtkNew<vtkImageStencilData> stencil;
-  GenerateStencil(stencil, stencilExt);
+  GenerateStencil(stencil.Get(), stencilExt);
 
   vtkImageStencilIterator<unsigned char> iter;
-  iter.Initialize(image, stencil, extent);
+  iter.Initialize(image.Get(), stencil.Get(), extent);
 
   bool match = true;
   int i = extent[0];
@@ -111,12 +113,13 @@ static bool CheckStencilExtents(int imageExt[6], int stencilExt[6], int extent[6
   for (; !iter.IsAtEnd(); iter.NextSpan())
   {
     bool inside = iter.IsInStencil();
-    for (unsigned char* p = iter.BeginSpan(); p != iter.EndSpan(); p++)
+    for (unsigned char *p = iter.BeginSpan(); p != iter.EndSpan(); p++)
     {
-      match &= (*p == VoxelValue(i, j, k));
+      match &= (*p == VoxelValue(i,j,k));
 
-      if (i >= stencilExt[0] && i <= stencilExt[1] && j >= stencilExt[2] && j <= stencilExt[3] &&
-        k >= stencilExt[4] && k <= stencilExt[5])
+      if (i >= stencilExt[0] && i <= stencilExt[1] &&
+          j >= stencilExt[2] && j <= stencilExt[3] &&
+          k >= stencilExt[4] && k <= stencilExt[5])
       {
         match &= (!inside) ^ (*p > 127);
       }
@@ -142,10 +145,10 @@ static bool CheckStencilExtents(int imageExt[6], int stencilExt[6], int extent[6
 }
 
 //----------------------------------------------------------------------------
-int TestImageStencilIterator(int argc, char* argv[])
+int TestImageStencilIterator(int argc, char *argv[])
 {
   vtkNew<vtkTesting> testing;
-  for (int cc = 1; cc < argc; cc++)
+  for (int cc = 1; cc < argc; cc ++ )
   {
     testing->AddArgument(argv[cc]);
   }
@@ -212,45 +215,49 @@ int TestImageStencilIterator(int argc, char* argv[])
     { 0, 9, 4, 9, 6, 9 },
 
     // stencil and execute extent do not overlap
-    { 0, 10, 3, 8, 2, 19 },
-    { 0, 10, 3, 8, 2, 7 },
-    { 0, 10, 3, 8, 8, 19 },
+    { 0, 10, 3, 8, 2, 19},
+    { 0, 10, 3, 8, 2, 7},
+    { 0, 10, 3, 8, 8, 19},
 
-    { 0, 10, 3, 8, 2, 19 },
-    { 0, 10, 3, 8, 8, 19 },
-    { 0, 10, 3, 8, 2, 7 },
+    { 0, 10, 3, 8, 2, 19},
+    { 0, 10, 3, 8, 8, 19},
+    { 0, 10, 3, 8, 2, 7},
 
-    { 0, 10, 3, 8, 2, 19 },
-    { 0, 10, 0, 4, 2, 19 },
-    { 0, 10, 6, 8, 2, 19 },
+    { 0, 10, 3, 8, 2, 19},
+    { 0, 10, 0, 4, 2, 19},
+    { 0, 10, 6, 8, 2, 19},
 
-    { 0, 10, 3, 8, 2, 19 },
-    { 0, 10, 6, 8, 2, 19 },
-    { 0, 10, 3, 4, 2, 19 },
+    { 0, 10, 3, 8, 2, 19},
+    { 0, 10, 6, 8, 2, 19},
+    { 0, 10, 3, 4, 2, 19},
 
-    { 0, 10, 3, 8, 2, 19 },
-    { 6, 10, 3, 8, 2, 19 },
-    { 0, 3, 3, 8, 2, 19 },
+    { 0, 10, 3, 8, 2, 19},
+    { 6, 10, 3, 8, 2, 19},
+    { 0, 3, 3, 8, 2, 19},
 
-    { 0, 10, 3, 8, 2, 19 },
-    { 0, 5, 3, 8, 2, 19 },
-    { 6, 10, 3, 8, 2, 19 },
+    { 0, 10, 3, 8, 2, 19},
+    { 0, 5, 3, 8, 2, 19},
+    { 6, 10, 3, 8, 2, 19},
   };
 
   int rval = EXIT_SUCCESS;
   for (int i = 0; i < 57; i += 3)
   {
-    if (!CheckStencilExtents(extents[i], extents[i + 1], extents[i + 2]))
+    if (!CheckStencilExtents(extents[i], extents[i+1], extents[i+2]))
     {
       std::cerr << "Failed with these extents:\n";
-      std::cerr << "Image:   " << extents[i][0] << " " << extents[i][1] << " " << extents[i][2]
-                << " " << extents[i][3] << " " << extents[i][4] << " " << extents[i][5] << "\n";
-      std::cerr << "Stencil: " << extents[i + 1][0] << " " << extents[i + 1][1] << " "
-                << extents[i + 1][2] << " " << extents[i + 1][3] << " " << extents[i + 1][4] << " "
-                << extents[i + 1][5] << "\n";
-      std::cerr << "Execute: " << extents[i + 2][0] << " " << extents[i + 2][1] << " "
-                << extents[i + 2][2] << " " << extents[i + 2][3] << " " << extents[i + 2][4] << " "
-                << extents[i + 2][5] << "\n";
+      std::cerr << "Image:   "
+                << extents[i][0] << " " << extents[i][1] << " "
+                << extents[i][2] << " " << extents[i][3] << " "
+                << extents[i][4] << " " << extents[i][5] << "\n";
+      std::cerr << "Stencil: "
+                << extents[i+1][0] << " " << extents[i+1][1] << " "
+                << extents[i+1][2] << " " << extents[i+1][3] << " "
+                << extents[i+1][4] << " " << extents[i+1][5] << "\n";
+      std::cerr << "Execute: "
+                << extents[i+2][0] << " " << extents[i+2][1] << " "
+                << extents[i+2][2] << " " << extents[i+2][3] << " "
+                << extents[i+2][4] << " " << extents[i+2][5] << "\n";
       rval = EXIT_FAILURE;
     }
   }

@@ -32,7 +32,7 @@
  * @sa
  * vtkInteractorStyleTrackballCamera vtkInteractorStyleJoystickActor
  * vtkInteractorStyleJoystickCamera
- */
+*/
 
 #ifndef vtkInteractorStyleTrackballActor_h
 #define vtkInteractorStyleTrackballActor_h
@@ -45,51 +45,54 @@ class vtkCellPicker;
 class VTKINTERACTIONSTYLE_EXPORT vtkInteractorStyleTrackballActor : public vtkInteractorStyle
 {
 public:
-  static vtkInteractorStyleTrackballActor* New();
-  vtkTypeMacro(vtkInteractorStyleTrackballActor, vtkInteractorStyle);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkInteractorStyleTrackballActor *New();
+  vtkTypeMacro(vtkInteractorStyleTrackballActor,vtkInteractorStyle);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
    * Event bindings controlling the effects of pressing mouse buttons
    * or moving the mouse.
    */
-  void OnMouseMove() override;
-  void OnLeftButtonDown() override;
-  void OnLeftButtonUp() override;
-  void OnMiddleButtonDown() override;
-  void OnMiddleButtonUp() override;
-  void OnRightButtonDown() override;
-  void OnRightButtonUp() override;
+  virtual void OnMouseMove();
+  virtual void OnLeftButtonDown();
+  virtual void OnLeftButtonUp();
+  virtual void OnMiddleButtonDown();
+  virtual void OnMiddleButtonUp();
+  virtual void OnRightButtonDown();
+  virtual void OnRightButtonUp();
   //@}
 
   // These methods for the different interactions in different modes
   // are overridden in subclasses to perform the correct motion. Since
   // they might be called from OnTimer, they do not have mouse coord parameters
   // (use interactor's GetEventPosition and GetLastEventPosition)
-  void Rotate() override;
-  void Spin() override;
-  void Pan() override;
-  void Dolly() override;
-  void UniformScale() override;
+  virtual void Rotate();
+  virtual void Spin();
+  virtual void Pan();
+  virtual void Dolly();
+  virtual void UniformScale();
 
 protected:
   vtkInteractorStyleTrackballActor();
-  ~vtkInteractorStyleTrackballActor() override;
+  ~vtkInteractorStyleTrackballActor();
 
   void FindPickedActor(int x, int y);
 
-  void Prop3DTransform(
-    vtkProp3D* prop3D, double* boxCenter, int NumRotation, double** rotate, double* scale);
+  void Prop3DTransform(vtkProp3D *prop3D,
+                       double *boxCenter,
+                       int NumRotation,
+                       double **rotate,
+                       double *scale);
 
   double MotionFactor;
 
-  vtkProp3D* InteractionProp;
-  vtkCellPicker* InteractionPicker;
+  vtkProp3D *InteractionProp;
+  vtkCellPicker *InteractionPicker;
 
 private:
-  vtkInteractorStyleTrackballActor(const vtkInteractorStyleTrackballActor&) = delete;
-  void operator=(const vtkInteractorStyleTrackballActor&) = delete;
+  vtkInteractorStyleTrackballActor(const vtkInteractorStyleTrackballActor&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkInteractorStyleTrackballActor&) VTK_DELETE_FUNCTION;
 };
 
 #endif

@@ -1,5 +1,4 @@
 #include "windows.h"
-
 #include "vfw.h"
 
 int main()

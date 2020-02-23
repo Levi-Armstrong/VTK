@@ -27,7 +27,7 @@
  * The third input is a vtkAnnotationLayers containing selected indices.
  * The field type of the input selection is ignored when converted to row
  * indices.
- */
+*/
 
 #ifndef vtkExtractSelectedRows_h
 #define vtkExtractSelectedRows_h
@@ -35,12 +35,13 @@
 #include "vtkFiltersExtractionModule.h" // For export macro
 #include "vtkTableAlgorithm.h"
 
+
 class VTKFILTERSEXTRACTION_EXPORT vtkExtractSelectedRows : public vtkTableAlgorithm
 {
 public:
   static vtkExtractSelectedRows* New();
-  vtkTypeMacro(vtkExtractSelectedRows, vtkTableAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkExtractSelectedRows,vtkTableAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * A convenience method for setting the second input (i.e. the selection).
@@ -55,7 +56,7 @@ public:
   /**
    * Specify the first vtkGraph input and the second vtkSelection input.
    */
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  int FillInputPortInformation(int port, vtkInformation* info);
 
   //@{
   /**
@@ -69,15 +70,18 @@ public:
 
 protected:
   vtkExtractSelectedRows();
-  ~vtkExtractSelectedRows() override;
+  ~vtkExtractSelectedRows();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(
+    vtkInformation*,
+    vtkInformationVector**,
+    vtkInformationVector*);
 
   bool AddOriginalRowIdsArray;
-
 private:
-  vtkExtractSelectedRows(const vtkExtractSelectedRows&) = delete;
-  void operator=(const vtkExtractSelectedRows&) = delete;
+  vtkExtractSelectedRows(const vtkExtractSelectedRows&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkExtractSelectedRows&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

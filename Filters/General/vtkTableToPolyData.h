@@ -19,7 +19,7 @@
  *
  * vtkTableToPolyData is a filter used to convert a vtkTable  to a vtkPolyData
  * consisting of vertices.
- */
+*/
 
 #ifndef vtkTableToPolyData_h
 #define vtkTableToPolyData_h
@@ -32,7 +32,7 @@ class VTKFILTERSGENERAL_EXPORT vtkTableToPolyData : public vtkPolyDataAlgorithm
 public:
   static vtkTableToPolyData* New();
   vtkTypeMacro(vtkTableToPolyData, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   //@{
   /**
@@ -135,18 +135,18 @@ public:
 
 protected:
   vtkTableToPolyData();
-  ~vtkTableToPolyData() override;
+  ~vtkTableToPolyData() VTK_OVERRIDE;
 
   /**
    * Overridden to specify that input must be a vtkTable.
    */
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  int FillInputPortInformation(int port, vtkInformation* info) VTK_OVERRIDE;
 
   /**
    * Convert input vtkTable to vtkPolyData.
    */
-  int RequestData(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  int RequestData(vtkInformation* request,
+    vtkInformationVector** inputVector, vtkInformationVector* outputVector) VTK_OVERRIDE;
 
   char* XColumn;
   char* YColumn;
@@ -159,10 +159,12 @@ protected:
   int ZComponent;
   bool Create2DPoints;
   bool PreserveCoordinateColumnsAsDataArrays;
-
 private:
-  vtkTableToPolyData(const vtkTableToPolyData&) = delete;
-  void operator=(const vtkTableToPolyData&) = delete;
+  vtkTableToPolyData(const vtkTableToPolyData&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTableToPolyData&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif
+
+

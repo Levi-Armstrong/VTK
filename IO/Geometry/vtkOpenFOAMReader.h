@@ -28,7 +28,6 @@
  * GUI Based selection of mesh regions and fields available in the case,
  * minor bug fixes, strict memory allocation checks,
  * minor performance enhancements by Philippose Rajan (sarith@rocketmail.com).
- *
  * Token-based FoamFile format lexer/parser,
  * performance/stability/compatibility enhancements, gzipped file
  * support, lagrangian field support, variable timestep support,
@@ -37,10 +36,7 @@
  * support, old mesh format support, parallelization support for
  * decomposed cases in conjunction with vtkPOpenFOAMReader, et. al. by
  * Takuya Oshima of Niigata University, Japan (oshima@eng.niigata-u.ac.jp).
- *
- * Misc cleanup, bugfixes, improvements
- * Mark Olesen (OpenCFD Ltd.)
- */
+*/
 
 #ifndef vtkOpenFOAMReader_h
 #define vtkOpenFOAMReader_h
@@ -60,14 +56,14 @@ class vtkOpenFOAMReaderPrivate;
 class VTKIOGEOMETRY_EXPORT vtkOpenFOAMReader : public vtkMultiBlockDataSetAlgorithm
 {
 public:
-  static vtkOpenFOAMReader* New();
+  static vtkOpenFOAMReader *New();
   vtkTypeMacro(vtkOpenFOAMReader, vtkMultiBlockDataSetAlgorithm);
-  void PrintSelf(ostream&, vtkIndent) override;
+  void PrintSelf(ostream &, vtkIndent);
 
   /**
-   * Determine if the file can be read with this reader.
+   * Determine if the file can be readed with this reader.
    */
-  int CanReadFile(const char*);
+  int CanReadFile(const char *);
 
   //@{
   /**
@@ -81,269 +77,207 @@ public:
    * Get the number of cell arrays available in the input.
    */
   int GetNumberOfCellArrays(void)
-  {
-    return this->GetNumberOfSelectionArrays(this->CellDataArraySelection);
-  }
+  { return this->GetNumberOfSelectionArrays(this->CellDataArraySelection); }
 
   /**
    * Get/Set whether the cell array with the given name is to
    * be read.
    */
-  int GetCellArrayStatus(const char* name)
-  {
-    return this->GetSelectionArrayStatus(this->CellDataArraySelection, name);
-  }
-  void SetCellArrayStatus(const char* name, int status)
-  {
-    this->SetSelectionArrayStatus(this->CellDataArraySelection, name, status);
-  }
+  int GetCellArrayStatus(const char *name)
+  { return this->GetSelectionArrayStatus(this->CellDataArraySelection, name); }
+  void SetCellArrayStatus(const char *name, int status)
+  { this->SetSelectionArrayStatus(this->CellDataArraySelection, name, status); }
 
   /**
-   * Get the name of the cell array with the given index in
+   * Get the name of the  cell array with the given index in
    * the input.
    */
-  const char* GetCellArrayName(int index)
-  {
-    return this->GetSelectionArrayName(this->CellDataArraySelection, index);
-  }
+  const char *GetCellArrayName(int index)
+  { return this->GetSelectionArrayName(this->CellDataArraySelection, index); }
 
   /**
    * Turn on/off all cell arrays.
    */
-  void DisableAllCellArrays() { this->DisableAllSelectionArrays(this->CellDataArraySelection); }
-  void EnableAllCellArrays() { this->EnableAllSelectionArrays(this->CellDataArraySelection); }
+  void DisableAllCellArrays()
+  { this->DisableAllSelectionArrays(this->CellDataArraySelection); }
+  void EnableAllCellArrays()
+  { this->EnableAllSelectionArrays(this->CellDataArraySelection); }
 
   /**
    * Get the number of point arrays available in the input.
    */
   int GetNumberOfPointArrays(void)
-  {
-    return this->GetNumberOfSelectionArrays(this->PointDataArraySelection);
-  }
+  { return this->GetNumberOfSelectionArrays(this->PointDataArraySelection); }
 
   /**
    * Get/Set whether the point array with the given name is to
    * be read.
    */
-  int GetPointArrayStatus(const char* name)
-  {
-    return this->GetSelectionArrayStatus(this->PointDataArraySelection, name);
-  }
-  void SetPointArrayStatus(const char* name, int status)
-  {
-    this->SetSelectionArrayStatus(this->PointDataArraySelection, name, status);
-  }
+  int GetPointArrayStatus(const char *name)
+  { return this->GetSelectionArrayStatus(this->PointDataArraySelection, name); }
+  void SetPointArrayStatus(const char *name, int status)
+  { this->SetSelectionArrayStatus(this->PointDataArraySelection,
+    name, status); }
 
   /**
-   * Get the name of the point array with the given index in
+   * Get the name of the  point array with the given index in
    * the input.
    */
-  const char* GetPointArrayName(int index)
-  {
-    return this->GetSelectionArrayName(this->PointDataArraySelection, index);
-  }
+  const char *GetPointArrayName(int index)
+  { return this->GetSelectionArrayName(this->PointDataArraySelection, index); }
 
   /**
    * Turn on/off all point arrays.
    */
-  void DisableAllPointArrays() { this->DisableAllSelectionArrays(this->PointDataArraySelection); }
-  void EnableAllPointArrays() { this->EnableAllSelectionArrays(this->PointDataArraySelection); }
+  void DisableAllPointArrays()
+  { this->DisableAllSelectionArrays(this->PointDataArraySelection); }
+  void EnableAllPointArrays()
+  { this->EnableAllSelectionArrays(this->PointDataArraySelection); }
 
   /**
    * Get the number of Lagrangian arrays available in the input.
    */
   int GetNumberOfLagrangianArrays(void)
-  {
-    return this->GetNumberOfSelectionArrays(this->LagrangianDataArraySelection);
-  }
+  { return this->GetNumberOfSelectionArrays(
+    this->LagrangianDataArraySelection); }
 
   /**
    * Get/Set whether the Lagrangian array with the given name is to
    * be read.
    */
-  int GetLagrangianArrayStatus(const char* name)
-  {
-    return this->GetSelectionArrayStatus(this->LagrangianDataArraySelection, name);
-  }
-  void SetLagrangianArrayStatus(const char* name, int status)
-  {
-    this->SetSelectionArrayStatus(this->LagrangianDataArraySelection, name, status);
-  }
+  int GetLagrangianArrayStatus(const char *name)
+  { return this->GetSelectionArrayStatus(this->LagrangianDataArraySelection,
+    name); }
+  void SetLagrangianArrayStatus(const char *name, int status)
+  { this->SetSelectionArrayStatus(this->LagrangianDataArraySelection, name,
+    status); }
 
   /**
-   * Get the name of the Lagrangian array with the given index in
+   * Get the name of the  Lagrangian array with the given index in
    * the input.
    */
   const char* GetLagrangianArrayName(int index)
-  {
-    return this->GetSelectionArrayName(this->LagrangianDataArraySelection, index);
-  }
+  { return this->GetSelectionArrayName(this->LagrangianDataArraySelection,
+    index); }
 
   /**
    * Turn on/off all Lagrangian arrays.
    */
   void DisableAllLagrangianArrays()
-  {
-    this->DisableAllSelectionArrays(this->LagrangianDataArraySelection);
-  }
+  { this->DisableAllSelectionArrays(this->LagrangianDataArraySelection); }
   void EnableAllLagrangianArrays()
-  {
-    this->EnableAllSelectionArrays(this->LagrangianDataArraySelection);
-  }
+  { this->EnableAllSelectionArrays(this->LagrangianDataArraySelection); }
 
   /**
    * Get the number of Patches (including Internal Mesh) available in the input.
    */
   int GetNumberOfPatchArrays(void)
-  {
-    return this->GetNumberOfSelectionArrays(this->PatchDataArraySelection);
-  }
+  { return this->GetNumberOfSelectionArrays(this->PatchDataArraySelection); }
 
   /**
    * Get/Set whether the Patch with the given name is to
    * be read.
    */
-  int GetPatchArrayStatus(const char* name)
-  {
-    return this->GetSelectionArrayStatus(this->PatchDataArraySelection, name);
-  }
-  void SetPatchArrayStatus(const char* name, int status)
-  {
-    this->SetSelectionArrayStatus(this->PatchDataArraySelection, name, status);
-  }
+  int GetPatchArrayStatus(const char *name)
+  { return this->GetSelectionArrayStatus(this->PatchDataArraySelection, name); }
+  void SetPatchArrayStatus(const char *name, int status)
+  { this->SetSelectionArrayStatus(this->PatchDataArraySelection, name,
+    status); }
 
   /**
    * Get the name of the Patch with the given index in
    * the input.
    */
-  const char* GetPatchArrayName(int index)
-  {
-    return this->GetSelectionArrayName(this->PatchDataArraySelection, index);
-  }
+  const char *GetPatchArrayName(int index)
+  { return this->GetSelectionArrayName(this->PatchDataArraySelection, index); }
 
   /**
    * Turn on/off all Patches including the Internal Mesh.
    */
-  void DisableAllPatchArrays() { this->DisableAllSelectionArrays(this->PatchDataArraySelection); }
-  void EnableAllPatchArrays() { this->EnableAllSelectionArrays(this->PatchDataArraySelection); }
+  void DisableAllPatchArrays()
+  { this->DisableAllSelectionArrays(this->PatchDataArraySelection); }
+  void EnableAllPatchArrays()
+  { this->EnableAllSelectionArrays(this->PatchDataArraySelection); }
 
   //@{
   /**
    * Set/Get whether to create cell-to-point translated data for cell-type data
    */
-  vtkSetMacro(CreateCellToPoint, vtkTypeBool);
-  vtkGetMacro(CreateCellToPoint, vtkTypeBool);
-  vtkBooleanMacro(CreateCellToPoint, vtkTypeBool);
+  vtkSetMacro(CreateCellToPoint,int);
+  vtkGetMacro(CreateCellToPoint,int);
+  vtkBooleanMacro(CreateCellToPoint, int);
   //@}
 
   //@{
   /**
    * Set/Get whether mesh is to be cached.
    */
-  vtkSetMacro(CacheMesh, vtkTypeBool);
-  vtkGetMacro(CacheMesh, vtkTypeBool);
-  vtkBooleanMacro(CacheMesh, vtkTypeBool);
+  vtkSetMacro(CacheMesh, int);
+  vtkGetMacro(CacheMesh, int);
+  vtkBooleanMacro(CacheMesh, int);
   //@}
 
   //@{
   /**
    * Set/Get whether polyhedra are to be decomposed.
    */
-  vtkSetMacro(DecomposePolyhedra, vtkTypeBool);
-  vtkGetMacro(DecomposePolyhedra, vtkTypeBool);
-  vtkBooleanMacro(DecomposePolyhedra, vtkTypeBool);
+  vtkSetMacro(DecomposePolyhedra, int);
+  vtkGetMacro(DecomposePolyhedra, int);
+  vtkBooleanMacro(DecomposePolyhedra, int);
   //@}
 
   // Option for reading old binary lagrangian/positions format
   //@{
   /**
-   * Set/Get whether the lagrangian/positions have additional data or not.
-   * For historical reasons, PositionsIsIn13Format is used to denote that
-   * the positions only have x,y,z value and the cell of the enclosing cell.
-   * In OpenFOAM 1.4-2.4, positions included facei and stepFraction information.
+   * Set/Get whether the lagrangian/positions is in OF 1.3 format
    */
-  vtkSetMacro(PositionsIsIn13Format, vtkTypeBool);
-  vtkGetMacro(PositionsIsIn13Format, vtkTypeBool);
-  vtkBooleanMacro(PositionsIsIn13Format, vtkTypeBool);
-  //@}
-
-  //@{
-  /**
-   * Ignore 0/ time directory, which is normally missing Lagrangian fields
-   * and may have many dictionary functionality that we cannot easily handle.
-   */
-  vtkSetMacro(SkipZeroTime, bool);
-  vtkGetMacro(SkipZeroTime, bool);
-  vtkBooleanMacro(SkipZeroTime, bool);
+  vtkSetMacro(PositionsIsIn13Format, int);
+  vtkGetMacro(PositionsIsIn13Format, int);
+  vtkBooleanMacro(PositionsIsIn13Format, int);
   //@}
 
   //@{
   /**
    * Determine if time directories are to be listed according to controlDict
    */
-  vtkSetMacro(ListTimeStepsByControlDict, vtkTypeBool);
-  vtkGetMacro(ListTimeStepsByControlDict, vtkTypeBool);
-  vtkBooleanMacro(ListTimeStepsByControlDict, vtkTypeBool);
+  vtkSetMacro(ListTimeStepsByControlDict, int);
+  vtkGetMacro(ListTimeStepsByControlDict, int);
+  vtkBooleanMacro(ListTimeStepsByControlDict, int);
   //@}
 
   //@{
   /**
    * Add dimensions to array names
    */
-  vtkSetMacro(AddDimensionsToArrayNames, vtkTypeBool);
-  vtkGetMacro(AddDimensionsToArrayNames, vtkTypeBool);
-  vtkBooleanMacro(AddDimensionsToArrayNames, vtkTypeBool);
+  vtkSetMacro(AddDimensionsToArrayNames, int);
+  vtkGetMacro(AddDimensionsToArrayNames, int);
+  vtkBooleanMacro(AddDimensionsToArrayNames, int);
   //@}
 
   //@{
   /**
    * Set/Get whether zones will be read.
    */
-  vtkSetMacro(ReadZones, vtkTypeBool);
-  vtkGetMacro(ReadZones, vtkTypeBool);
-  vtkBooleanMacro(ReadZones, vtkTypeBool);
+  vtkSetMacro(ReadZones, int);
+  vtkGetMacro(ReadZones, int);
+  vtkBooleanMacro(ReadZones, int);
   //@}
 
   //@{
   /**
    * If true, labels are expected to be 64-bit, rather than 32.
    */
-  virtual void SetUse64BitLabels(bool val);
-  vtkGetMacro(Use64BitLabels, bool);
-  vtkBooleanMacro(Use64BitLabels, bool);
+  vtkSetMacro(Use64BitLabels, bool)
+  vtkGetMacro(Use64BitLabels, bool)
+  vtkBooleanMacro(Use64BitLabels, bool)
   //@}
 
-  //@{
-  /**
-   * If true, data of the internal mesh are copied to the cell zones.
-   * Default is false.
-   */
-  vtkGetMacro(CopyDataToCellZones, bool);
-  vtkSetMacro(CopyDataToCellZones, bool);
-  vtkBooleanMacro(CopyDataToCellZones, bool);
-  //@}
+  void SetRefresh() { this->Refresh = true; this->Modified(); }
 
-  //@{
-  /**
-   * If true, floats are expected to be 64-bit, rather than 32. Note that
-   * vtkFloatArrays may still be used in the output if this is true. This flag
-   * is only used to ensure that binary data is correctly parsed.
-   */
-  virtual void SetUse64BitFloats(bool val);
-  vtkGetMacro(Use64BitFloats, bool);
-  vtkBooleanMacro(Use64BitFloats, bool);
-  //@}
-
-  void SetRefresh()
-  {
-    this->Refresh = true;
-    this->Modified();
-  }
-
-  void SetParent(vtkOpenFOAMReader* parent) { this->Parent = parent; }
-  int MakeInformationVector(vtkInformationVector*, const vtkStdString&);
+  void SetParent(vtkOpenFOAMReader *parent) { this->Parent = parent; }
+  int MakeInformationVector(vtkInformationVector *, const vtkStdString &);
   bool SetTimeValue(const double);
-  vtkDoubleArray* GetTimeValues();
+  vtkDoubleArray *GetTimeValues();
   int MakeMetaDataAtTimeStep(const bool);
 
   friend class vtkOpenFOAMReaderPrivate;
@@ -353,49 +287,38 @@ protected:
   bool Refresh;
 
   // for creating cell-to-point translated data
-  vtkTypeBool CreateCellToPoint;
+  int CreateCellToPoint;
 
   // for caching mesh
-  vtkTypeBool CacheMesh;
+  int CacheMesh;
 
   // for decomposing polyhedra on-the-fly
-  vtkTypeBool DecomposePolyhedra;
+  int DecomposePolyhedra;
 
-  // for lagrangian/positions without extra data (OF 1.4 - 2.4)
-  vtkTypeBool PositionsIsIn13Format;
+  // for reading old binary lagrangian/positions format
+  int PositionsIsIn13Format;
 
   // for reading point/face/cell-Zones
-  vtkTypeBool ReadZones;
-
-  // Ignore 0/ directory
-  bool SkipZeroTime;
+  int ReadZones;
 
   // determine if time directories are listed according to controlDict
-  vtkTypeBool ListTimeStepsByControlDict;
+  int ListTimeStepsByControlDict;
 
   // add dimensions to array names
-  vtkTypeBool AddDimensionsToArrayNames;
+  int AddDimensionsToArrayNames;
 
-  // Expect label size to be 64-bit integers instead of 32-bit.
+  // Expect label size to be 64-bit integers instead of the default 32.
   bool Use64BitLabels;
 
-  // Expect float data to be 64-bit floats instead of 32-bit.
-  // Note that vtkFloatArrays may still be used -- this just tells the reader how to
-  // parse the binary data.
-  bool Use64BitFloats;
-
-  // The data of internal mesh are copied to cell zones
-  bool CopyDataToCellZones;
-
-  char* FileName;
-  vtkCharArray* CasePath;
-  vtkCollection* Readers;
+  char *FileName;
+  vtkCharArray *CasePath;
+  vtkCollection *Readers;
 
   // DataArraySelection for Patch / Region Data
-  vtkDataArraySelection* PatchDataArraySelection;
-  vtkDataArraySelection* CellDataArraySelection;
-  vtkDataArraySelection* PointDataArraySelection;
-  vtkDataArraySelection* LagrangianDataArraySelection;
+  vtkDataArraySelection *PatchDataArraySelection;
+  vtkDataArraySelection *CellDataArraySelection;
+  vtkDataArraySelection *PointDataArraySelection;
+  vtkDataArraySelection *LagrangianDataArraySelection;
 
   // old selection status
   vtkMTimeType PatchSelectionMTimeOld;
@@ -404,19 +327,16 @@ protected:
   vtkMTimeType LagrangianSelectionMTimeOld;
 
   // preserved old information
-  vtkStdString* FileNameOld;
-  bool SkipZeroTimeOld;
+  vtkStdString *FileNameOld;
   int ListTimeStepsByControlDictOld;
   int CreateCellToPointOld;
   int DecomposePolyhedraOld;
   int PositionsIsIn13FormatOld;
   int AddDimensionsToArrayNamesOld;
   int ReadZonesOld;
-  bool Use64BitLabelsOld;
-  bool Use64BitFloatsOld;
 
   // paths to Lagrangians
-  vtkStringArray* LagrangianPaths;
+  vtkStringArray *LagrangianPaths;
 
   // number of reader instances
   int NumberOfReaders;
@@ -424,30 +344,32 @@ protected:
   int CurrentReaderIndex;
 
   vtkOpenFOAMReader();
-  ~vtkOpenFOAMReader() override;
-  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  ~vtkOpenFOAMReader();
+  int RequestInformation(vtkInformation *, vtkInformationVector **,
+    vtkInformationVector *);
+  int RequestData(vtkInformation *, vtkInformationVector **,
+    vtkInformationVector *);
 
-  void CreateCasePath(vtkStdString&, vtkStdString&);
-  void SetTimeInformation(vtkInformationVector*, vtkDoubleArray*);
-  void CreateCharArrayFromString(vtkCharArray*, const char*, vtkStdString&);
+  void CreateCasePath(vtkStdString &, vtkStdString &);
+  void SetTimeInformation(vtkInformationVector *, vtkDoubleArray *);
+  void CreateCharArrayFromString(vtkCharArray *, const char *, vtkStdString &);
   void UpdateStatus();
   void UpdateProgress(double);
 
 private:
-  vtkOpenFOAMReader* Parent;
+  vtkOpenFOAMReader *Parent;
 
-  vtkOpenFOAMReader(const vtkOpenFOAMReader&) = delete;
-  void operator=(const vtkOpenFOAMReader&) = delete;
+  vtkOpenFOAMReader(const vtkOpenFOAMReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkOpenFOAMReader&) VTK_DELETE_FUNCTION;
 
-  int GetNumberOfSelectionArrays(vtkDataArraySelection*);
-  int GetSelectionArrayStatus(vtkDataArraySelection*, const char*);
-  void SetSelectionArrayStatus(vtkDataArraySelection*, const char*, int);
-  const char* GetSelectionArrayName(vtkDataArraySelection*, int);
-  void DisableAllSelectionArrays(vtkDataArraySelection*);
-  void EnableAllSelectionArrays(vtkDataArraySelection*);
+  int GetNumberOfSelectionArrays(vtkDataArraySelection *);
+  int GetSelectionArrayStatus(vtkDataArraySelection *, const char *);
+  void SetSelectionArrayStatus(vtkDataArraySelection *, const char *, int);
+  const char *GetSelectionArrayName(vtkDataArraySelection *, int);
+  void DisableAllSelectionArrays(vtkDataArraySelection *);
+  void EnableAllSelectionArrays(vtkDataArraySelection *);
 
-  void AddSelectionNames(vtkDataArraySelection*, vtkStringArray*);
+  void AddSelectionNames(vtkDataArraySelection *, vtkStringArray *);
 };
 
 #endif

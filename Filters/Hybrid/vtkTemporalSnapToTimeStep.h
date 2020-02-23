@@ -27,62 +27,72 @@
  * John Biddiscombe, Berk Geveci, Ken Martin, Kenneth Moreland, David Thompson,
  * "Time Dependent Processing in a Parallel Pipeline Architecture",
  * IEEE Visualization 2007.
- */
+*/
 
 #ifndef vtkTemporalSnapToTimeStep_h
 #define vtkTemporalSnapToTimeStep_h
 
 #include "vtkFiltersHybridModule.h" // For export macro
-#include "vtkPassInputTypeAlgorithm.h"
+#include "vtkAlgorithm.h"
 
 #include <vector> // used because I am a bad boy. So there.
 
-class VTKFILTERSHYBRID_EXPORT vtkTemporalSnapToTimeStep : public vtkPassInputTypeAlgorithm
+class VTKFILTERSHYBRID_EXPORT vtkTemporalSnapToTimeStep : public vtkAlgorithm
 {
 public:
-  static vtkTemporalSnapToTimeStep* New();
-  vtkTypeMacro(vtkTemporalSnapToTimeStep, vtkPassInputTypeAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkTemporalSnapToTimeStep *New();
+  vtkTypeMacro(vtkTemporalSnapToTimeStep, vtkAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
-  enum
-  {
-    VTK_SNAP_NEAREST = 0,
+  enum {
+    VTK_SNAP_NEAREST=0,
     VTK_SNAP_NEXTBELOW_OR_EQUAL,
     VTK_SNAP_NEXTABOVE_OR_EQUAL
   };
 
-  vtkSetMacro(SnapMode, int);
-  vtkGetMacro(SnapMode, int);
-  void SetSnapModeToNearest() { this->SetSnapMode(VTK_SNAP_NEAREST); }
+  vtkSetMacro(SnapMode,int);
+  vtkGetMacro(SnapMode,int);
+  void SetSnapModeToNearest()          { this->SetSnapMode(VTK_SNAP_NEAREST); }
   void SetSnapModeToNextBelowOrEqual() { this->SetSnapMode(VTK_SNAP_NEXTBELOW_OR_EQUAL); }
   void SetSnapModeToNextAboveOrEqual() { this->SetSnapMode(VTK_SNAP_NEXTABOVE_OR_EQUAL); }
 
 protected:
   vtkTemporalSnapToTimeStep();
-  ~vtkTemporalSnapToTimeStep() override;
+  ~vtkTemporalSnapToTimeStep();
 
   /**
    * see vtkAlgorithm for details
    */
-  vtkTypeBool ProcessRequest(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  virtual int ProcessRequest(vtkInformation* request,
+                             vtkInformationVector** inputVector,
+                             vtkInformationVector* outputVector);
 
-  int RequestUpdateExtent(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  virtual int FillInputPortInformation(int port, vtkInformation* info);
+  virtual int FillOutputPortInformation(int vtkNotUsed(port), vtkInformation* info);
 
-  int RequestInformation(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  virtual int RequestUpdateExtent (vtkInformation *,
+                                   vtkInformationVector **,
+                                   vtkInformationVector *);
+  virtual int RequestInformation (vtkInformation *,
+                                  vtkInformationVector **,
+                                  vtkInformationVector *);
 
-  int RequestData(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  virtual int RequestData(vtkInformation *,
+                          vtkInformationVector **,
+                          vtkInformationVector *);
 
-  std::vector<double> InputTimeValues;
-  int HasDiscrete;
-  int SnapMode;
+    std::vector<double>  InputTimeValues;
+    int HasDiscrete;
+    int SnapMode;
 
 private:
-  vtkTemporalSnapToTimeStep(const vtkTemporalSnapToTimeStep&) = delete;
-  void operator=(const vtkTemporalSnapToTimeStep&) = delete;
+  vtkTemporalSnapToTimeStep(const vtkTemporalSnapToTimeStep&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTemporalSnapToTimeStep&) VTK_DELETE_FUNCTION;
 };
 
+
+
 #endif
+
+
+

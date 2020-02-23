@@ -22,13 +22,13 @@
  *
  * @sa
  * vtkTextRepresentation vtkBorderWidget vtkAbstractWidget vtkWidgetRepresentation
- */
+*/
 
 #ifndef vtkTextRepresentation_h
 #define vtkTextRepresentation_h
 
-#include "vtkBorderRepresentation.h"
 #include "vtkInteractionWidgetsModule.h" // For export macro
+#include "vtkBorderRepresentation.h"
 
 class vtkRenderer;
 class vtkTextActor;
@@ -41,14 +41,14 @@ public:
   /**
    * Instantiate class.
    */
-  static vtkTextRepresentation* New();
+  static vtkTextRepresentation *New();
 
   //@{
   /**
    * Standard VTK methods.
    */
-  vtkTypeMacro(vtkTextRepresentation, vtkBorderRepresentation);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkTextRepresentation,vtkBorderRepresentation);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   //@{
@@ -56,8 +56,8 @@ public:
    * Specify the vtkTextActor to manage. If not specified, then one
    * is automatically created.
    */
-  void SetTextActor(vtkTextActor* textActor);
-  vtkGetObjectMacro(TextActor, vtkTextActor);
+  void SetTextActor(vtkTextActor *textActor);
+  vtkGetObjectMacro(TextActor,vtkTextActor);
   //@}
 
   //@{
@@ -71,24 +71,21 @@ public:
   /**
    * Satisfy the superclasses API.
    */
-  void BuildRepresentation() override;
-  void GetSize(double size[2]) override
-  {
-    size[0] = 2.0;
-    size[1] = 2.0;
-  }
+  virtual void BuildRepresentation();
+  virtual void GetSize(double size[2])
+    {size[0]=2.0; size[1]=2.0;}
 
   //@{
   /**
    * These methods are necessary to make this representation behave as
    * a vtkProp.
    */
-  void GetActors2D(vtkPropCollection*) override;
-  void ReleaseGraphicsResources(vtkWindow*) override;
-  int RenderOverlay(vtkViewport*) override;
-  int RenderOpaqueGeometry(vtkViewport*) override;
-  int RenderTranslucentPolygonalGeometry(vtkViewport*) override;
-  vtkTypeBool HasTranslucentPolygonalGeometry() override;
+  virtual void GetActors2D(vtkPropCollection*);
+  virtual void ReleaseGraphicsResources(vtkWindow*);
+  virtual int RenderOverlay(vtkViewport*);
+  virtual int RenderOpaqueGeometry(vtkViewport*);
+  virtual int RenderTranslucentPolygonalGeometry(vtkViewport*);
+  virtual int HasTranslucentPolygonalGeometry();
   //@}
 
   enum
@@ -120,11 +117,12 @@ public:
 
   //@{
   /**
-   * Set the text position, by overriding the same function of
+   * Set the text position, by overiding the same function of
    * vtkBorderRepresentation so that the Modified() will be called.
    */
-  void SetPosition(double x, double y) override;
-  void SetPosition(double pos[2]) override { this->SetPosition(pos[0], pos[1]); }
+  virtual void SetPosition(double x, double y);
+  virtual void SetPosition(double pos[2])
+    { this->SetPosition(pos[0], pos[1]);};
   //@}
 
   //@{
@@ -137,7 +135,7 @@ public:
 
 protected:
   vtkTextRepresentation();
-  ~vtkTextRepresentation() override;
+  ~vtkTextRepresentation();
 
   // Initialize text actor
   virtual void InitializeTextActor();
@@ -146,19 +144,19 @@ protected:
   virtual void CheckTextBoundary();
 
   // the text to manage
-  vtkTextActor* TextActor;
-  vtkTextProperty* TextProperty;
+  vtkTextActor  *TextActor;
+  vtkTextProperty *TextProperty;
 
   // Window location by enumeration
   int WindowLocation;
   virtual void UpdateWindowLocation();
 
   // observer to observe internal TextActor and TextProperty
-  vtkTextRepresentationObserver* Observer;
+  vtkTextRepresentationObserver *Observer;
 
 private:
-  vtkTextRepresentation(const vtkTextRepresentation&) = delete;
-  void operator=(const vtkTextRepresentation&) = delete;
+  vtkTextRepresentation(const vtkTextRepresentation&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTextRepresentation&) VTK_DELETE_FUNCTION;
 };
 
 #endif

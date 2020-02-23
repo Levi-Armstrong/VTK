@@ -21,8 +21,8 @@
 #include "vtkObjectFactory.h"
 #include "vtkPolyData.h"
 #include "vtkPolygon.h"
-#include "vtkSmartPointer.h"
 #include "vtkTriangleFilter.h"
+#include "vtkSmartPointer.h"
 
 vtkStandardNewMacro(vtkImplicitPolyDataDistance);
 
@@ -39,24 +39,25 @@ vtkImplicitPolyDataDistance::vtkImplicitPolyDataDistance()
 
   this->NoValue = 0.0;
 
-  this->Input = nullptr;
-  this->Locator = nullptr;
+  this->Input = NULL;
+  this->Locator = NULL;
   this->Tolerance = 1e-12;
 }
 
 //-----------------------------------------------------------------------------
 void vtkImplicitPolyDataDistance::SetInput(vtkPolyData* input)
 {
-  if (this->Input != input)
+  if ( this->Input != input )
   {
     // Use a vtkTriangleFilter on the polydata input.
     // This is done to filter out lines and vertices to leave only
     // polygons which are required by this algorithm for cell normals.
-    vtkSmartPointer<vtkTriangleFilter> triangleFilter = vtkSmartPointer<vtkTriangleFilter>::New();
+    vtkSmartPointer<vtkTriangleFilter> triangleFilter =
+      vtkSmartPointer<vtkTriangleFilter>::New();
     triangleFilter->PassVertsOff();
     triangleFilter->PassLinesOff();
 
-    triangleFilter->SetInputData(input);
+    triangleFilter->SetInputData( input );
     triangleFilter->Update();
 
     this->Input = triangleFilter->GetOutput();
@@ -77,10 +78,10 @@ void vtkImplicitPolyDataDistance::SetInput(vtkPolyData* input)
 //-----------------------------------------------------------------------------
 vtkMTimeType vtkImplicitPolyDataDistance::GetMTime()
 {
-  vtkMTimeType mTime = this->vtkImplicitFunction::GetMTime();
+  vtkMTimeType mTime=this->vtkImplicitFunction::GetMTime();
   vtkMTimeType InputMTime;
 
-  if (this->Input != nullptr)
+  if ( this->Input != NULL )
   {
     InputMTime = this->Input->GetMTime();
     mTime = (InputMTime > mTime ? InputMTime : mTime);
@@ -92,17 +93,17 @@ vtkMTimeType vtkImplicitPolyDataDistance::GetMTime()
 //-----------------------------------------------------------------------------
 vtkImplicitPolyDataDistance::~vtkImplicitPolyDataDistance()
 {
-  if (this->Locator)
+  if ( this->Locator )
   {
     this->Locator->UnRegister(this);
-    this->Locator = nullptr;
+    this->Locator = NULL;
   }
 }
 
 //----------------------------------------------------------------------------
 void vtkImplicitPolyDataDistance::CreateDefaultLocator()
 {
-  if (this->Locator == nullptr)
+  if ( this->Locator == NULL)
   {
     this->Locator = vtkCellLocator::New();
   }
@@ -113,25 +114,21 @@ double vtkImplicitPolyDataDistance::EvaluateFunction(double x[3])
 {
   double g[3];
   double p[3];
-  return this->SharedEvaluate(
-    x, g, p); // get distance value returned, normal and closest point not used
+  return this->SharedEvaluate(x, g, p); // get distance value returned, normal and closest point not used
 }
 
 //-----------------------------------------------------------------------------
-double vtkImplicitPolyDataDistance::EvaluateFunctionAndGetClosestPoint(
-  double x[3], double closestPoint[3])
+double vtkImplicitPolyDataDistance::EvaluateFunctionAndGetClosestPoint(double x[3], double closestPoint[3])
 {
   double g[3];
-  return this->SharedEvaluate(x, g, closestPoint); // distance value returned and point on
-                                                   // vtkPolyData stored in p (normal not used).
+  return this->SharedEvaluate(x, g, closestPoint); // distance value returned and point on vtkPolyData stored in p (normal not used).
 }
 
 //-----------------------------------------------------------------------------
 void vtkImplicitPolyDataDistance::EvaluateGradient(double x[3], double g[3])
 {
   double p[3];
-  this->SharedEvaluate(
-    x, g, p); // get normal, returned distance value not used and closest point not used
+  this->SharedEvaluate(x, g, p);	// get normal, returned distance value not used and closest point not used
 }
 
 //-----------------------------------------------------------------------------
@@ -140,20 +137,20 @@ double vtkImplicitPolyDataDistance::SharedEvaluate(double x[3], double g[3], dou
   // Set defaults
   double ret = this->NoValue;
 
-  for (int i = 0; i < 3; i++)
+  for( int i=0; i < 3; i++ )
   {
     g[i] = this->NoGradient[i];
   }
 
-  for (int i = 0; i < 3; i++)
+  for( int i=0; i < 3; i++ )
   {
     closestPoint[i] = this->NoClosestPoint[i];
   }
 
   // See if data set with polygons has been specified
-  if (this->Input == nullptr || Input->GetNumberOfCells() == 0)
+  if (this->Input == NULL || Input->GetNumberOfCells() == 0)
   {
-    vtkErrorMacro(<< "No polygons to evaluate function!");
+    vtkErrorMacro(<<"No polygons to evaluate function!");
     return ret;
   }
 
@@ -162,17 +159,18 @@ double vtkImplicitPolyDataDistance::SharedEvaluate(double x[3], double g[3], dou
   int subId;
   double vlen2;
 
-  vtkDataArray* cnorms = nullptr;
-  if (this->Input->GetCellData() && this->Input->GetCellData()->GetNormals())
+  vtkDataArray* cnorms = 0;
+  if ( this->Input->GetCellData() && this->Input->GetCellData()->GetNormals() )
   {
     cnorms = this->Input->GetCellData()->GetNormals();
   }
 
   // Get point id of closest point in data set.
-  vtkSmartPointer<vtkGenericCell> cell = vtkSmartPointer<vtkGenericCell>::New();
+  vtkSmartPointer<vtkGenericCell> cell =
+    vtkSmartPointer<vtkGenericCell>::New();
   this->Locator->FindClosestPoint(x, p, cell, cellId, subId, vlen2);
 
-  if (cellId != -1) // point located
+  if (cellId != -1)	// point located
   {
     // dist = | point - x |
     ret = sqrt(vlen2);
@@ -182,7 +180,7 @@ double vtkImplicitPolyDataDistance::SharedEvaluate(double x[3], double g[3], dou
       g[i] = (p[i] - x[i]) / (ret == 0. ? 1. : ret);
     }
 
-    double dist2, weights[3], pcoords[3], awnorm[3] = { 0, 0, 0 };
+    double dist2, weights[3], pcoords[3], awnorm[3] = {0, 0, 0};
     cell->EvaluatePosition(p, closestPoint, subId, pcoords, dist2, weights);
 
     vtkIdList* idList = vtkIdList::New();
@@ -192,10 +190,10 @@ double vtkImplicitPolyDataDistance::SharedEvaluate(double x[3], double g[3], dou
       count += (fabs(weights[i]) < this->Tolerance ? 1 : 0);
     }
     // Face case - weights contains no 0s
-    if (count == 0)
+    if ( count == 0 )
     {
       // Compute face normal.
-      if (cnorms)
+      if ( cnorms )
       {
         cnorms->GetTuple(cellId, awnorm);
       }
@@ -205,13 +203,13 @@ double vtkImplicitPolyDataDistance::SharedEvaluate(double x[3], double g[3], dou
       }
     }
     // Edge case - weights contain one 0
-    else if (count == 1)
+    else if ( count == 1 )
     {
       // ... edge ... get two adjacent faces, compute average normal
       int a = -1, b = -1;
-      for (int edge = 0; edge < 3; edge++)
+      for ( int edge = 0; edge < 3; edge++ )
       {
-        if (fabs(weights[edge]) < this->Tolerance)
+        if ( fabs(weights[edge]) < this->Tolerance )
         {
           a = cell->PointIds->GetId((edge + 1) % 3);
           b = cell->PointIds->GetId((edge + 2) % 3);
@@ -219,10 +217,10 @@ double vtkImplicitPolyDataDistance::SharedEvaluate(double x[3], double g[3], dou
         }
       }
 
-      if (a == -1)
+      if ( a == -1 )
       {
-        vtkErrorMacro(<< "Could not find edge when closest point is "
-                      << "expected to be on an edge.");
+        vtkErrorMacro( << "Could not find edge when closest point is "
+                       << "expected to be on an edge." );
         return this->NoValue;
       }
 
@@ -248,7 +246,7 @@ double vtkImplicitPolyDataDistance::SharedEvaluate(double x[3], double g[3], dou
     }
 
     // Vertex case - weights contain two 0s
-    else if (count == 2)
+    else if ( count == 2 )
     {
       // ... vertex ... this is the expensive case, get all adjacent
       // faces and compute sum(a_i * n_i) Angle-Weighted Pseudo
@@ -256,16 +254,16 @@ double vtkImplicitPolyDataDistance::SharedEvaluate(double x[3], double g[3], dou
       int a = -1;
       for (int i = 0; i < 3; i++)
       {
-        if (fabs(weights[i]) > this->Tolerance)
+        if ( fabs( weights[i] ) > this->Tolerance )
         {
           a = cell->PointIds->GetId(i);
         }
       }
 
-      if (a == -1)
+      if ( a == -1 )
       {
-        vtkErrorMacro(<< "Could not find point when closest point is "
-                      << "expected to be a point.");
+        vtkErrorMacro( << "Could not find point when closest point is "
+                       << "expected to be a point." );
         return this->NoValue;
       }
 
@@ -273,7 +271,7 @@ double vtkImplicitPolyDataDistance::SharedEvaluate(double x[3], double g[3], dou
       for (int i = 0; i < idList->GetNumberOfIds(); i++)
       {
         double norm[3];
-        if (cnorms)
+        if ( cnorms )
         {
           cnorms->GetTuple(idList->GetId(i), norm);
         }
@@ -297,11 +295,7 @@ double vtkImplicitPolyDataDistance::SharedEvaluate(double x[3], double g[3], dou
         this->Input->GetPoint(a, pa);
         this->Input->GetPoint(b, pb);
         this->Input->GetPoint(c, pc);
-        for (int j = 0; j < 3; j++)
-        {
-          pb[j] -= pa[j];
-          pc[j] -= pa[j];
-        }
+        for (int j = 0; j < 3; j++) { pb[j] -= pa[j]; pc[j] -= pa[j]; }
         vtkMath::Normalize(pb);
         vtkMath::Normalize(pc);
         double alpha = acos(vtkMath::Dot(pb, pc));
@@ -338,11 +332,11 @@ double vtkImplicitPolyDataDistance::SharedEvaluate(double x[3], double g[3], dou
 //-----------------------------------------------------------------------------
 void vtkImplicitPolyDataDistance::PrintSelf(ostream& os, vtkIndent indent)
 {
-  vtkImplicitFunction::PrintSelf(os, indent);
+  vtkImplicitFunction::PrintSelf(os,indent);
 
   os << indent << "NoValue: " << this->NoValue << "\n";
-  os << indent << "NoGradient: (" << this->NoGradient[0] << ", " << this->NoGradient[1] << ", "
-     << this->NoGradient[2] << ")\n";
+  os << indent << "NoGradient: (" << this->NoGradient[0] << ", "
+     << this->NoGradient[1] << ", " << this->NoGradient[2] << ")\n";
   os << indent << "Tolerance: " << this->Tolerance << "\n";
 
   if (this->Input)

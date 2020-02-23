@@ -76,7 +76,6 @@ vtk_add_test_python(
   TestWrapPad.py
   resampledTexture.py
   voxelModel.py
-  TestBlendCompound.py
   TestBlendStencil.py
   TestExtractVOI.py
   TestImageWeightedSum.py

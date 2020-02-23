@@ -43,7 +43,7 @@
  * @par Thanks:
  *  Developed by David Feng and Philippe Pebay at Sandia National Laboratories
  *------------------------------------------------------------------------------
- */
+*/
 
 #ifndef vtkExtractHistogram2D_h
 #define vtkExtractHistogram2D_h
@@ -60,19 +60,19 @@ class VTKFILTERSIMAGING_EXPORT vtkExtractHistogram2D : public vtkStatisticsAlgor
 public:
   static vtkExtractHistogram2D* New();
   vtkTypeMacro(vtkExtractHistogram2D, vtkStatisticsAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   enum OutputIndices
   {
-    HISTOGRAM_IMAGE = 3
+    HISTOGRAM_IMAGE=3
   };
 
   //@{
   /**
    * Set/get the number of bins to be used per dimension (x,y)
    */
-  vtkSetVector2Macro(NumberOfBins, int);
-  vtkGetVector2Macro(NumberOfBins, int);
+  vtkSetVector2Macro(NumberOfBins,int);
+  vtkGetVector2Macro(NumberOfBins,int);
   //@}
 
   //@{
@@ -80,8 +80,8 @@ public:
    * Set/get the components of the arrays in the two input columns
    * to be used during histogram computation.  Defaults to component 0.
    */
-  vtkSetVector2Macro(ComponentsToProcess, int);
-  vtkGetVector2Macro(ComponentsToProcess, int);
+  vtkSetVector2Macro(ComponentsToProcess,int);
+  vtkGetVector2Macro(ComponentsToProcess,int);
   //@}
 
   //@{
@@ -89,8 +89,8 @@ public:
    * Set/get a custom domain for histogram computation.  UseCustomHistogramExtents
    * must be called for these to actually be used.
    */
-  vtkSetVector4Macro(CustomHistogramExtents, double);
-  vtkGetVector4Macro(CustomHistogramExtents, double);
+  vtkSetVector4Macro(CustomHistogramExtents,double);
+  vtkGetVector4Macro(CustomHistogramExtents,double);
   //@}
 
   //@{
@@ -98,9 +98,9 @@ public:
    * Use the extents in CustomHistogramExtents when computing the
    * histogram, rather than the simple range of the input columns.
    */
-  vtkSetMacro(UseCustomHistogramExtents, vtkTypeBool);
-  vtkGetMacro(UseCustomHistogramExtents, vtkTypeBool);
-  vtkBooleanMacro(UseCustomHistogramExtents, vtkTypeBool);
+  vtkSetMacro(UseCustomHistogramExtents,int);
+  vtkGetMacro(UseCustomHistogramExtents,int);
+  vtkBooleanMacro(UseCustomHistogramExtents,int);
   //@}
 
   //@{
@@ -109,14 +109,20 @@ public:
    * is relatively small, you can save space by using a smaller
    * data type.  Defaults to unsigned integer.
    */
-  vtkSetMacro(ScalarType, int);
-  void SetScalarTypeToUnsignedInt() { this->SetScalarType(VTK_UNSIGNED_INT); }
-  void SetScalarTypeToUnsignedLong() { this->SetScalarType(VTK_UNSIGNED_LONG); }
-  void SetScalarTypeToUnsignedShort() { this->SetScalarType(VTK_UNSIGNED_SHORT); }
-  void SetScalarTypeToUnsignedChar() { this->SetScalarType(VTK_UNSIGNED_CHAR); }
-  void SetScalarTypeToFloat() { this->SetScalarType(VTK_FLOAT); }
-  void SetScalarTypeToDouble() { this->SetScalarType(VTK_DOUBLE); }
-  vtkGetMacro(ScalarType, int);
+  vtkSetMacro(ScalarType,int);
+  void SetScalarTypeToUnsignedInt()
+    {this->SetScalarType(VTK_UNSIGNED_INT);};
+  void SetScalarTypeToUnsignedLong()
+    {this->SetScalarType(VTK_UNSIGNED_LONG);};
+  void SetScalarTypeToUnsignedShort()
+    {this->SetScalarType(VTK_UNSIGNED_SHORT);};
+  void SetScalarTypeToUnsignedChar()
+    {this->SetScalarType(VTK_UNSIGNED_CHAR);};
+  void SetScalarTypeToFloat()
+    {this->SetScalarType(VTK_FLOAT);};
+  void SetScalarTypeToDouble()
+    {this->SetScalarType(VTK_DOUBLE);};
+  vtkGetMacro(ScalarType,int);
   //@}
 
   //@{
@@ -124,7 +130,7 @@ public:
    * Access the count of the histogram bin containing the largest number
    * of input rows.
    */
-  vtkGetMacro(MaximumBinCount, double);
+  vtkGetMacro(MaximumBinCount,double);
   //@}
 
   /**
@@ -157,32 +163,32 @@ public:
    */
   double* GetHistogramExtents();
 
-  vtkSetMacro(SwapColumns, vtkTypeBool);
-  vtkGetMacro(SwapColumns, vtkTypeBool);
-  vtkBooleanMacro(SwapColumns, vtkTypeBool);
+  vtkSetMacro(SwapColumns,int);
+  vtkGetMacro(SwapColumns,int);
+  vtkBooleanMacro(SwapColumns,int);
 
   //@{
   /**
    * Get/Set an optional mask that can ignore rows of the table
    */
   virtual void SetRowMask(vtkDataArray*);
-  vtkGetObjectMacro(RowMask, vtkDataArray);
+  vtkGetObjectMacro(RowMask,vtkDataArray);
   //@}
 
   /**
    * Given a collection of models, calculate aggregate model. Not used.
    */
-  void Aggregate(vtkDataObjectCollection*, vtkMultiBlockDataSet*) override {}
+  virtual void Aggregate( vtkDataObjectCollection*, vtkMultiBlockDataSet* ) {}
 
 protected:
   vtkExtractHistogram2D();
-  ~vtkExtractHistogram2D() override;
+  ~vtkExtractHistogram2D();
 
-  vtkTypeBool SwapColumns;
+  int SwapColumns;
   int NumberOfBins[2];
   double HistogramExtents[4];
   double CustomHistogramExtents[4];
-  vtkTypeBool UseCustomHistogramExtents;
+  int UseCustomHistogramExtents;
   int ComponentsToProcess[2];
   double MaximumBinCount;
   int ScalarType;
@@ -194,38 +200,45 @@ protected:
    * Execute the calculations required by the Learn option.
    * This is what actually does the histogram computation.
    */
-  void Learn(vtkTable* inData, vtkTable* inParameters, vtkMultiBlockDataSet* inMeta) override;
+  virtual void Learn( vtkTable* inData,
+                      vtkTable* inParameters,
+                      vtkMultiBlockDataSet* inMeta );
 
   /**
    * Execute the calculations required by the Derive option. Not used.
    */
-  void Derive(vtkMultiBlockDataSet*) override {}
+  virtual void Derive( vtkMultiBlockDataSet* ) {}
 
   /**
    * Execute the calculations required by the Test option.
    */
-  void Test(vtkTable*, vtkMultiBlockDataSet*, vtkTable*) override { return; }
+  virtual void Test( vtkTable*,
+                     vtkMultiBlockDataSet*,
+                     vtkTable* ) { return; };
 
   /**
    * Execute the calculations required by the Assess option.
    */
-  void Assess(vtkTable*, vtkMultiBlockDataSet*, vtkTable*) override { return; }
+  virtual void Assess( vtkTable*,
+                       vtkMultiBlockDataSet*,
+                       vtkTable* ) { return; };
 
   /**
    * Provide the appropriate assessment functor. Not used.
    */
-  void SelectAssessFunctor(vtkTable* vtkNotUsed(outData), vtkDataObject* vtkNotUsed(inMeta),
-    vtkStringArray* vtkNotUsed(rowNames), AssessFunctor*& vtkNotUsed(dfunc)) override
-  {
-  }
+  virtual void SelectAssessFunctor( vtkTable* vtkNotUsed(outData),
+                                    vtkDataObject* vtkNotUsed(inMeta),
+                                    vtkStringArray* vtkNotUsed(rowNames),
+                                    AssessFunctor*& vtkNotUsed(dfunc) ) {}
 
-  int FillOutputPortInformation(int port, vtkInformation* info) override;
+  virtual int FillOutputPortInformation( int port, vtkInformation* info );
 
   /**
    * Makes sure that the image data output port has up-to-date spacing/origin/etc
    */
-  int RequestInformation(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  virtual int RequestInformation (vtkInformation *request,
+                                  vtkInformationVector **inputVector,
+                                  vtkInformationVector *outputVector);
 
   /**
    * Get points to the arrays that live in the two input columns
@@ -233,8 +246,8 @@ protected:
   int GetInputArrays(vtkDataArray*& col1, vtkDataArray*& col2);
 
 private:
-  vtkExtractHistogram2D(const vtkExtractHistogram2D&) = delete;
-  void operator=(const vtkExtractHistogram2D&) = delete;
+  vtkExtractHistogram2D(const vtkExtractHistogram2D&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkExtractHistogram2D&) VTK_DELETE_FUNCTION;
 };
 
 #endif

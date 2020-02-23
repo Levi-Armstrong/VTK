@@ -18,7 +18,7 @@
  *
  * vtkPReflectionFilter is a parallel version of vtkReflectionFilter which takes
  * into consideration the full dataset bounds for performing the reflection.
- */
+*/
 
 #ifndef vtkPReflectionFilter_h
 #define vtkPReflectionFilter_h
@@ -33,30 +33,32 @@ class VTKFILTERSPARALLEL_EXPORT vtkPReflectionFilter : public vtkReflectionFilte
 public:
   static vtkPReflectionFilter* New();
   vtkTypeMacro(vtkPReflectionFilter, vtkReflectionFilter);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
    * Get/Set the parallel controller.
    */
   void SetController(vtkMultiProcessController*);
-  vtkGetObjectMacro(Controller, vtkMultiProcessController);
+  vtkGetObjectMacro (Controller, vtkMultiProcessController);
   //@}
 
 protected:
   vtkPReflectionFilter();
-  ~vtkPReflectionFilter() override;
+  ~vtkPReflectionFilter();
 
   /**
    * Internal method to compute bounds.
    */
-  int ComputeBounds(vtkDataObject* input, double bounds[6]) override;
+  virtual int ComputeBounds(vtkDataObject* input, double bounds[6]);
 
   vtkMultiProcessController* Controller;
-
 private:
-  vtkPReflectionFilter(const vtkPReflectionFilter&) = delete;
-  void operator=(const vtkPReflectionFilter&) = delete;
+  vtkPReflectionFilter(const vtkPReflectionFilter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPReflectionFilter&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif
+
+

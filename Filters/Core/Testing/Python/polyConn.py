@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import vtk
+from vtk.test import Testing
 from vtk.util.misc import vtkGetDataRoot
 VTK_DATA_ROOT = vtkGetDataRoot()
 
@@ -7,7 +8,6 @@ VTK_DATA_ROOT = vtkGetDataRoot()
 #
 ren1 = vtk.vtkRenderer()
 renWin = vtk.vtkRenderWindow()
-renWin.SetMultiSamples(0)
 renWin.AddRenderer(ren1)
 iren = vtk.vtkRenderWindowInteractor()
 iren.SetRenderWindow(renWin)

@@ -20,15 +20,15 @@
  * It observes the user events (mouse events) and propagates them
  * to the scene. If the scene doesn't eat the event, it is propagated
  * to the interactor style superclass.
- */
+*/
 
 #ifndef vtkContextInteractorStyle_h
 #define vtkContextInteractorStyle_h
 
-#include "vtkInteractorStyle.h"
-#include "vtkNew.h"                  // For ivars
 #include "vtkViewsContext2DModule.h" // For export macro
-#include "vtkWeakPointer.h"          // For ivars
+#include "vtkInteractorStyle.h"
+#include "vtkNew.h" // For ivars
+#include "vtkWeakPointer.h" // For ivars
 
 class vtkContextMouseEvent;
 class vtkContextScene;
@@ -36,9 +36,9 @@ class vtkContextScene;
 class VTKVIEWSCONTEXT2D_EXPORT vtkContextInteractorStyle : public vtkInteractorStyle
 {
 public:
-  static vtkContextInteractorStyle* New();
+  static vtkContextInteractorStyle *New();
   vtkTypeMacro(vtkContextInteractorStyle, vtkInteractorStyle);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Set the scene to forward user events to.
@@ -63,55 +63,55 @@ public:
    * Called when the user moves the mouse
    * Default behavior forwards the event to the observed scene.
    */
-  void OnMouseMove() override;
+  virtual void OnMouseMove();
 
   /**
    * Called when the user clicks the mouse left button.
    * Default behavior forwards the event to the observed scene.
    */
-  void OnLeftButtonDown() override;
+  virtual void OnLeftButtonDown();
 
   /**
    * Called when the user releases the mouse left button.
    * Default behavior forwards the event to the observed scene.
    */
-  void OnLeftButtonUp() override;
+  virtual void OnLeftButtonUp();
 
   /**
    * Called when the user clicks the mouse middle button.
    * Default behavior forwards the event to the observed scene.
    */
-  void OnMiddleButtonDown() override;
+  virtual void OnMiddleButtonDown();
 
   /**
    * Called when the user releases the mouse middle button.
    * Default behavior forwards the event to the observed scene.
    */
-  void OnMiddleButtonUp() override;
+  virtual void OnMiddleButtonUp();
 
   /**
    * Called when the user clicks the mouse right button.
    * Default behavior forwards the event to the observed scene.
    */
-  void OnRightButtonDown() override;
+  virtual void OnRightButtonDown();
 
   /**
    * Called when the user releases the mouse right button.
    * Default behavior forwards the event to the observed scene.
    */
-  void OnRightButtonUp() override;
+  virtual void OnRightButtonUp();
 
   /**
    * Called when the user moves the mouse wheel forward.
    * Default behavior forwards the event to the observed scene.
    */
-  void OnMouseWheelForward() override;
+  virtual void OnMouseWheelForward();
 
   /**
    * Called when the user moves the mouse wheel backward.
    * Default behavior forwards the event to the observed scene.
    */
-  void OnMouseWheelBackward() override;
+  virtual void OnMouseWheelBackward();
 
   /**
    * Place holder for future implementation.
@@ -122,27 +122,27 @@ public:
   /**
    * Handle key presses.
    */
-  void OnChar() override;
+  virtual void OnChar();
 
   /**
    * Called when the user presses a key.
    */
-  void OnKeyPress() override;
+  virtual void OnKeyPress();
 
   /**
    * Called when the user releases a key.
    */
-  void OnKeyRelease() override;
+  virtual void OnKeyRelease();
 
 protected:
   vtkContextInteractorStyle();
-  ~vtkContextInteractorStyle() override;
+  ~vtkContextInteractorStyle();
 
-  static void ProcessSceneEvents(
-    vtkObject* object, unsigned long event, void* clientdata, void* calldata);
+  static void ProcessSceneEvents(vtkObject* object, unsigned long event,
+                                 void* clientdata, void* calldata);
 
-  static void ProcessInteractorEvents(
-    vtkObject* object, unsigned long event, void* clientdata, void* calldata);
+  static void ProcessInteractorEvents(vtkObject* object, unsigned long event,
+                                      void* clientdata, void* calldata);
 
   virtual void RenderNow();
 
@@ -163,18 +163,18 @@ protected:
   vtkWeakPointer<vtkContextScene> Scene;
   vtkNew<vtkCallbackCommand> SceneCallbackCommand;
   vtkNew<vtkCallbackCommand> InteractorCallbackCommand;
-  int ProcessingEvents;
-  vtkMTimeType LastSceneRepaintMTime;
+  int                 ProcessingEvents;
+  vtkMTimeType        LastSceneRepaintMTime;
 
-  int SceneTimerId;
-  bool TimerCallbackInitialized;
+  int                 TimerId;
+  bool                TimerCallbackInitialized;
 
 private:
-  vtkContextInteractorStyle(const vtkContextInteractorStyle&) = delete;
-  void operator=(const vtkContextInteractorStyle&) = delete;
+  vtkContextInteractorStyle(const vtkContextInteractorStyle&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkContextInteractorStyle&) VTK_DELETE_FUNCTION;
 
-  void ConstructMouseEvent(vtkContextMouseEvent& event, int button);
-  bool ProcessMousePress(const vtkContextMouseEvent& event);
+  void ConstructMouseEvent(vtkContextMouseEvent &event, int button);
+  bool ProcessMousePress(const vtkContextMouseEvent &event);
 };
 
 #endif

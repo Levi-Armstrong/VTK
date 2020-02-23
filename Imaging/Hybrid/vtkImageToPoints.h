@@ -23,7 +23,7 @@
  * @par Thanks:
  * Thanks to David Gobbi, Calgary Image Processing and Analysis Centre,
  * University of Calgary, for providing this class.
- */
+*/
 
 #ifndef vtkImageToPoints_h
 #define vtkImageToPoints_h
@@ -33,20 +33,21 @@
 
 class vtkImageStencilData;
 
-class VTKIMAGINGHYBRID_EXPORT vtkImageToPoints : public vtkPolyDataAlgorithm
+class VTKIMAGINGHYBRID_EXPORT vtkImageToPoints :
+  public vtkPolyDataAlgorithm
 {
 public:
-  static vtkImageToPoints* New();
-  vtkTypeMacro(vtkImageToPoints, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkImageToPoints *New();
+  vtkTypeMacro(vtkImageToPoints,vtkPolyDataAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
    * Only extract the points that lie within the stencil.
    */
-  void SetStencilConnection(vtkAlgorithmOutput* port);
-  vtkAlgorithmOutput* GetStencilConnection();
-  void SetStencilData(vtkImageStencilData* stencil);
+  void SetStencilConnection(vtkAlgorithmOutput *port);
+  vtkAlgorithmOutput *GetStencilConnection();
+  void SetStencilData(vtkImageStencilData *stencil);
   //@}
 
   //@{
@@ -61,25 +62,28 @@ public:
 
 protected:
   vtkImageToPoints();
-  ~vtkImageToPoints() override;
+  ~vtkImageToPoints();
 
-  int RequestInformation(
-    vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo) override;
+  virtual int RequestInformation(vtkInformation *request,
+                                 vtkInformationVector **inInfo,
+                                 vtkInformationVector *outInfo);
 
-  int RequestUpdateExtent(
-    vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo) override;
+  virtual int RequestUpdateExtent(vtkInformation *request,
+                                 vtkInformationVector **inInfo,
+                                 vtkInformationVector *outInfo);
 
-  int RequestData(
-    vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo) override;
+  virtual int RequestData(vtkInformation *request,
+                          vtkInformationVector **inInfo,
+                          vtkInformationVector *outInfo);
 
-  int FillInputPortInformation(int port, vtkInformation* info) override;
-  int FillOutputPortInformation(int port, vtkInformation* info) override;
+  virtual int FillInputPortInformation(int port, vtkInformation *info);
+  virtual int FillOutputPortInformation(int port, vtkInformation *info);
 
   int OutputPointsPrecision;
 
 private:
-  vtkImageToPoints(const vtkImageToPoints&) = delete;
-  void operator=(const vtkImageToPoints&) = delete;
+  vtkImageToPoints(const vtkImageToPoints&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkImageToPoints&) VTK_DELETE_FUNCTION;
 };
 
 #endif

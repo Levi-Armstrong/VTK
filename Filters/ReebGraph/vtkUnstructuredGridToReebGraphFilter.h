@@ -21,23 +21,24 @@
  * Id 'fieldId' of the mesh's vtkPointData.
  * If this field does not exist, the filter will use the vtkElevationFilter to
  * generate a default scalar field.
- */
+*/
 
 #ifndef vtkUnstructuredGridToReebGraphFilter_h
 #define vtkUnstructuredGridToReebGraphFilter_h
 
-#include "vtkDirectedGraphAlgorithm.h"
 #include "vtkFiltersReebGraphModule.h" // For export macro
+#include "vtkDirectedGraphAlgorithm.h"
 
 class vtkReebGraph;
 
-class VTKFILTERSREEBGRAPH_EXPORT vtkUnstructuredGridToReebGraphFilter
-  : public vtkDirectedGraphAlgorithm
+class VTKFILTERSREEBGRAPH_EXPORT vtkUnstructuredGridToReebGraphFilter :
+  public vtkDirectedGraphAlgorithm
 {
 public:
   static vtkUnstructuredGridToReebGraphFilter* New();
-  vtkTypeMacro(vtkUnstructuredGridToReebGraphFilter, vtkDirectedGraphAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkUnstructuredGridToReebGraphFilter,
+    vtkDirectedGraphAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -49,20 +50,23 @@ public:
 
   vtkReebGraph* GetOutput();
 
+
 protected:
   vtkUnstructuredGridToReebGraphFilter();
-  ~vtkUnstructuredGridToReebGraphFilter() override;
+  ~vtkUnstructuredGridToReebGraphFilter();
 
   int FieldId;
 
-  int FillInputPortInformation(int portNumber, vtkInformation*) override;
-  int FillOutputPortInformation(int, vtkInformation*) override;
+  int FillInputPortInformation(int portNumber, vtkInformation *);
+  int FillOutputPortInformation(int, vtkInformation *);
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation*,
+                  vtkInformationVector**,
+                  vtkInformationVector*);
 
 private:
-  vtkUnstructuredGridToReebGraphFilter(const vtkUnstructuredGridToReebGraphFilter&) = delete;
-  void operator=(const vtkUnstructuredGridToReebGraphFilter&) = delete;
+  vtkUnstructuredGridToReebGraphFilter(const vtkUnstructuredGridToReebGraphFilter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkUnstructuredGridToReebGraphFilter&) VTK_DELETE_FUNCTION;
 };
 
 #endif

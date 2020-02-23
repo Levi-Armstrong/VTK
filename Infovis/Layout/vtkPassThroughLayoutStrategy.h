@@ -25,27 +25,28 @@
  * Yes, this incredible strategy does absoluted nothing to the data
  * so in affect passes through the graph untouched. This strategy
  * is useful in the cases where the graph is already laid out.
- */
+*/
 
 #ifndef vtkPassThroughLayoutStrategy_h
 #define vtkPassThroughLayoutStrategy_h
 
-#include "vtkGraphLayoutStrategy.h"
 #include "vtkInfovisLayoutModule.h" // For export macro
+#include "vtkGraphLayoutStrategy.h"
 
 class VTKINFOVISLAYOUT_EXPORT vtkPassThroughLayoutStrategy : public vtkGraphLayoutStrategy
 {
 public:
-  static vtkPassThroughLayoutStrategy* New();
+  static vtkPassThroughLayoutStrategy *New();
 
   vtkTypeMacro(vtkPassThroughLayoutStrategy, vtkGraphLayoutStrategy);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
+
 
   /**
    * This strategy sets up some data structures
    * for faster processing of each Layout() call
    */
-  void Initialize() override;
+  virtual void Initialize();
 
   /**
    * This is the layout method where the graph that was
@@ -54,21 +55,23 @@ public:
    * graph. If you have an iterative layout please implement
    * the IsLayoutComplete() method.
    */
-  void Layout() override;
+  virtual void Layout();
 
   /**
    * I'm an iterative layout so this method lets the caller
    * know if I'm done laying out the graph
    */
-  int IsLayoutComplete() override { return 1; }
+  virtual int IsLayoutComplete() {return 1;}
 
 protected:
   vtkPassThroughLayoutStrategy();
-  ~vtkPassThroughLayoutStrategy() override;
+  ~vtkPassThroughLayoutStrategy();
 
 private:
-  vtkPassThroughLayoutStrategy(const vtkPassThroughLayoutStrategy&) = delete;
-  void operator=(const vtkPassThroughLayoutStrategy&) = delete;
+
+  vtkPassThroughLayoutStrategy(const vtkPassThroughLayoutStrategy&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPassThroughLayoutStrategy&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

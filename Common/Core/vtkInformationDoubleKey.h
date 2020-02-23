@@ -18,7 +18,7 @@
  *
  * vtkInformationDoubleKey is used to represent keys for double values
  * in vtkInformation.
- */
+*/
 
 #ifndef vtkInformationDoubleKey_h
 #define vtkInformationDoubleKey_h
@@ -31,11 +31,11 @@
 class VTKCOMMONCORE_EXPORT vtkInformationDoubleKey : public vtkInformationKey
 {
 public:
-  vtkTypeMacro(vtkInformationDoubleKey, vtkInformationKey);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkInformationDoubleKey,vtkInformationKey);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   vtkInformationDoubleKey(const char* name, const char* location);
-  ~vtkInformationDoubleKey() override;
+  ~vtkInformationDoubleKey() VTK_OVERRIDE;
 
   /**
    * This method simply returns a new vtkInformationDoubleKey, given a
@@ -61,12 +61,12 @@ public:
    * object to another.  If there is no entry in the first information
    * object for this key, the value is removed from the second.
    */
-  void ShallowCopy(vtkInformation* from, vtkInformation* to) override;
+  void ShallowCopy(vtkInformation* from, vtkInformation* to) VTK_OVERRIDE;
 
   /**
    * Print the key's value in an information object to a stream.
    */
-  void Print(ostream& os, vtkInformation* info) override;
+  void Print(ostream& os, vtkInformation* info) VTK_OVERRIDE;
 
 protected:
   /**
@@ -77,8 +77,8 @@ protected:
   double* GetWatchAddress(vtkInformation* info);
 
 private:
-  vtkInformationDoubleKey(const vtkInformationDoubleKey&) = delete;
-  void operator=(const vtkInformationDoubleKey&) = delete;
+  vtkInformationDoubleKey(const vtkInformationDoubleKey&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkInformationDoubleKey&) VTK_DELETE_FUNCTION;
 };
 
 #endif

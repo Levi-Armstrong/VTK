@@ -25,13 +25,17 @@ VTK_AOS_DATA_ARRAY_TEMPLATE_INSTANTIATE(double);
 vtkStandardNewMacro(vtkDoubleArray);
 
 //----------------------------------------------------------------------------
-vtkDoubleArray::vtkDoubleArray() = default;
+vtkDoubleArray::vtkDoubleArray()
+{
+}
 
 //----------------------------------------------------------------------------
-vtkDoubleArray::~vtkDoubleArray() = default;
+vtkDoubleArray::~vtkDoubleArray()
+{
+}
 
 //----------------------------------------------------------------------------
 void vtkDoubleArray::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->RealSuperclass::PrintSelf(os, indent);
+  this->RealSuperclass::PrintSelf(os,indent);
 }

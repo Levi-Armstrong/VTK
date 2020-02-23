@@ -16,18 +16,18 @@
  * @brief   draw PointGaussians using imposters
  *
  *
- * A mapper that uses imposters to draw gaussian splats or other shapes if
+ * An  mapper that uses imposters to draw gaussian splats or other shapes if
  * custom shader code is set. Supports transparency and picking as well. It
- * draws all the points and does not require cell arrays. If cell arrays are
+ * draws all the points and does not require cell arrays.  If cell arrays are
  * provided it will only draw the points used by the Verts cell array. The shape
  * of the imposter is a triangle.
- */
+*/
 
 #ifndef vtkPointGaussianMapper_h
 #define vtkPointGaussianMapper_h
 
-#include "vtkPolyDataMapper.h"
 #include "vtkRenderingCoreModule.h" // For export macro
+#include "vtkPolyDataMapper.h"
 
 class vtkPiecewiseFunction;
 
@@ -35,16 +35,16 @@ class VTKRENDERINGCORE_EXPORT vtkPointGaussianMapper : public vtkPolyDataMapper
 {
 public:
   static vtkPointGaussianMapper* New();
-  vtkTypeMacro(vtkPointGaussianMapper, vtkPolyDataMapper);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkPointGaussianMapper, vtkPolyDataMapper)
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
    * Set/Get the optional scale transfer function. This is only
    * used when a ScaleArray is also specified.
    */
-  void SetScaleFunction(vtkPiecewiseFunction*);
-  vtkGetObjectMacro(ScaleFunction, vtkPiecewiseFunction);
+  void SetScaleFunction(vtkPiecewiseFunction *);
+  vtkGetObjectMacro(ScaleFunction,vtkPiecewiseFunction);
   //@}
 
   //@{
@@ -66,14 +66,6 @@ public:
 
   //@{
   /**
-   * Convenience method to set the component of the array to scale with.
-   */
-  vtkSetMacro(ScaleArrayComponent, int);
-  vtkGetMacro(ScaleArrayComponent, int);
-  //@}
-
-  //@{
-  /**
    * Set the default scale factor of the point gaussians.  This
    * defaults to 1.0. All radius computations will be scaled by the factor
    * including the ScaleArray. If a vtkPiecewideFunction is used the
@@ -81,17 +73,17 @@ public:
    * A scale factor of 0.0 indicates that the splats should be rendered
    * as simple points.
    */
-  vtkSetMacro(ScaleFactor, double);
-  vtkGetMacro(ScaleFactor, double);
+  vtkSetMacro(ScaleFactor,double);
+  vtkGetMacro(ScaleFactor,double);
   //@}
 
   //@{
   /**
    * Treat the points/splats as emissive light sources. The default is true.
    */
-  vtkSetMacro(Emissive, vtkTypeBool);
-  vtkGetMacro(Emissive, vtkTypeBool);
-  vtkBooleanMacro(Emissive, vtkTypeBool);
+  vtkSetMacro(Emissive, int);
+  vtkGetMacro(Emissive, int);
+  vtkBooleanMacro(Emissive, int);
   //@}
 
   //@{
@@ -99,8 +91,8 @@ public:
    * Set/Get the optional opacity transfer function. This is only
    * used when an OpacityArray is also specified.
    */
-  void SetScalarOpacityFunction(vtkPiecewiseFunction*);
-  vtkGetObjectMacro(ScalarOpacityFunction, vtkPiecewiseFunction);
+  void SetScalarOpacityFunction(vtkPiecewiseFunction *);
+  vtkGetObjectMacro(ScalarOpacityFunction,vtkPiecewiseFunction);
   //@}
 
   //@{
@@ -119,14 +111,6 @@ public:
    */
   vtkSetStringMacro(OpacityArray);
   vtkGetStringMacro(OpacityArray);
-  //@}
-
-  //@{
-  /**
-   * Convenience method to set the component of the array to opacify with.
-   */
-  vtkSetMacro(OpacityArrayComponent, int);
-  vtkGetMacro(OpacityArrayComponent, int);
   //@}
 
   //@{
@@ -157,42 +141,32 @@ public:
    * to avoid sending many fragments to the shader that will just get
    * discarded.
    */
-  vtkSetMacro(TriangleScale, float);
-  vtkGetMacro(TriangleScale, float);
+  vtkSetMacro(TriangleScale,float);
+  vtkGetMacro(TriangleScale,float);
   //@}
-
-  /**
-   * WARNING: INTERNAL METHOD - NOT INTENDED FOR GENERAL USE
-   * DO NOT USE THIS METHOD OUTSIDE OF THE RENDERING PROCESS
-   * Used by vtkHardwareSelector to determine if the prop supports hardware
-   * selection.
-   */
-  bool GetSupportsSelection() override { return true; }
 
 protected:
   vtkPointGaussianMapper();
-  ~vtkPointGaussianMapper() override;
+  ~vtkPointGaussianMapper();
 
-  char* ScaleArray;
-  int ScaleArrayComponent;
-  char* OpacityArray;
-  int OpacityArrayComponent;
-  char* SplatShaderCode;
+  char *ScaleArray;
+  char *OpacityArray;
+  char *SplatShaderCode;
 
-  vtkPiecewiseFunction* ScaleFunction;
+  vtkPiecewiseFunction *ScaleFunction;
   int ScaleTableSize;
 
-  vtkPiecewiseFunction* ScalarOpacityFunction;
+  vtkPiecewiseFunction *ScalarOpacityFunction;
   int OpacityTableSize;
 
   double ScaleFactor;
-  vtkTypeBool Emissive;
+  int Emissive;
 
   float TriangleScale;
 
 private:
-  vtkPointGaussianMapper(const vtkPointGaussianMapper&) = delete;
-  void operator=(const vtkPointGaussianMapper&) = delete;
+  vtkPointGaussianMapper(const vtkPointGaussianMapper&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPointGaussianMapper&) VTK_DELETE_FUNCTION;
 };
 
 #endif

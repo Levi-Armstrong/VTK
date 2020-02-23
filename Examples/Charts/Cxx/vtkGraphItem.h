@@ -20,7 +20,7 @@
  *
  * This is a vtkContextItem that can be placed into a vtkContextScene. It draws
  * a block of the given dimensions, and reacts to mouse events.
- */
+*/
 
 #ifndef vtkGraphItem_h
 #define vtkGraphItem_h
@@ -34,9 +34,9 @@ class vtkGraphItem : public vtkContextItem
 {
 public:
   vtkTypeMacro(vtkGraphItem, vtkContextItem);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  virtual void PrintSelf(ostream &os, vtkIndent indent);
 
-  static vtkGraphItem* New();
+  static vtkGraphItem *New();
 
   vtkGetObjectMacro(Graph, vtkGraph);
   virtual void SetGraph(vtkGraph* g);
@@ -44,43 +44,43 @@ public:
   /**
    * Paint event for the item.
    */
-  bool Paint(vtkContext2D* painter) override;
+  virtual bool Paint(vtkContext2D *painter);
 
   /**
    * Returns true if the supplied x, y coordinate is inside the item.
    */
-  bool Hit(const vtkContextMouseEvent& mouse) override;
+  virtual bool Hit(const vtkContextMouseEvent &mouse);
 
   /**
    * Mouse enter event.
    */
-  bool MouseEnterEvent(const vtkContextMouseEvent& mouse) override;
+  virtual bool MouseEnterEvent(const vtkContextMouseEvent &mouse);
 
   /**
    * Mouse move event.
    */
-  bool MouseMoveEvent(const vtkContextMouseEvent& mouse) override;
+  virtual bool MouseMoveEvent(const vtkContextMouseEvent &mouse);
 
   /**
    * Mouse leave event.
    */
-  bool MouseLeaveEvent(const vtkContextMouseEvent& mouse) override;
+  virtual bool MouseLeaveEvent(const vtkContextMouseEvent &mouse);
 
   /**
    * Mouse button down event.
    */
-  bool MouseButtonPressEvent(const vtkContextMouseEvent& mouse) override;
+  virtual bool MouseButtonPressEvent(const vtkContextMouseEvent &mouse);
 
   /**
    * Mouse button release event.
    */
-  bool MouseButtonReleaseEvent(const vtkContextMouseEvent& mouse) override;
+  virtual bool MouseButtonReleaseEvent(const vtkContextMouseEvent &mouse);
 
   void UpdatePositions();
 
 protected:
   vtkGraphItem();
-  ~vtkGraphItem() override;
+  ~vtkGraphItem();
 
   float LastPosition[2];
 
@@ -94,8 +94,9 @@ protected:
   Implementation* Impl;
 
 private:
-  vtkGraphItem(const vtkGraphItem&) = delete;
-  void operator=(const vtkGraphItem&) = delete;
+  vtkGraphItem(const vtkGraphItem &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkGraphItem &) VTK_DELETE_FUNCTION;
+
 };
 
-#endif // vtkGraphItem_h
+#endif //vtkGraphItem_h

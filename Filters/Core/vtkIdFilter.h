@@ -19,48 +19,48 @@
  * vtkIdFilter is a filter to that generates scalars or field data
  * using cell and point ids. That is, the point attribute data scalars
  * or field data are generated from the point ids, and the cell
- * attribute data scalars or field data are generated from the
+ * attribute data scalars or field data are generated from the the
  * cell ids.
  *
  * Typically this filter is used with vtkLabeledDataMapper (and possibly
  * vtkSelectVisiblePoints) to create labels for points and cells, or labels
  * for the point or cell data scalar values.
- */
+*/
 
 #ifndef vtkIdFilter_h
 #define vtkIdFilter_h
 
-#include "vtkDataSetAlgorithm.h"
 #include "vtkFiltersCoreModule.h" // For export macro
+#include "vtkDataSetAlgorithm.h"
 
 class VTKFILTERSCORE_EXPORT vtkIdFilter : public vtkDataSetAlgorithm
 {
 public:
-  vtkTypeMacro(vtkIdFilter, vtkDataSetAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkIdFilter,vtkDataSetAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Construct object with PointIds and CellIds on; and ids being generated
    * as scalars.
    */
-  static vtkIdFilter* New();
+  static vtkIdFilter *New();
 
   //@{
   /**
    * Enable/disable the generation of point ids. Default is on.
    */
-  vtkSetMacro(PointIds, vtkTypeBool);
-  vtkGetMacro(PointIds, vtkTypeBool);
-  vtkBooleanMacro(PointIds, vtkTypeBool);
+  vtkSetMacro(PointIds,int);
+  vtkGetMacro(PointIds,int);
+  vtkBooleanMacro(PointIds,int);
   //@}
 
   //@{
   /**
    * Enable/disable the generation of point ids. Default is on.
    */
-  vtkSetMacro(CellIds, vtkTypeBool);
-  vtkGetMacro(CellIds, vtkTypeBool);
-  vtkBooleanMacro(CellIds, vtkTypeBool);
+  vtkSetMacro(CellIds,int);
+  vtkGetMacro(CellIds,int);
+  vtkBooleanMacro(CellIds,int);
   //@}
 
   //@{
@@ -69,52 +69,36 @@ public:
    * or field data. If this flag is off, scalar data is generated.
    * Otherwise, field data is generated. Default is off.
    */
-  vtkSetMacro(FieldData, vtkTypeBool);
-  vtkGetMacro(FieldData, vtkTypeBool);
-  vtkBooleanMacro(FieldData, vtkTypeBool);
+  vtkSetMacro(FieldData,int);
+  vtkGetMacro(FieldData,int);
+  vtkBooleanMacro(FieldData,int);
   //@}
 
   //@{
   /**
-   * @deprecated use SetPointIdsArrayName/GetPointIdsArrayName or
-   * SetCellIdsArrayName/GetCellIdsArrayName.
+   * Set/Get the name of the Ids array if generated. By default the Ids
+   * are named "vtkIdFilter_Ids", but this can be changed with this function.
    */
-  VTK_LEGACY(void SetIdsArrayName(const char*));
-  VTK_LEGACY(const char* GetIdsArrayName());
+  vtkSetStringMacro(IdsArrayName);
+  vtkGetStringMacro(IdsArrayName);
   //@}
 
-  //@{
-  /**
-   * Set/Get the name of the Ids array for points, if generated. By default,
-   * set to "vtkIdFilter_Ids" for backwards compatibility.
-   */
-  vtkSetStringMacro(PointIdsArrayName);
-  vtkGetStringMacro(PointIdsArrayName);
-  //@}
-
-  //@{
-  /**
-   * Set/Get the name of the Ids array for points, if generated. By default,
-   * set to "vtkIdFilter_Ids" for backwards compatibility.
-   */
-  vtkSetStringMacro(CellIdsArrayName);
-  vtkGetStringMacro(CellIdsArrayName);
-  //@}
 protected:
   vtkIdFilter();
-  ~vtkIdFilter() override;
+  ~vtkIdFilter() VTK_OVERRIDE;
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *) VTK_OVERRIDE;
 
-  vtkTypeBool PointIds;
-  vtkTypeBool CellIds;
-  vtkTypeBool FieldData;
-  char* PointIdsArrayName;
-  char* CellIdsArrayName;
+  int PointIds;
+  int CellIds;
+  int FieldData;
+  char *IdsArrayName;
 
 private:
-  vtkIdFilter(const vtkIdFilter&) = delete;
-  void operator=(const vtkIdFilter&) = delete;
+  vtkIdFilter(const vtkIdFilter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkIdFilter&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+

@@ -20,7 +20,7 @@
  * a uniform grid. It internally uses vtkProbeFilter to do the probing.
  * @sa
  * vtkResampleToImage vtkProbeFilter
- */
+*/
 
 #ifndef vtkPResampleToImage_h
 #define vtkPResampleToImage_h
@@ -36,13 +36,13 @@ class VTKFILTERSPARALLELDIY2_EXPORT vtkPResampleToImage : public vtkResampleToIm
 {
 public:
   vtkTypeMacro(vtkPResampleToImage, vtkResampleToImage);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
-  static vtkPResampleToImage* New();
+  static vtkPResampleToImage *New();
 
   //@{
   /**
-   * By default this filter uses the global controller,
+   * By defualt this filter uses the global controller,
    * but this method can be used to set another instead.
    */
   virtual void SetController(vtkMultiProcessController*);
@@ -51,15 +51,16 @@ public:
 
 protected:
   vtkPResampleToImage();
-  ~vtkPResampleToImage() override;
+  ~vtkPResampleToImage();
 
-  virtual int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int RequestData(vtkInformation *, vtkInformationVector **,
+                          vtkInformationVector *);
 
-  vtkMultiProcessController* Controller;
+  vtkMultiProcessController *Controller;
 
 private:
-  vtkPResampleToImage(const vtkPResampleToImage&) = delete;
-  void operator=(const vtkPResampleToImage&) = delete;
+  vtkPResampleToImage(const vtkPResampleToImage&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPResampleToImage&) VTK_DELETE_FUNCTION;
 };
 
 #endif

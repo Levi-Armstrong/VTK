@@ -29,11 +29,14 @@ vtkImageHSVToRGB::vtkImageHSVToRGB()
   this->SetNumberOfOutputPorts(1);
 }
 
+
 //----------------------------------------------------------------------------
 // This templated function executes the filter for any type of data.
 template <class T>
-void vtkImageHSVToRGBExecute(
-  vtkImageHSVToRGB* self, vtkImageData* inData, vtkImageData* outData, int outExt[6], int id, T*)
+void vtkImageHSVToRGBExecute(vtkImageHSVToRGB *self,
+                             vtkImageData *inData,
+                             vtkImageData *outData,
+                             int outExt[6], int id, T *)
 {
   vtkImageIterator<T> inIt(inData, outExt);
   vtkImageProgressIterator<T> outIt(outData, outExt, self, id);
@@ -42,7 +45,7 @@ void vtkImageHSVToRGBExecute(
   int idxC;
 
   // find the region to loop over
-  int maxC = inData->GetNumberOfScalarComponents() - 1;
+  int maxC = inData->GetNumberOfScalarComponents()-1;
 
   // Loop through output pixels
   while (!outIt.IsAtEnd())
@@ -53,12 +56,9 @@ void vtkImageHSVToRGBExecute(
     while (outSI != outSIEnd)
     {
       // Pixel operation
-      H = static_cast<double>(*inSI) / max;
-      ++inSI;
-      S = static_cast<double>(*inSI) / max;
-      ++inSI;
-      V = static_cast<double>(*inSI) / max;
-      ++inSI;
+      H = static_cast<double>(*inSI) / max; ++inSI;
+      S = static_cast<double>(*inSI) / max; ++inSI;
+      V = static_cast<double>(*inSI) / max; ++inSI;
 
       vtkMath::HSVToRGB(H, S, V, &R, &G, &B);
 
@@ -80,12 +80,9 @@ void vtkImageHSVToRGBExecute(
       }
 
       // assign output.
-      *outSI = static_cast<T>(R);
-      ++outSI;
-      *outSI = static_cast<T>(G);
-      ++outSI;
-      *outSI = static_cast<T>(B);
-      ++outSI;
+      *outSI = static_cast<T>(R); ++outSI;
+      *outSI = static_cast<T>(G); ++outSI;
+      *outSI = static_cast<T>(B); ++outSI;
 
       for (idxC = 3; idxC <= maxC; idxC++)
       {
@@ -98,16 +95,18 @@ void vtkImageHSVToRGBExecute(
 }
 
 //----------------------------------------------------------------------------
-void vtkImageHSVToRGB::ThreadedExecute(
-  vtkImageData* inData, vtkImageData* outData, int outExt[6], int id)
+void vtkImageHSVToRGB::ThreadedExecute (vtkImageData *inData,
+                                       vtkImageData *outData,
+                                       int outExt[6], int id)
 {
-  vtkDebugMacro(<< "Execute: inData = " << inData << ", outData = " << outData);
+  vtkDebugMacro(<< "Execute: inData = " << inData
+  << ", outData = " << outData);
 
   // this filter expects that input is the same type as output.
   if (inData->GetScalarType() != outData->GetScalarType())
   {
     vtkErrorMacro(<< "Execute: input ScalarType, " << inData->GetScalarType()
-                  << ", must match out ScalarType " << outData->GetScalarType());
+    << ", must match out ScalarType " << outData->GetScalarType());
     return;
   }
 
@@ -126,7 +125,8 @@ void vtkImageHSVToRGB::ThreadedExecute(
   switch (inData->GetScalarType())
   {
     vtkTemplateMacro(
-      vtkImageHSVToRGBExecute(this, inData, outData, outExt, id, static_cast<VTK_TT*>(nullptr)));
+      vtkImageHSVToRGBExecute(this, inData,
+                              outData, outExt, id, static_cast<VTK_TT *>(0)));
     default:
       vtkErrorMacro(<< "Execute: Unknown ScalarType");
       return;
@@ -135,7 +135,8 @@ void vtkImageHSVToRGB::ThreadedExecute(
 
 void vtkImageHSVToRGB::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 
   os << indent << "Maximum: " << this->Maximum << "\n";
 }
+

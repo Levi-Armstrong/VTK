@@ -22,12 +22,12 @@ vtkStandardNewMacro(vtkKdTreePointLocator);
 
 vtkKdTreePointLocator::vtkKdTreePointLocator()
 {
-  this->KdTree = nullptr;
+  this->KdTree = 0;
 }
 
 vtkKdTreePointLocator::~vtkKdTreePointLocator()
 {
-  if (this->KdTree)
+  if(this->KdTree)
   {
     this->KdTree->Delete();
   }
@@ -48,13 +48,15 @@ vtkIdType vtkKdTreePointLocator::FindClosestPointWithinRadius(
   return this->KdTree->FindClosestPointWithinRadius(radius, x, dist2);
 }
 
-void vtkKdTreePointLocator::FindClosestNPoints(int N, const double x[3], vtkIdList* result)
+void vtkKdTreePointLocator::FindClosestNPoints(int N, const double x[3],
+                                               vtkIdList* result)
 {
   this->BuildLocator();
   this->KdTree->FindClosestNPoints(N, x, result);
 }
 
-void vtkKdTreePointLocator::FindPointsWithinRadius(double R, const double x[3], vtkIdList* result)
+void vtkKdTreePointLocator::FindPointsWithinRadius(double R, const double x[3],
+                                                   vtkIdList * result)
 {
   this->BuildLocator();
   this->KdTree->FindPointsWithinRadius(R, x, result);
@@ -62,19 +64,19 @@ void vtkKdTreePointLocator::FindPointsWithinRadius(double R, const double x[3], 
 
 void vtkKdTreePointLocator::FreeSearchStructure()
 {
-  if (this->KdTree)
+  if(this->KdTree)
   {
     this->KdTree->Delete();
-    this->KdTree = nullptr;
+    this->KdTree = 0;
   }
 }
 
 void vtkKdTreePointLocator::BuildLocator()
 {
-  if (!this->KdTree)
+  if(!this->KdTree)
   {
     vtkPointSet* pointSet = vtkPointSet::SafeDownCast(this->GetDataSet());
-    if (!pointSet)
+    if(!pointSet)
     {
       vtkErrorMacro("vtkKdTreePointLocator requires a PointSet to build locator.");
       return;
@@ -86,7 +88,7 @@ void vtkKdTreePointLocator::BuildLocator()
   }
 }
 
-void vtkKdTreePointLocator::GenerateRepresentation(int level, vtkPolyData* pd)
+void vtkKdTreePointLocator::GenerateRepresentation(int level, vtkPolyData *pd)
 {
   this->BuildLocator();
   this->KdTree->GenerateRepresentation(level, pd);
@@ -94,7 +96,8 @@ void vtkKdTreePointLocator::GenerateRepresentation(int level, vtkPolyData* pd)
 
 void vtkKdTreePointLocator::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 
   os << indent << "KdTree " << this->KdTree << "\n";
 }
+

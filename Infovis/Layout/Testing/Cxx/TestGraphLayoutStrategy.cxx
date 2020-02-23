@@ -31,7 +31,8 @@
 #include "vtkTestUtilities.h"
 #include "vtkTreeLayoutStrategy.h"
 
-#define VTK_CREATE(type, name) vtkSmartPointer<type> name = vtkSmartPointer<type>::New()
+#define VTK_CREATE(type, name) \
+  vtkSmartPointer<type> name = vtkSmartPointer<type>::New()
 
 int TestGraphLayoutStrategy(int vtkNotUsed(argc), char* vtkNotUsed(argv)[])
 {
@@ -46,9 +47,9 @@ int TestGraphLayoutStrategy(int vtkNotUsed(argc), char* vtkNotUsed(argv)[])
 
   VTK_CREATE(vtkGraphLayout, layout);
   layout->SetInputConnection(source->GetOutputPort());
-  vtkGraph* output = nullptr;
-  double pt[3] = { 0.0, 0.0, 0.0 };
-  double pt2[3] = { 0.0, 0.0, 0.0 };
+  vtkGraph *output = NULL;
+  double pt[3] = {0.0, 0.0, 0.0};
+  double pt2[3] = {0.0, 0.0, 0.0};
   double eps = 1.0e-6;
   double length = 0.0;
   double tol = 50.0;
@@ -61,7 +62,7 @@ int TestGraphLayoutStrategy(int vtkNotUsed(argc), char* vtkNotUsed(argv)[])
   for (vtkIdType i = 0; i < numVert; i++)
   {
     output->GetPoint(i, pt);
-    double dist = pt[0] * pt[0] + pt[1] * pt[1] - 1.0;
+    double dist = pt[0]*pt[0] + pt[1]*pt[1] - 1.0;
     dist = dist > 0 ? dist : -dist;
     if (dist > eps || pt[2] != 0.0)
     {
@@ -88,7 +89,7 @@ int TestGraphLayoutStrategy(int vtkNotUsed(argc), char* vtkNotUsed(argv)[])
     output->GetPoint(u, pt);
     output->GetPoint(v, pt2);
     double dist = sqrt(vtkMath::Distance2BetweenPoints(pt, pt2));
-    if (dist < length / tol || dist > length * tol)
+    if (dist < length/tol || dist > length*tol)
     {
       cerr << "ERROR: Edge " << u << "," << v << " distance is " << dist
            << " but resting distance is " << length << endl;
@@ -109,7 +110,7 @@ int TestGraphLayoutStrategy(int vtkNotUsed(argc), char* vtkNotUsed(argv)[])
 
   cerr << "Testing vtkForceDirectedLayoutStrategy..." << endl;
   VTK_CREATE(vtkForceDirectedLayoutStrategy, force);
-  length = pow(1.0 / numVert, 1.0 / 3.0);
+  length = pow(1.0/numVert, 1.0/3.0);
   layout->SetLayoutStrategy(force);
   layout->Update();
   output = layout->GetOutput();
@@ -122,7 +123,7 @@ int TestGraphLayoutStrategy(int vtkNotUsed(argc), char* vtkNotUsed(argv)[])
     output->GetPoint(u, pt);
     output->GetPoint(v, pt2);
     double dist = sqrt(vtkMath::Distance2BetweenPoints(pt, pt2));
-    if (dist < length / tol || dist > length * tol)
+    if (dist < length/tol || dist > length*tol)
     {
       cerr << "ERROR: Edge " << u << "," << v << " distance is " << dist
            << " but resting distance is " << length << endl;
@@ -149,7 +150,7 @@ int TestGraphLayoutStrategy(int vtkNotUsed(argc), char* vtkNotUsed(argv)[])
 
   cerr << "Testing vtkRandomLayoutStrategy..." << endl;
   VTK_CREATE(vtkRandomLayoutStrategy, random);
-  double bounds[6] = { 0, 0, 0, 0, 0, 0 };
+  double bounds[6] = {0, 0, 0, 0, 0, 0};
   random->GetGraphBounds(bounds);
   layout->SetLayoutStrategy(random);
   layout->Update();
@@ -157,8 +158,9 @@ int TestGraphLayoutStrategy(int vtkNotUsed(argc), char* vtkNotUsed(argv)[])
   for (vtkIdType i = 0; i < numVert; i++)
   {
     output->GetPoint(i, pt);
-    if (pt[0] < bounds[0] || pt[0] > bounds[1] || pt[1] < bounds[2] || pt[1] > bounds[3] ||
-      pt[2] < bounds[4] || pt[2] > bounds[5])
+    if (pt[0] < bounds[0] || pt[0] > bounds[1]
+     || pt[1] < bounds[2] || pt[1] > bounds[3]
+     || pt[2] < bounds[4] || pt[2] > bounds[5])
     {
       cerr << "ERROR: Point " << i << " is not within the bounds." << endl;
       errors++;
@@ -182,7 +184,7 @@ int TestGraphLayoutStrategy(int vtkNotUsed(argc), char* vtkNotUsed(argv)[])
     output->GetPoint(u, pt);
     output->GetPoint(v, pt2);
     double dist = sqrt(vtkMath::Distance2BetweenPoints(pt, pt2));
-    if (dist < length / tol || dist > length * tol)
+    if (dist < length/tol || dist > length*tol)
     {
       cerr << "ERROR: Edge " << u << "," << v << " distance is " << dist
            << " but resting distance is " << length << endl;

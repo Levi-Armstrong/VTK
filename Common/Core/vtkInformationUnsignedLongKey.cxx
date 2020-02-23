@@ -16,15 +16,18 @@
 
 #include "vtkInformation.h"
 
+
 //----------------------------------------------------------------------------
-vtkInformationUnsignedLongKey::vtkInformationUnsignedLongKey(const char* name, const char* location)
-  : vtkInformationKey(name, location)
+vtkInformationUnsignedLongKey::vtkInformationUnsignedLongKey(const char* name, const char* location):
+  vtkInformationKey(name, location)
 {
   vtkCommonInformationKeyManager::Register(this);
 }
 
 //----------------------------------------------------------------------------
-vtkInformationUnsignedLongKey::~vtkInformationUnsignedLongKey() = default;
+vtkInformationUnsignedLongKey::~vtkInformationUnsignedLongKey()
+{
+}
 
 //----------------------------------------------------------------------------
 void vtkInformationUnsignedLongKey::PrintSelf(ostream& os, vtkIndent indent)
@@ -33,7 +36,7 @@ void vtkInformationUnsignedLongKey::PrintSelf(ostream& os, vtkIndent indent)
 }
 
 //----------------------------------------------------------------------------
-class vtkInformationUnsignedLongValue : public vtkObjectBase
+class vtkInformationUnsignedLongValue: public vtkObjectBase
 {
 public:
   vtkBaseTypeMacro(vtkInformationUnsignedLongValue, vtkObjectBase);
@@ -41,10 +44,12 @@ public:
 };
 
 //----------------------------------------------------------------------------
-void vtkInformationUnsignedLongKey::Set(vtkInformation* info, unsigned long value)
+void vtkInformationUnsignedLongKey::Set(vtkInformation* info,
+                                        unsigned long value)
 {
-  if (vtkInformationUnsignedLongValue* oldv =
-        static_cast<vtkInformationUnsignedLongValue*>(this->GetAsObjectBase(info)))
+  if(vtkInformationUnsignedLongValue* oldv =
+     static_cast<vtkInformationUnsignedLongValue *>
+     (this->GetAsObjectBase(info)))
   {
     if (oldv->Value != value)
     {
@@ -71,12 +76,14 @@ void vtkInformationUnsignedLongKey::Set(vtkInformation* info, unsigned long valu
 unsigned long vtkInformationUnsignedLongKey::Get(vtkInformation* info)
 {
   vtkInformationUnsignedLongValue* v =
-    static_cast<vtkInformationUnsignedLongValue*>(this->GetAsObjectBase(info));
-  return v ? v->Value : 0;
+    static_cast<vtkInformationUnsignedLongValue *>
+    (this->GetAsObjectBase(info));
+  return v?v->Value:0;
 }
 
 //----------------------------------------------------------------------------
-void vtkInformationUnsignedLongKey::ShallowCopy(vtkInformation* from, vtkInformation* to)
+void vtkInformationUnsignedLongKey::ShallowCopy(vtkInformation* from,
+                                         vtkInformation* to)
 {
   if (this->Has(from))
   {
@@ -84,7 +91,7 @@ void vtkInformationUnsignedLongKey::ShallowCopy(vtkInformation* from, vtkInforma
   }
   else
   {
-    this->SetAsObjectBase(to, nullptr); // doesn't exist in from, so remove the key
+    this->SetAsObjectBase(to, 0); // doesn't exist in from, so remove the key
   }
 }
 
@@ -92,19 +99,21 @@ void vtkInformationUnsignedLongKey::ShallowCopy(vtkInformation* from, vtkInforma
 void vtkInformationUnsignedLongKey::Print(ostream& os, vtkInformation* info)
 {
   // Print the value.
-  if (this->Has(info))
+  if(this->Has(info))
   {
     os << this->Get(info);
   }
 }
 
 //----------------------------------------------------------------------------
-unsigned long* vtkInformationUnsignedLongKey::GetWatchAddress(vtkInformation* info)
+unsigned long*
+vtkInformationUnsignedLongKey::GetWatchAddress(vtkInformation* info)
 {
-  if (vtkInformationUnsignedLongValue* v =
-        static_cast<vtkInformationUnsignedLongValue*>(this->GetAsObjectBase(info)))
+  if(vtkInformationUnsignedLongValue* v =
+     static_cast<vtkInformationUnsignedLongValue *>
+     (this->GetAsObjectBase(info)))
   {
     return &v->Value;
   }
-  return nullptr;
+  return 0;
 }

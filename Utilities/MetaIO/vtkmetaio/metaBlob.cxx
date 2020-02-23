@@ -16,8 +16,8 @@
 
 #include "metaBlob.h"
 
-#include <cctype>
-#include <cstdio>
+#include <stdio.h>
+#include <ctype.h>
 #include <string>
 
 #if (METAIO_USE_NAMESPACE)
@@ -128,19 +128,19 @@ PointDim(const char* pointDim)
 }
 
 const char* MetaBlob::
-PointDim() const
+PointDim(void) const
 {
   return m_PointDim;
 }
 
 void MetaBlob::
-NPoints(size_t npnt)
+NPoints(int npnt)
 {
   m_NPoints = npnt;
 }
 
-size_t MetaBlob::
-NPoints() const
+int MetaBlob::
+NPoints(void) const
 {
   return m_NPoints;
 }
@@ -148,7 +148,7 @@ NPoints() const
 
 /** Clear blob information */
 void MetaBlob::
-Clear()
+Clear(void)
 {
   if(META_DEBUG) METAIO_STREAM::cout << "MetaBlob: Clear" << METAIO_STREAM::endl;
   MetaObject::Clear();
@@ -158,7 +158,7 @@ Clear()
   while(it != m_PointList.end())
   {
     BlobPnt* pnt = *it;
-    ++it;
+    it++;
     delete pnt;
   }
   m_PointList.clear();
@@ -169,14 +169,14 @@ Clear()
 
 /** Destroy blob information */
 void MetaBlob::
-M_Destroy()
+M_Destroy(void)
 {
   MetaObject::M_Destroy();
 }
 
 /** Set Read fields */
 void MetaBlob::
-M_SetupReadFields()
+M_SetupReadFields(void)
 {
   if(META_DEBUG) METAIO_STREAM::cout << "MetaBlob: M_SetupReadFields" << METAIO_STREAM::endl;
 
@@ -205,7 +205,7 @@ M_SetupReadFields()
 }
 
 MET_ValueEnumType MetaBlob::
-ElementType() const
+ElementType(void) const
 {
   return m_ElementType;
 }
@@ -218,7 +218,7 @@ ElementType(MET_ValueEnumType _elementType)
 
 
 void MetaBlob::
-M_SetupWriteFields()
+M_SetupWriteFields(void)
 {
   strcpy(m_ObjectTypeName,"Blob");
   MetaObject::M_SetupWriteFields();
@@ -241,7 +241,7 @@ M_SetupWriteFields()
 
   m_NPoints = (int)m_PointList.size();
   mF = new MET_FieldRecordType;
-  MET_InitWriteField(mF, "NPoints", MET_INT,static_cast<double>(m_NPoints));
+  MET_InitWriteField(mF, "NPoints", MET_INT,m_NPoints);
   m_Fields.push_back(mF);
 
   mF = new MET_FieldRecordType;
@@ -253,7 +253,7 @@ M_SetupWriteFields()
 
 
 bool MetaBlob::
-M_Read()
+M_Read(void)
 {
   if(META_DEBUG) METAIO_STREAM::cout << "MetaBlob: M_Read: Loading Header" << METAIO_STREAM::endl;
 
@@ -294,11 +294,12 @@ M_Read()
   }
 
   int pntDim;
-  char** pntVal = nullptr;
+  char** pntVal = NULL;
   MET_StringToWordArray(m_PointDim, &pntDim, &pntVal);
 
 
-  for(int j = 0; j < pntDim; j++)
+  int j;
+  for(j = 0; j < pntDim; j++)
   {
     if(!strcmp(pntVal[j], "x") || !strcmp(pntVal[j], "X"))
     {
@@ -327,12 +328,12 @@ M_Read()
   {
     int elementSize;
     MET_SizeOfType(m_ElementType, &elementSize);
-    size_t readSize = m_NPoints*(m_NDims+4)*elementSize;
+    int readSize = m_NPoints*(m_NDims+4)*elementSize;
 
     char* _data = new char[readSize];
     m_ReadStream->read((char *)_data, readSize);
 
-    size_t gc = static_cast<size_t>(m_ReadStream->gcount());
+    int gc = static_cast<int>(m_ReadStream->gcount());
     if(gc != readSize)
     {
       METAIO_STREAM::cout << "MetaBlob: m_Read: data not read completely"
@@ -346,7 +347,7 @@ M_Read()
     i=0;
     int d;
     unsigned int k;
-    for(size_t j=0; j<m_NPoints; j++)
+    for(j=0; j<m_NPoints; j++)
     {
       BlobPnt* pnt = new BlobPnt(m_NDims);
 
@@ -386,7 +387,7 @@ M_Read()
   }
   else
   {
-    for(size_t j=0; j<m_NPoints; j++)
+    for(j=0; j<m_NPoints; j++)
     {
       BlobPnt* pnt = new BlobPnt(m_NDims);
 
@@ -415,7 +416,7 @@ M_Read()
       char c = ' ';
       while( (c!='\n') && (!m_ReadStream->eof()))
         {
-        c = static_cast<char>(m_ReadStream->get());// to avoid unrecognized characters
+        c = static_cast<char>(m_ReadStream->get());// to avoid unrecognize charactere
         }
       }
   }
@@ -426,7 +427,7 @@ M_Read()
 
 
 bool MetaBlob::
-M_Write()
+M_Write(void)
 {
 
   if(!MetaObject::M_Write())
@@ -462,7 +463,7 @@ M_Write()
         MET_SwapByteIfSystemMSB(&c,MET_FLOAT);
         MET_DoubleToValue((double)c,m_ElementType,data,i++);
         }
-      ++it;
+      it++;
       }
     m_WriteStream->write((char *)data,(m_NDims+4)*m_NPoints*elementSize);
     m_WriteStream->write("\n",1);
@@ -487,7 +488,7 @@ M_Write()
         }
 
       *m_WriteStream << METAIO_STREAM::endl;
-      ++it;
+      it++;
       }
     }
 

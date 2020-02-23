@@ -23,7 +23,7 @@
  * vtkControlPointsItem
  * vtkPiecewiseFunctionItem
  * vtkCompositeTransferFunctionItem
- */
+*/
 
 #ifndef vtkPiecewiseControlPointsItem_h
 #define vtkPiecewiseControlPointsItem_h
@@ -33,11 +33,11 @@
 
 class vtkPiecewiseFunction;
 
-class VTKCHARTSCORE_EXPORT vtkPiecewiseControlPointsItem : public vtkControlPointsItem
+class VTKCHARTSCORE_EXPORT vtkPiecewiseControlPointsItem: public vtkControlPointsItem
 {
 public:
   vtkTypeMacro(vtkPiecewiseControlPointsItem, vtkControlPointsItem);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  virtual void PrintSelf(ostream &os, vtkIndent indent);
 
   /**
    * Creates a piecewise control points object
@@ -60,14 +60,14 @@ public:
    * or -1 on error.
    * Subclasses should reimplement this function to do the actual work.
    */
-  vtkIdType AddPoint(double* newPos) override;
+  virtual vtkIdType AddPoint(double* newPos);
 
   /**
    * Remove a point of the function. Returns the index of the point (0 based),
    * or -1 on error.
    * Subclasses should reimplement this function to do the actual work.
    */
-  vtkIdType RemovePoint(double* pos) override;
+  virtual vtkIdType RemovePoint(double* pos);
 
   //@{
   /**
@@ -80,22 +80,22 @@ public:
 
 protected:
   vtkPiecewiseControlPointsItem();
-  ~vtkPiecewiseControlPointsItem() override;
+  virtual ~vtkPiecewiseControlPointsItem();
 
-  void emitEvent(unsigned long event, void* params = nullptr) override;
+  virtual void emitEvent(unsigned long event, void* params = 0);
 
-  vtkMTimeType GetControlPointsMTime() override;
+  virtual vtkMTimeType GetControlPointsMTime();
 
-  vtkIdType GetNumberOfPoints() const override;
-  void GetControlPoint(vtkIdType index, double* point) const override;
-  void SetControlPoint(vtkIdType index, double* point) override;
-  void EditPoint(float tX, float tY) override;
+  virtual vtkIdType GetNumberOfPoints()const;
+  virtual void GetControlPoint(vtkIdType index, double *point)const;
+  virtual void SetControlPoint(vtkIdType index, double *point);
+  virtual void EditPoint(float tX, float tY);
 
   vtkPiecewiseFunction* PiecewiseFunction;
 
 private:
-  vtkPiecewiseControlPointsItem(const vtkPiecewiseControlPointsItem&) = delete;
-  void operator=(const vtkPiecewiseControlPointsItem&) = delete;
+  vtkPiecewiseControlPointsItem(const vtkPiecewiseControlPointsItem &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPiecewiseControlPointsItem &) VTK_DELETE_FUNCTION;
 };
 
 #endif

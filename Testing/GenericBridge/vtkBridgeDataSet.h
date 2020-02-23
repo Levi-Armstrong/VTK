@@ -18,7 +18,7 @@
  *
  * It is just an example that show how to implement the Generic. It is also
  * used for testing and evaluating the Generic.
- */
+*/
 
 #ifndef vtkBridgeDataSet_h
 #define vtkBridgeDataSet_h
@@ -31,27 +31,27 @@ class vtkDataSet;
 class VTKTESTINGGENERICBRIDGE_EXPORT vtkBridgeDataSet : public vtkGenericDataSet
 {
 public:
-  static vtkBridgeDataSet* New();
-  vtkTypeMacro(vtkBridgeDataSet, vtkGenericDataSet);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkBridgeDataSet *New();
+  vtkTypeMacro(vtkBridgeDataSet,vtkGenericDataSet);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Return the dataset that will be manipulated through the adaptor interface.
    */
-  vtkDataSet* GetDataSet();
+  vtkDataSet *GetDataSet();
 
   /**
    * Set the dataset that will be manipulated through the adaptor interface.
    * \pre ds_exists: ds!=0
    */
-  void SetDataSet(vtkDataSet* ds);
+  void SetDataSet(vtkDataSet *ds);
 
   /**
    * Number of points composing the dataset. See NewPointIterator for more
    * details.
    * \post positive_result: result>=0
    */
-  vtkIdType GetNumberOfPoints() override;
+  virtual vtkIdType GetNumberOfPoints();
 
   /**
    * Number of cells that explicitly define the dataset. See NewCellIterator
@@ -59,7 +59,7 @@ public:
    * \pre valid_dim_range: (dim>=-1) && (dim<=3)
    * \post positive_result: result>=0
    */
-  vtkIdType GetNumberOfCells(int dim = -1) override;
+  virtual vtkIdType GetNumberOfCells(int dim=-1);
 
   /**
    * Return -1 if the dataset is explicitly defined by cells of several
@@ -68,7 +68,7 @@ public:
    * dimension, return this dimension.
    * \post valid_range: (result>=-1) && (result<=3)
    */
-  int GetCellDimension() override;
+  virtual int GetCellDimension();
 
   /**
    * Get a list of types of cells in a dataset. The list consists of an array
@@ -80,7 +80,7 @@ public:
    * THE DATASET IS NOT MODIFIED
    * \pre types_exist: types!=0
    */
-  void GetCellTypes(vtkCellTypes* types) override;
+  void GetCellTypes(vtkCellTypes *types);
 
   /**
    * Cells of dimension `dim' (or all dimensions if -1) that explicitly define
@@ -91,28 +91,30 @@ public:
    * \pre valid_dim_range: (dim>=-1) && (dim<=3)
    * \post result_exists: result!=0
    */
-  vtkGenericCellIterator* NewCellIterator(int dim = -1) override;
+  vtkGenericCellIterator *NewCellIterator(int dim=-1);
 
   /**
    * Boundaries of dimension `dim' (or all dimensions if -1) of the dataset.
-   * If `exteriorOnly' is true, only the exterior boundaries of the dataset
+   * If `exteriorOnly' is true, only  the exterior boundaries of the dataset
    * will be returned, otherwise it will return exterior and interior
    * boundaries.
    * \pre valid_dim_range: (dim>=-1) && (dim<=2)
    * \post result_exists: result!=0
    */
-  vtkGenericCellIterator* NewBoundaryIterator(int dim = -1, int exteriorOnly = 0) override;
+  vtkGenericCellIterator *NewBoundaryIterator(int dim=-1,
+                                       int exteriorOnly=0);
 
   /**
    * Points composing the dataset; they can be on a vertex or isolated.
    * \post result_exists: result!=0
    */
-  vtkGenericPointIterator* NewPointIterator() override;
+  vtkGenericPointIterator *NewPointIterator();
+
 
   /**
    * Estimated size needed after tessellation (or special operation)
    */
-  vtkIdType GetEstimatedSize() override;
+  vtkIdType GetEstimatedSize();
 
   /**
    * Locate closest cell to position `x' (global coordinates) with respect to
@@ -126,30 +128,34 @@ public:
    * \pre cell_exists: cell!=0
    * \pre positive_tolerance: tol2>0
    */
-  int FindCell(double x[3], vtkGenericCellIterator*& cell, double tol2, int& subId,
-    double pcoords[3]) override;
+  int FindCell(double x[3],
+               vtkGenericCellIterator* &cell,
+               double tol2,
+               int &subId,
+               double pcoords[3]);
 
   /**
    * Locate closest point `p' to position `x' (global coordinates)
    * \pre not_empty: GetNumberOfPoints()>0
    * \pre p_exists: p!=0
    */
-  void FindPoint(double x[3], vtkGenericPointIterator* p) override;
+  void FindPoint(double x[3],
+                 vtkGenericPointIterator *p);
 
   /**
    * Datasets are composite objects and need to check each part for MTime.
    */
-  vtkMTimeType GetMTime() override;
+  vtkMTimeType GetMTime();
 
   /**
    * Compute the geometry bounding box.
    */
-  void ComputeBounds() override;
+  void ComputeBounds();
 
 protected:
   // Constructor with default bounds (0,1, 0,1, 0,1).
   vtkBridgeDataSet();
-  ~vtkBridgeDataSet() override;
+  virtual ~vtkBridgeDataSet();
 
   friend class vtkBridgeCell;
   friend class vtkBridgeCellIterator;
@@ -166,17 +172,17 @@ protected:
    */
   void ComputeNumberOfCellsAndTypes();
 
-  vtkDataSet* Implementation;
+  vtkDataSet *Implementation;
   vtkIdType NumberOf0DCells;
   vtkIdType NumberOf1DCells;
   vtkIdType NumberOf2DCells;
   vtkIdType NumberOf3DCells;
-  vtkCellTypes* Types;
+  vtkCellTypes *Types;
   vtkTimeStamp ComputeNumberOfCellsTime; // for number of cells and cell types
 
 private:
-  vtkBridgeDataSet(const vtkBridgeDataSet&) = delete;
-  void operator=(const vtkBridgeDataSet&) = delete;
+  vtkBridgeDataSet(const vtkBridgeDataSet&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkBridgeDataSet&) VTK_DELETE_FUNCTION;
 };
 
 #endif

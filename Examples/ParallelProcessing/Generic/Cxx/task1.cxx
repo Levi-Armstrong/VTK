@@ -20,7 +20,8 @@
 
 // Task 1 for TaskParallelism.
 // See TaskParallelism.cxx for more information.
-vtkPolyDataMapper* task1(vtkRenderWindow* renWin, double data, vtkCamera* cam)
+vtkPolyDataMapper* task1(vtkRenderWindow* renWin, double data,
+                         vtkCamera* cam)
 {
   double extent = data;
   int iextent = static_cast<int>(data);
@@ -28,17 +29,18 @@ vtkPolyDataMapper* task1(vtkRenderWindow* renWin, double data, vtkCamera* cam)
 
   // Synthetic image source.
   vtkRTAnalyticSource* source1 = vtkRTAnalyticSource::New();
-  source1->SetWholeExtent(-1 * iextent, iextent, -1 * iextent, iextent, -1 * iextent, iextent);
+  source1->SetWholeExtent (-1*iextent, iextent, -1*iextent, iextent,
+                           -1*iextent, iextent );
   source1->SetCenter(0, 0, 0);
-  source1->SetStandardDeviation(0.5);
-  source1->SetMaximum(255.0);
-  source1->SetXFreq(60);
-  source1->SetXMag(10);
-  source1->SetYFreq(30);
-  source1->SetYMag(18);
-  source1->SetZFreq(40);
-  source1->SetZMag(5);
-  source1->GetOutput()->SetSpacing(2.0 / extent, 2.0 / extent, 2.0 / extent);
+  source1->SetStandardDeviation( 0.5 );
+  source1->SetMaximum( 255.0 );
+  source1->SetXFreq( 60 );
+  source1->SetXMag( 10 );
+  source1->SetYFreq( 30 );
+  source1->SetYMag( 18 );
+  source1->SetZFreq( 40 );
+  source1->SetZMag( 5 );
+  source1->GetOutput()->SetSpacing(2.0/extent,2.0/extent,2.0/extent);
 
   // Iso-surfacing.
   vtkContourFilter* contour = vtkContourFilter::New();
@@ -61,6 +63,7 @@ vtkPolyDataMapper* task1(vtkRenderWindow* renWin, double data, vtkCamera* cam)
   vtkPolyDataMapper* mapper = vtkPolyDataMapper::New();
   mapper->SetInputData(probe->GetPolyDataOutput());
   mapper->SetScalarRange(50, 180);
+  mapper->ImmediateModeRenderingOn();
 
   vtkActor* actor = vtkActor::New();
   actor->SetMapper(mapper);
@@ -69,7 +72,7 @@ vtkPolyDataMapper* task1(vtkRenderWindow* renWin, double data, vtkCamera* cam)
   renWin->AddRenderer(ren);
 
   ren->AddActor(actor);
-  ren->SetActiveCamera(cam);
+  ren->SetActiveCamera( cam );
 
   // Cleanup
   source1->Delete();
@@ -80,4 +83,7 @@ vtkPolyDataMapper* task1(vtkRenderWindow* renWin, double data, vtkCamera* cam)
   ren->Delete();
 
   return mapper;
+
 }
+
+

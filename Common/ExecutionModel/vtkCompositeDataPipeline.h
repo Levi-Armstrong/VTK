@@ -39,16 +39,13 @@
  * composite dataset.
  * @sa
  *  vtkCompositeDataSet
- */
+*/
 
 #ifndef vtkCompositeDataPipeline_h
 #define vtkCompositeDataPipeline_h
 
 #include "vtkCommonExecutionModelModule.h" // For export macro
 #include "vtkStreamingDemandDrivenPipeline.h"
-#include <vtkSmartPointer.h> // smart pointer
-
-#include <vector> // for vector in return type
 
 class vtkCompositeDataSet;
 class vtkCompositeDataIterator;
@@ -59,13 +56,13 @@ class vtkInformationStringKey;
 class vtkInformationDataObjectKey;
 class vtkInformationIntegerKey;
 
-class VTKCOMMONEXECUTIONMODEL_EXPORT vtkCompositeDataPipeline
-  : public vtkStreamingDemandDrivenPipeline
+class VTKCOMMONEXECUTIONMODEL_EXPORT vtkCompositeDataPipeline :
+  public vtkStreamingDemandDrivenPipeline
 {
 public:
   static vtkCompositeDataPipeline* New();
-  vtkTypeMacro(vtkCompositeDataPipeline, vtkStreamingDemandDrivenPipeline);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkCompositeDataPipeline,vtkStreamingDemandDrivenPipeline);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Returns the data object stored with the DATA_OBJECT() in the
@@ -77,13 +74,14 @@ public:
    * Returns the data object stored with the DATA_OBJECT() in the
    * input port
    */
-  vtkDataObject* GetCompositeInputData(int port, int index, vtkInformationVector** inInfoVec);
+  vtkDataObject* GetCompositeInputData(
+    int port, int index, vtkInformationVector **inInfoVec);
 
   /**
    * An integer key that indicates to the source to load all requested
    * blocks specified in UPDATE_COMPOSITE_INDICES.
    */
-  static vtkInformationIntegerKey* LOAD_REQUESTED_BLOCKS();
+  static vtkInformationIntegerKey*  LOAD_REQUESTED_BLOCKS();
 
   /**
    * COMPOSITE_DATA_META_DATA is a key placed in the output-port information by
@@ -117,62 +115,85 @@ public:
 
 protected:
   vtkCompositeDataPipeline();
-  ~vtkCompositeDataPipeline() override;
+  ~vtkCompositeDataPipeline() VTK_OVERRIDE;
 
-  int ForwardUpstream(vtkInformation* request) override;
+  int ForwardUpstream(vtkInformation* request) VTK_OVERRIDE;
   virtual int ForwardUpstream(int i, int j, vtkInformation* request);
 
   // Copy information for the given request.
   void CopyDefaultInformation(vtkInformation* request, int direction,
-    vtkInformationVector** inInfoVec, vtkInformationVector* outInfoVec) override;
+                                      vtkInformationVector** inInfoVec,
+                                      vtkInformationVector* outInfoVec) VTK_OVERRIDE;
 
   virtual void PushInformation(vtkInformation*);
-  virtual void PopInformation(vtkInformation*);
+  virtual void PopInformation (vtkInformation*);
 
-  int ExecuteDataObject(
-    vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo) override;
+  int ExecuteDataObject(vtkInformation* request,
+                                vtkInformationVector** inInfo,
+                                vtkInformationVector* outInfo) VTK_OVERRIDE;
 
-  int ExecuteData(vtkInformation* request, vtkInformationVector** inInfoVec,
-    vtkInformationVector* outInfoVec) override;
+  int ExecuteData(vtkInformation* request,
+                          vtkInformationVector** inInfoVec,
+                          vtkInformationVector* outInfoVec) VTK_OVERRIDE;
 
-  void ExecuteDataStart(vtkInformation* request, vtkInformationVector** inInfoVec,
-    vtkInformationVector* outInfoVec) override;
+  void ExecuteDataStart(vtkInformation* request,
+                                vtkInformationVector** inInfoVec,
+                                vtkInformationVector* outInfoVec) VTK_OVERRIDE;
 
   // Override this check to account for update extent.
-  int NeedToExecuteData(
-    int outputPort, vtkInformationVector** inInfoVec, vtkInformationVector* outInfoVec) override;
+  int NeedToExecuteData(int outputPort,
+                                vtkInformationVector** inInfoVec,
+                                vtkInformationVector* outInfoVec) VTK_OVERRIDE;
 
-  // Check whether the data object in the pipeline information exists
-  // and has a valid type.
-  virtual int CheckCompositeData(
-    vtkInformation* request, vtkInformationVector** inInfoVec, vtkInformationVector* outInfoVec);
+  // Check whether the data object in the pipeline information for an
+  // output port exists and has a valid type.
+  virtual int CheckCompositeData(vtkInformation *request,
+                                 int port,
+                                 vtkInformationVector** inInfoVec,
+                                 vtkInformationVector* outInfoVec);
 
   // True when the pipeline is iterating over the current (simple) filter
   // to produce composite output. In this case, ExecuteDataStart() should
   // NOT Initialize() the composite output.
   int InLocalLoop;
 
-  virtual void ExecuteSimpleAlgorithm(vtkInformation* request, vtkInformationVector** inInfoVec,
-    vtkInformationVector* outInfoVec, int compositePort);
+  virtual void ExecuteSimpleAlgorithm(vtkInformation* request,
+                                      vtkInformationVector** inInfoVec,
+                                      vtkInformationVector* outInfoVec,
+                                      int compositePort);
 
-  virtual void ExecuteEach(vtkCompositeDataIterator* iter, vtkInformationVector** inInfoVec,
-    vtkInformationVector* outInfoVec, int compositePort, int connection, vtkInformation* request,
-    std::vector<vtkSmartPointer<vtkCompositeDataSet> >& compositeOutput);
+  virtual void ExecuteEach(vtkCompositeDataIterator* iter,
+                           vtkInformationVector** inInfoVec,
+                           vtkInformationVector* outInfoVec,
+                           int compositePort,
+                           int connection,
+                           vtkInformation* request,
+                           vtkCompositeDataSet* compositeOutput);
 
-  std::vector<vtkDataObject*> ExecuteSimpleAlgorithmForBlock(vtkInformationVector** inInfoVec,
-    vtkInformationVector* outInfoVec, vtkInformation* inInfo, vtkInformation* request,
+  vtkDataObject* ExecuteSimpleAlgorithmForBlock(
+    vtkInformationVector** inInfoVec,
+    vtkInformationVector* outInfoVec,
+    vtkInformation* inInfo,
+    vtkInformation* outInfo,
+    vtkInformation* request,
     vtkDataObject* dobj);
 
-  bool ShouldIterateOverInput(vtkInformationVector** inInfoVec, int& compositePort);
+  bool ShouldIterateOverInput(vtkInformationVector** inInfoVec,
+                              int& compositePort);
 
-  int InputTypeIsValid(int port, int index, vtkInformationVector** inInfoVec) override;
+  int InputTypeIsValid(int port, int index,
+                                vtkInformationVector **inInfoVec) VTK_OVERRIDE;
 
   vtkInformation* InformationCache;
 
   vtkInformation* GenericRequest;
+  vtkInformation* DataObjectRequest;
   vtkInformation* InformationRequest;
+  vtkInformation* UpdateExtentRequest;
+  vtkInformation* DataRequest;
 
-  void ResetPipelineInformation(int port, vtkInformation*) override;
+
+  void ResetPipelineInformation(int port, vtkInformation*) VTK_OVERRIDE;
 
   /**
    * Tries to create the best possible composite data output for the given input
@@ -183,12 +204,13 @@ protected:
    * vtkUniformGrid given vtkUniformGrid inputs) or if it should be downgraded
    * to a vtkMultiBlockDataSet.
    */
-  std::vector<vtkSmartPointer<vtkDataObject> > CreateOutputCompositeDataSet(
-    vtkCompositeDataSet* input, int compositePort, int numOutputPorts);
+  vtkCompositeDataSet* CreateOutputCompositeDataSet(
+    vtkCompositeDataSet* input, int compositePort);
 
   // Override this to handle UPDATE_COMPOSITE_INDICES().
-  void MarkOutputsGenerated(vtkInformation* request, vtkInformationVector** inInfoVec,
-    vtkInformationVector* outInfoVec) override;
+  void MarkOutputsGenerated(vtkInformation* request,
+                                    vtkInformationVector** inInfoVec,
+                                    vtkInformationVector* outInfoVec) VTK_OVERRIDE;
 
   int NeedToExecuteBasedOnCompositeIndices(vtkInformation* outInfo);
 
@@ -207,8 +229,8 @@ protected:
   static vtkInformationIntegerVectorKey* DATA_COMPOSITE_INDICES();
 
 private:
-  vtkCompositeDataPipeline(const vtkCompositeDataPipeline&) = delete;
-  void operator=(const vtkCompositeDataPipeline&) = delete;
+  vtkCompositeDataPipeline(const vtkCompositeDataPipeline&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkCompositeDataPipeline&) VTK_DELETE_FUNCTION;
 };
 
 #endif

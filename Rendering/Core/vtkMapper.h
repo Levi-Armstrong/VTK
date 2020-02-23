@@ -34,6 +34,14 @@
  * setting of the ColorMode flag. See the documentation for the appropriate
  * methods for an explanation.
  *
+ * Another important feature of this class is whether to use immediate mode
+ * rendering (ImmediateModeRenderingOn) or display list rendering
+ * (ImmediateModeRenderingOff). If display lists are used, a data structure
+ * is constructed (generally in the rendering library) which can then be
+ * rapidly traversed and rendered by the rendering library. The disadvantage
+ * of display lists is that they require additionally memory which may affect
+ * the performance of the system.
+ *
  * Another important feature of the mapper is the ability to shift the
  * z-buffer to resolve coincident topology. For example, if you'd like to
  * draw a mesh with some edges a different color, and the edges lie on the
@@ -42,16 +50,15 @@
  *
  * @sa
  * vtkDataSetMapper vtkPolyDataMapper
- */
+*/
 
 #ifndef vtkMapper_h
 #define vtkMapper_h
 
-#include "vtkAbstractMapper3D.h"
 #include "vtkRenderingCoreModule.h" // For export macro
-#include "vtkSmartPointer.h"        // needed for vtkSmartPointer.
-#include "vtkSystemIncludes.h"      // For VTK_COLOR_MODE_DEFAULT and _MAP_SCALARS
-#include <vector>                   // for method args
+#include "vtkAbstractMapper3D.h"
+#include "vtkSystemIncludes.h" // For VTK_COLOR_MODE_DEFAULT and _MAP_SCALARS
+#include "vtkSmartPointer.h" // needed for vtkSmartPointer.
 
 #define VTK_RESOLVE_OFF 0
 #define VTK_RESOLVE_POLYGON_OFFSET 1
@@ -60,59 +67,57 @@
 #define VTK_GET_ARRAY_BY_ID 0
 #define VTK_GET_ARRAY_BY_NAME 1
 
-#define VTK_MATERIALMODE_DEFAULT 0
-#define VTK_MATERIALMODE_AMBIENT 1
-#define VTK_MATERIALMODE_DIFFUSE 2
-#define VTK_MATERIALMODE_AMBIENT_AND_DIFFUSE 3
+#define VTK_MATERIALMODE_DEFAULT  0
+#define VTK_MATERIALMODE_AMBIENT  1
+#define VTK_MATERIALMODE_DIFFUSE  2
+#define VTK_MATERIALMODE_AMBIENT_AND_DIFFUSE  3
 
+class vtkWindow;
+class vtkRenderer;
 class vtkActor;
 class vtkDataSet;
 class vtkDataObject;
 class vtkFloatArray;
-class vtkHardwareSelector;
 class vtkImageData;
-class vtkProp;
-class vtkRenderer;
 class vtkScalarsToColors;
 class vtkUnsignedCharArray;
-class vtkWindow;
 
 class VTKRENDERINGCORE_EXPORT vtkMapper : public vtkAbstractMapper3D
 {
 public:
   vtkTypeMacro(vtkMapper, vtkAbstractMapper3D);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Make a shallow copy of this mapper.
    */
-  void ShallowCopy(vtkAbstractMapper* m) override;
+  void ShallowCopy(vtkAbstractMapper *m);
 
   /**
    * Overload standard modified time function. If lookup table is modified,
    * then this object is modified as well.
    */
-  vtkMTimeType GetMTime() override;
+  vtkMTimeType GetMTime();
 
   /**
    * Method initiates the mapping process. Generally sent by the actor
    * as each frame is rendered.
    */
-  virtual void Render(vtkRenderer* ren, vtkActor* a) = 0;
+  virtual void Render(vtkRenderer *ren, vtkActor *a) = 0;
 
   /**
    * Release any graphics resources that are being consumed by this mapper.
    * The parameter window could be used to determine which graphic
    * resources to release.
    */
-  void ReleaseGraphicsResources(vtkWindow*) override {}
+  virtual void ReleaseGraphicsResources(vtkWindow *) {}
 
   //@{
   /**
    * Specify a lookup table for the mapper to use.
    */
-  void SetLookupTable(vtkScalarsToColors* lut);
-  vtkScalarsToColors* GetLookupTable();
+  void SetLookupTable(vtkScalarsToColors *lut);
+  vtkScalarsToColors *GetLookupTable();
   //@}
 
   /**
@@ -125,9 +130,9 @@ public:
   /**
    * Turn on/off flag to control whether scalar data is used to color objects.
    */
-  vtkSetMacro(ScalarVisibility, vtkTypeBool);
-  vtkGetMacro(ScalarVisibility, vtkTypeBool);
-  vtkBooleanMacro(ScalarVisibility, vtkTypeBool);
+  vtkSetMacro(ScalarVisibility, int);
+  vtkGetMacro(ScalarVisibility, int);
+  vtkBooleanMacro(ScalarVisibility, int);
   //@}
 
   //@{
@@ -137,9 +142,9 @@ public:
    * decreasing the time it takes to update many mappers. This should only be
    * used if the data never changes.
    */
-  vtkSetMacro(Static, vtkTypeBool);
-  vtkGetMacro(Static, vtkTypeBool);
-  vtkBooleanMacro(Static, vtkTypeBool);
+  vtkSetMacro(Static, int);
+  vtkGetMacro(Static, int);
+  vtkBooleanMacro(Static, int);
   //@}
 
   //@{
@@ -157,15 +162,18 @@ public:
    */
   vtkSetMacro(ColorMode, int);
   vtkGetMacro(ColorMode, int);
-  void SetColorModeToDefault() { this->SetColorMode(VTK_COLOR_MODE_DEFAULT); }
-  void SetColorModeToMapScalars() { this->SetColorMode(VTK_COLOR_MODE_MAP_SCALARS); }
-  void SetColorModeToDirectScalars() { this->SetColorMode(VTK_COLOR_MODE_DIRECT_SCALARS); }
+  void SetColorModeToDefault()
+    { this->SetColorMode(VTK_COLOR_MODE_DEFAULT); }
+  void SetColorModeToMapScalars()
+    { this->SetColorMode(VTK_COLOR_MODE_MAP_SCALARS); }
+  void SetColorModeToDirectScalars()
+  { this->SetColorMode(VTK_COLOR_MODE_DIRECT_SCALARS); }
   //@}
 
   /**
    * Return the method of coloring scalar data.
    */
-  const char* GetColorModeAsString();
+  const char *GetColorModeAsString();
 
   //@{
   /**
@@ -174,9 +182,9 @@ public:
    * This option avoids color interpolation by using a one dimensional
    * texture map for the colors.
    */
-  vtkSetMacro(InterpolateScalarsBeforeMapping, vtkTypeBool);
-  vtkGetMacro(InterpolateScalarsBeforeMapping, vtkTypeBool);
-  vtkBooleanMacro(InterpolateScalarsBeforeMapping, vtkTypeBool);
+  vtkSetMacro(InterpolateScalarsBeforeMapping, int);
+  vtkGetMacro(InterpolateScalarsBeforeMapping, int);
+  vtkBooleanMacro(InterpolateScalarsBeforeMapping, int);
   //@}
 
   //@{
@@ -188,9 +196,9 @@ public:
    * mappers/actors will probably wish to force the mapper to use the
    * LookupTable unchanged.
    */
-  vtkSetMacro(UseLookupTableScalarRange, vtkTypeBool);
-  vtkGetMacro(UseLookupTableScalarRange, vtkTypeBool);
-  vtkBooleanMacro(UseLookupTableScalarRange, vtkTypeBool);
+  vtkSetMacro(UseLookupTableScalarRange, int);
+  vtkGetMacro(UseLookupTableScalarRange, int);
+  vtkBooleanMacro(UseLookupTableScalarRange, int);
   //@}
 
   //@{
@@ -201,6 +209,51 @@ public:
    */
   vtkSetVector2Macro(ScalarRange, double);
   vtkGetVectorMacro(ScalarRange, double, 2);
+  //@}
+
+  //@{
+  /**
+   * Turn on/off flag to control whether data is rendered using
+   * immediate mode or note. Immediate mode rendering
+   * tends to be slower but it can handle larger datasets.
+   * The default value is immediate mode off. If you are
+   * having problems rendering a large dataset you might
+   * want to consider using immediate more rendering.
+   */
+  vtkSetMacro(ImmediateModeRendering, int);
+  vtkGetMacro(ImmediateModeRendering, int);
+  vtkBooleanMacro(ImmediateModeRendering, int);
+  //@}
+
+  //@{
+  /**
+   * Turn on/off flag to control whether data is rendered using
+   * immediate mode or note. Immediate mode rendering
+   * tends to be slower but it can handle larger datasets.
+   * The default value is immediate mode off. If you are
+   * having problems rendering a large dataset you might
+   * want to consider using immediate more rendering.
+   */
+  static void SetGlobalImmediateModeRendering(int val);
+  static void GlobalImmediateModeRenderingOn()
+    { vtkMapper::SetGlobalImmediateModeRendering(1); }
+  static void GlobalImmediateModeRenderingOff()
+    { vtkMapper::SetGlobalImmediateModeRendering(0); }
+  static int  GetGlobalImmediateModeRendering();
+  //@}
+
+  //@{
+  /**
+   * Force compile only mode in case display lists are used
+   * (ImmediateModeRendering is false). If ImmediateModeRendering is true,
+   * no rendering happens. Changing the value of this flag does not change
+   * modified time of the mapper. Initial value is false.
+   * This can be used by another rendering class which also uses display lists
+   * (call of display lists can be nested but not their creation.)
+   * There is no good reason to expose it to wrappers.
+   */
+  vtkGetMacro(ForceCompileOnly, int);
+  void SetForceCompileOnly(int value);
   //@}
 
   /**
@@ -230,18 +283,18 @@ public:
   // the tuple index.
   vtkSetMacro(ScalarMode, int);
   vtkGetMacro(ScalarMode, int);
-  void SetScalarModeToDefault() { this->SetScalarMode(VTK_SCALAR_MODE_DEFAULT); }
-  void SetScalarModeToUsePointData() { this->SetScalarMode(VTK_SCALAR_MODE_USE_POINT_DATA); }
-  void SetScalarModeToUseCellData() { this->SetScalarMode(VTK_SCALAR_MODE_USE_CELL_DATA); }
+  void SetScalarModeToDefault()
+    { this->SetScalarMode(VTK_SCALAR_MODE_DEFAULT); }
+  void SetScalarModeToUsePointData()
+    { this->SetScalarMode(VTK_SCALAR_MODE_USE_POINT_DATA); }
+  void SetScalarModeToUseCellData()
+    { this->SetScalarMode(VTK_SCALAR_MODE_USE_CELL_DATA); }
   void SetScalarModeToUsePointFieldData()
-  {
-    this->SetScalarMode(VTK_SCALAR_MODE_USE_POINT_FIELD_DATA);
-  }
+    { this->SetScalarMode(VTK_SCALAR_MODE_USE_POINT_FIELD_DATA); }
   void SetScalarModeToUseCellFieldData()
-  {
-    this->SetScalarMode(VTK_SCALAR_MODE_USE_CELL_FIELD_DATA);
-  }
-  void SetScalarModeToUseFieldData() { this->SetScalarMode(VTK_SCALAR_MODE_USE_FIELD_DATA); }
+    { this->SetScalarMode(VTK_SCALAR_MODE_USE_CELL_FIELD_DATA); }
+  void SetScalarModeToUseFieldData()
+    { this->SetScalarMode(VTK_SCALAR_MODE_USE_FIELD_DATA); }
 
   //@{
   /**
@@ -252,6 +305,7 @@ public:
   void SelectColorArray(int arrayNum);
   void SelectColorArray(const char* arrayName);
   //@}
+
 
   // When ScalarMode is set to UseFieldData, set the index of the
   // tuple by which to color the entire data set. By default, the
@@ -273,45 +327,40 @@ public:
   //@}
 
   /**
-   * Set/Get the array name or number and component to color by.
+   * Get the array name or number and component to color by.
    */
-  vtkGetStringMacro(ArrayName);
-  vtkSetStringMacro(ArrayName);
-  vtkGetMacro(ArrayId, int);
-  vtkSetMacro(ArrayId, int);
-  vtkGetMacro(ArrayAccessMode, int);
-  vtkSetMacro(ArrayAccessMode, int);
-  vtkGetMacro(ArrayComponent, int);
-  vtkSetMacro(ArrayComponent, int);
+  char* GetArrayName() { return this->ArrayName; }
+  int GetArrayId() { return this->ArrayId; }
+  int GetArrayAccessMode() { return this->ArrayAccessMode; }
+  int GetArrayComponent() { return this->ArrayComponent; }
 
   /**
    * Return the method for obtaining scalar data.
    */
-  const char* GetScalarModeAsString();
+  const char *GetScalarModeAsString();
 
   //@{
   /**
    * Set/Get a global flag that controls whether coincident topology (e.g., a
    * line on top of a polygon) is shifted to avoid z-buffer resolution (and
    * hence rendering problems). If not off, there are two methods to choose
-   * from. PolygonOffset uses graphics systems calls to shift polygons, lines
-   * and points from each other. ShiftZBuffer is a legacy method that used to
-   * remap the z-buffer to distinguish vertices, lines, and polygons, but
-   * does not always produce acceptable results. You should only use the
-   * PolygonOffset method (or none) at this point.
+   * from. PolygonOffset uses graphics systems calls to shift polygons, but
+   * does not distinguish vertices and lines from one another. ShiftZBuffer
+   * remaps the z-buffer to distinguish vertices, lines, and polygons, but
+   * does not always produce acceptable results. If you use the ShiftZBuffer
+   * approach, you may also want to set the ResolveCoincidentTopologyZShift
+   * value. (Note: not all mappers/graphics systems implement this
+   * functionality.)
    */
   static void SetResolveCoincidentTopology(int val);
-  static int GetResolveCoincidentTopology();
+  static int  GetResolveCoincidentTopology();
   static void SetResolveCoincidentTopologyToDefault();
-  static void SetResolveCoincidentTopologyToOff() { SetResolveCoincidentTopology(VTK_RESOLVE_OFF); }
+  static void SetResolveCoincidentTopologyToOff()
+    { SetResolveCoincidentTopology(VTK_RESOLVE_OFF) ;}
   static void SetResolveCoincidentTopologyToPolygonOffset()
-  {
-    SetResolveCoincidentTopology(VTK_RESOLVE_POLYGON_OFFSET);
-  }
+    { SetResolveCoincidentTopology(VTK_RESOLVE_POLYGON_OFFSET); }
   static void SetResolveCoincidentTopologyToShiftZBuffer()
-  {
-    SetResolveCoincidentTopology(VTK_RESOLVE_SHIFT_ZBUFFER);
-  }
+    { SetResolveCoincidentTopology(VTK_RESOLVE_SHIFT_ZBUFFER); }
   //@}
 
   //@{
@@ -320,8 +369,10 @@ public:
    * Used when ResolveCoincidentTopology is set to PolygonOffset.
    * These are global variables.
    */
-  static void SetResolveCoincidentTopologyPolygonOffsetParameters(double factor, double units);
-  static void GetResolveCoincidentTopologyPolygonOffsetParameters(double& factor, double& units);
+  static void SetResolveCoincidentTopologyPolygonOffsetParameters(
+    double factor, double units);
+  static void GetResolveCoincidentTopologyPolygonOffsetParameters(
+    double& factor, double& units);
   //@}
 
   //@{
@@ -329,8 +380,10 @@ public:
    * Used to set the polygon offset values relative to the global
    * Used when ResolveCoincidentTopology is set to PolygonOffset.
    */
-  void SetRelativeCoincidentTopologyPolygonOffsetParameters(double factor, double units);
-  void GetRelativeCoincidentTopologyPolygonOffsetParameters(double& factor, double& units);
+  void SetRelativeCoincidentTopologyPolygonOffsetParameters(
+    double factor, double units);
+  void GetRelativeCoincidentTopologyPolygonOffsetParameters(
+    double& factor, double& units);
   //@}
 
   //@{
@@ -339,8 +392,10 @@ public:
    * Used when ResolveCoincidentTopology is set to PolygonOffset.
    * These are global variables.
    */
-  static void SetResolveCoincidentTopologyLineOffsetParameters(double factor, double units);
-  static void GetResolveCoincidentTopologyLineOffsetParameters(double& factor, double& units);
+  static void SetResolveCoincidentTopologyLineOffsetParameters(
+    double factor, double units);
+  static void GetResolveCoincidentTopologyLineOffsetParameters(
+    double& factor, double& units);
   //@}
 
   //@{
@@ -348,8 +403,10 @@ public:
    * Used to set the line offset values relative to the global
    * Used when ResolveCoincidentTopology is set to PolygonOffset.
    */
-  void SetRelativeCoincidentTopologyLineOffsetParameters(double factor, double units);
-  void GetRelativeCoincidentTopologyLineOffsetParameters(double& factor, double& units);
+  void SetRelativeCoincidentTopologyLineOffsetParameters(
+    double factor, double units);
+  void GetRelativeCoincidentTopologyLineOffsetParameters(
+    double& factor, double& units);
   //@}
 
   //@{
@@ -358,8 +415,10 @@ public:
    * Used when ResolveCoincidentTopology is set to PolygonOffset.
    * These are global variables.
    */
-  static void SetResolveCoincidentTopologyPointOffsetParameter(double units);
-  static void GetResolveCoincidentTopologyPointOffsetParameter(double& units);
+  static void SetResolveCoincidentTopologyPointOffsetParameter(
+    double units);
+  static void GetResolveCoincidentTopologyPointOffsetParameter(
+    double& units);
   //@}
 
   //@{
@@ -373,11 +432,13 @@ public:
 
   //@{
   /**
-   * Get the net parameters for handling coincident topology
+   * Get the net paramters for handlig coincident topology
    * obtained by summing the global values with the relative values.
    */
-  void GetCoincidentTopologyPolygonOffsetParameters(double& factor, double& units);
-  void GetCoincidentTopologyLineOffsetParameters(double& factor, double& units);
+  void GetCoincidentTopologyPolygonOffsetParameters(
+    double& factor, double& units);
+  void GetCoincidentTopologyLineOffsetParameters(
+    double& factor, double& units);
   void GetCoincidentTopologyPointOffsetParameter(double& units);
   //@}
 
@@ -406,22 +467,23 @@ public:
    * Return bounding box (array of six doubles) of data expressed as
    * (xmin,xmax, ymin,ymax, zmin,zmax).
    */
-  double* GetBounds() VTK_SIZEHINT(6) override;
-  void GetBounds(double bounds[6]) override { this->vtkAbstractMapper3D::GetBounds(bounds); }
+  virtual double *GetBounds();
+  virtual void GetBounds(double bounds[6])
+    { this->vtkAbstractMapper3D::GetBounds(bounds); }
 
   /**
    * This instance variable is used by vtkLODActor to determine which
    * mapper to use.  It is an estimate of the time necessary to render.
    * Setting the render time does not modify the mapper.
    */
-  void SetRenderTime(double time) { this->RenderTime = time; }
+  void SetRenderTime(double time) {this->RenderTime = time;}
   vtkGetMacro(RenderTime, double);
 
   /**
    * Get the input as a vtkDataSet.  This method is overridden in
    * the specialized mapper classes to return more specific data types.
    */
-  vtkDataSet* GetInput();
+  vtkDataSet *GetInput();
 
   /**
    * Get the input to this mapper as a vtkDataSet, instead of as a
@@ -429,7 +491,8 @@ public:
    * GetInput().  This method is provided for use in the wrapper languages,
    * C++ programmers should use GetInput() instead.
    */
-  vtkDataSet* GetInputAsDataSet() { return this->GetInput(); }
+  vtkDataSet *GetInputAsDataSet()
+    { return this->GetInput(); }
 
   //@{
   /**
@@ -439,21 +502,46 @@ public:
    * allows the blending of the scalars with an additional alpha (typically
    * which comes from a vtkActor, etc.)
    */
-  virtual vtkUnsignedCharArray* MapScalars(double alpha);
-  virtual vtkUnsignedCharArray* MapScalars(double alpha, int& cellFlag);
-  virtual vtkUnsignedCharArray* MapScalars(vtkDataSet* input, double alpha);
-  virtual vtkUnsignedCharArray* MapScalars(vtkDataSet* input, double alpha, int& cellFlag);
+  virtual vtkUnsignedCharArray *MapScalars(double alpha);
+  virtual vtkUnsignedCharArray *MapScalars(double alpha,
+                                           int &cellFlag);
+  virtual vtkUnsignedCharArray *MapScalars(vtkDataSet *input,
+                                           double alpha);
+  virtual vtkUnsignedCharArray *MapScalars(vtkDataSet *input,
+                                           double alpha,
+                                           int &cellFlag);
   //@}
 
   //@{
   /**
-   * Some introspection on the type of data the mapper will render
-   * used by props to determine if they should invoke the mapper
-   * on a specific rendering pass.
+   * Set/Get the light-model color mode.
    */
-  virtual bool HasOpaqueGeometry();
-  virtual bool HasTranslucentPolygonalGeometry();
+  vtkSetMacro(ScalarMaterialMode,int);
+  vtkGetMacro(ScalarMaterialMode,int);
+  void SetScalarMaterialModeToDefault()
+    { this->SetScalarMaterialMode(VTK_MATERIALMODE_DEFAULT); }
+  void SetScalarMaterialModeToAmbient()
+    { this->SetScalarMaterialMode(VTK_MATERIALMODE_AMBIENT); }
+  void SetScalarMaterialModeToDiffuse()
+    { this->SetScalarMaterialMode(VTK_MATERIALMODE_DIFFUSE); }
+  void SetScalarMaterialModeToAmbientAndDiffuse()
+    { this->SetScalarMaterialMode(VTK_MATERIALMODE_AMBIENT_AND_DIFFUSE); }
   //@}
+
+  /**
+   * Return the light-model color mode.
+   */
+  const char *GetScalarMaterialModeAsString();
+
+  /**
+   * Returns if the mapper does not expect to have translucent geometry. This
+   * may happen when using ColorMode is set to not map scalars i.e. render the
+   * scalar array directly as colors and the scalar array has opacity i.e. alpha
+   * component.  Default implementation simply returns true. Note that even if
+   * this method returns true, an actor may treat the geometry as translucent
+   * since a constant translucency is set on the property, for example.
+   */
+  virtual bool GetIsOpaque();
 
   /**
    * WARNING: INTERNAL METHOD - NOT INTENDED FOR GENERAL USE
@@ -461,16 +549,8 @@ public:
    * Used by vtkHardwareSelector to determine if the prop supports hardware
    * selection.
    */
-  virtual bool GetSupportsSelection() { return false; }
-
-  /**
-   * allows a mapper to update a selections color buffers
-   * Called from a prop which in turn is called from the selector
-   */
-  virtual void ProcessSelectorPixelBuffers(vtkHardwareSelector* /* sel */,
-    std::vector<unsigned int>& /* pixeloffsets */, vtkProp* /* prop */)
-  {
-  }
+  virtual bool GetSupportsSelection()
+    { return false; }
 
   /**
    * Returns if we can use texture maps for scalar coloring. Note this doesn't
@@ -482,6 +562,42 @@ public:
    */
   virtual int CanUseTextureMapForColoring(vtkDataObject* input);
 
+  //@{
+  /**
+   * Used internally by vtkValuePass
+   */
+  void UseInvertibleColorFor(vtkDataObject *input,
+    int scalarMode,
+    int arrayAccessMode,
+    int arrayId,
+    const char *arrayName,
+    int arrayComponent,
+    double *scalarRange);
+  void UseInvertibleColorFor(int scalarMode,
+    int arrayAccessMode,
+    int arrayId,
+    const char *arrayName,
+    int arrayComponent,
+    double *scalarRange);
+  //@}
+
+  /**
+   * Used internally by vtkValuePass.
+   */
+  void ClearInvertibleColor();
+
+  /**
+   * Convert a floating point value to an RGB triplet.
+   */
+  static void ValueToColor(double value, double min, double scale,
+    unsigned char *color);
+
+  /**
+   * Convert an RGB triplet to a floating point value.
+   */
+  static void ColorToValue(unsigned char *color, double min, double scale,
+    double &value);
+
   /**
    * Call to force a rebuild of color result arrays on next MapScalars.
    * Necessary when using arrays in the case of multiblock data.
@@ -491,12 +607,12 @@ public:
   /**
    * Provide read access to the color array
    */
-  vtkUnsignedCharArray* GetColorMapColors();
+  vtkUnsignedCharArray *GetColorMapColors();
 
   /**
    * Provide read access to the color texture coordinate array
    */
-  vtkFloatArray* GetColorCoordinates();
+  vtkFloatArray *GetColorCoordinates();
 
   /**
    * Provide read access to the color texture array
@@ -505,33 +621,39 @@ public:
 
 protected:
   vtkMapper();
-  ~vtkMapper() override;
+  ~vtkMapper();
 
   // color mapped colors
-  vtkUnsignedCharArray* Colors;
+  vtkUnsignedCharArray *Colors;
 
   // Use texture coordinates for coloring.
-  vtkTypeBool InterpolateScalarsBeforeMapping;
+  int InterpolateScalarsBeforeMapping;
   // Coordinate for each point.
-  vtkFloatArray* ColorCoordinates;
+  vtkFloatArray *ColorCoordinates;
   // 1D ColorMap used for the texture image.
   vtkImageData* ColorTextureMap;
   void MapScalarsToTexture(vtkAbstractArray* scalars, double alpha);
 
-  vtkScalarsToColors* LookupTable;
-  vtkTypeBool ScalarVisibility;
+  // Makes a lookup table that can be used for deferred colormaps
+  void AcquireInvertibleLookupTable();
+  bool UseInvertibleColors;
+  static vtkScalarsToColors *InvertibleLookupTable;
+
+  vtkScalarsToColors *LookupTable;
+  int ScalarVisibility;
   vtkTimeStamp BuildTime;
   double ScalarRange[2];
-  vtkTypeBool UseLookupTableScalarRange;
-
+  int UseLookupTableScalarRange;
+  int ImmediateModeRendering;
   int ColorMode;
   int ScalarMode;
+  int ScalarMaterialMode;
 
   double RenderTime;
 
   // for coloring by a component of a field data array
   int ArrayId;
-  char* ArrayName;
+  char ArrayName[256];
   int ArrayComponent;
   int ArrayAccessMode;
 
@@ -539,7 +661,11 @@ protected:
   // data set. If -1, treat array values as cell data.
   vtkIdType FieldDataTupleId;
 
-  vtkTypeBool Static;
+  int Static;
+
+  int ForceCompileOnly;
+
+  vtkAbstractArray *InvertibleScalars;
 
   double CoincidentPolygonFactor;
   double CoincidentPolygonOffset;
@@ -548,8 +674,8 @@ protected:
   double CoincidentPointOffset;
 
 private:
-  vtkMapper(const vtkMapper&) = delete;
-  void operator=(const vtkMapper&) = delete;
+  vtkMapper(const vtkMapper&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkMapper&) VTK_DELETE_FUNCTION;
 };
 
 #endif

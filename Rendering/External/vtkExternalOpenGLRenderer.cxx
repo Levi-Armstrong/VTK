@@ -18,14 +18,15 @@
 #include "vtkCommand.h"
 #include "vtkExternalLight.h"
 #include "vtkExternalOpenGLCamera.h"
-#include "vtkLight.h"
 #include "vtkLightCollection.h"
+#include "vtkLightCollection.h"
+#include "vtkLight.h"
 #include "vtkMath.h"
 #include "vtkMatrix4x4.h"
 #include "vtkNew.h"
 #include "vtkObjectFactory.h"
-#include "vtkOpenGL.h"
 #include "vtkOpenGLError.h"
+#include "vtkOpenGL.h"
 #include "vtkRenderWindow.h"
 #include "vtkTexture.h"
 
@@ -38,8 +39,6 @@ vtkExternalOpenGLRenderer::vtkExternalOpenGLRenderer()
 {
   this->PreserveColorBuffer = 1;
   this->PreserveDepthBuffer = 1;
-  this->PreserveGLCameraMatrices = 1;
-  this->PreserveGLLights = 1;
   this->SetAutomaticLightCreation(0);
   this->ExternalLights = vtkLightCollection::New();
 }
@@ -48,37 +47,18 @@ vtkExternalOpenGLRenderer::vtkExternalOpenGLRenderer()
 vtkExternalOpenGLRenderer::~vtkExternalOpenGLRenderer()
 {
   this->ExternalLights->Delete();
-  this->ExternalLights = nullptr;
+  this->ExternalLights = NULL;
 }
 
 //----------------------------------------------------------------------------
 void vtkExternalOpenGLRenderer::Render(void)
 {
-  // Copy GL camera matrices
-  if (this->PreserveGLCameraMatrices)
-  {
-    this->SynchronizeGLCameraMatrices();
-  }
+  GLdouble mv[16],p[16];
+  glGetDoublev(GL_MODELVIEW_MATRIX,mv);
+  glGetDoublev(GL_PROJECTION_MATRIX,p);
 
-  // Copy GL lights
-  if (this->PreserveGLLights)
-  {
-    this->SynchronizeGLLights();
-  }
-
-  // Forward the call to the Superclass
-  this->Superclass::Render();
-}
-
-//----------------------------------------------------------------------------
-void vtkExternalOpenGLRenderer::SynchronizeGLCameraMatrices()
-{
-  GLdouble mv[16], p[16];
-  glGetDoublev(GL_MODELVIEW_MATRIX, mv);
-  glGetDoublev(GL_PROJECTION_MATRIX, p);
-
-  vtkExternalOpenGLCamera* camera =
-    vtkExternalOpenGLCamera::SafeDownCast(this->GetActiveCameraAndResetIfCreated());
+  vtkExternalOpenGLCamera* camera = vtkExternalOpenGLCamera::SafeDownCast(
+    this->GetActiveCameraAndResetIfCreated());
 
   camera->SetProjectionTransformMatrix(p);
   camera->SetViewTransformMatrix(mv);
@@ -89,13 +69,13 @@ void vtkExternalOpenGLRenderer::SynchronizeGLCameraMatrices()
   matrix->Invert();
 
   // Synchronize camera viewUp
-  double viewUp[4] = { 0.0, 1.0, 0.0, 0.0 }, newViewUp[4];
+  double viewUp[4] = {0.0, 1.0, 0.0, 0.0}, newViewUp[4];
   matrix->MultiplyPoint(viewUp, newViewUp);
   vtkMath::Normalize(newViewUp);
   camera->SetViewUp(newViewUp);
 
   // Synchronize camera position
-  double position[4] = { 0.0, 0.0, 0.0, 1.0 }, newPosition[4];
+  double position[4] = {0.0, 0.0, 1.0, 1.0}, newPosition[4];
   matrix->MultiplyPoint(position, newPosition);
 
   if (newPosition[3] != 0.0)
@@ -108,28 +88,28 @@ void vtkExternalOpenGLRenderer::SynchronizeGLCameraMatrices()
   camera->SetPosition(newPosition);
 
   // Synchronize focal point
-  double focalPoint[4] = { 0.0, 0.0, -1.0, 1.0 }, newFocalPoint[4];
+  double focalPoint[4] = {0.0, 0.0, 0.0, 1.0}, newFocalPoint[4];
   matrix->MultiplyPoint(focalPoint, newFocalPoint);
   camera->SetFocalPoint(newFocalPoint);
 
   matrix->Delete();
-}
 
-//----------------------------------------------------------------------------
-void vtkExternalOpenGLRenderer::SynchronizeGLLights()
-{
   // Lights
   // Query lights existing in the external context
   // and tweak them based on vtkExternalLight objects added by the user
   GLenum curLight;
-  for (curLight = GL_LIGHT0; curLight < GL_LIGHT0 + MAX_LIGHTS; curLight++)
+  for (curLight = GL_LIGHT0;
+       curLight < GL_LIGHT0 + MAX_LIGHTS;
+       curLight++)
   {
     GLboolean status;
     glGetBooleanv(curLight, &status);
 
-    int l_ind = static_cast<int>(curLight - GL_LIGHT0);
+    int l_ind = static_cast<int> (curLight - GL_LIGHT0);
+    vtkLight* light = NULL;
     bool light_created = false;
-    vtkLight* light = vtkLight::SafeDownCast(this->GetLights()->GetItemAsObject(l_ind));
+    light = vtkLight::SafeDownCast(
+              this->GetLights()->GetItemAsObject(l_ind));
     if (light)
     {
       if (!status)
@@ -166,18 +146,21 @@ void vtkExternalOpenGLRenderer::SynchronizeGLLights()
     // light index.
     vtkCollectionSimpleIterator sit;
     vtkExternalLight* eLight;
-    vtkExternalLight* curExtLight = nullptr;
+    vtkExternalLight* curExtLight = NULL;
     for (this->ExternalLights->InitTraversal(sit);
-         (eLight = vtkExternalLight::SafeDownCast(this->ExternalLights->GetNextLight(sit)));)
+         (eLight = vtkExternalLight::SafeDownCast(
+          this->ExternalLights->GetNextLight(sit))); )
     {
-      if (eLight && (static_cast<GLenum>(eLight->GetLightIndex()) == curLight))
+      if (eLight &&
+          (static_cast<GLenum>(eLight->GetLightIndex()) == curLight))
       {
         curExtLight = eLight;
         break;
       }
     }
 
-    if (curExtLight && (curExtLight->GetReplaceMode() == vtkExternalLight::ALL_PARAMS))
+    if (curExtLight &&
+        (curExtLight->GetReplaceMode() == vtkExternalLight::ALL_PARAMS))
     {
       // If the replace mode is all parameters, blatantly overwrite the
       // parameters of existing/new light
@@ -296,7 +279,7 @@ void vtkExternalOpenGLRenderer::SynchronizeGLLights()
           light->SetConeAngle(info[0]);
         }
 
-        if (light->GetConeAngle() < 90.0)
+        if (light->GetConeAngle() < 180.0)
         {
           // Exponent
           if (curExtLight && curExtLight->GetExponentSet())
@@ -334,6 +317,9 @@ void vtkExternalOpenGLRenderer::SynchronizeGLLights()
       light->Delete();
     }
   }
+
+  // Forward the call to the Superclass
+  this->Superclass::Render();
 }
 
 //----------------------------------------------------------------------------
@@ -345,7 +331,7 @@ vtkCamera* vtkExternalOpenGLRenderer::MakeCamera()
 }
 
 //----------------------------------------------------------------------------
-void vtkExternalOpenGLRenderer::AddExternalLight(vtkExternalLight* light)
+void vtkExternalOpenGLRenderer::AddExternalLight(vtkExternalLight *light)
 {
   if (!light)
   {
@@ -356,12 +342,14 @@ void vtkExternalOpenGLRenderer::AddExternalLight(vtkExternalLight* light)
 
   vtkCollectionSimpleIterator sit;
   for (this->ExternalLights->InitTraversal(sit);
-       (aLight = vtkExternalLight::SafeDownCast(this->ExternalLights->GetNextLight(sit)));)
+       (aLight = vtkExternalLight::SafeDownCast(
+          this->ExternalLights->GetNextLight(sit))); )
   {
     if (aLight && (aLight->GetLightIndex() == light->GetLightIndex()))
     {
-      vtkErrorMacro(<< "Attempting to add light with index " << light->GetLightIndex()
-                    << ". But light with same index already exists.");
+      vtkErrorMacro( << "Attempting to add light with index " <<
+                     light->GetLightIndex() <<
+                     ". But light with same index already exists.");
       return;
     }
   }
@@ -370,7 +358,7 @@ void vtkExternalOpenGLRenderer::AddExternalLight(vtkExternalLight* light)
 }
 
 //----------------------------------------------------------------------------
-void vtkExternalOpenGLRenderer::RemoveExternalLight(vtkExternalLight* light)
+void vtkExternalOpenGLRenderer::RemoveExternalLight(vtkExternalLight *light)
 {
   this->ExternalLights->RemoveItem(light);
 }
@@ -382,7 +370,7 @@ void vtkExternalOpenGLRenderer::RemoveAllExternalLights()
 }
 
 //----------------------------------------------------------------------------
-void vtkExternalOpenGLRenderer::PrintSelf(ostream& os, vtkIndent indent)
+void vtkExternalOpenGLRenderer::PrintSelf(ostream &os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 

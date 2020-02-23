@@ -5,22 +5,23 @@
 
 This file must be translated to C and modified to build everywhere.
 
-See the adjacent README.txt file for instructions.
+Run flex like this:
+
+  flex --nodefault -olex.yy.c vtkParse.l
+
+Modify lex.yy.c:
+  - convert tabs to spaces (8 spaces per tab)
+  - remove extra space from end of lines
+  - remove blank lines from end of file
+  - replace "int yyl;" with "yy_size_t yyl;"
+  - compile with gcc and "-Wsign-compare", there should be no warnings
+  - replace "#line" lines with blank lines
+  - remove usage of the "register" keyword
+  - add a prototype for isatty
+  - fixed 2 cppcheck warnings about "checking if unsigned variable
+    is less than zero" around lines 3670 and 3683 by changing <= to ==
 
 */
-
-/* to workaround https://bugs.llvm.org/show_bug.cgi?id=43465 */
-#if defined(__clang__)
-  #pragma clang diagnostic push
-  #if defined(__has_warning)
-    #if __has_warning("-Wimplicit-fallthrough")
-      #pragma clang diagnostic ignored "-Wimplicit-fallthrough"
-    #endif
-  #endif
-#elif defined(__GNUC__) && (__GNUC__ >= 7)
-  #pragma GCC diagnostic push
-  #pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
-#endif
 
 /* We do not care of interactive mode */
 #define YY_NEVER_INTERACTIVE 1
@@ -51,38 +52,38 @@ See the adjacent README.txt file for instructions.
  * then skip to the end of the line.
  * Return 0 if no match found.
  */
-static int skip_comment(void);
+static int skip_comment();
 static int skip_trailing_comment(const char *text, size_t l);
 static int skip_ahead_multi(const char *strings[]);
 static int skip_ahead_until(const char *text);
-static int skip_to_next_directive(void);
-static int skip_conditional_block(void);
+static int skip_to_next_directive();
+static int skip_conditional_block();
 
-static void doxygen_comment(void);
-static void doxygen_cpp_comment(void);
-static void doxygen_group_start(void);
-static void doxygen_group_end(void);
-static void vtk_comment(void);
-static void vtk_name_comment(void);
-static void vtk_section_comment(void);
-static void cpp_comment_line(void);
-static void blank_line(void);
+static void doxygen_comment();
+static void doxygen_cpp_comment();
+static void doxygen_group_start();
+static void doxygen_group_end();
+static void vtk_comment();
+static void vtk_name_comment();
+static void vtk_section_comment();
+static void cpp_comment_line();
+static void blank_line();
 
 static const char *raw_string(const char *begin);
 
 static void preprocessor_directive(const char *text, size_t l);
 static void print_preprocessor_error(int result, const char *cp, size_t n);
-static char *get_macro_arguments(void);
+static const char *get_macro_arguments();
 
-static void push_buffer(void);
-static int pop_buffer(void);
+static void push_buffer();
+static int pop_buffer();
 
 static void push_include(const char *filename);
-static void pop_include(void);
+static void pop_include();
 
 static void push_macro(MacroInfo *macro);
-static void pop_macro(void);
-static int in_macro(void);
+static void pop_macro();
+static int in_macro();
 
 %}
 
@@ -133,7 +134,7 @@ ID [a-zA-Z_\x80-\xff][0-9a-zA-Z_\x80-\xff]*
       return(CHAR_LITERAL);
     }
 
-("R"|"u8R"|"uR"|"UR"|"LR")\"[^ ()\t\v\f\n]*"(" {
+("R"|"u8R"|"uR"|"UR"|"LR")?\"[^ ()\t\v\f\n]*"(" {
       yylval.str = raw_string(yytext);
       return(STRING_LITERAL);
     }
@@ -141,9 +142,10 @@ ID [a-zA-Z_\x80-\xff][0-9a-zA-Z_\x80-\xff]*
 {ID}"_EXPORT"  /* ignore EXPORT macros */
 
 "vtkNotUsed" { /* let the wrappers see the parameter */
-      char *args = get_macro_arguments();
-      char *cp;
+      const char *args = NULL;
+      const char *cp;
       size_t l = 0;
+      args = get_macro_arguments();
       if (args)
       {
         cp = args;
@@ -153,10 +155,10 @@ ID [a-zA-Z_\x80-\xff][0-9a-zA-Z_\x80-\xff]*
         if (l)
         {
           yylval.str = vtkstrndup(cp, l);
-          free(args);
+          free((char *)args);
           return(ID);
         }
-        free(args);
+        free((char *)args);
       }
     }
 
@@ -253,6 +255,44 @@ ID [a-zA-Z_\x80-\xff][0-9a-zA-Z_\x80-\xff]*
 "bitor"         return('|');
 "compl"         return('~');
 
+"vtkIdType"            return(IdType);
+"vtkSetMacro"          return(SetMacro);
+"vtkGetMacro"          return(GetMacro);
+"vtkSetStringMacro"    return(SetStringMacro);
+"vtkGetStringMacro"    return(GetStringMacro);
+"vtkSetClampMacro"     return(SetClampMacro);
+"vtkSetObjectMacro"    return(SetObjectMacro);
+"vtkGetObjectMacro"    return(GetObjectMacro);
+"vtkBooleanMacro"      return(BooleanMacro);
+"vtkSetVector2Macro"   return(SetVector2Macro);
+"vtkSetVector3Macro"   return(SetVector3Macro);
+"vtkSetVector4Macro"   return(SetVector4Macro);
+"vtkSetVector6Macro"   return(SetVector6Macro);
+"vtkGetVector2Macro"   return(GetVector2Macro);
+"vtkGetVector3Macro"   return(GetVector3Macro);
+"vtkGetVector4Macro"   return(GetVector4Macro);
+"vtkGetVector6Macro"   return(GetVector6Macro);
+"vtkSetVectorMacro"    return(SetVectorMacro);
+"vtkGetVectorMacro"    return(GetVectorMacro);
+"vtkViewportCoordinateMacro" return(ViewportCoordinateMacro);
+"vtkWorldCoordinateMacro" return(WorldCoordinateMacro);
+"vtkExportedTypeMacro" return(TypeMacro);
+"vtkExportedTypeRevisionMacro" return(TypeMacro);
+"vtkTypeMacro"         return(TypeMacro);
+"vtkTypeRevisionMacro" return(TypeMacro);
+"VTK_WRAP_EXTERN"      ;
+"VTK_BYTE_SWAP_DECL"   return(VTK_BYTE_SWAP_DECL);
+"vtkTypeInt8"          return(TypeInt8);
+"vtkTypeUInt8"         return(TypeUInt8);
+"vtkTypeInt16"         return(TypeInt16);
+"vtkTypeUInt16"        return(TypeUInt16);
+"vtkTypeInt32"         return(TypeInt32);
+"vtkTypeUInt32"        return(TypeUInt32);
+"vtkTypeInt64"         return(TypeInt64);
+"vtkTypeUInt64"        return(TypeUInt64);
+"vtkTypeFloat32"       return(TypeFloat32);
+"vtkTypeFloat64"       return(TypeFloat64);
+
 "("{PS}({ID}"::")*"&" {
       size_t i = 1;
       size_t j;
@@ -338,10 +378,6 @@ ID [a-zA-Z_\x80-\xff][0-9a-zA-Z_\x80-\xff]*
 
 "_Noreturn"  /* C11 */
 
-"_Pragma"  get_macro_arguments(); /* C99 */
-
-"__pragma"  get_macro_arguments(); /* MSVC */
-
 "__attribute__"  get_macro_arguments(); /* gcc attributes */
 
 "__declspec"  get_macro_arguments(); /* Windows linkage */
@@ -353,7 +389,7 @@ ID [a-zA-Z_\x80-\xff][0-9a-zA-Z_\x80-\xff]*
 "__restrict" /* MSVC extension */
 
 "VTK_LEGACY" {
-      char *args = get_macro_arguments();
+      const char *args = get_macro_arguments();
       if (args && args[0] != '\0' && args[1] != '\0')
       {
         size_t l = strlen(args);
@@ -364,7 +400,7 @@ ID [a-zA-Z_\x80-\xff][0-9a-zA-Z_\x80-\xff]*
         macroEnded = 0;
         yy_switch_to_buffer(yy_scan_bytes(&args[1], l-2));
       }
-      free(args);
+      free((char *)args);
     }
 
 "nullptr" {
@@ -378,7 +414,7 @@ ID [a-zA-Z_\x80-\xff][0-9a-zA-Z_\x80-\xff]*
       int expanded = 0;
       if (macro)
       {
-        char *args = NULL;
+        const char *args = NULL;
         const char *emacro = NULL;
 
         /* make sure that vtkNotUsed is never expanded */
@@ -400,7 +436,7 @@ ID [a-zA-Z_\x80-\xff][0-9a-zA-Z_\x80-\xff]*
               print_preprocessor_error(VTK_PARSE_MACRO_NUMARGS, NULL, 0);
               exit(1);
             }
-            free(args);
+            free((char *)args);
           }
         }
         else if (macro->Definition && macro->Definition[0])
@@ -556,7 +592,7 @@ ID [a-zA-Z_\x80-\xff][0-9a-zA-Z_\x80-\xff]*
 /*
  * Return a parenthetical macro arg list as a new string.
  */
-char *get_macro_arguments()
+const char *get_macro_arguments()
 {
   char *cp = NULL;
   size_t i = 0;
@@ -768,7 +804,7 @@ int skip_trailing_comment(const char *text, size_t l)
 
   while (cp < ep)
   {
-    while (cp < ep && *cp != '/' && *cp != '\"') { cp++; }
+    while (cp < ep && *cp != '/' && *cp != '\"') { cp++; };
     if (cp >= ep)
     {
       break;
@@ -777,7 +813,7 @@ int skip_trailing_comment(const char *text, size_t l)
     {
       incomment = 1;
       cp += 2;
-      while (cp < ep && *cp != '*') { cp++; }
+      while (cp < ep && *cp != '*') { cp++; };
       if (cp[0] == '*' && cp[1] == '/')
       {
         incomment = 0;
@@ -793,7 +829,7 @@ int skip_trailing_comment(const char *text, size_t l)
       cp++;
       while (cp < ep)
       {
-        while (cp < ep && *cp != '\\' && *cp != '\"') { cp++; }
+        while (cp < ep && *cp != '\\' && *cp != '\"') { cp++; };
         if (cp >= ep)
         {
           break;
@@ -1046,7 +1082,7 @@ void doxygen_comment()
   int savelineno = yylineno;
   int asterisk, isfirstline = 1;
   int type = DoxygenComment;
-  int l = 0, i = 0, base = yyleng;
+  size_t l = 0, i = 0, base = yyleng;
   int c1 = 0, c2 = input();
   for (l = 0; l < yyleng; l++)
   {
@@ -1067,7 +1103,7 @@ void doxygen_comment()
     }
     if (l < 256)
     {
-      linetext[l++] = (char)c2;
+      linetext[l++] = c2;
     }
     if (c2 == '\n' || (c1 == '*' && c2 == '/'))
     {
@@ -1138,7 +1174,7 @@ void doxygen_comment()
 void doxygen_cpp_comment()
 {
   int type = DoxygenComment;
-  int pos = 2;
+  size_t pos = 2;
   while (yytext[pos-2] != '/' || yytext[pos-1] != '/') pos++;
   while (pos < yyleng && yytext[pos-1] == '/' && yytext[pos] == '/') pos++;
   if (pos < yyleng && yytext[pos] == '!') pos++;
@@ -1181,7 +1217,7 @@ void vtk_comment()
  */
 void vtk_name_comment()
 {
-  int pos = 1;
+  size_t pos = 1;
   while (yytext[pos-1] != 'M' || yytext[pos] != 'E')
   {
     pos++;
@@ -1196,7 +1232,7 @@ void vtk_name_comment()
  */
 void vtk_section_comment()
 {
-  int pos = 1;
+  size_t pos = 1;
   while (yytext[pos-1] != 'O' || yytext[pos] != 'N')
   {
     pos++;
@@ -1235,7 +1271,7 @@ void vtk_section_comment()
  */
 void cpp_comment_line()
 {
-  int pos = 2;
+  size_t pos = 2;
   while (yytext[pos-2] != '/' || yytext[pos-1] != '/') pos++;
   addCommentLine(&yytext[pos], yyleng - pos, NormalComment);
 }
@@ -1703,9 +1739,8 @@ void preprocessor_directive(const char *text, size_t l)
       if (Recursive && ep - cp > 3)
       {
         const char *dp;
-        dp = vtkParsePreprocess_FindIncludeFile(preprocessor, &cp[1],
-          (*cp != '\"' ? VTK_PARSE_SYSTEM_INCLUDE : VTK_PARSE_SOURCE_INCLUDE),
-          &already_loaded);
+        dp = vtkParsePreprocess_FindIncludeFile(preprocessor,
+          &cp[1], (*cp != '\"'), &already_loaded);
         if (dp)
         {
           yyin = fopen(dp, "r");

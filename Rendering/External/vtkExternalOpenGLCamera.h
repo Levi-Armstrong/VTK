@@ -20,20 +20,26 @@
  * vtkCamera.  vtkExternalOpenGLCamera interfaces to the OpenGL rendering library.
  * This class extends vtkOpenGLCamera by introducing API wherein the camera
  * matrices can be set explicitly by the application.
- */
+*/
 
 #ifndef vtkExternalOpenGLCamera_h
 #define vtkExternalOpenGLCamera_h
 
-#include "vtkOpenGLCamera.h"
 #include "vtkRenderingExternalModule.h" // For export macro
+#include "vtkOpenGLCamera.h"
 
-class VTKRENDERINGEXTERNAL_EXPORT vtkExternalOpenGLCamera : public vtkOpenGLCamera
+class VTKRENDERINGEXTERNAL_EXPORT vtkExternalOpenGLCamera :
+  public vtkOpenGLCamera
 {
 public:
-  static vtkExternalOpenGLCamera* New();
+  static vtkExternalOpenGLCamera *New();
   vtkTypeMacro(vtkExternalOpenGLCamera, vtkOpenGLCamera);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+
+  /**
+   * Implement base class method.
+   */
+  void Render(vtkRenderer *ren);
 
   /**
    * Set the view transform matrix
@@ -47,19 +53,28 @@ public:
 
 protected:
   vtkExternalOpenGLCamera();
-  ~vtkExternalOpenGLCamera() override {}
+  ~vtkExternalOpenGLCamera() {}
+
+  /**
+   * These methods should only be used within vtkCamera.cxx.
+   * Bypass computation if user provided the projection transform
+   */
+  void ComputeProjectionTransform(double aspect,
+                                  double nearz,
+                                  double farz);
 
   /**
    * These methods should only be used within vtkCamera.cxx.
    * Bypass computation if user provided the view transform
    */
-  void ComputeViewTransform() override;
+  void ComputeViewTransform();
 
 private:
+  bool UserProvidedProjectionTransform;
   bool UserProvidedViewTransform;
 
-  vtkExternalOpenGLCamera(const vtkExternalOpenGLCamera&) = delete;
-  void operator=(const vtkExternalOpenGLCamera&) = delete;
+  vtkExternalOpenGLCamera(const vtkExternalOpenGLCamera&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkExternalOpenGLCamera&) VTK_DELETE_FUNCTION;
 };
 
 #endif

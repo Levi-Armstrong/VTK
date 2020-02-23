@@ -27,7 +27,7 @@
  * on the vtkPoints object, or the transformation might not update.
  * @sa
  * vtkLinearTransform
- */
+*/
 
 #ifndef vtkLandmarkTransform_h
 #define vtkLandmarkTransform_h
@@ -42,10 +42,10 @@
 class VTKCOMMONTRANSFORMS_EXPORT vtkLandmarkTransform : public vtkLinearTransform
 {
 public:
-  static vtkLandmarkTransform* New();
+  static vtkLandmarkTransform *New();
 
-  vtkTypeMacro(vtkLandmarkTransform, vtkLinearTransform);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkLandmarkTransform,vtkLinearTransform);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   //@{
   /**
@@ -53,8 +53,8 @@ public:
    * the same number of points.  If you add or change points in these objects,
    * you must call Modified() on them or the transformation might not update.
    */
-  void SetSourceLandmarks(vtkPoints* points);
-  void SetTargetLandmarks(vtkPoints* points);
+  void SetSourceLandmarks(vtkPoints *points);
+  void SetTargetLandmarks(vtkPoints *points);
   vtkGetObjectMacro(SourceLandmarks, vtkPoints);
   vtkGetObjectMacro(TargetLandmarks, vtkPoints);
   //@}
@@ -69,59 +69,58 @@ public:
    * Ratios of distances along a line are preserved.
    * The default is similarity.
    */
-  vtkSetMacro(Mode, int);
-  void SetModeToRigidBody() { this->SetMode(VTK_LANDMARK_RIGIDBODY); }
-  void SetModeToSimilarity() { this->SetMode(VTK_LANDMARK_SIMILARITY); }
-  void SetModeToAffine() { this->SetMode(VTK_LANDMARK_AFFINE); }
+  vtkSetMacro(Mode,int);
+  void SetModeToRigidBody() { this->SetMode(VTK_LANDMARK_RIGIDBODY); };
+  void SetModeToSimilarity() { this->SetMode(VTK_LANDMARK_SIMILARITY); };
+  void SetModeToAffine() { this->SetMode(VTK_LANDMARK_AFFINE); };
   //@}
 
   //@{
   /**
    * Get the current transformation mode.
    */
-  vtkGetMacro(Mode, int);
-  const char* GetModeAsString();
+  vtkGetMacro(Mode,int);
+  const char *GetModeAsString();
   //@}
 
   /**
    * Invert the transformation.  This is done by switching the
    * source and target landmarks.
    */
-  void Inverse() override;
+  void Inverse() VTK_OVERRIDE;
 
   /**
    * Get the MTime.
    */
-  vtkMTimeType GetMTime() override;
+  vtkMTimeType GetMTime() VTK_OVERRIDE;
 
   /**
    * Make another transform of the same type.
    */
-  vtkAbstractTransform* MakeTransform() override;
+  vtkAbstractTransform *MakeTransform() VTK_OVERRIDE;
 
 protected:
   vtkLandmarkTransform();
-  ~vtkLandmarkTransform() override;
+  ~vtkLandmarkTransform() VTK_OVERRIDE;
 
   // Update the matrix from the quaternion.
-  void InternalUpdate() override;
+  void InternalUpdate() VTK_OVERRIDE;
 
   /**
    * This method does no type checking, use DeepCopy instead.
    */
-  void InternalDeepCopy(vtkAbstractTransform* transform) override;
+  void InternalDeepCopy(vtkAbstractTransform *transform) VTK_OVERRIDE;
 
   vtkPoints* SourceLandmarks;
   vtkPoints* TargetLandmarks;
 
   int Mode;
-
 private:
-  vtkLandmarkTransform(const vtkLandmarkTransform&) = delete;
-  void operator=(const vtkLandmarkTransform&) = delete;
+  vtkLandmarkTransform(const vtkLandmarkTransform&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkLandmarkTransform&) VTK_DELETE_FUNCTION;
 };
 
-inline const char* vtkLandmarkTransform::GetModeAsString()
+inline const char *vtkLandmarkTransform::GetModeAsString()
 {
   switch (this->Mode)
   {

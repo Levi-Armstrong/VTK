@@ -18,7 +18,7 @@
  *
  * vtkTableToMySQLWriter reads a vtkTable and inserts it into a MySQL
  * database.
- */
+*/
 
 #ifndef vtkTableToMySQLWriter_h
 #define vtkTableToMySQLWriter_h
@@ -31,9 +31,9 @@ class vtkMySQLDatabase;
 class VTKIOMYSQL_EXPORT vtkTableToMySQLWriter : public vtkTableToDatabaseWriter
 {
 public:
-  static vtkTableToMySQLWriter* New();
-  vtkTypeMacro(vtkTableToMySQLWriter, vtkTableToDatabaseWriter);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkTableToMySQLWriter *New();
+  vtkTypeMacro(vtkTableToMySQLWriter,vtkTableToDatabaseWriter);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -44,15 +44,17 @@ public:
   //@}
 
 protected:
-  vtkTableToMySQLWriter();
-  ~vtkTableToMySQLWriter() override;
-  void WriteData() override;
+   vtkTableToMySQLWriter();
+  ~vtkTableToMySQLWriter();
+  void WriteData();
 
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  virtual int FillInputPortInformation(int port, vtkInformation *info);
+
+  vtkTable *Input;
 
 private:
-  vtkTableToMySQLWriter(const vtkTableToMySQLWriter&) = delete;
-  void operator=(const vtkTableToMySQLWriter&) = delete;
+  vtkTableToMySQLWriter(const vtkTableToMySQLWriter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTableToMySQLWriter&) VTK_DELETE_FUNCTION;
 };
 
 #endif

@@ -16,15 +16,18 @@
 
 #include "vtkInformation.h"
 
+
 //----------------------------------------------------------------------------
-vtkInformationIntegerKey::vtkInformationIntegerKey(const char* name, const char* location)
-  : vtkInformationKey(name, location)
+vtkInformationIntegerKey::vtkInformationIntegerKey(const char* name, const char* location):
+  vtkInformationKey(name, location)
 {
   vtkCommonInformationKeyManager::Register(this);
 }
 
 //----------------------------------------------------------------------------
-vtkInformationIntegerKey::~vtkInformationIntegerKey() = default;
+vtkInformationIntegerKey::~vtkInformationIntegerKey()
+{
+}
 
 //----------------------------------------------------------------------------
 void vtkInformationIntegerKey::PrintSelf(ostream& os, vtkIndent indent)
@@ -33,7 +36,7 @@ void vtkInformationIntegerKey::PrintSelf(ostream& os, vtkIndent indent)
 }
 
 //----------------------------------------------------------------------------
-class vtkInformationIntegerValue : public vtkObjectBase
+class vtkInformationIntegerValue: public vtkObjectBase
 {
 public:
   vtkBaseTypeMacro(vtkInformationIntegerValue, vtkObjectBase);
@@ -43,8 +46,9 @@ public:
 //----------------------------------------------------------------------------
 void vtkInformationIntegerKey::Set(vtkInformation* info, int value)
 {
-  if (vtkInformationIntegerValue* oldv =
-        static_cast<vtkInformationIntegerValue*>(this->GetAsObjectBase(info)))
+  if(vtkInformationIntegerValue* oldv =
+     static_cast<vtkInformationIntegerValue *>
+     (this->GetAsObjectBase(info)))
   {
     if (oldv->Value != value)
     {
@@ -71,8 +75,9 @@ void vtkInformationIntegerKey::Set(vtkInformation* info, int value)
 int vtkInformationIntegerKey::Get(vtkInformation* info)
 {
   vtkInformationIntegerValue* v =
-    static_cast<vtkInformationIntegerValue*>(this->GetAsObjectBase(info));
-  return v ? v->Value : 0;
+    static_cast<vtkInformationIntegerValue *>
+    (this->GetAsObjectBase(info));
+  return v?v->Value:0;
 }
 
 //----------------------------------------------------------------------------
@@ -84,7 +89,7 @@ void vtkInformationIntegerKey::ShallowCopy(vtkInformation* from, vtkInformation*
   }
   else
   {
-    this->SetAsObjectBase(to, nullptr); // doesn't exist in from, so remove the key
+    this->SetAsObjectBase(to, 0); // doesn't exist in from, so remove the key
   }
 }
 
@@ -92,7 +97,7 @@ void vtkInformationIntegerKey::ShallowCopy(vtkInformation* from, vtkInformation*
 void vtkInformationIntegerKey::Print(ostream& os, vtkInformation* info)
 {
   // Print the value.
-  if (this->Has(info))
+  if(this->Has(info))
   {
     os << this->Get(info);
   }
@@ -101,10 +106,11 @@ void vtkInformationIntegerKey::Print(ostream& os, vtkInformation* info)
 //----------------------------------------------------------------------------
 int* vtkInformationIntegerKey::GetWatchAddress(vtkInformation* info)
 {
-  if (vtkInformationIntegerValue* v =
-        static_cast<vtkInformationIntegerValue*>(this->GetAsObjectBase(info)))
+  if(vtkInformationIntegerValue* v =
+     static_cast<vtkInformationIntegerValue *>
+     (this->GetAsObjectBase(info)))
   {
     return &v->Value;
   }
-  return nullptr;
+  return 0;
 }

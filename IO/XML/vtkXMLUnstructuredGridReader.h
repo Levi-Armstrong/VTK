@@ -24,7 +24,7 @@
  *
  * @sa
  * vtkXMLPUnstructuredGridReader
- */
+*/
 
 #ifndef vtkXMLUnstructuredGridReader_h
 #define vtkXMLUnstructuredGridReader_h
@@ -38,41 +38,42 @@ class vtkIdTypeArray;
 class VTKIOXML_EXPORT vtkXMLUnstructuredGridReader : public vtkXMLUnstructuredDataReader
 {
 public:
-  vtkTypeMacro(vtkXMLUnstructuredGridReader, vtkXMLUnstructuredDataReader);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
-  static vtkXMLUnstructuredGridReader* New();
+  vtkTypeMacro(vtkXMLUnstructuredGridReader,vtkXMLUnstructuredDataReader);
+  void PrintSelf(ostream& os, vtkIndent indent);
+  static vtkXMLUnstructuredGridReader *New();
 
   //@{
   /**
    * Get the reader's output.
    */
-  vtkUnstructuredGrid* GetOutput();
-  vtkUnstructuredGrid* GetOutput(int idx);
+  vtkUnstructuredGrid *GetOutput();
+  vtkUnstructuredGrid *GetOutput(int idx);
   //@}
 
 protected:
   vtkXMLUnstructuredGridReader();
-  ~vtkXMLUnstructuredGridReader() override;
+  ~vtkXMLUnstructuredGridReader();
 
-  const char* GetDataSetName() override;
-  void GetOutputUpdateExtent(int& piece, int& numberOfPieces, int& ghostLevel) override;
-  void SetupOutputTotals() override;
-  void SetupPieces(int numPieces) override;
-  void DestroyPieces() override;
+  const char* GetDataSetName();
+  void GetOutputUpdateExtent(int& piece, int& numberOfPieces, int& ghostLevel);
+  void SetupOutputTotals();
+  void SetupPieces(int numPieces);
+  void DestroyPieces();
 
-  void SetupOutputData() override;
-  int ReadPiece(vtkXMLDataElement* ePiece) override;
-  void SetupNextPiece() override;
-  int ReadPieceData() override;
+  void SetupOutputData();
+  int ReadPiece(vtkXMLDataElement* ePiece);
+  void SetupNextPiece();
+  int ReadPieceData();
 
   // Read a data array whose tuples correspond to cells.
-  int ReadArrayForCells(vtkXMLDataElement* da, vtkAbstractArray* outArray) override;
+  virtual int ReadArrayForCells(vtkXMLDataElement* da,
+    vtkAbstractArray* outArray);
 
   // Get the number of cells in the given piece.  Valid after
   // UpdateInformation.
-  vtkIdType GetNumberOfCellsInPiece(int piece) override;
+  virtual vtkIdType GetNumberOfCellsInPiece(int piece);
 
-  int FillOutputPortInformation(int, vtkInformation*) override;
+  virtual int FillOutputPortInformation(int, vtkInformation*);
 
   // The index of the cell in the output where the current piece
   // begins.
@@ -86,8 +87,8 @@ protected:
   unsigned long CellsOffset;
 
 private:
-  vtkXMLUnstructuredGridReader(const vtkXMLUnstructuredGridReader&) = delete;
-  void operator=(const vtkXMLUnstructuredGridReader&) = delete;
+  vtkXMLUnstructuredGridReader(const vtkXMLUnstructuredGridReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkXMLUnstructuredGridReader&) VTK_DELETE_FUNCTION;
 };
 
 #endif

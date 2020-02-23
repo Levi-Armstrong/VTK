@@ -32,13 +32,14 @@
  *
  * The method DisplayTag outputs the text unprocessed. To use this
  * class, instantiate it and then call SetInstance(this).
- */
+*/
 
 #ifndef vtkXMLFileOutputWindow_h
 #define vtkXMLFileOutputWindow_h
 
 #include "vtkCommonCoreModule.h" // For export macro
 #include "vtkFileOutputWindow.h"
+
 
 class VTKCOMMONCORE_EXPORT vtkXMLFileOutputWindow : public vtkFileOutputWindow
 {
@@ -53,11 +54,11 @@ public:
    * replace &, <, > with &amp, &lt, and &gt.
    * Each display method outputs a different XML tag.
    */
-  void DisplayText(const char*) override;
-  void DisplayErrorText(const char*) override;
-  void DisplayWarningText(const char*) override;
-  void DisplayGenericWarningText(const char*) override;
-  void DisplayDebugText(const char*) override;
+  void DisplayText(const char*) VTK_OVERRIDE;
+  void DisplayErrorText(const char*) VTK_OVERRIDE;
+  void DisplayWarningText(const char*) VTK_OVERRIDE;
+  void DisplayGenericWarningText(const char*) VTK_OVERRIDE;
+  void DisplayDebugText(const char*) VTK_OVERRIDE;
   //@}
 
   /**
@@ -67,15 +68,17 @@ public:
 
 protected:
   vtkXMLFileOutputWindow() {}
-  ~vtkXMLFileOutputWindow() override {}
+  ~vtkXMLFileOutputWindow() VTK_OVERRIDE {}
 
   void Initialize();
   virtual void DisplayXML(const char*, const char*);
 
 private:
-  vtkXMLFileOutputWindow(const vtkXMLFileOutputWindow&) = delete;
-  void operator=(const vtkXMLFileOutputWindow&) = delete;
+  vtkXMLFileOutputWindow(const vtkXMLFileOutputWindow&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkXMLFileOutputWindow&) VTK_DELETE_FUNCTION;
 };
+
+
 
 #endif
 // VTK-HeaderTest-Exclude: vtkXMLFileOutputWindow.h

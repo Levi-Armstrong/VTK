@@ -1,31 +1,38 @@
-set(classes
-  vtkAnnotatedCubeActor
-  vtkArcPlotter
-  vtkAxesActor
-  vtkAxisActor
-  vtkAxisActor2D
-  vtkAxisFollower
-  vtkBarChartActor
-  vtkCaptionActor2D
-  vtkConvexHull2D
-  vtkCornerAnnotation
-  vtkCubeAxesActor
-  vtkCubeAxesActor2D
-  vtkGraphAnnotationLayersFilter
-  vtkLeaderActor2D
-  vtkLegendBoxActor
-  vtkLegendScaleActor
-  vtkParallelCoordinatesActor
-  vtkPieChartActor
-  vtkPolarAxesActor
-  vtkProp3DAxisFollower
-  vtkScalarBarActor
-  vtkSpiderPlotActor
-  vtkXYPlotActor)
+set(Module_SRCS
+  vtkAnnotatedCubeActor.cxx
+  vtkArcPlotter.cxx
+  vtkAxesActor.cxx
+  vtkAxisActor2D.cxx
+  vtkAxisActor.cxx
+  vtkAxisFollower.cxx
+  vtkBarChartActor.cxx
+  vtkCaptionActor2D.cxx
+  vtkConvexHull2D.cxx
+  vtkCornerAnnotation.cxx
+  vtkCubeAxesActor2D.cxx
+  vtkCubeAxesActor.cxx
+  vtkGraphAnnotationLayersFilter.cxx
+  vtkLeaderActor2D.cxx
+  vtkLegendBoxActor.cxx
+  vtkLegendScaleActor.cxx
+  vtkPieChartActor.cxx
+  vtkPolarAxesActor.cxx
+  vtkProp3DAxisFollower.cxx
+  vtkScalarBarActor.cxx
+  vtkSpiderPlotActor.cxx
+  vtkXYPlotActor.cxx
+  )
 
-set(private_headers
-  vtkScalarBarActorInternal.h)
+set(${vtk-module}_HDRS
+  vtkScalarBarActorInternal.h
+  )
 
-vtk_module_add_module(VTK::RenderingAnnotation
-  CLASSES ${classes}
-  PRIVATE_HEADERS ${private_headers})
+set_source_files_properties(
+  vtkScalarBarActorInternal.h
+  PROPERTIES
+    HEADER_FILE_ONLY 1
+    WRAP_EXCLUDE 1
+    WRAP_EXCLUDE_PYTHON 1
+  )
+
+vtk_module_library(vtkRenderingAnnotation ${Module_SRCS})

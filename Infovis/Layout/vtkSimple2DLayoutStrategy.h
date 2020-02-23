@@ -30,23 +30,23 @@
  * @par Thanks:
  * Thanks to Brian Wylie from Sandia National Laboratories for creating this
  * class.
- */
+*/
 
 #ifndef vtkSimple2DLayoutStrategy_h
 #define vtkSimple2DLayoutStrategy_h
 
-#include "vtkGraphLayoutStrategy.h"
 #include "vtkInfovisLayoutModule.h" // For export macro
+#include "vtkGraphLayoutStrategy.h"
 
 class vtkFloatArray;
 
 class VTKINFOVISLAYOUT_EXPORT vtkSimple2DLayoutStrategy : public vtkGraphLayoutStrategy
 {
 public:
-  static vtkSimple2DLayoutStrategy* New();
+  static vtkSimple2DLayoutStrategy *New();
 
   vtkTypeMacro(vtkSimple2DLayoutStrategy, vtkGraphLayoutStrategy);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -132,7 +132,7 @@ public:
    * This strategy sets up some data structures
    * for faster processing of each Layout() call
    */
-  void Initialize() override;
+  virtual void Initialize();
 
   /**
    * This is the layout method where the graph that was
@@ -141,23 +141,24 @@ public:
    * graph. If you have an iterative layout please implement
    * the IsLayoutComplete() method.
    */
-  void Layout() override;
+  virtual void Layout();
 
   /**
    * I'm an iterative layout so this method lets the caller
    * know if I'm done laying out the graph
    */
-  int IsLayoutComplete() override { return this->LayoutComplete; }
+  virtual int IsLayoutComplete() {return this->LayoutComplete;}
 
 protected:
   vtkSimple2DLayoutStrategy();
-  ~vtkSimple2DLayoutStrategy() override;
+  ~vtkSimple2DLayoutStrategy();
 
-  int MaxNumberOfIterations; // Maximum number of iterations.
-  float InitialTemperature;
-  float CoolDownRate; // Cool-down rate.  Note:  Higher # = Slower rate.
+  int    MaxNumberOfIterations;  //Maximum number of iterations.
+  float  InitialTemperature;
+  float  CoolDownRate;  //Cool-down rate.  Note:  Higher # = Slower rate.
 
 private:
+
   // An edge consists of two vertices joined together.
   // This struct acts as a "pointer" to those two vertices.
   typedef struct
@@ -168,9 +169,9 @@ private:
   } vtkLayoutEdge;
 
   // These are for storage of repulsion and attraction
-  vtkFloatArray* RepulsionArray;
-  vtkFloatArray* AttractionArray;
-  vtkLayoutEdge* EdgeArray;
+  vtkFloatArray *RepulsionArray;
+  vtkFloatArray *AttractionArray;
+  vtkLayoutEdge *EdgeArray;
 
   int RandomSeed;
   int IterationsPerLayout;
@@ -180,8 +181,9 @@ private:
   float RestDistance;
   bool Jitter;
 
-  vtkSimple2DLayoutStrategy(const vtkSimple2DLayoutStrategy&) = delete;
-  void operator=(const vtkSimple2DLayoutStrategy&) = delete;
+  vtkSimple2DLayoutStrategy(const vtkSimple2DLayoutStrategy&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkSimple2DLayoutStrategy&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

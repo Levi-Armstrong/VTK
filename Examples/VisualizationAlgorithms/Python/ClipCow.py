@@ -50,7 +50,7 @@ clipActor.SetBackfaceProperty(backProp)
 # boundary of the clipping process. The cutter generates line
 # segments, the stripper then puts them together into polylines. We
 # then pull a trick and define polygons using the closed line
-# segments that the stripper created.
+# segements that the stripper created.
 cutEdges = vtk.vtkCutter()
 cutEdges.SetInputConnection(cowNormals.GetOutputPort())
 cutEdges.SetCutFunction(plane)

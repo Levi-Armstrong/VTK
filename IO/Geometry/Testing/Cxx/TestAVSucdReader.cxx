@@ -23,8 +23,8 @@
 #include <vtkRenderer.h>
 #include <vtkUnstructuredGrid.h>
 
-#include <vtkRegressionTestImage.h>
 #include <vtkTestUtilities.h>
+#include <vtkRegressionTestImage.h>
 
 int TestAVSucdReader(int argc, char* argv[])
 {
@@ -51,25 +51,29 @@ int TestAVSucdReader(int argc, char* argv[])
   mapper->SetScalarRange(grid->GetPointData()->GetScalars()->GetRange());
 
   vtkNew<vtkActor> actor;
-  actor->SetMapper(mapper);
+  actor->SetMapper(mapper.GetPointer());
   actor->GetProperty()->EdgeVisibilityOn();
 
   vtkNew<vtkRenderer> ren;
-  ren->AddActor(actor);
+  ren->AddActor(actor.GetPointer());
   ren->SetBackground(0, 0, 0);
 
   vtkNew<vtkRenderWindow> renWin;
-  renWin->AddRenderer(ren);
+  renWin->AddRenderer(ren.GetPointer());
   renWin->SetSize(300, 300);
 
   vtkNew<vtkRenderWindowInteractor> iren;
-  iren->SetRenderWindow(renWin);
+  iren->SetRenderWindow(renWin.GetPointer());
 
   renWin->Render();
-  int r = vtkRegressionTestImage(renWin);
+  int r = vtkRegressionTestImage(renWin.GetPointer());
+  if (r == vtkRegressionTester::FAILED)
+  {
+    return EXIT_FAILURE;
+  }
   if (r == vtkRegressionTester::DO_INTERACTOR)
   {
     iren->Start();
   }
-  return !r;
+  return EXIT_SUCCESS;
 }

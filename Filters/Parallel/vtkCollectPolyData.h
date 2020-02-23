@@ -18,7 +18,7 @@
  *
  * This filter has code to collect polydat from across processes onto node 0.
  * Collection can be turned on or off using the "PassThrough" flag.
- */
+*/
 
 #ifndef vtkCollectPolyData_h
 #define vtkCollectPolyData_h
@@ -32,13 +32,13 @@ class vtkSocketController;
 class VTKFILTERSPARALLEL_EXPORT vtkCollectPolyData : public vtkPolyDataAlgorithm
 {
 public:
-  static vtkCollectPolyData* New();
+  static vtkCollectPolyData *New();
   vtkTypeMacro(vtkCollectPolyData, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
-   * By default this filter uses the global controller,
+   * By defualt this filter uses the global controller,
    * but this method can be used to set another instead.
    */
   virtual void SetController(vtkMultiProcessController*);
@@ -59,27 +59,27 @@ public:
   /**
    * To collect or just copy input to output. Off (collect) by default.
    */
-  vtkSetMacro(PassThrough, vtkTypeBool);
-  vtkGetMacro(PassThrough, vtkTypeBool);
-  vtkBooleanMacro(PassThrough, vtkTypeBool);
+  vtkSetMacro(PassThrough, int);
+  vtkGetMacro(PassThrough, int);
+  vtkBooleanMacro(PassThrough, int);
   //@}
 
 protected:
   vtkCollectPolyData();
-  ~vtkCollectPolyData() override;
+  ~vtkCollectPolyData();
 
-  vtkTypeBool PassThrough;
+  int PassThrough;
 
   // Data generation method
-  int RequestUpdateExtent(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int RequestUpdateExtent(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
+  virtual int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 
-  vtkMultiProcessController* Controller;
-  vtkSocketController* SocketController;
+  vtkMultiProcessController *Controller;
+  vtkSocketController *SocketController;
 
 private:
-  vtkCollectPolyData(const vtkCollectPolyData&) = delete;
-  void operator=(const vtkCollectPolyData&) = delete;
+  vtkCollectPolyData(const vtkCollectPolyData&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkCollectPolyData&) VTK_DELETE_FUNCTION;
 };
 
 #endif

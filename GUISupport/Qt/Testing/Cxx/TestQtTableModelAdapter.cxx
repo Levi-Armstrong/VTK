@@ -25,7 +25,8 @@
 #include "vtkSmartPointer.h"
 #include "vtkTable.h"
 
-#define VTK_CREATE(type, name) vtkSmartPointer<type> name = vtkSmartPointer<type>::New()
+#define VTK_CREATE(type, name) \
+  vtkSmartPointer<type> name = vtkSmartPointer<type>::New()
 
 int TestQtTableModelAdapter(int, char*[])
 {
@@ -78,3 +79,5 @@ int TestQtTableModelAdapter(int, char*[])
   }
   return errors;
 }
+
+

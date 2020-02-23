@@ -23,20 +23,24 @@
 #include "vtkKdTree.h"
 #include "vtkObjectFactory.h"
 
+#ifdef _MSC_VER
+#pragma warning ( disable : 4100 )
+#endif
+
 vtkStandardNewMacro(vtkBSPCuts);
 
 //----------------------------------------------------------------------------
 vtkBSPCuts::vtkBSPCuts()
 {
-  this->Top = nullptr;
+  this->Top = NULL;
   this->NumberOfCuts = 0;
-  this->Dim = nullptr;
-  this->Coord = nullptr;
-  this->Lower = nullptr;
-  this->Upper = nullptr;
-  this->LowerDataCoord = nullptr;
-  this->UpperDataCoord = nullptr;
-  this->Npoints = nullptr;
+  this->Dim = NULL;
+  this->Coord = NULL;
+  this->Lower = NULL;
+  this->Upper = NULL;
+  this->LowerDataCoord = NULL;
+  this->UpperDataCoord = NULL;
+  this->Npoints = NULL;
 }
 
 //----------------------------------------------------------------------------
@@ -58,7 +62,7 @@ void vtkBSPCuts::Initialize()
   {
     vtkBSPCuts::DeleteAllDescendants(this->Top);
     this->Top->Delete();
-    this->Top = nullptr;
+    this->Top = NULL;
   }
   this->ResetArrays();
   this->Superclass::Initialize();
@@ -67,45 +71,45 @@ void vtkBSPCuts::Initialize()
 //----------------------------------------------------------------------------
 void vtkBSPCuts::ResetArrays()
 {
-  delete[] this->Dim;
-  this->Dim = nullptr;
+  delete [] this->Dim;
+  this->Dim = NULL;
 
-  delete[] this->Coord;
-  this->Coord = nullptr;
+  delete [] this->Coord;
+  this->Coord = NULL;
 
-  delete[] this->Lower;
-  this->Lower = nullptr;
+  delete [] this->Lower;
+  this->Lower = NULL;
 
-  delete[] this->Upper;
-  this->Upper = nullptr;
+  delete [] this->Upper;
+  this->Upper = NULL;
 
-  delete[] this->LowerDataCoord;
-  this->LowerDataCoord = nullptr;
+  delete [] this->LowerDataCoord;
+  this->LowerDataCoord = NULL;
 
-  delete[] this->UpperDataCoord;
-  this->UpperDataCoord = nullptr;
+  delete [] this->UpperDataCoord;
+  this->UpperDataCoord = NULL;
 
-  delete[] this->Npoints;
-  this->Npoints = nullptr;
+  delete [] this->Npoints;
+  this->Npoints = NULL;
 
   this->NumberOfCuts = 0;
 }
 //----------------------------------------------------------------------------
 void vtkBSPCuts::AllocateArrays(int nNodes)
 {
-  this->Dim = new int[nNodes];
-  this->Coord = new double[nNodes];
-  this->Lower = new int[nNodes];
-  this->Upper = new int[nNodes];
-  this->LowerDataCoord = new double[nNodes];
-  this->UpperDataCoord = new double[nNodes];
-  this->Npoints = new int[nNodes];
+  this->Dim = new int [nNodes];
+  this->Coord = new double [nNodes];
+  this->Lower = new int [nNodes];
+  this->Upper = new int [nNodes];
+  this->LowerDataCoord = new double [nNodes];
+  this->UpperDataCoord = new double [nNodes];
+  this->Npoints = new int [nNodes];
 }
 //----------------------------------------------------------------------------
-void vtkBSPCuts::DeleteAllDescendants(vtkKdNode* nd)
+void vtkBSPCuts::DeleteAllDescendants(vtkKdNode *nd)
 {
-  vtkKdNode* left = nd->GetLeft();
-  vtkKdNode* right = nd->GetRight();
+  vtkKdNode *left = nd->GetLeft();
+  vtkKdNode *right = nd->GetRight();
 
   if (left && left->GetLeft())
   {
@@ -119,11 +123,12 @@ void vtkBSPCuts::DeleteAllDescendants(vtkKdNode* nd)
 
   if (left && right)
   {
-    nd->DeleteChildNodes(); // undo AddChildNodes
-    left->Delete();         // undo vtkKdNode::New()
+    nd->DeleteChildNodes();   // undo AddChildNodes
+    left->Delete();           // undo vtkKdNode::New()
     right->Delete();
   }
 }
+
 
 //----------------------------------------------------------------------------
 void vtkBSPCuts::ShallowCopy(vtkDataObject* src)
@@ -136,7 +141,7 @@ void vtkBSPCuts::ShallowCopy(vtkDataObject* src)
   {
     vtkBSPCuts::DeleteAllDescendants(this->Top);
     this->Top->Delete();
-    this->Top = nullptr;
+    this->Top = NULL;
   }
 
   if (srcCuts)
@@ -157,7 +162,7 @@ void vtkBSPCuts::DeepCopy(vtkDataObject* src)
   {
     vtkBSPCuts::DeleteAllDescendants(this->Top);
     this->Top->Delete();
-    this->Top = nullptr;
+    this->Top = NULL;
   }
 
   vtkBSPCuts* srcCuts = vtkBSPCuts::SafeDownCast(src);
@@ -171,7 +176,7 @@ void vtkBSPCuts::DeepCopy(vtkDataObject* src)
 }
 
 //----------------------------------------------------------------------------
-void vtkBSPCuts::CreateCuts(vtkKdNode* kd)
+void vtkBSPCuts::CreateCuts(vtkKdNode *kd)
 {
   // Given a tree of vtkKdNodes, create the arrays that describe this
   // spatial partitioning.
@@ -196,16 +201,16 @@ void vtkBSPCuts::CreateCuts(vtkKdNode* kd)
   {
     vtkBSPCuts::DeleteAllDescendants(this->Top);
     this->Top->Delete();
-    this->Top = nullptr;
+    this->Top = NULL;
   }
 
   this->Top = vtkKdTree::CopyTree(kd);
 }
 //----------------------------------------------------------------------------
-int vtkBSPCuts::CountNodes(vtkKdNode* kd)
+int vtkBSPCuts::CountNodes(vtkKdNode *kd)
 {
-  int leftCount = 0;
-  int rightCount = 0;
+  int leftCount=0;
+  int rightCount=0;
 
   if (kd->GetLeft())
   {
@@ -216,20 +221,20 @@ int vtkBSPCuts::CountNodes(vtkKdNode* kd)
   return leftCount + rightCount + 1;
 }
 //----------------------------------------------------------------------------
-int vtkBSPCuts::WriteArray(vtkKdNode* kd, int loc)
+int vtkBSPCuts::WriteArray(vtkKdNode *kd, int loc)
 {
   int nextloc = loc + 1;
 
-  int dim = kd->GetDim(); // 0 (X), 1 (Y), 2 (Z)
+  int dim = kd->GetDim();   // 0 (X), 1 (Y), 2 (Z)
 
   this->Npoints[loc] = kd->GetNumberOfPoints();
 
   if (kd->GetLeft())
   {
-    this->Dim[loc] = dim;
+    this->Dim[loc]     = dim;
 
-    vtkKdNode* left = kd->GetLeft();
-    vtkKdNode* right = kd->GetRight();
+    vtkKdNode *left = kd->GetLeft();
+    vtkKdNode *right = kd->GetRight();
 
     this->Coord[loc] = left->GetMaxBounds()[dim];
     this->LowerDataCoord[loc] = left->GetMaxDataBounds()[dim];
@@ -250,22 +255,24 @@ int vtkBSPCuts::WriteArray(vtkKdNode* kd, int loc)
     this->Coord[loc] = 0.0;
     this->LowerDataCoord[loc] = 0.0;
     this->UpperDataCoord[loc] = 0.0;
-    this->Lower[loc] = kd->GetID() * -1; // partition ID
+    this->Lower[loc] = kd->GetID() * -1;  // partition ID
     this->Upper[loc] = kd->GetID() * -1;
   }
 
-  return nextloc; // next available array location
+  return nextloc;   // next available array location
 }
 //----------------------------------------------------------------------------
-void vtkBSPCuts::CreateCuts(double* bnds, int ncuts, int* dim, double* coord, int* lower,
-  int* upper, double* lowerDataCoord, double* upperDataCoord, int* npoints)
+void vtkBSPCuts::CreateCuts(double *bnds, int ncuts, int *dim, double *coord,
+                  int *lower, int *upper,
+                  double *lowerDataCoord, double *upperDataCoord,
+                  int *npoints)
 {
   // Keep a copy of these arrays
 
   vtkBSPCuts::ResetArrays();
   vtkBSPCuts::AllocateArrays(ncuts);
 
-  for (int i = 0; i < 6; i++)
+  for (int i=0; i<6; i++)
   {
     this->Bounds[i] = bnds[i];
   }
@@ -283,8 +290,8 @@ void vtkBSPCuts::CreateCuts(double* bnds, int ncuts, int* dim, double* coord, in
   }
   else
   {
-    delete[] this->LowerDataCoord;
-    this->LowerDataCoord = nullptr;
+    delete [] this->LowerDataCoord;
+    this->LowerDataCoord = NULL;
   }
 
   if (upperDataCoord)
@@ -293,8 +300,8 @@ void vtkBSPCuts::CreateCuts(double* bnds, int ncuts, int* dim, double* coord, in
   }
   else
   {
-    delete[] this->UpperDataCoord;
-    this->UpperDataCoord = nullptr;
+    delete [] this->UpperDataCoord;
+    this->UpperDataCoord = NULL;
   }
 
   if (npoints)
@@ -303,8 +310,8 @@ void vtkBSPCuts::CreateCuts(double* bnds, int ncuts, int* dim, double* coord, in
   }
   else
   {
-    delete[] this->Npoints;
-    this->Npoints = nullptr;
+    delete [] this->Npoints;
+    this->Npoints = NULL;
   }
 
   // Now build tree from arrays
@@ -313,19 +320,19 @@ void vtkBSPCuts::CreateCuts(double* bnds, int ncuts, int* dim, double* coord, in
   {
     vtkBSPCuts::DeleteAllDescendants(this->Top);
     this->Top->Delete();
-    this->Top = nullptr;
+    this->Top = NULL;
   }
 
   this->Top = vtkKdNode::New();
-  this->Top->SetBounds(bnds[0], bnds[1], bnds[2], bnds[3], bnds[4], bnds[5]);
-  this->Top->SetDataBounds(bnds[0], bnds[1], bnds[2], bnds[3], bnds[4], bnds[5]);
+  this->Top->SetBounds(bnds[0], bnds[1],bnds[2],bnds[3],bnds[4],bnds[5]);
+  this->Top->SetDataBounds(bnds[0], bnds[1],bnds[2],bnds[3],bnds[4],bnds[5]);
 
   this->BuildTree(this->Top, 0);
 
   vtkBSPCuts::SetMinMaxId(this->Top);
 }
 //----------------------------------------------------------------------------
-void vtkBSPCuts::BuildTree(vtkKdNode* kd, int idx)
+void vtkBSPCuts::BuildTree(vtkKdNode *kd, int idx)
 {
   int dim = this->Dim[idx];
 
@@ -336,8 +343,8 @@ void vtkBSPCuts::BuildTree(vtkKdNode* kd, int idx)
 
   if (this->Lower[idx] > 0)
   {
-    vtkKdNode* left = vtkKdNode::New();
-    vtkKdNode* right = vtkKdNode::New();
+    vtkKdNode *left = vtkKdNode::New();
+    vtkKdNode *right = vtkKdNode::New();
 
     kd->SetDim(dim);
 
@@ -347,36 +354,36 @@ void vtkBSPCuts::BuildTree(vtkKdNode* kd, int idx)
     kd->GetBounds(b2);
     kd->GetDataBounds(db2);
 
-    b2[dim * 2 + 1] = this->Coord[idx]; // new upper bound for lower half
+    b2[dim*2 + 1] = this->Coord[idx];  // new upper bound for lower half
 
     if (this->LowerDataCoord)
     {
-      db2[dim * 2 + 1] = this->LowerDataCoord[idx];
+      db2[dim*2 + 1] = this->LowerDataCoord[idx];
     }
     else
     {
-      db2[dim * 2 + 1] = this->Coord[idx];
+      db2[dim*2 + 1] = this->Coord[idx];
     }
 
-    left->SetBounds(b2[0], b2[1], b2[2], b2[3], b2[4], b2[5]);
-    left->SetDataBounds(db2[0], db2[1], db2[2], db2[3], db2[4], db2[5]);
+    left->SetBounds(b2[0],b2[1],b2[2],b2[3],b2[4],b2[5]);
+    left->SetDataBounds(db2[0],db2[1],db2[2],db2[3],db2[4],db2[5]);
 
     kd->GetBounds(b2);
     kd->GetDataBounds(db2);
 
-    b2[dim * 2] = this->Coord[idx]; // new lower bound for upper half
+    b2[dim*2] = this->Coord[idx];  // new lower bound for upper half
 
     if (this->UpperDataCoord)
     {
-      db2[dim * 2] = this->UpperDataCoord[idx];
+      db2[dim*2] = this->UpperDataCoord[idx];
     }
     else
     {
-      db2[dim * 2] = this->Coord[idx];
+      db2[dim*2] = this->Coord[idx];
     }
 
-    right->SetBounds(b2[0], b2[1], b2[2], b2[3], b2[4], b2[5]);
-    right->SetDataBounds(db2[0], db2[1], db2[2], db2[3], db2[4], db2[5]);
+    right->SetBounds(b2[0],b2[1],b2[2],b2[3],b2[4],b2[5]);
+    right->SetDataBounds(db2[0],db2[1],db2[2],db2[3],db2[4],db2[5]);
 
     kd->AddChildNodes(left, right);
 
@@ -385,11 +392,11 @@ void vtkBSPCuts::BuildTree(vtkKdNode* kd, int idx)
   }
   else
   {
-    kd->SetID(this->Lower[idx] * -1); // partition ID of leaf node
+    kd->SetID(this->Lower[idx] * -1);  // partition ID of leaf node
   }
 }
 //----------------------------------------------------------------------------
-void vtkBSPCuts::SetMinMaxId(vtkKdNode* kd)
+void vtkBSPCuts::SetMinMaxId(vtkKdNode *kd)
 {
   if (kd->GetLeft())
   {
@@ -408,18 +415,18 @@ void vtkBSPCuts::SetMinMaxId(vtkKdNode* kd)
   int min2 = kd->GetRight()->GetMinID();
   int max2 = kd->GetRight()->GetMaxID();
 
-  kd->SetMinID((min1 < min2) ? min1 : min2);
-  kd->SetMaxID((max1 > max2) ? max1 : max2);
+  kd->SetMinID( (min1 < min2) ? min1 : min2);
+  kd->SetMaxID( (max1 > max2) ? max1 : max2);
 }
 
 //----------------------------------------------------------------------------
-int vtkBSPCuts::GetArrays(int len, int* dim, double* coord, int* lower, int* upper,
-  double* lowerDataCoord, double* upperDataCoord, int* npoints)
+int vtkBSPCuts::GetArrays(int len,
+                int *dim, double *coord, int *lower, int *upper,
+                double *lowerDataCoord, double *upperDataCoord, int *npoints)
 {
   int l = (len < this->NumberOfCuts) ? len : this->NumberOfCuts;
 
-  if (l < 1)
-    return 1;
+  if (l < 1) return 1;
 
   if (dim)
   {
@@ -455,9 +462,9 @@ int vtkBSPCuts::GetArrays(int len, int* dim, double* coord, int* lower, int* upp
 }
 
 //-----------------------------------------------------------------------------
-int vtkBSPCuts::Equals(vtkBSPCuts* other, double tolerance)
+int vtkBSPCuts::Equals(vtkBSPCuts *other, double tolerance)
 {
-#define EQ(x, y) (((x) - (y) <= tolerance) && (y) - (x) <= tolerance)
+#define EQ(x, y)        (((x)-(y) <= tolerance) && (y)-(x) <= tolerance)
   if (!other)
   {
     return 0;
@@ -493,36 +500,15 @@ int vtkBSPCuts::Equals(vtkBSPCuts* other, double tolerance)
     {
       return 0;
     }
-    if (this->LowerDataCoord && other->LowerDataCoord)
-    {
-      if (!EQ(this->LowerDataCoord[i], other->LowerDataCoord[i]))
-      {
-        return 0;
-      }
-    }
-    else if (this->LowerDataCoord || other->LowerDataCoord)
+    if (!EQ(this->LowerDataCoord[i], other->LowerDataCoord[i]))
     {
       return 0;
     }
-    if (this->UpperDataCoord && other->UpperDataCoord)
-    {
-      if (!EQ(this->UpperDataCoord[i], other->UpperDataCoord[i]))
-      {
-        return 0;
-      }
-    }
-    else if (this->UpperDataCoord || other->UpperDataCoord)
+    if (!EQ(this->UpperDataCoord[i], other->UpperDataCoord[i]))
     {
       return 0;
     }
-    if (this->Npoints && other->Npoints)
-    {
-      if (this->Npoints[i] != other->Npoints[i])
-      {
-        return 0;
-      }
-    }
-    else if (this->Npoints || other->Npoints)
+    if (this->Npoints[i] != other->Npoints[i])
     {
       return 0;
     }
@@ -540,13 +526,13 @@ void vtkBSPCuts::PrintArrays()
     return;
   }
 
-  cout << "xmin: " << this->Bounds[0] << " xmax: " << this->Bounds[1] << endl;
+  cout << "xmin: " << this->Bounds[0] << " xmax: " << this->Bounds[1] << endl ;
   cout << "ymin: " << this->Bounds[2] << " ymax: " << this->Bounds[3] << endl;
   cout << "zmin: " << this->Bounds[4] << " zmax: " << this->Bounds[5] << endl;
 
   cout << "index / dimension / coordinate / lower region / upper region" << endl;
 
-  for (i = 0; i < this->NumberOfCuts; i++)
+  for (i=0; i<this->NumberOfCuts; i++)
   {
     cout << i << " / " << this->Dim[i] << " / " << this->Coord[i];
     cout << " / " << this->Lower[i] << " / " << this->Upper[i] << endl;
@@ -556,7 +542,7 @@ void vtkBSPCuts::PrintArrays()
   {
     cout << "index / lower data bdry / upper data bdry / data points" << endl;
 
-    for (i = 0; i < this->NumberOfCuts; i++)
+    for (i=0; i<this->NumberOfCuts; i++)
     {
       cout << i << " / " << this->LowerDataCoord[i] << " / " << this->UpperDataCoord[i];
       cout << " / " << this->Npoints[i] << endl;
@@ -566,7 +552,7 @@ void vtkBSPCuts::PrintArrays()
 //----------------------------------------------------------------------------
 void vtkBSPCuts::PrintTree()
 {
-  if (this->Top == nullptr)
+  if (this->Top == NULL)
   {
     return;
   }
@@ -574,14 +560,14 @@ void vtkBSPCuts::PrintTree()
   vtkBSPCuts::_PrintTree(this->Top, 0);
 }
 //----------------------------------------------------------------------------
-void vtkBSPCuts::_PrintTree(vtkKdNode* kd, int depth)
+void vtkBSPCuts::_PrintTree(vtkKdNode *kd, int depth)
 {
   kd->PrintNode(depth);
 
   if (kd->GetLeft())
   {
-    vtkBSPCuts::_PrintTree(kd->GetLeft(), depth + 1);
-    vtkBSPCuts::_PrintTree(kd->GetRight(), depth + 1);
+    vtkBSPCuts::_PrintTree(kd->GetLeft(),depth+1);
+    vtkBSPCuts::_PrintTree(kd->GetRight(),depth+1);
   }
 }
 
@@ -599,7 +585,7 @@ vtkBSPCuts* vtkBSPCuts::GetData(vtkInformationVector* v, int i)
 //----------------------------------------------------------------------------
 void vtkBSPCuts::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 
   os << indent << "Top: " << this->Top << endl;
   os << indent << "NumberOfCuts: " << this->NumberOfCuts << endl;

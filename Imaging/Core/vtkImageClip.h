@@ -23,7 +23,7 @@
  * Only the whole extent is modified.
  * 2: If ClipDataOn is set, then you will get no more that the clipped
  * extent.
- */
+*/
 
 #ifndef vtkImageClip_h
 #define vtkImageClip_h
@@ -31,24 +31,25 @@
 // I did not make this a subclass of in place filter because
 // the references on the data do not matter. I make no modifications
 // to the data.
-#include "vtkImageAlgorithm.h"
 #include "vtkImagingCoreModule.h" // For export macro
+#include "vtkImageAlgorithm.h"
 
 class VTKIMAGINGCORE_EXPORT vtkImageClip : public vtkImageAlgorithm
 {
 public:
-  static vtkImageClip* New();
-  vtkTypeMacro(vtkImageClip, vtkImageAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkImageClip *New();
+  vtkTypeMacro(vtkImageClip,vtkImageAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   //@{
   /**
    * The whole extent of the output has to be set explicitly.
    */
-  void SetOutputWholeExtent(int extent[6], vtkInformation* outInfo = nullptr);
-  void SetOutputWholeExtent(int minX, int maxX, int minY, int maxY, int minZ, int maxZ);
+  void SetOutputWholeExtent(int extent[6], vtkInformation *outInfo=0);
+  void SetOutputWholeExtent(int minX, int maxX, int minY, int maxY,
+                            int minZ, int maxZ);
   void GetOutputWholeExtent(int extent[6]);
-  int* GetOutputWholeExtent() VTK_SIZEHINT(6) { return this->OutputWholeExtent; }
+  int *GetOutputWholeExtent() {return this->OutputWholeExtent;}
   //@}
 
   void ResetOutputWholeExtent();
@@ -59,31 +60,40 @@ public:
    * the data's extent may actually be larger.  When this flag is on,
    * the data extent will be no more than the OutputWholeExtent.
    */
-  vtkSetMacro(ClipData, vtkTypeBool);
-  vtkGetMacro(ClipData, vtkTypeBool);
-  vtkBooleanMacro(ClipData, vtkTypeBool);
+  vtkSetMacro(ClipData, int);
+  vtkGetMacro(ClipData, int);
+  vtkBooleanMacro(ClipData, int);
   //@}
 
 protected:
   vtkImageClip();
-  ~vtkImageClip() override {}
+  ~vtkImageClip() {}
 
   // Time when OutputImageExtent was computed.
   vtkTimeStamp CTime;
   int Initialized; // Set the OutputImageExtent for the first time.
   int OutputWholeExtent[6];
 
-  vtkTypeBool ClipData;
+  int ClipData;
 
-  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int RequestInformation (vtkInformation *,
+                                  vtkInformationVector **,
+                                  vtkInformationVector *) VTK_OVERRIDE;
 
-  void CopyData(vtkImageData* inData, vtkImageData* outData, int* ext);
+  void CopyData(vtkImageData *inData, vtkImageData *outData, int *ext);
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int RequestData(vtkInformation *,
+                          vtkInformationVector **,
+                          vtkInformationVector *) VTK_OVERRIDE;
 
 private:
-  vtkImageClip(const vtkImageClip&) = delete;
-  void operator=(const vtkImageClip&) = delete;
+  vtkImageClip(const vtkImageClip&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkImageClip&) VTK_DELETE_FUNCTION;
 };
 
+
+
 #endif
+
+
+

@@ -16,8 +16,8 @@
 
 #include "metaLandmark.h"
 
-#include <cctype>
-#include <cstdio>
+#include <stdio.h>
+#include <ctype.h>
 #include <string>
 
 #if (METAIO_USE_NAMESPACE)
@@ -128,7 +128,7 @@ PointDim(const char* pointDim)
 }
 
 const char* MetaLandmark::
-PointDim() const
+PointDim(void) const
 {
   return m_PointDim;
 }
@@ -140,7 +140,7 @@ NPoints(int npnt)
 }
 
 int MetaLandmark::
-NPoints() const
+NPoints(void) const
 {
   return m_NPoints;
 }
@@ -148,7 +148,7 @@ NPoints() const
 
 /** Clear tube information */
 void MetaLandmark::
-Clear()
+Clear(void)
 {
   if(META_DEBUG) METAIO_STREAM::cout << "MetaLandmark: Clear" << METAIO_STREAM::endl;
   MetaObject::Clear();
@@ -158,7 +158,7 @@ Clear()
   while(it != m_PointList.end())
   {
     LandmarkPnt* pnt = *it;
-    ++it;
+    it++;
     delete pnt;
   }
   m_PointList.clear();
@@ -169,14 +169,14 @@ Clear()
 
 /** Destroy tube information */
 void MetaLandmark::
-M_Destroy()
+M_Destroy(void)
 {
   MetaObject::M_Destroy();
 }
 
 /** Set Read fields */
 void MetaLandmark::
-M_SetupReadFields()
+M_SetupReadFields(void)
 {
   if(META_DEBUG) METAIO_STREAM::cout << "MetaLandmark: M_SetupReadFields" << METAIO_STREAM::endl;
 
@@ -205,7 +205,7 @@ M_SetupReadFields()
 }
 
 MET_ValueEnumType MetaLandmark::
-ElementType() const
+ElementType(void) const
 {
   return m_ElementType;
 }
@@ -218,7 +218,7 @@ ElementType(MET_ValueEnumType _elementType)
 
 
 void MetaLandmark::
-M_SetupWriteFields()
+M_SetupWriteFields(void)
 {
   strcpy(m_ObjectTypeName,"Landmark");
   MetaObject::M_SetupWriteFields();
@@ -253,7 +253,7 @@ M_SetupWriteFields()
 
 
 bool MetaLandmark::
-M_Read()
+M_Read(void)
 {
   if(META_DEBUG) METAIO_STREAM::cout << "MetaLandmark: M_Read: Loading Header" << METAIO_STREAM::endl;
 
@@ -294,7 +294,7 @@ M_Read()
   }
 
   int pntDim;
-  char** pntVal = nullptr;
+  char** pntVal = NULL;
   MET_StringToWordArray(m_PointDim, &pntDim, &pntVal);
 
 
@@ -421,7 +421,7 @@ M_Read()
 
 
 bool MetaLandmark::
-M_Write()
+M_Write(void)
 {
 
   if(!MetaObject::M_Write())
@@ -456,7 +456,7 @@ M_Write()
         MET_SwapByteIfSystemMSB(&c,MET_FLOAT);
         MET_DoubleToValue((double)c,m_ElementType,data,i++);
       }
-      ++it;
+      it++;
     }
     m_WriteStream->write((char *)data,(m_NDims+4)*m_NPoints*elementSize);
     m_WriteStream->write("\n",1);
@@ -481,7 +481,7 @@ M_Write()
       }
 
       *m_WriteStream << METAIO_STREAM::endl;
-      ++it;
+      it++;
     }
   }
 

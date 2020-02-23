@@ -72,13 +72,13 @@
  * opacity is taken as a number from 0 to 1. So items will never be more opaque
  * than any of these three opacities. Selected items are always given the
  * selection opacity directly.
- */
+*/
 
 #ifndef vtkApplyColors_h
 #define vtkApplyColors_h
 
-#include "vtkPassInputTypeAlgorithm.h"
 #include "vtkViewsInfovisModule.h" // For export macro
+#include "vtkPassInputTypeAlgorithm.h"
 
 class vtkScalarsToColors;
 class vtkUnsignedCharArray;
@@ -86,9 +86,9 @@ class vtkUnsignedCharArray;
 class VTKVIEWSINFOVIS_EXPORT vtkApplyColors : public vtkPassInputTypeAlgorithm
 {
 public:
-  static vtkApplyColors* New();
+  static vtkApplyColors *New();
   vtkTypeMacro(vtkApplyColors, vtkPassInputTypeAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -252,24 +252,29 @@ public:
   /**
    * Retrieve the modified time for this filter.
    */
-  vtkMTimeType GetMTime() override;
+  virtual vtkMTimeType GetMTime();
 
 protected:
   vtkApplyColors();
-  ~vtkApplyColors() override;
+  ~vtkApplyColors();
 
   /**
    * Convert the vtkGraph into vtkPolyData.
    */
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(
+    vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 
   /**
    * Set the input type of the algorithm to vtkGraph.
    */
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  int FillInputPortInformation(int port, vtkInformation* info);
 
-  void ProcessColorArray(vtkUnsignedCharArray* colorArr, vtkScalarsToColors* lut,
-    vtkAbstractArray* arr, unsigned char color[4], bool scale);
+  void ProcessColorArray(
+    vtkUnsignedCharArray* colorArr,
+    vtkScalarsToColors* lut,
+    vtkAbstractArray* arr,
+    unsigned char color[4],
+    bool scale);
 
   vtkScalarsToColors* PointLookupTable;
   vtkScalarsToColors* CellLookupTable;
@@ -290,8 +295,8 @@ protected:
   bool UseCurrentAnnotationColor;
 
 private:
-  vtkApplyColors(const vtkApplyColors&) = delete;
-  void operator=(const vtkApplyColors&) = delete;
+  vtkApplyColors(const vtkApplyColors&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkApplyColors&) VTK_DELETE_FUNCTION;
 };
 
 #endif

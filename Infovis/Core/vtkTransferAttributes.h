@@ -33,7 +33,7 @@ PURPOSE.  See the above copyright notice for more information.
  * corresponding offsets (i.e. node i in the graph must correspond to node i in
  * the tree).
  *
- */
+*/
 
 #ifndef vtkTransferAttributes_h
 #define vtkTransferAttributes_h
@@ -52,10 +52,10 @@ public:
    * SourceFieldType=vtkDataObject::FIELD_ASSOCIATION_POINTS,
    * TargetFieldType=vtkDataObject::FIELD_ASSOCIATION_POINTS
    */
-  static vtkTransferAttributes* New();
+  static vtkTransferAttributes *New();
 
-  vtkTypeMacro(vtkTransferAttributes, vtkPassInputTypeAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkTransferAttributes,vtkPassInputTypeAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -114,11 +114,11 @@ public:
   /**
    * Set the input type of the algorithm to vtkGraph.
    */
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  int FillInputPortInformation(int port, vtkInformation* info);
 
 protected:
   vtkTransferAttributes();
-  ~vtkTransferAttributes() override;
+  ~vtkTransferAttributes();
 
   bool DirectMapping;
   char* SourceArrayName;
@@ -131,11 +131,11 @@ protected:
   /**
    * Convert the vtkGraph into vtkPolyData.
    */
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 
 private:
-  vtkTransferAttributes(const vtkTransferAttributes&) = delete;
-  void operator=(const vtkTransferAttributes&) = delete;
+  vtkTransferAttributes(const vtkTransferAttributes&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTransferAttributes&) VTK_DELETE_FUNCTION;
 };
 
 #endif

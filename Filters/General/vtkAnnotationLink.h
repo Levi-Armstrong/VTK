@@ -39,13 +39,13 @@
  * normally interpreted as the interactive selection of an application.
  * As a convenience, this selection is sent to output port 2 so that it
  * can be connected to pipelines requiring a vtkSelection.
- */
+*/
 
 #ifndef vtkAnnotationLink_h
 #define vtkAnnotationLink_h
 
-#include "vtkAnnotationLayersAlgorithm.h"
 #include "vtkFiltersGeneralModule.h" // For export macro
+#include "vtkAnnotationLayersAlgorithm.h"
 
 class vtkCommand;
 class vtkDataObjectCollection;
@@ -57,9 +57,9 @@ class vtkTable;
 class VTKFILTERSGENERAL_EXPORT vtkAnnotationLink : public vtkAnnotationLayersAlgorithm
 {
 public:
-  static vtkAnnotationLink* New();
+  static vtkAnnotationLink *New();
   vtkTypeMacro(vtkAnnotationLink, vtkAnnotationLayersAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   //@{
   /**
@@ -91,38 +91,43 @@ public:
   /**
    * Get the mtime of this object.
    */
-  vtkMTimeType GetMTime() override;
+  vtkMTimeType GetMTime() VTK_OVERRIDE;
 
 protected:
   vtkAnnotationLink();
-  ~vtkAnnotationLink() override;
+  ~vtkAnnotationLink() VTK_OVERRIDE;
 
   /**
    * Called to process modified events from its vtkAnnotationLayers.
    */
-  virtual void ProcessEvents(vtkObject* caller, unsigned long eventId, void* callData);
+  virtual void ProcessEvents(vtkObject* caller, unsigned long eventId,
+    void* callData);
 
   /**
    * Set up input ports.
    */
-  int FillInputPortInformation(int, vtkInformation*) override;
+  int FillInputPortInformation(int, vtkInformation*) VTK_OVERRIDE;
 
   /**
    * Set up output ports.
    */
-  int FillOutputPortInformation(int, vtkInformation*) override;
+  int FillOutputPortInformation(int, vtkInformation*) VTK_OVERRIDE;
 
   /**
    * Copy the data to the output objects.
    */
   void ShallowCopyToOutput(
-    vtkAnnotationLayers* input, vtkAnnotationLayers* output, vtkSelection* sel);
+    vtkAnnotationLayers* input,
+    vtkAnnotationLayers* output,
+    vtkSelection* sel);
 
   /**
    * Shallow copy the internal selection to the output.
    */
-  int RequestData(vtkInformation* info, vtkInformationVector** inVector,
-    vtkInformationVector* outVector) override;
+  int RequestData(
+    vtkInformation *info,
+    vtkInformationVector **inVector,
+    vtkInformationVector *outVector) VTK_OVERRIDE;
 
   /**
    * The shared selection.
@@ -134,13 +139,15 @@ protected:
    */
   vtkDataObjectCollection* DomainMaps;
 
+
 private:
-  vtkAnnotationLink(const vtkAnnotationLink&) = delete;
-  void operator=(const vtkAnnotationLink&) = delete;
+  vtkAnnotationLink(const vtkAnnotationLink&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkAnnotationLink&) VTK_DELETE_FUNCTION;
 
   class Command;
   friend class Command;
   Command* Observer;
+
 };
 
 #endif

@@ -21,30 +21,31 @@
  * pipeline involving vtkAlgorithm must have a producer.  This trivial
  * producer allows data objects that are hand-constructed in a program
  * without another vtk producer to be connected.
- */
+*/
 
 #ifndef vtkTrivialProducer_h
 #define vtkTrivialProducer_h
 
-#include "vtkAlgorithm.h"
 #include "vtkCommonExecutionModelModule.h" // For export macro
+#include "vtkAlgorithm.h"
 
 class vtkDataObject;
 
 class VTKCOMMONEXECUTIONMODEL_EXPORT vtkTrivialProducer : public vtkAlgorithm
 {
 public:
-  static vtkTrivialProducer* New();
-  vtkTypeMacro(vtkTrivialProducer, vtkAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkTrivialProducer *New();
+  vtkTypeMacro(vtkTrivialProducer,vtkAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Process upstream/downstream requests trivially.  The associated
    * output data object is never modified, but it is queried to
    * fulfill requests.
    */
-  vtkTypeBool ProcessRequest(
-    vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int ProcessRequest(vtkInformation*,
+                             vtkInformationVector**,
+                             vtkInformationVector*) VTK_OVERRIDE;
 
   /**
    * Set the data object that is "produced" by this producer.  It is
@@ -56,7 +57,7 @@ public:
    * The modified time of this producer is the newer of this object or
    * the assigned output.
    */
-  vtkMTimeType GetMTime() override;
+  vtkMTimeType GetMTime() VTK_OVERRIDE;
 
   //@{
   /**
@@ -73,26 +74,26 @@ public:
    * object to an information object. For example, whole extent,
    * image data spacing, origin etc.
    */
-  static void FillOutputDataInformation(vtkDataObject* output, vtkInformation* outInfo);
+  static void FillOutputDataInformation(vtkDataObject* output,
+                                        vtkInformation* outInfo);
 
 protected:
   vtkTrivialProducer();
-  ~vtkTrivialProducer() override;
+  ~vtkTrivialProducer() VTK_OVERRIDE;
 
-  int FillInputPortInformation(int, vtkInformation*) override;
-  int FillOutputPortInformation(int, vtkInformation*) override;
-  vtkExecutive* CreateDefaultExecutive() override;
+  int FillInputPortInformation(int, vtkInformation*) VTK_OVERRIDE;
+  int FillOutputPortInformation(int, vtkInformation*) VTK_OVERRIDE;
+  vtkExecutive* CreateDefaultExecutive() VTK_OVERRIDE;
 
   // The real data object.
   vtkDataObject* Output;
 
   int WholeExtent[6];
 
-  void ReportReferences(vtkGarbageCollector*) override;
-
+  void ReportReferences(vtkGarbageCollector*) VTK_OVERRIDE;
 private:
-  vtkTrivialProducer(const vtkTrivialProducer&) = delete;
-  void operator=(const vtkTrivialProducer&) = delete;
+  vtkTrivialProducer(const vtkTrivialProducer&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTrivialProducer&) VTK_DELETE_FUNCTION;
 };
 
 #endif

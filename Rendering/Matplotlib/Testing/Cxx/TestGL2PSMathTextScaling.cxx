@@ -24,9 +24,9 @@
 #include "vtkObjectFactory.h"
 #include "vtkPath.h"
 #include "vtkPoints.h"
+#include "vtkRenderer.h"
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
-#include "vtkRenderer.h"
 #include "vtkTestingInteractor.h"
 #include "vtkTextProperty.h"
 
@@ -34,22 +34,22 @@
 class GL2PSMathTextScalingTest : public vtkContextItem
 {
 public:
-  static GL2PSMathTextScalingTest* New();
-  vtkTypeMacro(GL2PSMathTextScalingTest, vtkContextItem);
+  static GL2PSMathTextScalingTest *New();
+  vtkTypeMacro(GL2PSMathTextScalingTest, vtkContextItem)
   // Paint event for the chart, called whenever the chart needs to be drawn
-  virtual bool Paint(vtkContext2D* painter) override;
+  virtual bool Paint(vtkContext2D *painter);
 };
 
 //----------------------------------------------------------------------------
-int TestGL2PSMathTextScaling(int, char*[])
+int TestGL2PSMathTextScaling(int, char *[])
 {
   // Set up a 2D context view, context test object and add it to the scene
   vtkNew<vtkContextView> view;
   view->GetRenderer()->SetBackground(1.0, 1.0, 1.0);
-  view->GetRenderWindow()->SetSize(500, 500);
+  view->GetRenderWindow()->SetSize(400, 600);
   view->GetRenderWindow()->SetDPI(120);
   vtkNew<GL2PSMathTextScalingTest> test;
-  view->GetScene()->AddItem(test);
+  view->GetScene()->AddItem(test.GetPointer());
 
   view->GetRenderWindow()->SetMultiSamples(0);
 
@@ -62,8 +62,8 @@ int TestGL2PSMathTextScaling(int, char*[])
   exp->DrawBackgroundOn();
   exp->Write3DPropsAsRasterImageOff();
 
-  std::string fileprefix =
-    vtkTestingInteractor::TempDirectory + std::string("/TestGL2PSMathTextScaling");
+  std::string fileprefix = vtkTestingInteractor::TempDirectory +
+      std::string("/TestGL2PSMathTextScaling");
 
   exp->SetFilePrefix(fileprefix.c_str());
   exp->Write();
@@ -74,25 +74,26 @@ int TestGL2PSMathTextScaling(int, char*[])
   return EXIT_SUCCESS;
 }
 
-vtkStandardNewMacro(GL2PSMathTextScalingTest);
+// Make our new derived class to draw a diagram
+vtkStandardNewMacro(GL2PSMathTextScalingTest)
 
-bool GL2PSMathTextScalingTest::Paint(vtkContext2D* painter)
+// This function aims to test the primitives provided by the 2D API.
+bool GL2PSMathTextScalingTest::Paint(vtkContext2D *painter)
 {
   painter->GetBrush()->SetColor(50, 50, 128);
-  painter->DrawRect(0, 0, 500, 500);
+  painter->DrawRect(0, 0, 400, 600);
 
   painter->GetTextProp()->SetColor(.7, .4, .5);
   painter->GetTextProp()->SetJustificationToLeft();
-  painter->GetTextProp()->SetVerticalJustificationToCentered();
-  painter->GetTextProp()->UseTightBoundingBoxOn();
+  painter->GetTextProp()->SetVerticalJustificationToBottom();
 
   for (int i = 0; i < 10; ++i)
   {
     int fontSize = 5 + i * 3;
-    float y = 500 - ((pow(i, 1.2) + 0.5) * 30);
+    float y = 600 - ((pow(i, 1.2) + 1) * 40);
     painter->GetTextProp()->SetFontSize(fontSize);
     painter->DrawString(5, y, "Text");
-    painter->DrawMathTextString(120, y, "MathText$\\ast$");
+    painter->DrawMathTextString(120, y, "MathText");
   }
 
   return true;

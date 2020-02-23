@@ -17,7 +17,7 @@
 #include "vtkPiecewiseFunction.h"
 
 //-----------------------------------------------------------------------------
-vtkAbstractObjectFactoryNewMacro(vtkPointGaussianMapper);
+vtkAbstractObjectFactoryNewMacro(vtkPointGaussianMapper)
 
 vtkCxxSetObjectMacro(vtkPointGaussianMapper, ScaleFunction, vtkPiecewiseFunction);
 vtkCxxSetObjectMacro(vtkPointGaussianMapper, ScalarOpacityFunction, vtkPiecewiseFunction);
@@ -25,16 +25,14 @@ vtkCxxSetObjectMacro(vtkPointGaussianMapper, ScalarOpacityFunction, vtkPiecewise
 //-----------------------------------------------------------------------------
 vtkPointGaussianMapper::vtkPointGaussianMapper()
 {
-  this->ScaleArray = nullptr;
-  this->ScaleArrayComponent = 0;
-  this->OpacityArray = nullptr;
-  this->OpacityArrayComponent = 0;
-  this->SplatShaderCode = nullptr;
+  this->ScaleArray = 0;
+  this->OpacityArray = 0;
+  this->SplatShaderCode = 0;
 
-  this->ScaleFunction = nullptr;
+  this->ScaleFunction = 0;
   this->ScaleTableSize = 1024;
 
-  this->ScalarOpacityFunction = nullptr;
+  this->ScalarOpacityFunction = 0;
   this->OpacityTableSize = 1024;
 
   this->ScaleFactor = 1.0;
@@ -45,11 +43,11 @@ vtkPointGaussianMapper::vtkPointGaussianMapper()
 //-----------------------------------------------------------------------------
 vtkPointGaussianMapper::~vtkPointGaussianMapper()
 {
-  this->SetScaleArray(nullptr);
-  this->SetOpacityArray(nullptr);
-  this->SetSplatShaderCode(nullptr);
-  this->SetScalarOpacityFunction(nullptr);
-  this->SetScaleFunction(nullptr);
+  this->SetScaleArray(0);
+  this->SetOpacityArray(0);
+  this->SetSplatShaderCode(0);
+  this->SetScalarOpacityFunction(0);
+  this->SetScaleFunction(0);
 }
 
 //-----------------------------------------------------------------------------
@@ -58,11 +56,8 @@ void vtkPointGaussianMapper::PrintSelf(ostream& os, vtkIndent indent)
   this->Superclass::PrintSelf(os, indent);
 
   os << indent << "Scale Array: " << (this->ScaleArray ? this->ScaleArray : "(none)") << "\n";
-  os << indent << "Scale Array Component: " << this->ScaleArrayComponent << "\n";
   os << indent << "Opacity Array: " << (this->OpacityArray ? this->OpacityArray : "(none)") << "\n";
-  os << indent << "Opacity Array Component: " << this->OpacityArrayComponent << "\n";
-  os << indent << "SplatShaderCode: " << (this->SplatShaderCode ? this->SplatShaderCode : "(none)")
-     << "\n";
+  os << indent << "SplatShaderCode: " << (this->SplatShaderCode ? this->SplatShaderCode : "(none)") << "\n";
   os << indent << "ScaleFactor: " << this->ScaleFactor << "\n";
   os << indent << "Emissive: " << this->Emissive << "\n";
   os << indent << "OpacityTableSize: " << this->OpacityTableSize << "\n";

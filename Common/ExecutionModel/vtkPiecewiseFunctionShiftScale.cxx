@@ -29,19 +29,23 @@ vtkPiecewiseFunctionShiftScale::vtkPiecewiseFunctionShiftScale()
   this->ValueScale = 1.0;
 }
 
-vtkPiecewiseFunctionShiftScale::~vtkPiecewiseFunctionShiftScale() = default;
+vtkPiecewiseFunctionShiftScale::~vtkPiecewiseFunctionShiftScale()
+{
+}
 
 int vtkPiecewiseFunctionShiftScale::RequestData(
-  vtkInformation*, vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+  vtkInformation *,
+  vtkInformationVector **inputVector,
+  vtkInformationVector *outputVector)
 {
-  vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
-  vtkInformation* outInfo = outputVector->GetInformationObject(0);
-  vtkPiecewiseFunction* input =
-    vtkPiecewiseFunction::SafeDownCast(inInfo->Get(vtkDataObject::DATA_OBJECT()));
-  vtkPiecewiseFunction* output =
-    vtkPiecewiseFunction::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
+  vtkInformation *inInfo = inputVector[0]->GetInformationObject(0);
+  vtkInformation *outInfo = outputVector->GetInformationObject(0);
+  vtkPiecewiseFunction *input = vtkPiecewiseFunction::SafeDownCast(
+    inInfo->Get(vtkDataObject::DATA_OBJECT()));
+  vtkPiecewiseFunction *output = vtkPiecewiseFunction::SafeDownCast(
+    outInfo->Get(vtkDataObject::DATA_OBJECT()));
 
-  double* inFunction = input->GetDataPointer();
+  double *inFunction = input->GetDataPointer();
   int numInValues = input->GetSize();
 
   output->RemoveAllPoints();
@@ -50,8 +54,10 @@ int vtkPiecewiseFunctionShiftScale::RequestData(
 
   for (i = 0; i < numInValues; i++)
   {
-    output->AddPoint((inFunction[2 * i] + this->PositionShift) * this->PositionScale,
-      (inFunction[2 * i + 1] + this->ValueShift) * this->ValueScale);
+    output->AddPoint((inFunction[2*i] + this->PositionShift) *
+                     this->PositionScale,
+                     (inFunction[2*i+1] + this->ValueShift) *
+                     this->ValueScale);
   }
 
   return 1;

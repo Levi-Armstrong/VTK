@@ -21,7 +21,7 @@
  *
  * @sa
  * vtkPNGWriter
- */
+*/
 
 #ifndef vtkPNGReader_h
 #define vtkPNGReader_h
@@ -32,26 +32,32 @@
 class VTKIOIMAGE_EXPORT vtkPNGReader : public vtkImageReader2
 {
 public:
-  static vtkPNGReader* New();
-  vtkTypeMacro(vtkPNGReader, vtkImageReader2);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkPNGReader *New();
+  vtkTypeMacro(vtkPNGReader,vtkImageReader2);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Is the given file a PNG file?
    */
-  int CanReadFile(const char* fname) override;
+  virtual int CanReadFile(const char* fname);
 
   /**
    * Get the file extensions for this format.
    * Returns a string with a space separated list of extensions in
    * the format .extension
    */
-  const char* GetFileExtensions() override { return ".png"; }
+  virtual const char* GetFileExtensions()
+  {
+      return ".png";
+  }
 
   /**
    * Return a descriptive name for the file format that might be useful in a GUI.
    */
-  const char* GetDescriptiveName() override { return "PNG"; }
+  virtual const char* GetDescriptiveName()
+  {
+      return "PNG";
+  }
 
   /**
    * Given a 'key' for the text chunks, fills in 'beginEndIndex'
@@ -75,33 +81,24 @@ public:
    */
   size_t GetNumberOfTextChunks();
 
-  //@{
-  /**
-   * Set/Get if data spacing should be calculated from the PNG file.
-   * Use default spacing if the PNG file don't have valid pixel per meter parameters.
-   * Default is false.
-   */
-  vtkSetMacro(ReadSpacingFromFile, bool);
-  vtkGetMacro(ReadSpacingFromFile, bool);
-  vtkBooleanMacro(ReadSpacingFromFile, bool);
-  //@}
 protected:
   vtkPNGReader();
-  ~vtkPNGReader() override;
+  ~vtkPNGReader();
 
-  void ExecuteInformation() override;
-  void ExecuteDataWithInformation(vtkDataObject* out, vtkInformation* outInfo) override;
+  virtual void ExecuteInformation();
+  virtual void ExecuteDataWithInformation(vtkDataObject *out, vtkInformation *outInfo);
   template <class OT>
-  void vtkPNGReaderUpdate(vtkImageData* data, OT* outPtr);
+    void vtkPNGReaderUpdate(vtkImageData *data, OT *outPtr);
   template <class OT>
-  void vtkPNGReaderUpdate2(OT* outPtr, int* outExt, vtkIdType* outInc, long pixSize);
+    void vtkPNGReaderUpdate2(
+      OT *outPtr, int *outExt, vtkIdType *outInc, long pixSize);
+
 
 private:
-  vtkPNGReader(const vtkPNGReader&) = delete;
-  void operator=(const vtkPNGReader&) = delete;
+  vtkPNGReader(const vtkPNGReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPNGReader&) VTK_DELETE_FUNCTION;
 
   class vtkInternals;
   vtkInternals* Internals;
-  bool ReadSpacingFromFile;
 };
 #endif

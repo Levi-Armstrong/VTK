@@ -19,7 +19,7 @@
  *
  *
  * Read NPT_Z_TESSELLATE.out files from VASP.
- */
+*/
 
 #ifndef vtkVASPTessellationReader_h
 #define vtkVASPTessellationReader_h
@@ -27,37 +27,39 @@
 #include "vtkDomainsChemistryModule.h" // For export macro
 #include "vtkMoleculeAlgorithm.h"
 
-namespace vtksys
-{
+namespace vtksys {
 class RegularExpression;
 }
 
 class vtkUnstructuredGrid;
 
-class VTKDOMAINSCHEMISTRY_EXPORT vtkVASPTessellationReader : public vtkMoleculeAlgorithm
+class VTKDOMAINSCHEMISTRY_EXPORT vtkVASPTessellationReader
+    : public vtkMoleculeAlgorithm
 {
 public:
   static vtkVASPTessellationReader* New();
-  vtkTypeMacro(vtkVASPTessellationReader, vtkMoleculeAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkVASPTessellationReader, vtkMoleculeAlgorithm)
+  virtual void PrintSelf(ostream &os, vtkIndent indent);
 
   //@{
   /**
    * The name of the file to read.
    */
-  vtkSetStringMacro(FileName);
-  vtkGetStringMacro(FileName);
+  vtkSetStringMacro(FileName)
+  vtkGetStringMacro(FileName)
   //@}
 
 protected:
   vtkVASPTessellationReader();
-  ~vtkVASPTessellationReader() override;
+  ~vtkVASPTessellationReader();
 
-  int RequestData(vtkInformation* request, vtkInformationVector** inInfoVecs,
-    vtkInformationVector* outInfoVec) override;
-  int RequestInformation(vtkInformation* request, vtkInformationVector** inInfoVecs,
-    vtkInformationVector* outInfoVec) override;
-  int FillOutputPortInformation(int port, vtkInformation* info) override;
+  virtual int RequestData(vtkInformation *request,
+                          vtkInformationVector **inInfoVecs,
+                          vtkInformationVector *outInfoVec);
+  virtual int RequestInformation(vtkInformation *request,
+                                 vtkInformationVector **inInfoVecs,
+                                 vtkInformationVector *outInfoVec);
+  virtual int FillOutputPortInformation(int port, vtkInformation *info);
 
   /**
    * Advance @a in to the start of the data for the next timestep. Parses the
@@ -65,7 +67,7 @@ protected:
    * success. Returning false means either EOF was reached, or the timestamp
    * line could not be parsed.
    */
-  bool NextTimeStep(std::istream& in, double& time);
+  bool NextTimeStep(std::istream &in, double &time);
 
   /**
    * Called by RequestData to determine which timestep to read. If both
@@ -73,21 +75,22 @@ protected:
    * timestep in TIME_STEPS closest to UPDATE_TIME_STEP. If either is undefined,
    * return 0.
    */
-  size_t SelectTimeStepIndex(vtkInformation* info);
+  size_t SelectTimeStepIndex(vtkInformation *info);
 
-  bool ReadTimeStep(std::istream& in, vtkMolecule* molecule, vtkUnstructuredGrid* voronoi);
+  bool ReadTimeStep(std::istream &in, vtkMolecule *molecule,
+                    vtkUnstructuredGrid *voronoi);
 
-  char* FileName;
+  char *FileName;
 
-  vtksys::RegularExpression* TimeParser;
-  vtksys::RegularExpression* LatticeParser;
-  vtksys::RegularExpression* AtomCountParser;
-  vtksys::RegularExpression* AtomParser;
-  vtksys::RegularExpression* ParenExtract;
+  vtksys::RegularExpression *TimeParser;
+  vtksys::RegularExpression *LatticeParser;
+  vtksys::RegularExpression *AtomCountParser;
+  vtksys::RegularExpression *AtomParser;
+  vtksys::RegularExpression *ParenExtract;
 
 private:
-  vtkVASPTessellationReader(const vtkVASPTessellationReader&) = delete;
-  void operator=(const vtkVASPTessellationReader&) = delete;
+  vtkVASPTessellationReader(const vtkVASPTessellationReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkVASPTessellationReader&) VTK_DELETE_FUNCTION;
 };
 
 #endif // vtkVASPTessellationReader_h

@@ -21,7 +21,7 @@
  * is the same orientation as when the measurement was initially placed.
  * @sa
  * vtkResliceCursor vtkResliceCursorWidget vtkResliceCursorRepresentation
- */
+*/
 
 #ifndef vtkResliceImageViewerMeasurements_h
 #define vtkResliceImageViewerMeasurements_h
@@ -45,13 +45,14 @@ class vtkSeedWidget;
 class VTKINTERACTIONIMAGE_EXPORT vtkResliceImageViewerMeasurements : public vtkObject
 {
 public:
+
   //@{
   /**
    * Standard VTK methods.
    */
-  static vtkResliceImageViewerMeasurements* New();
-  vtkTypeMacro(vtkResliceImageViewerMeasurements, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkResliceImageViewerMeasurements *New();
+  vtkTypeMacro(vtkResliceImageViewerMeasurements,vtkObject);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   /**
@@ -63,8 +64,8 @@ public:
   /**
    * Add / remove a measurement widget
    */
-  virtual void AddItem(vtkAbstractWidget*);
-  virtual void RemoveItem(vtkAbstractWidget*);
+  virtual void AddItem(vtkAbstractWidget *);
+  virtual void RemoveItem(vtkAbstractWidget *);
   virtual void RemoveAllItems();
   //@}
 
@@ -72,20 +73,20 @@ public:
   /**
    * Methods to change whether the widget responds to interaction.
    * Set this to Off to disable interaction. On by default.
-   * Subclasses must override SetProcessEvents() to make sure
+   * Subclasses must overide SetProcessEvents() to make sure
    * that they pass on the flag to all component widgets.
    */
-  vtkSetClampMacro(ProcessEvents, vtkTypeBool, 0, 1);
-  vtkGetMacro(ProcessEvents, vtkTypeBool);
-  vtkBooleanMacro(ProcessEvents, vtkTypeBool);
+  vtkSetClampMacro(ProcessEvents, int, 0, 1);
+  vtkGetMacro(ProcessEvents, int);
+  vtkBooleanMacro(ProcessEvents, int);
   //@}
 
   //@{
   /**
    * Tolerance for Point-in-Plane check
    */
-  vtkSetMacro(Tolerance, double);
-  vtkGetMacro(Tolerance, double);
+  vtkSetMacro( Tolerance, double );
+  vtkGetMacro( Tolerance, double );
   //@}
 
   //@{
@@ -93,8 +94,8 @@ public:
    * Set the reslice image viewer. This is automatically done in the class
    * vtkResliceImageViewer
    */
-  virtual void SetResliceImageViewer(vtkResliceImageViewer*);
-  vtkGetObjectMacro(ResliceImageViewer, vtkResliceImageViewer);
+  virtual void SetResliceImageViewer( vtkResliceImageViewer * );
+  vtkGetObjectMacro( ResliceImageViewer, vtkResliceImageViewer );
   //@}
 
   /**
@@ -105,44 +106,44 @@ public:
 
 protected:
   vtkResliceImageViewerMeasurements();
-  ~vtkResliceImageViewerMeasurements() override;
+  ~vtkResliceImageViewerMeasurements();
 
   //@{
   /**
    * Check if a measurement widget is on the resliced plane.
    */
-  bool IsItemOnReslicedPlane(vtkAbstractWidget* w);
-  bool IsWidgetOnReslicedPlane(vtkDistanceWidget* w);
-  bool IsWidgetOnReslicedPlane(vtkAngleWidget* w);
-  bool IsWidgetOnReslicedPlane(vtkBiDimensionalWidget* w);
-  bool IsWidgetOnReslicedPlane(vtkCaptionWidget* w);
-  bool IsWidgetOnReslicedPlane(vtkContourWidget* w);
-  bool IsWidgetOnReslicedPlane(vtkSeedWidget* w);
-  bool IsWidgetOnReslicedPlane(vtkHandleWidget* w);
-  bool IsPointOnReslicedPlane(vtkHandleRepresentation* h);
-  bool IsPositionOnReslicedPlane(double p[3]);
+  bool IsItemOnReslicedPlane( vtkAbstractWidget * w );
+  bool IsWidgetOnReslicedPlane( vtkDistanceWidget * w );
+  bool IsWidgetOnReslicedPlane( vtkAngleWidget * w );
+  bool IsWidgetOnReslicedPlane( vtkBiDimensionalWidget * w );
+  bool IsWidgetOnReslicedPlane( vtkCaptionWidget * w );
+  bool IsWidgetOnReslicedPlane( vtkContourWidget * w );
+  bool IsWidgetOnReslicedPlane( vtkSeedWidget * w );
+  bool IsWidgetOnReslicedPlane( vtkHandleWidget * w );
+  bool IsPointOnReslicedPlane( vtkHandleRepresentation * h );
+  bool IsPositionOnReslicedPlane( double p[3] );
   //@}
 
   // Handles the events; centralized here for all widgets.
-  static void ProcessEventsHandler(
-    vtkObject* object, unsigned long event, void* clientdata, void* calldata);
+  static void ProcessEventsHandler(vtkObject* object, unsigned long event,
+                            void* clientdata, void* calldata);
 
-  vtkResliceImageViewer* ResliceImageViewer;
-  vtkCollection* WidgetCollection;
+  vtkResliceImageViewer * ResliceImageViewer;
+  vtkCollection         * WidgetCollection;
 
   // Handle the visibility of the measurements.
-  vtkCallbackCommand* EventCallbackCommand; //
+  vtkCallbackCommand    * EventCallbackCommand; //
 
   // Flag indicating if we should handle events.
   // On by default.
-  vtkTypeBool ProcessEvents;
+  int ProcessEvents;
 
   // Tolerance for Point-in-plane computation
   double Tolerance;
 
 private:
-  vtkResliceImageViewerMeasurements(const vtkResliceImageViewerMeasurements&) = delete;
-  void operator=(const vtkResliceImageViewerMeasurements&) = delete;
+  vtkResliceImageViewerMeasurements(const vtkResliceImageViewerMeasurements&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkResliceImageViewerMeasurements&) VTK_DELETE_FUNCTION;
 };
 
 #endif

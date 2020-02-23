@@ -25,13 +25,13 @@
  *
  * @sa
  * vtkImageMapper
- */
+*/
 
 #ifndef vtkOpenGLImageMapper_h
 #define vtkOpenGLImageMapper_h
 
-#include "vtkImageMapper.h"
 #include "vtkRenderingOpenGL2Module.h" // For export macro
+#include "vtkImageMapper.h"
 
 class vtkActor2D;
 class vtkTexturedActor2D;
@@ -39,45 +39,44 @@ class vtkTexturedActor2D;
 class VTKRENDERINGOPENGL2_EXPORT vtkOpenGLImageMapper : public vtkImageMapper
 {
 public:
-  static vtkOpenGLImageMapper* New();
+  static vtkOpenGLImageMapper *New();
   vtkTypeMacro(vtkOpenGLImageMapper, vtkImageMapper);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Handle the render method.
    */
-  void RenderOverlay(vtkViewport* viewport, vtkActor2D* actor) override
-  {
-    this->RenderStart(viewport, actor);
-  }
+  void RenderOverlay(vtkViewport* viewport, vtkActor2D* actor)
+    { this->RenderStart(viewport, actor); }
 
   /**
    * Called by the Render function in vtkImageMapper.  Actually draws
    * the image to the screen.
    */
-  void RenderData(vtkViewport* viewport, vtkImageData* data, vtkActor2D* actor) override;
+  void RenderData(vtkViewport* viewport, vtkImageData* data,
+                  vtkActor2D* actor);
 
   /**
    * draw the data once it has been converted to uchar, windowed leveled
    * used internally by the templated functions
    */
-  void DrawPixels(vtkViewport* vp, int width, int height, int numComponents, void* data);
+  void DrawPixels(vtkViewport *vp, int width, int height, int numComponents, void *data);
 
   /**
    * Release any graphics resources that are being consumed by this
    * mapper, the image texture in particular.
    */
-  void ReleaseGraphicsResources(vtkWindow*) override;
+  void ReleaseGraphicsResources(vtkWindow *);
 
 protected:
   vtkOpenGLImageMapper();
-  ~vtkOpenGLImageMapper() override;
+  ~vtkOpenGLImageMapper();
 
-  vtkTexturedActor2D* Actor;
+  vtkTexturedActor2D *Actor;
 
 private:
-  vtkOpenGLImageMapper(const vtkOpenGLImageMapper&) = delete;
-  void operator=(const vtkOpenGLImageMapper&) = delete;
+  vtkOpenGLImageMapper(const vtkOpenGLImageMapper&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkOpenGLImageMapper&) VTK_DELETE_FUNCTION;
 };
 
 #endif

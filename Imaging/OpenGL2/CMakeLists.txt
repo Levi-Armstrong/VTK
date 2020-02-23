@@ -1,6 +1,5 @@
-set(classes
-  vtkOpenGLImageGradient
+set(Module_SRCS
+  vtkOpenGLImageGradient.cxx
   )
 
-vtk_module_add_module(VTK::ImagingOpenGL2
-  CLASSES ${classes})
+vtk_module_library(${vtk-module} ${Module_SRCS})

@@ -16,9 +16,9 @@
 
 #include "vtkCompositeDataPipeline.h"
 #include "vtkDataSet.h"
-#include "vtkHierarchicalBoxDataSet.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
+#include "vtkHierarchicalBoxDataSet.h"
 #include "vtkObjectFactory.h"
 
 vtkStandardNewMacro(vtkHierarchicalBoxDataSetAlgorithm);
@@ -30,7 +30,9 @@ vtkHierarchicalBoxDataSetAlgorithm::vtkHierarchicalBoxDataSetAlgorithm()
 }
 
 //----------------------------------------------------------------------------
-vtkHierarchicalBoxDataSetAlgorithm::~vtkHierarchicalBoxDataSetAlgorithm() = default;
+vtkHierarchicalBoxDataSetAlgorithm::~vtkHierarchicalBoxDataSetAlgorithm()
+{
+}
 
 //----------------------------------------------------------------------------
 vtkHierarchicalBoxDataSet* vtkHierarchicalBoxDataSetAlgorithm::GetOutput()
@@ -42,7 +44,8 @@ vtkHierarchicalBoxDataSet* vtkHierarchicalBoxDataSetAlgorithm::GetOutput()
 vtkHierarchicalBoxDataSet* vtkHierarchicalBoxDataSetAlgorithm::GetOutput(int port)
 {
   vtkDataObject* output =
-    vtkCompositeDataPipeline::SafeDownCast(this->GetExecutive())->GetCompositeOutputData(port);
+    vtkCompositeDataPipeline::SafeDownCast(this->GetExecutive())->
+    GetCompositeOutputData(port);
   return vtkHierarchicalBoxDataSet::SafeDownCast(output);
 }
 
@@ -63,36 +66,39 @@ vtkDataObject* vtkHierarchicalBoxDataSetAlgorithm::GetInput(int port)
 {
   if (this->GetNumberOfInputConnections(port) < 1)
   {
-    return nullptr;
+    return 0;
   }
   return this->GetExecutive()->GetInputData(port, 0);
 }
 
 //----------------------------------------------------------------------------
-vtkTypeBool vtkHierarchicalBoxDataSetAlgorithm::ProcessRequest(
-  vtkInformation* request, vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+int vtkHierarchicalBoxDataSetAlgorithm::ProcessRequest(
+  vtkInformation* request,
+  vtkInformationVector** inputVector,
+  vtkInformationVector* outputVector)
 {
   // create the output
-  if (request->Has(vtkDemandDrivenPipeline::REQUEST_DATA_OBJECT()))
+  if(request->Has(vtkDemandDrivenPipeline::REQUEST_DATA_OBJECT()))
   {
     return this->RequestDataObject(request, inputVector, outputVector);
   }
 
   // generate the data
-  if (request->Has(vtkCompositeDataPipeline::REQUEST_DATA()))
+  if(request->Has(vtkCompositeDataPipeline::REQUEST_DATA()))
   {
     int retVal = this->RequestData(request, inputVector, outputVector);
     return retVal;
   }
 
   // execute information
-  if (request->Has(vtkDemandDrivenPipeline::REQUEST_INFORMATION()))
+  if(request->Has(vtkDemandDrivenPipeline::REQUEST_INFORMATION()))
   {
     return this->RequestInformation(request, inputVector, outputVector);
   }
 
   // set update extent
-  if (request->Has(vtkCompositeDataPipeline::REQUEST_UPDATE_EXTENT()))
+  if(request->Has(
+       vtkCompositeDataPipeline::REQUEST_UPDATE_EXTENT()))
   {
     return this->RequestUpdateExtent(request, inputVector, outputVector);
   }
@@ -128,3 +134,4 @@ void vtkHierarchicalBoxDataSetAlgorithm::PrintSelf(ostream& os, vtkIndent indent
 {
   this->Superclass::PrintSelf(os, indent);
 }
+

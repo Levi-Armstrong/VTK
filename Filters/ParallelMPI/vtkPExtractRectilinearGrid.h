@@ -26,42 +26,44 @@
  *
  * @sa
  *  vtkExtractRectilinearGrid
- */
+*/
 
 #ifndef vtkPExtractRectilinearGrid_h
 #define vtkPExtractRectilinearGrid_h
 
-#include "vtkExtractRectilinearGrid.h"
 #include "vtkFiltersParallelMPIModule.h" // For export macro
+#include "vtkExtractRectilinearGrid.h"
 
 // Forward Declarations
 class vtkInformation;
 class vtkInformationVector;
 class vtkMPIController;
 
-class VTKFILTERSPARALLELMPI_EXPORT vtkPExtractRectilinearGrid : public vtkExtractRectilinearGrid
+class VTKFILTERSPARALLELMPI_EXPORT vtkPExtractRectilinearGrid :
+  public vtkExtractRectilinearGrid
 {
 public:
   static vtkPExtractRectilinearGrid* New();
-  vtkTypeMacro(vtkPExtractRectilinearGrid, vtkExtractRectilinearGrid);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkPExtractRectilinearGrid,vtkExtractRectilinearGrid);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
 protected:
   vtkPExtractRectilinearGrid();
   virtual ~vtkPExtractRectilinearGrid();
 
   // Standard VTK Pipeline methods
-  virtual int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int RequestData(
+      vtkInformation*, vtkInformationVector**,vtkInformationVector*);
   virtual int RequestInformation(
-    vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+      vtkInformation*, vtkInformationVector**, vtkInformationVector*);
   virtual int RequestUpdateExtent(
-    vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+      vtkInformation*, vtkInformationVector**, vtkInformationVector*);
 
   vtkMPIController* Controller;
 
 private:
-  vtkPExtractRectilinearGrid(const vtkPExtractRectilinearGrid&) = delete;
-  void operator=(const vtkPExtractRectilinearGrid&) = delete;
+  vtkPExtractRectilinearGrid(const vtkPExtractRectilinearGrid&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPExtractRectilinearGrid&) VTK_DELETE_FUNCTION;
 };
 
 #endif /* VTKPEXTRACTRECTILINEARGRID_H_ */

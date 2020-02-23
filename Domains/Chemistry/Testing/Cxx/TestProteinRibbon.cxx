@@ -12,30 +12,31 @@
 
 =========================================================================*/
 
-#include "vtkRegressionTestImage.h"
 #include "vtkTestUtilities.h"
+#include "vtkRegressionTestImage.h"
 
 #include "vtkActor.h"
 #include "vtkCamera.h"
-#include "vtkInteractorStyleSwitch.h"
-#include "vtkNew.h"
-#include "vtkPDBReader.h"
 #include "vtkPolyDataMapper.h"
+#include "vtkNew.h"
 #include "vtkProperty.h"
-#include "vtkProteinRibbonFilter.h"
-#include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
+#include "vtkRenderWindow.h"
 #include "vtkRenderer.h"
+#include "vtkProteinRibbonFilter.h"
+#include "vtkPDBReader.h"
+#include "vtkInteractorStyleSwitch.h"
 
-int TestProteinRibbon(int argc, char* argv[])
+int TestProteinRibbon(int argc, char *argv[])
 {
-  char* fileName = vtkTestUtilities::ExpandDataFileName(argc, argv, "Data/3GQP.pdb");
+  char* fileName =
+    vtkTestUtilities::ExpandDataFileName(argc, argv, "Data/3GQP.pdb");
 
   // read protein from pdb
   vtkNew<vtkPDBReader> reader;
   reader->SetFileName(fileName);
 
-  delete[] fileName;
+  delete [] fileName;
 
   // setup ribbon filter
   vtkNew<vtkProteinRibbonFilter> ribbonFilter;
@@ -49,21 +50,21 @@ int TestProteinRibbon(int argc, char* argv[])
 
   // setup actor
   vtkNew<vtkActor> actor;
-  actor->SetMapper(polyDataMapper);
+  actor->SetMapper(polyDataMapper.GetPointer());
 
   // setup render window
   vtkNew<vtkRenderer> ren;
   vtkNew<vtkRenderWindow> win;
-  win->AddRenderer(ren);
+  win->AddRenderer(ren.GetPointer());
   vtkNew<vtkRenderWindowInteractor> iren;
-  iren->SetRenderWindow(win);
+  iren->SetRenderWindow(win.GetPointer());
   vtkInteractorStyleSwitch* is = vtkInteractorStyleSwitch::SafeDownCast(iren->GetInteractorStyle());
   if (is)
   {
     is->SetCurrentStyleToTrackballCamera();
   }
-  ren->AddActor(actor);
-  ren->SetBackground(0, 0, 0);
+  ren->AddActor(actor.GetPointer());
+  ren->SetBackground(0,0,0);
   win->SetSize(450, 450);
   ren->ResetCamera();
   ren->GetActiveCamera()->Zoom(1.5);

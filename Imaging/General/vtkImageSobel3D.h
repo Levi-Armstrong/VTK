@@ -20,34 +20,38 @@
  * Sobel functions.  The number of vector components is 3 because
  * the input is a volume.  Output is always doubles.  A little creative
  * liberty was used to extend the 2D sobel kernels into 3D.
- */
+*/
 
 #ifndef vtkImageSobel3D_h
 #define vtkImageSobel3D_h
 
-#include "vtkImageSpatialAlgorithm.h"
+
 #include "vtkImagingGeneralModule.h" // For export macro
+#include "vtkImageSpatialAlgorithm.h"
 
 class VTKIMAGINGGENERAL_EXPORT vtkImageSobel3D : public vtkImageSpatialAlgorithm
 {
 public:
-  static vtkImageSobel3D* New();
-  vtkTypeMacro(vtkImageSobel3D, vtkImageSpatialAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkImageSobel3D *New();
+  vtkTypeMacro(vtkImageSobel3D,vtkImageSpatialAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
 protected:
   vtkImageSobel3D();
-  ~vtkImageSobel3D() override {}
+  ~vtkImageSobel3D() {}
 
-  void ThreadedRequestData(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector, vtkImageData*** inData, vtkImageData** outData,
-    int outExt[6], int id) override;
-  int RequestInformation(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  void ThreadedRequestData(vtkInformation *request,
+                           vtkInformationVector **inputVector,
+                           vtkInformationVector *outputVector,
+                           vtkImageData ***inData, vtkImageData **outData,
+                           int outExt[6], int id);
+  virtual int RequestInformation (vtkInformation *request,
+                                  vtkInformationVector **inputVector,
+                                  vtkInformationVector *outputVector);
 
 private:
-  vtkImageSobel3D(const vtkImageSobel3D&) = delete;
-  void operator=(const vtkImageSobel3D&) = delete;
+  vtkImageSobel3D(const vtkImageSobel3D&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkImageSobel3D&) VTK_DELETE_FUNCTION;
 };
 
 #endif

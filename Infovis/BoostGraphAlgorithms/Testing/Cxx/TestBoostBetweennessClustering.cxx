@@ -26,17 +26,20 @@
 
 #include <map>
 
-int TestBoostBetweennessClustering(int vtkNotUsed(argc), char* vtkNotUsed(argv)[])
+int TestBoostBetweennessClustering(int vtkNotUsed(argc),
+                                   char* vtkNotUsed(argv)[])
 {
   // Create the test graph
-  vtkSmartPointer<vtkMutableUndirectedGraph> g(vtkSmartPointer<vtkMutableUndirectedGraph>::New());
+  vtkSmartPointer<vtkMutableUndirectedGraph> g
+    (vtkSmartPointer<vtkMutableUndirectedGraph>::New());
 
-  vtkSmartPointer<vtkIntArray> weights(vtkSmartPointer<vtkIntArray>::New());
+  vtkSmartPointer<vtkIntArray> weights (
+    vtkSmartPointer<vtkIntArray>::New());
   weights->SetName("weights");
 
   g->GetEdgeData()->AddArray(weights);
 
-  vtkSmartPointer<vtkPoints> pts(vtkSmartPointer<vtkPoints>::New());
+  vtkSmartPointer<vtkPoints> pts (vtkSmartPointer<vtkPoints>::New());
   g->AddVertex();
   pts->InsertNextPoint(1, 1, 0);
 
@@ -94,7 +97,7 @@ int TestBoostBetweennessClustering(int vtkNotUsed(argc), char* vtkNotUsed(argv)[
   weights->InsertTuple1(e.Id, 10);
 
   // Test centrality
-  vtkSmartPointer<vtkBoostBetweennessClustering> bbc(
+  vtkSmartPointer<vtkBoostBetweennessClustering> bbc (
     vtkSmartPointer<vtkBoostBetweennessClustering>::New());
   bbc->SetInputData(g);
   bbc->SetThreshold(4);
@@ -105,14 +108,14 @@ int TestBoostBetweennessClustering(int vtkNotUsed(argc), char* vtkNotUsed(argv)[
 
   vtkGraph* og = bbc->GetOutput();
 
-  if (!og)
+  if(!og)
   {
     return 1;
   }
 
-  vtkIntArray* compArray =
-    vtkArrayDownCast<vtkIntArray>(og->GetVertexData()->GetArray("component"));
-  if (!compArray)
+  vtkIntArray* compArray = vtkArrayDownCast<vtkIntArray>(og->GetVertexData()->
+                                                     GetArray("component"));
+  if(!compArray)
   {
     return 1;
   }
@@ -130,18 +133,19 @@ int TestBoostBetweennessClustering(int vtkNotUsed(argc), char* vtkNotUsed(argv)[
   expResults[7] = 1;
   expResults[8] = 2;
 
-  vtkSmartPointer<vtkVertexListIterator> vlItr(vtkSmartPointer<vtkVertexListIterator>::New());
+  vtkSmartPointer<vtkVertexListIterator> vlItr (
+    vtkSmartPointer<vtkVertexListIterator>::New());
   vlItr->SetGraph(og);
 
-  while (vlItr->HasNext())
+  while(vlItr->HasNext())
   {
     vtkIdType id = vlItr->Next();
 
-    if (expResults[id] != compArray->GetVariantValue(id).ToInt())
+    if(expResults[id] != compArray->GetVariantValue(id).ToInt())
     {
       return 1;
     }
   }
 
-  return 0;
+    return 0;
 }

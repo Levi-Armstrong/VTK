@@ -14,27 +14,30 @@
 =========================================================================*/
 #include "vtkExtractSelectedBlock.h"
 
-#include "vtkArrayDispatch.h"
-#include "vtkDataArrayRange.h"
-#include "vtkDataObjectTreeIterator.h"
+#include "vtkCompositeDataIterator.h"
+#include "vtkUnsignedIntArray.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
 #include "vtkMultiBlockDataSet.h"
 #include "vtkObjectFactory.h"
 #include "vtkSelection.h"
 #include "vtkSelectionNode.h"
-#include "vtkUnsignedIntArray.h"
 
-#include <unordered_set>
+#include <set>
 vtkStandardNewMacro(vtkExtractSelectedBlock);
 //----------------------------------------------------------------------------
-vtkExtractSelectedBlock::vtkExtractSelectedBlock() = default;
+vtkExtractSelectedBlock::vtkExtractSelectedBlock()
+{
+}
 
 //----------------------------------------------------------------------------
-vtkExtractSelectedBlock::~vtkExtractSelectedBlock() = default;
+vtkExtractSelectedBlock::~vtkExtractSelectedBlock()
+{
+}
 
 //----------------------------------------------------------------------------
-int vtkExtractSelectedBlock::FillInputPortInformation(int port, vtkInformation* info)
+int vtkExtractSelectedBlock::FillInputPortInformation(
+  int port, vtkInformation* info)
 {
   this->Superclass::FillInputPortInformation(port, info);
 
@@ -48,12 +51,15 @@ int vtkExtractSelectedBlock::FillInputPortInformation(int port, vtkInformation* 
   return 1;
 }
 
+
 //----------------------------------------------------------------------------
 // Needed because parent class sets output type to input type
 // and we sometimes want to change it to make an UnstructuredGrid regardless of
 // input type
 int vtkExtractSelectedBlock::RequestDataObject(
-  vtkInformation* req, vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+  vtkInformation* req,
+  vtkInformationVector** inputVector ,
+  vtkInformationVector* outputVector)
 {
   vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
   if (!inInfo)
@@ -61,7 +67,7 @@ int vtkExtractSelectedBlock::RequestDataObject(
     return 0;
   }
 
-  vtkCompositeDataSet* input = vtkCompositeDataSet::GetData(inInfo);
+  vtkCompositeDataSet *input = vtkCompositeDataSet::GetData(inInfo);
   vtkInformation* outInfo = outputVector->GetInformationObject(0);
 
   if (input)
@@ -79,69 +85,17 @@ int vtkExtractSelectedBlock::RequestDataObject(
   return this->Superclass::RequestDataObject(req, inputVector, outputVector);
 }
 
-namespace
-{
-/**
- * Copies subtree and removes ids for subtree from `ids`.
- */
-void vtkCopySubTree(std::unordered_set<unsigned int>& ids, vtkCompositeDataIterator* loc,
-  vtkCompositeDataSet* output, vtkCompositeDataSet* input)
-{
-  vtkDataObject* inputNode = input->GetDataSet(loc);
-  if (vtkCompositeDataSet* cinput = vtkCompositeDataSet::SafeDownCast(inputNode))
-  {
-    vtkCompositeDataSet* coutput = vtkCompositeDataSet::SafeDownCast(output->GetDataSet(loc));
-    assert(coutput != nullptr);
-
-    // shallow copy..this pass the non-leaf nodes over.
-    coutput->ShallowCopy(cinput);
-
-    // now, we need to remove all composite ids for the subtree from the set to
-    // extract to avoid attempting to copy them multiple times (although it
-    // should not be harmful at all).
-
-    vtkCompositeDataIterator* iter = cinput->NewIterator();
-    if (vtkDataObjectTreeIterator* treeIter = vtkDataObjectTreeIterator::SafeDownCast(iter))
-    {
-      treeIter->VisitOnlyLeavesOff();
-    }
-    for (iter->InitTraversal(); !iter->IsDoneWithTraversal(); iter->GoToNextItem())
-    {
-      ids.erase(loc->GetCurrentFlatIndex() + iter->GetCurrentFlatIndex());
-    }
-    iter->Delete();
-  }
-  else
-  {
-    output->SetDataSet(loc, inputNode);
-  }
-  ids.erase(loc->GetCurrentFlatIndex());
-}
-}
-
-namespace
-{
-struct SelectionToIds
-{
-  template <typename ArrayT>
-  void operator()(ArrayT* array, std::unordered_set<unsigned int>& blocks) const
-  {
-    for (auto value : vtk::DataArrayValueRange(array))
-    {
-      blocks.insert(static_cast<unsigned int>(value));
-    }
-  }
-};
-} // namespace
 
 //----------------------------------------------------------------------------
-int vtkExtractSelectedBlock::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+int vtkExtractSelectedBlock::RequestData(
+  vtkInformation *vtkNotUsed(request),
+  vtkInformationVector **inputVector,
+  vtkInformationVector *outputVector)
 {
   // get the info objects
-  vtkInformation* selInfo = inputVector[1]->GetInformationObject(0);
-  vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
-  vtkInformation* outInfo = outputVector->GetInformationObject(0);
+  vtkInformation *selInfo = inputVector[1]->GetInformationObject(0);
+  vtkInformation *inInfo = inputVector[0]->GetInformationObject(0);
+  vtkInformation *outInfo = outputVector->GetInformationObject(0);
 
   vtkCompositeDataSet* cd = vtkCompositeDataSet::GetData(inInfo);
   if (!cd)
@@ -153,7 +107,7 @@ int vtkExtractSelectedBlock::RequestData(vtkInformation* vtkNotUsed(request),
 
   if (!selInfo)
   {
-    // When not given a selection, quietly select nothing.
+    //When not given a selection, quietly select nothing.
     return 1;
   }
 
@@ -164,55 +118,39 @@ int vtkExtractSelectedBlock::RequestData(vtkInformation* vtkNotUsed(request),
     vtkErrorMacro("This filter expects a single-node selection of type BLOCKS.");
     return 0;
   }
+  vtkMultiBlockDataSet* output = vtkMultiBlockDataSet::GetData(outInfo);
 
   bool inverse = (node->GetProperties()->Has(vtkSelectionNode::INVERSE()) &&
     node->GetProperties()->Get(vtkSelectionNode::INVERSE()) == 1);
 
-  vtkDataArray* selectionList = vtkArrayDownCast<vtkDataArray>(node->GetSelectionList());
-  std::unordered_set<unsigned int> blocks;
+  output->CopyStructure(cd);
+  vtkDataArray* selectionList = vtkArrayDownCast<vtkDataArray>(
+    node->GetSelectionList());
+  std::set<unsigned int> blocks;
   if (selectionList)
   {
-    using Dispatcher = vtkArrayDispatch::DispatchByValueType<vtkArrayDispatch::Integrals>;
-    if (!Dispatcher::Execute(selectionList, SelectionToIds{}, blocks))
-    { // fallback for unsupported array types
-      // and non-integral value types:
-      SelectionToIds{}(selectionList, blocks);
+    vtkIdType numValues = selectionList->GetNumberOfTuples();
+    void * dataPtr = selectionList->GetVoidPointer(0);
+    switch (selectionList->GetDataType())
+    {
+      vtkTemplateMacro(
+        for (vtkIdType cc=0; cc < numValues; cc++)
+        {
+          blocks.insert(
+            static_cast<unsigned int>(static_cast<VTK_TT*>(dataPtr)[cc]));
+        });
     }
   }
 
-  vtkMultiBlockDataSet* output = vtkMultiBlockDataSet::GetData(outInfo);
-
-  // short-circuit if root index is present.
-  const bool has_root = (blocks.find(0) != blocks.end());
-  if (has_root && !inverse)
-  {
-    // pass everything.
-    output->ShallowCopy(cd);
-    return 1;
-  }
-
-  if (has_root && inverse)
-  {
-    // pass nothing.
-    output->CopyStructure(cd);
-    return 1;
-  }
-
-  // pass selected ids (or invert)
-  output->CopyStructure(cd);
-
   vtkCompositeDataIterator* citer = cd->NewIterator();
-  if (vtkDataObjectTreeIterator* diter = vtkDataObjectTreeIterator::SafeDownCast(citer))
+  for (citer->InitTraversal(); !citer->IsDoneWithTraversal();
+    citer->GoToNextItem())
   {
-    diter->VisitOnlyLeavesOff();
-  }
-
-  for (citer->InitTraversal(); !citer->IsDoneWithTraversal(); citer->GoToNextItem())
-  {
-    auto fiter = blocks.find(citer->GetCurrentFlatIndex());
+    std::set<unsigned int>::iterator fiter =
+      blocks.find(citer->GetCurrentFlatIndex());
     if ((inverse && fiter == blocks.end()) || (!inverse && fiter != blocks.end()))
     {
-      vtkCopySubTree(blocks, citer, output, cd);
+      output->SetDataSet(citer, citer->GetCurrentDataObject());
     }
   }
   citer->Delete();
@@ -224,3 +162,4 @@ void vtkExtractSelectedBlock::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 }
+

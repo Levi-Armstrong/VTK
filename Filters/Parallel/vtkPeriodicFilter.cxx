@@ -17,8 +17,8 @@
 
 #include "vtkDataObjectTreeIterator.h"
 #include "vtkDataSet.h"
-#include "vtkInformation.h"
 #include "vtkInformationVector.h"
+#include "vtkInformation.h"
 #include "vtkMultiBlockDataSet.h"
 #include "vtkMultiProcessController.h"
 
@@ -31,7 +31,9 @@ vtkPeriodicFilter::vtkPeriodicFilter()
 }
 
 //----------------------------------------------------------------------------
-vtkPeriodicFilter::~vtkPeriodicFilter() = default;
+vtkPeriodicFilter::~vtkPeriodicFilter()
+{
+}
 
 //----------------------------------------------------------------------------
 void vtkPeriodicFilter::PrintSelf(ostream& os, vtkIndent indent)
@@ -70,7 +72,8 @@ void vtkPeriodicFilter::RemoveAllIndices()
 }
 
 //----------------------------------------------------------------------------
-int vtkPeriodicFilter::FillInputPortInformation(int vtkNotUsed(port), vtkInformation* info)
+int vtkPeriodicFilter::FillInputPortInformation(
+  int vtkNotUsed(port), vtkInformation* info)
 {
   // now add our info
   info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkDataObject");
@@ -78,16 +81,17 @@ int vtkPeriodicFilter::FillInputPortInformation(int vtkNotUsed(port), vtkInforma
 }
 
 //----------------------------------------------------------------------------
-int vtkPeriodicFilter::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+int vtkPeriodicFilter::RequestData(vtkInformation *vtkNotUsed(request),
+                                   vtkInformationVector **inputVector,
+                                   vtkInformationVector *outputVector)
 {
   // Recover casted dataset
   vtkDataObject* inputObject = vtkDataObject::GetData(inputVector[0], 0);
-  vtkDataObjectTree* input = vtkDataObjectTree::SafeDownCast(inputObject);
+  vtkDataObjectTree *input = vtkDataObjectTree::SafeDownCast(inputObject);
   vtkDataSet* dsInput = vtkDataSet::SafeDownCast(inputObject);
-  vtkMultiBlockDataSet* mb = nullptr;
+  vtkMultiBlockDataSet* mb = NULL;
 
-  vtkMultiBlockDataSet* output = vtkMultiBlockDataSet::GetData(outputVector, 0);
+  vtkMultiBlockDataSet *output = vtkMultiBlockDataSet::GetData(outputVector, 0);
 
   if (dsInput)
   {
@@ -115,7 +119,7 @@ int vtkPeriodicFilter::RequestData(vtkInformation* vtkNotUsed(request),
   iter->VisitOnlyLeavesOn();
   iter->SkipEmptyNodesOff();
   iter->InitTraversal();
-  while (!iter->IsDoneWithTraversal() && !this->Indices.empty())
+  while (!iter->IsDoneWithTraversal() && this->Indices.size() > 0)
   {
     const unsigned int index = iter->GetCurrentFlatIndex();
     if (this->Indices.find(index) != this->Indices.end())
@@ -136,18 +140,18 @@ int vtkPeriodicFilter::RequestData(vtkInformation* vtkNotUsed(request),
     iter->GoToNextItem();
   }
 
-  // Reduce period number in case of parallelism, and update empty multipieces
+  // Reduce period number in case of parrallelism, and update empty multipieces
   if (this->ReducePeriodNumbers)
   {
     int* reducedPeriodNumbers = new int[this->PeriodNumbers.size()];
-    vtkMultiProcessController* controller = vtkMultiProcessController::GetGlobalController();
+    vtkMultiProcessController *controller = vtkMultiProcessController::GetGlobalController();
     if (controller)
     {
       controller->AllReduce(&this->PeriodNumbers.front(), reducedPeriodNumbers,
-        static_cast<vtkIdType>(this->PeriodNumbers.size()), vtkCommunicator::MAX_OP);
+        this->PeriodNumbers.size(), vtkCommunicator::MAX_OP);
       int i = 0;
       iter->InitTraversal();
-      while (!iter->IsDoneWithTraversal() && !this->Indices.empty())
+      while (!iter->IsDoneWithTraversal() && this->Indices.size() > 0)
       {
         if (reducedPeriodNumbers[i] > this->PeriodNumbers[i])
         {
@@ -161,11 +165,11 @@ int vtkPeriodicFilter::RequestData(vtkInformation* vtkNotUsed(request),
         i++;
       }
     }
-    delete[] reducedPeriodNumbers;
+    delete [] reducedPeriodNumbers;
   }
   iter->Delete();
 
-  if (mb != nullptr)
+  if (mb != NULL)
   {
     mb->Delete();
   }

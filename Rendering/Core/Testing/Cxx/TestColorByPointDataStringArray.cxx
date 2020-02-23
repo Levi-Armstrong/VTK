@@ -13,8 +13,8 @@
 
 =========================================================================*/
 
-#include "vtkRegressionTestImage.h"
 #include "vtkTestUtilities.h"
+#include "vtkRegressionTestImage.h"
 
 #include <vtkActor.h>
 #include <vtkDiscretizableColorTransferFunction.h>
@@ -22,12 +22,13 @@
 #include <vtkPointData.h>
 #include <vtkPolyData.h>
 #include <vtkPolyDataMapper.h>
+#include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
-#include <vtkRenderer.h>
 #include <vtkSphereSource.h>
 #include <vtkStdString.h>
 #include <vtkStringArray.h>
+
 
 int TestColorByPointDataStringArray(int argc, char* argv[])
 {
@@ -57,7 +58,7 @@ int TestColorByPointDataStringArray(int argc, char* argv[])
   }
 
   vtkPointData* cd = polydata->GetPointData();
-  cd->AddArray(sArray);
+  cd->AddArray(sArray.Get());
 
   // Set up transfer function
   vtkNew<vtkDiscretizableColorTransferFunction> tfer;
@@ -81,27 +82,27 @@ int TestColorByPointDataStringArray(int argc, char* argv[])
   tfer->SetAnnotation(cyan, cyan);
 
   vtkNew<vtkPolyDataMapper> mapper;
-  mapper->SetInputDataObject(polydata);
-  mapper->SetLookupTable(tfer);
+  mapper->SetInputDataObject(polydata.Get());
+  mapper->SetLookupTable(tfer.Get());
   mapper->ScalarVisibilityOn();
   mapper->SetScalarModeToUsePointFieldData();
   mapper->SelectColorArray("color");
 
   vtkNew<vtkActor> actor;
-  actor->SetMapper(mapper);
+  actor->SetMapper(mapper.Get());
 
   vtkNew<vtkRenderer> renderer;
-  renderer->AddActor(actor);
+  renderer->AddActor(actor.Get());
 
   vtkNew<vtkRenderWindow> renderWindow;
-  renderWindow->AddRenderer(renderer);
+  renderWindow->AddRenderer(renderer.Get());
 
   vtkNew<vtkRenderWindowInteractor> iren;
-  iren->SetRenderWindow(renderWindow);
+  iren->SetRenderWindow(renderWindow.Get());
 
   renderWindow->Render();
 
-  int retVal = vtkRegressionTestImage(renderWindow);
+  int retVal = vtkRegressionTestImage(renderWindow.Get());
   if (retVal == vtkRegressionTester::DO_INTERACTOR)
   {
     iren->Start();

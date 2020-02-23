@@ -14,14 +14,21 @@
 =========================================================================*/
 #include "vtkGenericPointIterator.h"
 
-//----------------------------------------------------------------------------
-vtkGenericPointIterator::vtkGenericPointIterator() = default;
 
 //----------------------------------------------------------------------------
-vtkGenericPointIterator::~vtkGenericPointIterator() = default;
+vtkGenericPointIterator::vtkGenericPointIterator()
+{
+}
+
+//----------------------------------------------------------------------------
+vtkGenericPointIterator::~vtkGenericPointIterator()
+{
+}
 
 //----------------------------------------------------------------------------
 void vtkGenericPointIterator::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
+
 }
+

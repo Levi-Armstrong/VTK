@@ -24,7 +24,7 @@
  *
  * @todo
  * Generalize to extrusions along arbitrary directions.
- */
+*/
 
 #ifndef vtkPolyPlane_h
 #define vtkPolyPlane_h
@@ -41,53 +41,54 @@ public:
   /**
    * Construct plane passing through origin and normal to z-axis.
    */
-  static vtkPolyPlane* New();
+  static vtkPolyPlane *New();
 
-  vtkTypeMacro(vtkPolyPlane, vtkImplicitFunction);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkPolyPlane,vtkImplicitFunction);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   //@{
   /**
    * Evaluate plane equation for point x[3].
    */
-  using vtkImplicitFunction::EvaluateFunction;
-  double EvaluateFunction(double x[3]) override;
+  double EvaluateFunction(double x[3]) VTK_OVERRIDE;
+  double EvaluateFunction(double x, double y, double z)
+    {return this->vtkImplicitFunction::EvaluateFunction(x, y, z); } ;
   //@}
 
   /**
    * Evaluate function gradient at point x[3].
    */
-  void EvaluateGradient(double x[3], double g[3]) override;
+  void EvaluateGradient(double x[3], double g[3]) VTK_OVERRIDE;
 
   //@{
   /**
    * Set/get point through which plane passes. Plane is defined by point
    * and normal.
    */
-  virtual void SetPolyLine(vtkPolyLine*);
-  vtkGetObjectMacro(PolyLine, vtkPolyLine);
+  virtual void SetPolyLine( vtkPolyLine * );
+  vtkGetObjectMacro( PolyLine, vtkPolyLine );
   //@}
 
   /**
    * Override GetMTime to include the polyline
    */
-  vtkMTimeType GetMTime() override;
+  vtkMTimeType GetMTime() VTK_OVERRIDE;
 
 protected:
   vtkPolyPlane();
-  ~vtkPolyPlane() override;
+  ~vtkPolyPlane() VTK_OVERRIDE;
 
   void ComputeNormals();
 
-  double ExtrusionDirection[3];
-  vtkPolyLine* PolyLine;
-  vtkTimeStamp NormalComputeTime;
-  vtkDoubleArray* Normals;
-  vtkIdType ClosestPlaneIdx;
+  double           ExtrusionDirection[3];
+  vtkPolyLine    * PolyLine;
+  vtkTimeStamp     NormalComputeTime;
+  vtkDoubleArray * Normals;
+  vtkIdType        ClosestPlaneIdx;
 
 private:
-  vtkPolyPlane(const vtkPolyPlane&) = delete;
-  void operator=(const vtkPolyPlane&) = delete;
+  vtkPolyPlane(const vtkPolyPlane&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPolyPlane&) VTK_DELETE_FUNCTION;
 };
 
 #endif

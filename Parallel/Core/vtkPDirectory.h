@@ -20,23 +20,23 @@
  * broadcasts it to other processes. It tries to replicate the API for both
  * Directory and vtkDirectory though there are slight mismatches between the
  * two. This is a blocking collective operation.
- */
+*/
 
 #ifndef vtkPDirectory_h
 #define vtkPDirectory_h
 
-#include "vtkObject.h"
 #include "vtkParallelCoreModule.h" // For export macro
-#include <string>                  // for string functions in Directory
+#include "vtkObject.h"
+#include <string> // for string functions in Directory
 
 class vtkStringArray;
 
 class VTKPARALLELCORE_EXPORT vtkPDirectory : public vtkObject
 {
-public:
-  static vtkPDirectory* New();
-  vtkTypeMacro(vtkPDirectory, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+ public:
+  static vtkPDirectory *New();
+  vtkTypeMacro(vtkPDirectory,vtkObject);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -66,7 +66,7 @@ public:
    * directory. If no directory has been opened, it is assumed to
    * be relative to the current working directory.
    */
-  int FileIsDirectory(const char* name);
+  int FileIsDirectory(const char *name);
 
   //@{
   /**
@@ -86,19 +86,19 @@ public:
    */
   void Clear();
 
-protected:
+ protected:
   vtkPDirectory();
-  ~vtkPDirectory() override;
+  ~vtkPDirectory();
 
-private:
+ private:
   // Array of Files
-  vtkStringArray* Files; // VTK array of files
+  vtkStringArray *Files;    // VTK array of files
 
   // Path to Open'ed directory
   std::string Path;
 
-  vtkPDirectory(const vtkPDirectory&) = delete;
-  void operator=(const vtkPDirectory&) = delete;
+  vtkPDirectory(const vtkPDirectory&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPDirectory&) VTK_DELETE_FUNCTION;
 }; // End Class: vtkPDirectory
 
 #endif

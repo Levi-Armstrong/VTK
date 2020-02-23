@@ -23,65 +23,43 @@
  *
  * @sa
  * vtkOpenGLGlyph3D
- */
+*/
 
 #ifndef vtkOpenGLGlyph3DMapper_h
 #define vtkOpenGLGlyph3DMapper_h
 
-#include "vtkGlyph3DMapper.h"
-#include "vtkNew.h"                    // For vtkNew
 #include "vtkRenderingOpenGL2Module.h" // For export macro
+#include "vtkGlyph3DMapper.h"
+#include "vtkNew.h" // For vtkNew
 
 class vtkOpenGLGlyph3DHelper;
 class vtkBitArray;
 
-class VTKRENDERINGOPENGL2_EXPORT vtkOpenGLGlyph3DMapper : public vtkGlyph3DMapper
+class VTKRENDERINGOPENGL2_EXPORT vtkOpenGLGlyph3DMapper
+    : public vtkGlyph3DMapper
 {
 public:
   static vtkOpenGLGlyph3DMapper* New();
   vtkTypeMacro(vtkOpenGLGlyph3DMapper, vtkGlyph3DMapper);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Method initiates the mapping process. Generally sent by the actor
    * as each frame is rendered.
+   * Its behavior depends on the value of SelectMode.
    */
-  void Render(vtkRenderer* ren, vtkActor* a) override;
+  virtual void Render(vtkRenderer *ren, vtkActor *a);
 
   /**
    * Release any graphics resources that are being consumed by this mapper.
    * The parameter window could be used to determine which graphic
    * resources to release.
    */
-  void ReleaseGraphicsResources(vtkWindow* window) override;
-
-  //@{
-  /**
-   * Get the maximum number of LOD. OpenGL context must be bound.
-   * The maximum number of LOD depends on GPU capabilities.
-   */
-  virtual vtkIdType GetMaxNumberOfLOD() override;
-
-  /**
-   * Set the number of LOD.
-   */
-  virtual void SetNumberOfLOD(vtkIdType nb) override;
-
-  /**
-   * Configure LODs. Culling must be enabled.
-   * distance have to be a positive value, it is the distance to the camera scaled by
-   * the instanced geometry bounding box.
-   * targetReduction have to be between 0 and 1, 0 disable decimation, 1 draw a point.
-   *
-   * @sa vtkDecimatePro::SetTargetReduction
-   */
-  virtual void SetLODDistanceAndTargetReduction(
-    vtkIdType index, float distance, float targetReduction) override;
-  //@}
+  virtual void ReleaseGraphicsResources(vtkWindow *window);
 
 protected:
   vtkOpenGLGlyph3DMapper();
-  ~vtkOpenGLGlyph3DMapper() override;
+  ~vtkOpenGLGlyph3DMapper();
 
   /**
    * Render setup
@@ -96,24 +74,25 @@ protected:
 
   void SetupColorMapper();
 
-  vtkMapper* ColorMapper;
+  vtkMapper *ColorMapper;
 
   class vtkOpenGLGlyph3DMapperEntry;
   class vtkOpenGLGlyph3DMapperSubArray;
   class vtkOpenGLGlyph3DMapperArray;
-  vtkOpenGLGlyph3DMapperArray* GlyphValues; // array of value for datasets
+  vtkOpenGLGlyph3DMapperArray *GlyphValues; // array of value for datasets
 
   /**
    * Build data structures associated with
    */
-  virtual void RebuildStructures(vtkOpenGLGlyph3DMapperSubArray* entry, vtkIdType numPts,
-    vtkActor* actor, vtkDataSet* dataset, vtkBitArray* maskArray);
+  virtual void RebuildStructures(vtkOpenGLGlyph3DMapperSubArray *entry,
+    vtkIdType numPts, vtkActor* actor, vtkDataSet* dataset,
+    vtkBitArray *maskArray, bool selecting_points);
 
-  vtkMTimeType BlockMTime; // Last time BlockAttributes was modified.
+  vtkWeakPointer<vtkWindow> LastWindow; // Window used for previous render.
 
 private:
-  vtkOpenGLGlyph3DMapper(const vtkOpenGLGlyph3DMapper&) = delete;
-  void operator=(const vtkOpenGLGlyph3DMapper&) = delete;
+  vtkOpenGLGlyph3DMapper(const vtkOpenGLGlyph3DMapper&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkOpenGLGlyph3DMapper&) VTK_DELETE_FUNCTION;
 };
 
 #endif

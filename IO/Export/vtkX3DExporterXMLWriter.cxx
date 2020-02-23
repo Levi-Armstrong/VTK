@@ -14,41 +14,35 @@
 =========================================================================*/
 #include "vtkX3DExporterXMLWriter.h"
 
-#include "vtkCellArray.h"
-#include "vtkDataArray.h"
-#include "vtkMath.h"
-#include "vtkObjectFactory.h"
-#include "vtkPoints.h"
-#include "vtkUnsignedCharArray.h"
 #include "vtkX3D.h"
-#include <vtksys/FStream.hxx>
+#include "vtkObjectFactory.h"
+#include "vtkDataArray.h"
+#include "vtkUnsignedCharArray.h"
+#include "vtkPoints.h"
+#include "vtkCellArray.h"
+#include "vtkMath.h"
 
-#include <cassert>
-#include <fstream>
-#include <iomanip>
-#include <ios>
-#include <limits>
 #include <sstream>
+#include <fstream>
 #include <string>
+#include <cassert>
 
 using namespace vtkX3D;
 
-struct XMLInfo
-{
+struct XMLInfo {
 
-  XMLInfo(int _elementId)
-  {
-    this->elementId = _elementId;
-    this->endTagWritten = false;
-  }
+XMLInfo(int _elementId)
+{
+  this->elementId = _elementId;
+  this->endTagWritten = false;
+}
   int elementId;
   bool endTagWritten;
 };
 
 typedef std::vector<XMLInfo> vtkX3DExporterXMLNodeInfoStackBase;
-class vtkX3DExporterXMLNodeInfoStack : public vtkX3DExporterXMLNodeInfoStackBase
-{
-};
+class vtkX3DExporterXMLNodeInfoStack: public vtkX3DExporterXMLNodeInfoStackBase
+{};
 
 //-----------------------------------------------------------------------------
 vtkStandardNewMacro(vtkX3DExporterXMLWriter);
@@ -57,13 +51,13 @@ vtkX3DExporterXMLWriter::~vtkX3DExporterXMLWriter()
 {
   delete this->InfoStack;
   delete this->OutputStream;
-  this->OutputStream = nullptr;
+  this->OutputStream = NULL;
 }
 
 //-----------------------------------------------------------------------------
 vtkX3DExporterXMLWriter::vtkX3DExporterXMLWriter()
 {
-  this->OutputStream = nullptr;
+  this->OutputStream = NULL;
   this->InfoStack = new vtkX3DExporterXMLNodeInfoStack();
   this->Depth = 0;
   this->ActTab = "";
@@ -80,9 +74,9 @@ int vtkX3DExporterXMLWriter::OpenFile(const char* file)
 {
   this->CloseFile();
   this->WriteToOutputString = 0;
-  vtksys::ofstream* fileStream = new vtksys::ofstream();
-  fileStream->open(file, ios::out);
-  if (fileStream->fail())
+  std::fstream* fileStream = new std::fstream();
+  fileStream->open (file, ios::out);
+  if(fileStream->fail())
   {
     delete fileStream;
     return 0;
@@ -90,8 +84,6 @@ int vtkX3DExporterXMLWriter::OpenFile(const char* file)
   else
   {
     this->OutputStream = fileStream;
-    *this->OutputStream << std::scientific
-                        << std::setprecision(std::numeric_limits<double>::max_digits10);
     return 1;
   }
 }
@@ -109,20 +101,22 @@ int vtkX3DExporterXMLWriter::OpenStream()
 //----------------------------------------------------------------------------
 void vtkX3DExporterXMLWriter::CloseFile()
 {
-  if (this->OutputStream != nullptr)
+  if(this->OutputStream != NULL)
   {
-    if (this->WriteToOutputString)
+    if(this->WriteToOutputString)
     {
-      std::ostringstream* ostr = static_cast<std::ostringstream*>(this->OutputStream);
+      std::ostringstream *ostr =
+        static_cast<std::ostringstream*>(this->OutputStream);
 
-      delete[] this->OutputString;
-      this->OutputStringLength = static_cast<vtkIdType>(ostr->str().size());
+      delete [] this->OutputString;
+      this->OutputStringLength = static_cast<int>(ostr->str().size());
       this->OutputString = new char[ostr->str().size()];
-      memcpy(this->OutputString, ostr->str().c_str(), this->OutputStringLength);
+      memcpy(this->OutputString, ostr->str().c_str(),
+             this->OutputStringLength);
     }
 
     delete this->OutputStream;
-    this->OutputStream = nullptr;
+    this->OutputStream = NULL;
   }
 }
 
@@ -130,7 +124,8 @@ void vtkX3DExporterXMLWriter::CloseFile()
 void vtkX3DExporterXMLWriter::StartDocument()
 {
   this->Depth = 0;
-  *this->OutputStream << "<?xml version=\"1.0\" encoding =\"UTF-8\"?>" << endl << endl;
+  *this->OutputStream << "<?xml version=\"1.0\" encoding =\"UTF-8\"?>"
+    << endl << endl;
 }
 
 //-----------------------------------------------------------------------------
@@ -171,8 +166,8 @@ void vtkX3DExporterXMLWriter::EndNode()
   }
   else
   {
-    *this->OutputStream << this->ActTab << "</" << x3dElementString[elementID] << ">"
-                        << this->GetNewline();
+    *this->OutputStream << this->ActTab << "</" << x3dElementString[elementID]
+      << ">" << this->GetNewline();
   }
 
   this->InfoStack->pop_back();
@@ -184,13 +179,22 @@ void vtkX3DExporterXMLWriter::SetField(int attributeID, int type, const double* 
   *this->OutputStream << " " << x3dAttributeString[attributeID] << "=\"";
   switch (type)
   {
-    case (SFVEC3F):
-    case (SFCOLOR):
-      *this->OutputStream << d[0] << " " << d[1] << " " << d[2];
+    case(SFVEC3F):
+    case(SFCOLOR):
+      *this->OutputStream << d[0]
+                         << " "
+                         << d[1]
+                         << " "
+                         << d[2];
       break;
-    case (SFROTATION):
-      *this->OutputStream << d[1] << " " << d[2] << " " << d[3] << " "
-                          << vtkMath::RadiansFromDegrees(-d[0]);
+    case(SFROTATION):
+      *this->OutputStream << d[1]
+                         << " "
+                         << d[2]
+                         << " "
+                         << d[3]
+                         << " "
+                         << vtkMath::RadiansFromDegrees( -d[0] );
       break;
     default:
       *this->OutputStream << "UNKNOWN DATATYPE";
@@ -204,15 +208,14 @@ void vtkX3DExporterXMLWriter::SetField(int attributeID, int type, vtkDataArray* 
   *this->OutputStream << " " << x3dAttributeString[attributeID] << "=\"" << this->GetNewline();
   switch (type)
   {
-    case (MFVEC3F):
+    case(MFVEC3F):
       for (vtkIdType i = 0; i < a->GetNumberOfTuples(); i++)
       {
         double* d = a->GetTuple(i);
-        *this->OutputStream << this->ActTab << d[0] << " " << d[1] << " " << d[2] << ","
-                            << this->GetNewline();
+        *this->OutputStream << this->ActTab << d[0] << " " << d[1] << " " << d[2] << "," << this->GetNewline();
       }
       break;
-    case (MFVEC2F):
+    case(MFVEC2F):
       for (vtkIdType i = 0; i < a->GetNumberOfTuples(); i++)
       {
         double* d = a->GetTuple(i);
@@ -222,20 +225,19 @@ void vtkX3DExporterXMLWriter::SetField(int attributeID, int type, vtkDataArray* 
     default:
       *this->OutputStream << "UNKNOWN DATATYPE";
   }
-  *this->OutputStream << this->ActTab << "\"";
+    *this->OutputStream << this->ActTab << "\"";
 }
 
 //-----------------------------------------------------------------------------
 void vtkX3DExporterXMLWriter::SetField(int attributeID, const double* values, size_t size)
 {
-  *this->OutputStream << " " << x3dAttributeString[attributeID] << "=\"" << this->GetNewline()
-                      << this->ActTab;
+  *this->OutputStream << " " << x3dAttributeString[attributeID] << "=\"" << this->GetNewline() << this->ActTab;
 
   unsigned int i = 0;
   while (i < size)
   {
     *this->OutputStream << values[i];
-    if ((i + 1) % 3)
+    if ((i+1)%3)
     {
       *this->OutputStream << " ";
     }
@@ -245,14 +247,13 @@ void vtkX3DExporterXMLWriter::SetField(int attributeID, const double* values, si
     }
     i++;
   }
-  *this->OutputStream << "\"";
+  *this->OutputStream  << "\"";
 }
 
 //-----------------------------------------------------------------------------
 void vtkX3DExporterXMLWriter::SetField(int attributeID, const int* values, size_t size, bool image)
 {
-  *this->OutputStream << " " << x3dAttributeString[attributeID] << "=\"" << this->GetNewline()
-                      << this->ActTab;
+  *this->OutputStream << " " << x3dAttributeString[attributeID] << "=\"" << this->GetNewline() << this->ActTab;
 
   unsigned int i = 0;
   if (image)
@@ -261,41 +262,39 @@ void vtkX3DExporterXMLWriter::SetField(int attributeID, const int* values, size_
     char buffer[20];
     *this->OutputStream << values[0] << " "; // width
     *this->OutputStream << values[1] << " "; // height
-    int bpp = values[2];
-    *this->OutputStream << bpp << "\n"; // bpp
+    int bpp = values[2]; *this->OutputStream << bpp << "\n"; // bpp
 
     i = 3;
     unsigned int j = 0;
 
     while (i < size)
     {
-      snprintf(buffer, sizeof(buffer), "0x%.8x", values[i]);
+      sprintf(buffer,"0x%.8x",values[i]);
       *this->OutputStream << buffer;
 
-      if (j % (8 * bpp))
+      if (j%(8*bpp))
       {
         *this->OutputStream << " ";
       }
       else
       {
-        *this->OutputStream << this->GetNewline(); // << this->ActTab;
+        *this->OutputStream << this->GetNewline();// << this->ActTab;
       }
-      i++;
-      j += bpp;
+      i++; j+=bpp;
     }
     *this->OutputStream << dec;
   }
   else
     while (i < size)
     {
-      *this->OutputStream << values[i] << " ";
-      if (values[i] == -1)
-      {
-        *this->OutputStream << this->GetNewline() << this->ActTab;
-      }
-      i++;
+    *this->OutputStream << values[i] << " ";
+    if (values[i] == -1)
+    {
+      *this->OutputStream << this->GetNewline() << this->ActTab;
     }
-  *this->OutputStream << "\"";
+    i++;
+    }
+  *this->OutputStream  << "\"";
 }
 
 //-----------------------------------------------------------------------------
@@ -313,17 +312,15 @@ void vtkX3DExporterXMLWriter::SetField(int attributeID, float value)
 //-----------------------------------------------------------------------------
 void vtkX3DExporterXMLWriter::SetField(int attributeID, double vtkNotUsed(value))
 {
-  *this->OutputStream << " " << x3dAttributeString[attributeID] << "=\""
-                      << "WHY DOUBLE?"
-                      << "\"";
+  *this->OutputStream << " " << x3dAttributeString[attributeID] << "=\"" << "WHY DOUBLE?" << "\"";
   assert(false);
 }
 
 //-----------------------------------------------------------------------------
 void vtkX3DExporterXMLWriter::SetField(int attributeID, bool value)
 {
-  *this->OutputStream << " " << x3dAttributeString[attributeID] << "=\""
-                      << (value ? "true" : "false") << "\"";
+  *this->OutputStream << " "
+    << x3dAttributeString[attributeID] << "=\"" << (value  ? "true" : "false" ) << "\"";
 }
 
 //-----------------------------------------------------------------------------
@@ -331,13 +328,16 @@ void vtkX3DExporterXMLWriter::SetField(int attributeID, const char* value, bool 
 {
   if (mfstring)
   {
-    *this->OutputStream << " " << x3dAttributeString[attributeID] << "='" << value << "'";
+    *this->OutputStream << " "
+      << x3dAttributeString[attributeID] << "='" << value << "'";
   }
   else
   {
-    *this->OutputStream << " " << x3dAttributeString[attributeID] << "=\"" << value << "\"";
+    *this->OutputStream
+      << " " << x3dAttributeString[attributeID] << "=\"" << value << "\"";
   }
 }
+
 
 //-----------------------------------------------------------------------------
 void vtkX3DExporterXMLWriter::Flush()
@@ -356,3 +356,4 @@ void vtkX3DExporterXMLWriter::SubDepth()
 {
   this->ActTab.erase(0, 2);
 }
+

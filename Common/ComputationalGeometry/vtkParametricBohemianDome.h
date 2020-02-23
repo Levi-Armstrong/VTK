@@ -18,13 +18,12 @@
  *
  * vtkParametricBohemianDome generates a parametric Bohemian dome. The Bohemian
  * dome is a quartic surface, and is described in much better detail at
- * <a href="https://www.math.hmc.edu/math142-01/mellon/curves_and_surfaces/surfaces/bohdom.html">HMC
- * page</a>.
+ * <a href="https://www.math.hmc.edu/math142-01/mellon/curves_and_surfaces/surfaces/bohdom.html">HMC page</a>.
  * @warning
  * I haven't set any restrictions on the A, B, or C values.
  * @par Thanks:
  * Tim Meehan
- */
+*/
 
 #ifndef vtkParametricBohemianDome_h
 #define vtkParametricBohemianDome_h
@@ -35,8 +34,9 @@
 class VTKCOMMONCOMPUTATIONALGEOMETRY_EXPORT vtkParametricBohemianDome : public vtkParametricFunction
 {
 public:
-  vtkTypeMacro(vtkParametricBohemianDome, vtkParametricFunction);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+
+  vtkTypeMacro(vtkParametricBohemianDome,vtkParametricFunction);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   //@{
   /**
@@ -56,14 +56,14 @@ public:
   // (MinimumV, MaximumV) = (-pi, pi),
   // JoinU = 1, JoinV = 1,
   // TwistU = 0, TwistV = 0;
-  // ClockwiseOrdering = 0,
+  // ClockwiseOrdering = 1,
   // DerivativesAvailable = 1,
-  static vtkParametricBohemianDome* New();
+  static vtkParametricBohemianDome *New();
 
   /**
    * Return the parametric dimension of the class.
    */
-  int GetDimension() override { return 2; }
+  int GetDimension() VTK_OVERRIDE {return 2;}
 
   /**
    * BohemianDome surface.
@@ -73,17 +73,17 @@ public:
    * \f$Pt = (x, y, z), D_u\vec{f} = (dx/du, dy/du, dz/du), D_v\vec{f} = (dx/dv, dy/dv, dz/dv)\f$ .
    * Then the normal is \f$N = D_u\vec{f} \times D_v\vec{f}\f$ .
    */
-  void Evaluate(double uvw[3], double Pt[3], double Duvw[9]) override;
+  void Evaluate(double uvw[3], double Pt[3], double Duvw[9]) VTK_OVERRIDE;
 
   /**
    * Calculate a user defined scalar using one or all of uvw, Pt, Duvw.
    * This method simply returns 0.
    */
-  double EvaluateScalar(double uvw[3], double Pt[3], double Duvw[9]) override;
+  double EvaluateScalar(double uvw[3], double Pt[3], double Duvw[9]) VTK_OVERRIDE;
 
 protected:
   vtkParametricBohemianDome();
-  ~vtkParametricBohemianDome() override;
+  ~vtkParametricBohemianDome() VTK_OVERRIDE;
 
   // Variables
   double A;
@@ -91,8 +91,8 @@ protected:
   double C;
 
 private:
-  vtkParametricBohemianDome(const vtkParametricBohemianDome&) = delete;
-  void operator=(const vtkParametricBohemianDome&) = delete;
+  vtkParametricBohemianDome(const vtkParametricBohemianDome&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkParametricBohemianDome&) VTK_DELETE_FUNCTION;
 };
 
 #endif

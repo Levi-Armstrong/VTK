@@ -21,22 +21,23 @@
  * that apply a stencil to an image.
  * @sa
  * vtkImplicitFunction vtkImageStencil vtkPolyDataToImageStencil
- */
+*/
 
 #ifndef vtkImplicitFunctionToImageStencil_h
 #define vtkImplicitFunctionToImageStencil_h
 
-#include "vtkImageStencilSource.h"
+
 #include "vtkImagingStencilModule.h" // For export macro
+#include "vtkImageStencilSource.h"
 
 class vtkImplicitFunction;
 
 class VTKIMAGINGSTENCIL_EXPORT vtkImplicitFunctionToImageStencil : public vtkImageStencilSource
 {
 public:
-  static vtkImplicitFunctionToImageStencil* New();
+  static vtkImplicitFunctionToImageStencil *New();
   vtkTypeMacro(vtkImplicitFunctionToImageStencil, vtkImageStencilSource);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -57,20 +58,22 @@ public:
   /**
    * Override GetMTime() to account for the implicit function.
    */
-  vtkMTimeType GetMTime() override;
+  vtkMTimeType GetMTime();
 
 protected:
   vtkImplicitFunctionToImageStencil();
-  ~vtkImplicitFunctionToImageStencil() override;
+  ~vtkImplicitFunctionToImageStencil();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int RequestData(vtkInformation *, vtkInformationVector **,
+                          vtkInformationVector *);
 
-  vtkImplicitFunction* Input;
+  vtkImplicitFunction *Input;
   double Threshold;
 
 private:
-  vtkImplicitFunctionToImageStencil(const vtkImplicitFunctionToImageStencil&) = delete;
-  void operator=(const vtkImplicitFunctionToImageStencil&) = delete;
+  vtkImplicitFunctionToImageStencil(const vtkImplicitFunctionToImageStencil&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkImplicitFunctionToImageStencil&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

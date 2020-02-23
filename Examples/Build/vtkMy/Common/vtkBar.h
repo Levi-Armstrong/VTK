@@ -17,27 +17,26 @@
  * @brief   Bar class for vtk
  *
  * None.
- */
+*/
 
 #ifndef vtkBar_h
 #define vtkBar_h
 
 #include "vtkObject.h"
-#include "vtkmyCommonModule.h" // For export macro
+#include "vtkmyCommonWin32Header.h"
 
-class VTKMYCOMMON_EXPORT vtkBar : public vtkObject
+class VTK_MY_COMMON_EXPORT vtkBar : public vtkObject
 {
 public:
-  static vtkBar* New();
-  vtkTypeMacro(vtkBar, vtkObject);
+  static vtkBar *New();
+  vtkTypeMacro(vtkBar,vtkObject);
 
 protected:
   vtkBar() {}
-  ~vtkBar() override {}
-
+  ~vtkBar() {}
 private:
-  vtkBar(const vtkBar&) = delete;
-  void operator=(const vtkBar&) = delete;
+  vtkBar(const vtkBar&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkBar&) VTK_DELETE_FUNCTION;
 };
 
 #endif

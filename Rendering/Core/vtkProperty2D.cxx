@@ -32,12 +32,14 @@ vtkProperty2D::vtkProperty2D()
   this->DisplayLocation = VTK_FOREGROUND_LOCATION;
 }
 
-vtkProperty2D::~vtkProperty2D() = default;
+vtkProperty2D::~vtkProperty2D()
+{
+}
 
 // Assign one property to another.
-void vtkProperty2D::DeepCopy(vtkProperty2D* p)
+void vtkProperty2D::DeepCopy(vtkProperty2D *p)
 {
-  if (p != nullptr)
+  if ( p != NULL )
   {
     this->SetColor(p->GetColor());
     this->SetOpacity(p->GetOpacity());
@@ -54,13 +56,14 @@ void vtkProperty2D::PrintSelf(ostream& os, vtkIndent indent)
   this->Superclass::PrintSelf(os, indent);
 
   os << indent << "Opacity: " << this->Opacity << "\n";
-  os << indent << "Color: (" << this->Color[0] << ", " << this->Color[1] << ", " << this->Color[2]
-     << ")\n";
+  os << indent << "Color: (" << this->Color[0] << ", "
+     << this->Color[1] << ", "
+     << this->Color[2] << ")\n";
   os << indent << "Point size: " << this->PointSize << "\n";
   os << indent << "Line width: " << this->LineWidth << "\n";
   os << indent << "Line stipple pattern: " << this->LineStipplePattern << "\n";
   os << indent << "Line stipple repeat factor: " << this->LineStippleRepeatFactor << "\n";
-  switch (this->DisplayLocation)
+  switch ( this->DisplayLocation )
   {
     case VTK_FOREGROUND_LOCATION:
       os << indent << "Display location: foreground\n";
@@ -72,4 +75,9 @@ void vtkProperty2D::PrintSelf(ostream& os, vtkIndent indent)
       os << indent << "Display location: invalid\n";
       break;
   }
+
 }
+
+
+
+

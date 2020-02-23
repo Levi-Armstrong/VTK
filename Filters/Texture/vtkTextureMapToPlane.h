@@ -35,48 +35,48 @@
  * @sa
  *  vtkPlaneSource vtkTextureMapToCylinder
  * vtkTextureMapToSphere vtkThresholdTextureCoords
- */
+*/
 
 #ifndef vtkTextureMapToPlane_h
 #define vtkTextureMapToPlane_h
 
-#include "vtkDataSetAlgorithm.h"
 #include "vtkFiltersTextureModule.h" // For export macro
+#include "vtkDataSetAlgorithm.h"
 
 class VTKFILTERSTEXTURE_EXPORT vtkTextureMapToPlane : public vtkDataSetAlgorithm
 {
 public:
-  vtkTypeMacro(vtkTextureMapToPlane, vtkDataSetAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkTextureMapToPlane,vtkDataSetAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Construct with s,t range=(0,1) and automatic plane generation turned on.
    */
-  static vtkTextureMapToPlane* New();
+  static vtkTextureMapToPlane *New();
 
   //@{
   /**
    * Specify a point defining the origin of the plane. Used in conjunction with
    * the Point1 and Point2 ivars to specify a map plane.
    */
-  vtkSetVector3Macro(Origin, double);
-  vtkGetVectorMacro(Origin, double, 3);
+  vtkSetVector3Macro(Origin,double);
+  vtkGetVectorMacro(Origin,double,3);
   //@}
 
   //@{
   /**
    * Specify a point defining the first axis of the plane.
    */
-  vtkSetVector3Macro(Point1, double);
-  vtkGetVectorMacro(Point1, double, 3);
+  vtkSetVector3Macro(Point1,double);
+  vtkGetVectorMacro(Point1,double,3);
   //@}
 
   //@{
   /**
    * Specify a point defining the second axis of the plane.
    */
-  vtkSetVector3Macro(Point2, double);
-  vtkGetVectorMacro(Point2, double, 3);
+  vtkSetVector3Macro(Point2,double);
+  vtkGetVectorMacro(Point2,double,3);
   //@}
 
   //@{
@@ -85,41 +85,41 @@ public:
    * this method, the object will scale the resulting texture coordinate
    * between the SRange and TRange specified.
    */
-  vtkSetVector3Macro(Normal, double);
-  vtkGetVectorMacro(Normal, double, 3);
+  vtkSetVector3Macro(Normal,double);
+  vtkGetVectorMacro(Normal,double,3);
   //@}
 
   //@{
   /**
    * Specify s-coordinate range for texture s-t coordinate pair.
    */
-  vtkSetVector2Macro(SRange, double);
-  vtkGetVectorMacro(SRange, double, 2);
+  vtkSetVector2Macro(SRange,double);
+  vtkGetVectorMacro(SRange,double,2);
   //@}
 
   //@{
   /**
    * Specify t-coordinate range for texture s-t coordinate pair.
    */
-  vtkSetVector2Macro(TRange, double);
-  vtkGetVectorMacro(TRange, double, 2);
+  vtkSetVector2Macro(TRange,double);
+  vtkGetVectorMacro(TRange,double,2);
   //@}
 
   //@{
   /**
    * Turn on/off automatic plane generation.
    */
-  vtkSetMacro(AutomaticPlaneGeneration, vtkTypeBool);
-  vtkGetMacro(AutomaticPlaneGeneration, vtkTypeBool);
-  vtkBooleanMacro(AutomaticPlaneGeneration, vtkTypeBool);
+  vtkSetMacro(AutomaticPlaneGeneration,int);
+  vtkGetMacro(AutomaticPlaneGeneration,int);
+  vtkBooleanMacro(AutomaticPlaneGeneration,int);
   //@}
 
 protected:
   vtkTextureMapToPlane();
-  ~vtkTextureMapToPlane() override {}
+  ~vtkTextureMapToPlane() {}
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  void ComputeNormal(vtkDataSet* output);
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
+  void ComputeNormal(vtkDataSet *output);
 
   double Origin[3];
   double Point1[3];
@@ -127,11 +127,11 @@ protected:
   double Normal[3];
   double SRange[2];
   double TRange[2];
-  vtkTypeBool AutomaticPlaneGeneration;
+  int AutomaticPlaneGeneration;
 
 private:
-  vtkTextureMapToPlane(const vtkTextureMapToPlane&) = delete;
-  void operator=(const vtkTextureMapToPlane&) = delete;
+  vtkTextureMapToPlane(const vtkTextureMapToPlane&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTextureMapToPlane&) VTK_DELETE_FUNCTION;
 };
 
 #endif

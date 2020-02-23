@@ -20,53 +20,36 @@
  * than the input.  Linear interpolation can be used to resample the data.
  * The Output spacing can be set explicitly or relative to input spacing
  * with the SetAxisMagnificationFactor method.
- */
+*/
 
 #ifndef vtkImageResample_h
 #define vtkImageResample_h
 
-#include "vtkImageReslice.h"
+
 #include "vtkImagingCoreModule.h" // For export macro
+#include "vtkImageReslice.h"
 
 class VTKIMAGINGCORE_EXPORT vtkImageResample : public vtkImageReslice
 {
 public:
-  static vtkImageResample* New();
-  vtkTypeMacro(vtkImageResample, vtkImageReslice);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkImageResample *New();
+  vtkTypeMacro(vtkImageResample,vtkImageReslice);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
-  //@{
   /**
    * Set desired spacing.
    * Zero is a reserved value indicating spacing has not been set.
    */
-  void SetOutputSpacing(double sx, double sy, double sz) override;
-  void SetOutputSpacing(const double spacing[3]) override
-  {
-    this->SetOutputSpacing(spacing[0], spacing[1], spacing[2]);
-  }
   void SetAxisOutputSpacing(int axis, double spacing);
-  //@}
 
   //@{
   /**
    * Set/Get Magnification factors.
    * Zero is a reserved value indicating values have not been computed.
    */
-  void SetMagnificationFactors(double fx, double fy, double fz);
-  void SetMagnificationFactors(const double f[3])
-  {
-    this->SetMagnificationFactors(f[0], f[1], f[2]);
-  }
-  vtkGetVector3Macro(MagnificationFactors, double);
   void SetAxisMagnificationFactor(int axis, double factor);
+  double GetAxisMagnificationFactor(int axis, vtkInformation *inInfo=0);
   //@}
-
-  /**
-   * Get the computed magnification factor for a specific axis.
-   * The input information is required to compute the value.
-   */
-  double GetAxisMagnificationFactor(int axis, vtkInformation* inInfo = nullptr);
 
   //@{
   /**
@@ -75,22 +58,25 @@ public:
    * This has the same effect as setting the magnification of the third
    * axis to 1.0
    */
-  vtkSetMacro(Dimensionality, int);
-  vtkGetMacro(Dimensionality, int);
+  vtkSetMacro(Dimensionality,int);
+  vtkGetMacro(Dimensionality,int);
   //@}
 
 protected:
   vtkImageResample();
-  ~vtkImageResample() override {}
+  ~vtkImageResample() {}
 
   double MagnificationFactors[3];
+  double OutputSpacing[3];
   int Dimensionality;
 
-  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int RequestInformation(vtkInformation *,
+                                 vtkInformationVector **,
+                                 vtkInformationVector *) VTK_OVERRIDE;
 
 private:
-  vtkImageResample(const vtkImageResample&) = delete;
-  void operator=(const vtkImageResample&) = delete;
+  vtkImageResample(const vtkImageResample&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkImageResample&) VTK_DELETE_FUNCTION;
 };
 
 #endif

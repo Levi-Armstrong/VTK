@@ -23,39 +23,39 @@
  *
  * @sa
  * vtkRenderPass
- */
+*/
 
 #ifndef vtkPointFillPass_h
 #define vtkPointFillPass_h
 
-#include "vtkDepthImageProcessingPass.h"
 #include "vtkRenderingOpenGL2Module.h" // For export macro
+#include "vtkDepthImageProcessingPass.h"
 
 class vtkDepthPeelingPassLayerList; // Pimpl
-class vtkOpenGLFramebufferObject;
-class vtkOpenGLQuadHelper;
+class vtkFrameBufferObject;
+class vtkOpenGLHelper;
 class vtkOpenGLRenderWindow;
 class vtkTextureObject;
 
 class VTKRENDERINGOPENGL2_EXPORT vtkPointFillPass : public vtkDepthImageProcessingPass
 {
 public:
-  static vtkPointFillPass* New();
-  vtkTypeMacro(vtkPointFillPass, vtkDepthImageProcessingPass);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkPointFillPass *New();
+  vtkTypeMacro(vtkPointFillPass,vtkDepthImageProcessingPass);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Perform rendering according to a render state \p s.
    * \pre s_exists: s!=0
    */
-  void Render(const vtkRenderState* s) override;
+  virtual void Render(const vtkRenderState *s);
 
   /**
    * Release graphics resources and ask components to release their own
    * resources.
    * \pre w_exists: w!=0
    */
-  void ReleaseGraphicsResources(vtkWindow* w) override;
+  void ReleaseGraphicsResources(vtkWindow *w);
 
   //@{
   /**
@@ -64,8 +64,8 @@ public:
    * a multiple of the points distance from the camera.
    * Defaults to 0.95
    */
-  vtkSetMacro(CandidatePointRatio, float);
-  vtkGetMacro(CandidatePointRatio, float);
+  vtkSetMacro(CandidatePointRatio,float);
+  vtkGetMacro(CandidatePointRatio,float);
   //@}
 
   //@{
@@ -75,11 +75,11 @@ public:
    * radians. A value of pi will keep edges from growing out.
    * Large values require more support, lower values less.
    */
-  vtkSetMacro(MinimumCandidateAngle, float);
-  vtkGetMacro(MinimumCandidateAngle, float);
+  vtkSetMacro(MinimumCandidateAngle,float);
+  vtkGetMacro(MinimumCandidateAngle,float);
   //@}
 
-protected:
+ protected:
   /**
    * Default constructor. DelegatePass is set to NULL.
    */
@@ -88,23 +88,27 @@ protected:
   /**
    * Destructor.
    */
-  ~vtkPointFillPass() override;
+  virtual ~vtkPointFillPass();
 
   /**
    * Graphics resources.
    */
-  vtkOpenGLFramebufferObject* FrameBufferObject;
-  vtkTextureObject* Pass1;      // render target for the scene
-  vtkTextureObject* Pass1Depth; // render target for the depth
+  vtkFrameBufferObject *FrameBufferObject;
+  vtkTextureObject *Pass1; // render target for the scene
+  vtkTextureObject *Pass1Depth; // render target for the depth
 
-  vtkOpenGLQuadHelper* QuadHelper;
+  // Structures for the various cell types we render.
+  vtkOpenGLHelper *BlurProgram;
+
+  bool Supported;
+  bool SupportProbed;
 
   float CandidatePointRatio;
   float MinimumCandidateAngle;
 
-private:
-  vtkPointFillPass(const vtkPointFillPass&) = delete;
-  void operator=(const vtkPointFillPass&) = delete;
+ private:
+  vtkPointFillPass(const vtkPointFillPass&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPointFillPass&) VTK_DELETE_FUNCTION;
 };
 
 #endif

@@ -19,7 +19,7 @@
  * vtkXMLUniformGridAMRWriter is a vtkXMLCompositeDataWriter subclass to
  * handle vtkUniformGridAMR datasets (including vtkNonOverlappingAMR and
  * vtkOverlappingAMR).
- */
+*/
 
 #ifndef vtkXMLUniformGridAMRWriter_h
 #define vtkXMLUniformGridAMRWriter_h
@@ -32,35 +32,37 @@ class VTKIOXML_EXPORT vtkXMLUniformGridAMRWriter : public vtkXMLCompositeDataWri
 public:
   static vtkXMLUniformGridAMRWriter* New();
   vtkTypeMacro(vtkXMLUniformGridAMRWriter, vtkXMLCompositeDataWriter);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Get the default file extension for files written by this writer.
    */
-  const char* GetDefaultFileExtension() override { return "vth"; }
+  virtual const char* GetDefaultFileExtension()
+    { return "vth"; }
 
 protected:
   vtkXMLUniformGridAMRWriter();
-  ~vtkXMLUniformGridAMRWriter() override;
+  ~vtkXMLUniformGridAMRWriter();
 
   /**
    * Methods to define the file's major and minor version numbers.
    * VTH/VTHB version number 1.1 is used for overlapping/non-overlapping AMR
    * datasets.
    */
-  int GetDataSetMajorVersion() override { return 1; }
-  int GetDataSetMinorVersion() override { return 1; }
+  virtual int GetDataSetMajorVersion() { return 1; }
+  virtual int GetDataSetMinorVersion() { return 1; }
 
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  virtual int FillInputPortInformation(int port, vtkInformation* info);
 
   // Internal method called recursively to create the xml tree for the children
   // of compositeData.
-  int WriteComposite(
-    vtkCompositeDataSet* compositeData, vtkXMLDataElement* parent, int& writerIdx) override;
+  virtual int WriteComposite(vtkCompositeDataSet* compositeData,
+    vtkXMLDataElement* parent, int &writerIdx);
 
 private:
-  vtkXMLUniformGridAMRWriter(const vtkXMLUniformGridAMRWriter&) = delete;
-  void operator=(const vtkXMLUniformGridAMRWriter&) = delete;
+  vtkXMLUniformGridAMRWriter(const vtkXMLUniformGridAMRWriter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkXMLUniformGridAMRWriter&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif

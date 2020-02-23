@@ -17,18 +17,18 @@
  * @brief   AMR class for a volume mapper
  *
  *
- * vtkAMRVolumeMapper is the definition of a volume mapper.
+ * vtkAMRVolumeMapper is the  definition of a volume mapper.
  * for AMR Structured Data
  *
  *
- */
+*/
 
 #ifndef vtkAMRVolumeMapper_h
 #define vtkAMRVolumeMapper_h
 
-#include "vtkImageReslice.h"             // for VTK_RESLICE_NEAREST, VTK_RESLICE_CUBIC
 #include "vtkRenderingVolumeAMRModule.h" // For export macro
 #include "vtkVolumeMapper.h"
+#include "vtkImageReslice.h" // for VTK_RESLICE_NEAREST, VTK_RESLICE_CUBIC
 
 class vtkAMRResampleFilter;
 class vtkCamera;
@@ -40,22 +40,20 @@ class vtkUniformGrid;
 class VTKRENDERINGVOLUMEAMR_EXPORT vtkAMRVolumeMapper : public vtkVolumeMapper
 {
 public:
-  static vtkAMRVolumeMapper* New();
-  vtkTypeMacro(vtkAMRVolumeMapper, vtkVolumeMapper);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkAMRVolumeMapper *New();
+  vtkTypeMacro(vtkAMRVolumeMapper,vtkVolumeMapper);
+  void PrintSelf( ostream& os, vtkIndent indent );
 
   //@{
   /**
    * Set the input data
    */
-  void SetInputData(vtkImageData*) override;
-  void SetInputData(vtkDataSet*) override;
-  virtual void SetInputData(vtkOverlappingAMR*);
-  void SetInputConnection(int port, vtkAlgorithmOutput* input) override;
-  void SetInputConnection(vtkAlgorithmOutput* input) override
-  {
-    this->SetInputConnection(0, input);
-  }
+  virtual void SetInputData( vtkImageData* );
+  virtual void SetInputData( vtkDataSet* );
+  virtual void SetInputData( vtkOverlappingAMR* );
+  virtual void SetInputConnection (int port, vtkAlgorithmOutput *input);
+  virtual void SetInputConnection (vtkAlgorithmOutput *input)
+  {this->SetInputConnection(0, input);}
   //@}
 
   //@{
@@ -63,8 +61,9 @@ public:
    * Return bounding box (array of six doubles) of data expressed as
    * (xmin,xmax, ymin,ymax, zmin,zmax).
    */
-  double* GetBounds() override;
-  void GetBounds(double bounds[6]) override { this->vtkVolumeMapper::GetBounds(bounds); }
+  virtual double *GetBounds();
+  virtual void GetBounds(double bounds[6])
+    {this->vtkVolumeMapper::GetBounds(bounds); };
   //@}
 
   /**
@@ -78,16 +77,20 @@ public:
    * (ScalarModeToUseCellFieldData).  If scalars are coming from a field
    * data array, you must call SelectScalarArray.
    */
-  void SetScalarMode(int mode) override;
+  virtual void SetScalarMode(int mode);
 
   //@{
   /**
-   * Set/Get the blend mode.
+   * Set/Get the blend mode. Currently this is only supported
+   * by the vtkFixedPointVolumeRayCastMapper - other mappers
+   * have different ways to set this (supplying a function
+   * to a vtkVolumeRayCastMapper) or don't have any options
+   * (vtkVolumeTextureMapper2D supports only compositing).
    * Additive blend mode adds scalars along the ray and multiply them by
    * their opacity mapping value.
    */
-  void SetBlendMode(int mode) override;
-  int GetBlendMode() override;
+  virtual void SetBlendMode(int mode);
+  virtual int GetBlendMode();
   //@}
 
   //@{
@@ -97,30 +100,30 @@ public:
    * The transfer function in the vtkVolumeProperty (attached to the calling
    * vtkVolume) will decide how to convert vectors to colors.
    */
-  void SelectScalarArray(int arrayNum) override;
-  void SelectScalarArray(const char* arrayName) override;
+  virtual void SelectScalarArray(int arrayNum);
+  virtual void SelectScalarArray(const char* arrayName);
   //@}
 
   //@{
   /**
    * Get the array name or number and component to use for rendering.
    */
-  char* GetArrayName() override;
-  int GetArrayId() override;
-  int GetArrayAccessMode() override;
+  virtual char* GetArrayName();
+  virtual int GetArrayId();
+  virtual int GetArrayAccessMode();
   //@}
 
   /**
    * Return the method for obtaining scalar data.
    */
-  const char* GetScalarModeAsString();
+  const char *GetScalarModeAsString();
   //@{
   /**
    * Turn On/Off orthogonal cropping. (Clipping planes are
    * perpendicular to the coordinate axes.)
    */
-  void SetCropping(vtkTypeBool) override;
-  vtkTypeBool GetCropping() override;
+  virtual void SetCropping(int mode);
+  virtual int GetCropping();
   //@}
 
   //@{
@@ -129,14 +132,14 @@ public:
    * These planes are defined in volume coordinates - spacing and origin are
    * considered.
    */
-  void SetCroppingRegionPlanes(
-    double arg1, double arg2, double arg3, double arg4, double arg5, double arg6) override;
-  void SetCroppingRegionPlanes(const double* planes) override
-  {
-    this->SetCroppingRegionPlanes(planes[0], planes[1], planes[2], planes[3], planes[4], planes[5]);
-  }
-  void GetCroppingRegionPlanes(double* planes) override;
-  double* GetCroppingRegionPlanes() VTK_SIZEHINT(6) override;
+  virtual void SetCroppingRegionPlanes(double arg1, double arg2, double arg3,
+                                       double arg4, double arg5, double arg6);
+  virtual void SetCroppingRegionPlanes(double *planes)
+    {this->SetCroppingRegionPlanes(
+        planes[0],planes[1],planes[2],
+        planes[3],planes[4],planes[5]);}
+  virtual void GetCroppingRegionPlanes(double *planes);
+  virtual double *GetCroppingRegionPlanes();
   //@}
   //@{
   /**
@@ -150,14 +153,14 @@ public:
    * clip plane pairs), inverted fence, cross (between any two of the
    * clip plane pairs) and inverted cross.
    */
-  void SetCroppingRegionFlags(int mode) override;
-  int GetCroppingRegionFlags() override;
+  virtual void SetCroppingRegionFlags(int mode);
+  virtual int GetCroppingRegionFlags();
   //@}
 
-  // The possible values for the default and current render mode ivars
+// The possible values for the default and current render mode ivars
   enum
   {
-    DefaultRenderMode = 0,
+    DefaultRenderMode=0,
     RayCastAndTextureRenderMode,
     RayCastRenderMode,
     TextureRenderMode,
@@ -181,9 +184,7 @@ public:
    * data types, hardware, and rendering parameters.
    */
   void SetRequestedRenderModeToDefault()
-  {
-    this->SetRequestedRenderMode(vtkAMRVolumeMapper::DefaultRenderMode);
-  }
+  {this->SetRequestedRenderMode(vtkAMRVolumeMapper::DefaultRenderMode);}
 
   /**
    * Set the requested render mode to
@@ -193,9 +194,7 @@ public:
    * available, for interactive rendering.
    */
   void SetRequestedRenderModeToRayCastAndTexture()
-  {
-    this->SetRequestedRenderMode(vtkAMRVolumeMapper::RayCastAndTextureRenderMode);
-  }
+  {this->SetRequestedRenderMode(vtkAMRVolumeMapper::RayCastAndTextureRenderMode);}
 
   /**
    * Set the requested render mode to vtkAMRVolumeMapper::RayCastRenderMode.
@@ -203,9 +202,7 @@ public:
    * if you know there is no hardware acceleration.
    */
   void SetRequestedRenderModeToRayCast()
-  {
-    this->SetRequestedRenderMode(vtkAMRVolumeMapper::RayCastRenderMode);
-  }
+  {this->SetRequestedRenderMode(vtkAMRVolumeMapper::RayCastRenderMode);}
 
   /**
    * Set the requested render mode to
@@ -214,9 +211,7 @@ public:
    * available, for interactive rendering.
    */
   void SetRequestedRenderModeToTexture()
-  {
-    this->SetRequestedRenderMode(vtkAMRVolumeMapper::TextureRenderMode);
-  }
+  {this->SetRequestedRenderMode(vtkAMRVolumeMapper::TextureRenderMode);}
 
   /**
    * Set the requested render mode to
@@ -224,9 +219,7 @@ public:
    * This will do the volume rendering on the GPU
    */
   void SetRequestedRenderModeToGPU()
-  {
-    this->SetRequestedRenderMode(vtkAMRVolumeMapper::GPURenderMode);
-  }
+  {this->SetRequestedRenderMode(vtkAMRVolumeMapper::GPURenderMode);}
 
   //@{
   /**
@@ -237,19 +230,22 @@ public:
   int GetInterpolationMode();
   //@}
 
-  void SetInterpolationModeToNearestNeighbor() { this->SetInterpolationMode(VTK_RESLICE_NEAREST); }
+  void SetInterpolationModeToNearestNeighbor()
+  {this->SetInterpolationMode(VTK_RESLICE_NEAREST);}
 
-  void SetInterpolationModeToLinear() { this->SetInterpolationMode(VTK_RESLICE_LINEAR); }
+  void SetInterpolationModeToLinear()
+  {this->SetInterpolationMode(VTK_RESLICE_LINEAR);}
 
-  void SetInterpolationModeToCubic() { this->SetInterpolationMode(VTK_RESLICE_CUBIC); }
+  void SetInterpolationModeToCubic()
+  {this->SetInterpolationMode(VTK_RESLICE_CUBIC);}
 
   //@{
   /**
    * Set/Get the number of samples/cells along the i/j/k directions.
    * The default is 128x128x128
    */
-  vtkSetVector3Macro(NumberOfSamples, int);
-  vtkGetVector3Macro(NumberOfSamples, int);
+  vtkSetVector3Macro(NumberOfSamples,int);
+  vtkGetVector3Macro(NumberOfSamples,int);
   //@}
 
   /**
@@ -257,7 +253,7 @@ public:
    * DO NOT USE THIS METHOD OUTSIDE OF THE RENDERING PROCESS
    * Render the volume
    */
-  void Render(vtkRenderer* ren, vtkVolume* vol) override;
+  virtual void Render(vtkRenderer *ren, vtkVolume *vol);
 
   /**
    * WARNING: INTERNAL METHOD - NOT INTENDED FOR GENERAL USE
@@ -265,14 +261,16 @@ public:
    * The parameter window could be used to determine which graphic
    * resources to release.
    */
-  void ReleaseGraphicsResources(vtkWindow*) override;
+  virtual void ReleaseGraphicsResources(vtkWindow *);
 
-  void ProcessUpdateExtentRequest(vtkRenderer* renderer, vtkInformation* info,
-    vtkInformationVector** inputVector, vtkInformationVector* outputVector);
-  void ProcessInformationRequest(vtkRenderer* renderer, vtkInformation* info,
-    vtkInformationVector** inputVector, vtkInformationVector* outputVector);
-  void UpdateResampler(vtkRenderer* ren, vtkOverlappingAMR* amr);
-  void UpdateResamplerFrustrumMethod(vtkRenderer* ren, vtkOverlappingAMR* amr);
+  void ProcessUpdateExtentRequest(vtkRenderer *renderer, vtkInformation*info,
+                                  vtkInformationVector **inputVector,
+                                  vtkInformationVector *outputVector);
+  void ProcessInformationRequest(vtkRenderer *renderer, vtkInformation*info,
+                                 vtkInformationVector **inputVector,
+                                 vtkInformationVector *outputVector);
+  void UpdateResampler(vtkRenderer *ren, vtkOverlappingAMR *amr);
+  void UpdateResamplerFrustrumMethod(vtkRenderer *ren, vtkOverlappingAMR *amr);
 
   //@{
   /**
@@ -308,21 +306,22 @@ public:
    * bounds.
    */
   static bool ComputeResamplerBoundsFrustumMethod(
-    vtkCamera* camera, vtkRenderer* renderer, const double data_bounds[6], double out_bounds[6]);
+    vtkCamera* camera, vtkRenderer* renderer,
+    const double data_bounds[6], double out_bounds[6]);
 
 protected:
   vtkAMRVolumeMapper();
-  ~vtkAMRVolumeMapper() override;
+  ~vtkAMRVolumeMapper();
 
   // see algorithm for more info
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  virtual int FillInputPortInformation(int port, vtkInformation* info);
   void UpdateGrid();
 
-  vtkSmartVolumeMapper* InternalMapper;
-  vtkAMRResampleFilter* Resampler;
-  vtkUniformGrid* Grid;
+  vtkSmartVolumeMapper *InternalMapper;
+  vtkAMRResampleFilter *Resampler;
+  vtkUniformGrid *Grid;
   int NumberOfSamples[3];
-
+  double Bounds[6];
   // This indicates that the input has meta data for
   // doing demand driven operations.
   bool HasMetaData;
@@ -333,7 +332,7 @@ protected:
   // focal point
   double LastFocalPointPosition[3];
   double LastPostionFPDistance;
-  // This is used when determining if
+  // This is used when determing if
   // either the camera or focal point has
   // move enough to cause the resampler to update
   double ResamplerUpdateTolerance;
@@ -341,8 +340,9 @@ protected:
   bool UseDefaultThreading;
 
 private:
-  vtkAMRVolumeMapper(const vtkAMRVolumeMapper&) = delete;
-  void operator=(const vtkAMRVolumeMapper&) = delete;
+  vtkAMRVolumeMapper(const vtkAMRVolumeMapper&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkAMRVolumeMapper&) VTK_DELETE_FUNCTION;
 };
+
 
 #endif

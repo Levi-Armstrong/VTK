@@ -19,7 +19,7 @@
  * vtkBlockIdScalars is a filter that generates scalars using the block index
  * for each block. Note that all sub-blocks within a block get the same scalar.
  * The new scalars array is named \c BlockIdScalars.
- */
+*/
 
 #ifndef vtkBlockIdScalars_h
 #define vtkBlockIdScalars_h
@@ -32,19 +32,24 @@ class VTKFILTERSGENERAL_EXPORT vtkBlockIdScalars : public vtkMultiBlockDataSetAl
 public:
   static vtkBlockIdScalars* New();
   vtkTypeMacro(vtkBlockIdScalars, vtkMultiBlockDataSetAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
 protected:
   vtkBlockIdScalars();
-  ~vtkBlockIdScalars() override;
+  ~vtkBlockIdScalars() VTK_OVERRIDE;
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *,
+                  vtkInformationVector **,
+                  vtkInformationVector *) VTK_OVERRIDE;
 
   vtkDataObject* ColorBlock(vtkDataObject* input, int group);
 
 private:
-  vtkBlockIdScalars(const vtkBlockIdScalars&) = delete;
-  void operator=(const vtkBlockIdScalars&) = delete;
+  vtkBlockIdScalars(const vtkBlockIdScalars&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkBlockIdScalars&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif
+
+

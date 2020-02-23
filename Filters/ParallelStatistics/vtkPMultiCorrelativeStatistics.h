@@ -26,9 +26,8 @@
  * individual data points on the node that owns it.
  *
  * @par Thanks:
- * Thanks to Philippe Pebay and David Thompson from Sandia National Laboratories for implementing
- * this class.
- */
+ * Thanks to Philippe Pebay and David Thompson from Sandia National Laboratories for implementing this class.
+*/
 
 #ifndef vtkPMultiCorrelativeStatistics_h
 #define vtkPMultiCorrelativeStatistics_h
@@ -38,13 +37,12 @@
 
 class vtkMultiProcessController;
 
-class VTKFILTERSPARALLELSTATISTICS_EXPORT vtkPMultiCorrelativeStatistics
-  : public vtkMultiCorrelativeStatistics
+class VTKFILTERSPARALLELSTATISTICS_EXPORT vtkPMultiCorrelativeStatistics : public vtkMultiCorrelativeStatistics
 {
 public:
   static vtkPMultiCorrelativeStatistics* New();
   vtkTypeMacro(vtkPMultiCorrelativeStatistics, vtkMultiCorrelativeStatistics);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -58,22 +56,25 @@ public:
   /**
    * Performs Reduction
    */
-  static void GatherStatistics(vtkMultiProcessController* curController, vtkTable* sparseCov);
+  static void GatherStatistics( vtkMultiProcessController *curController,
+                                vtkTable *sparseCov );
 
 protected:
   vtkPMultiCorrelativeStatistics();
-  ~vtkPMultiCorrelativeStatistics() override;
+  ~vtkPMultiCorrelativeStatistics();
 
   vtkMultiProcessController* Controller;
 
   // Execute the parallel calculations required by the Learn option.
-  void Learn(vtkTable* inData, vtkTable* inParameters, vtkMultiBlockDataSet* outMeta) override;
+  virtual void Learn( vtkTable* inData,
+                      vtkTable* inParameters,
+                      vtkMultiBlockDataSet* outMeta );
 
-  vtkOrderStatistics* CreateOrderStatisticsInstance() override;
+  virtual vtkOrderStatistics* CreateOrderStatisticsInstance();
 
 private:
-  vtkPMultiCorrelativeStatistics(const vtkPMultiCorrelativeStatistics&) = delete;
-  void operator=(const vtkPMultiCorrelativeStatistics&) = delete;
+  vtkPMultiCorrelativeStatistics(const vtkPMultiCorrelativeStatistics&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPMultiCorrelativeStatistics&) VTK_DELETE_FUNCTION;
 };
 
 #endif

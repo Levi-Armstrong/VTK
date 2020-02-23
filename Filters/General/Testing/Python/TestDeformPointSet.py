@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import vtk
+from vtk.test import Testing
 from vtk.util.misc import vtkGetDataRoot
 VTK_DATA_ROOT = vtkGetDataRoot()
 
@@ -79,7 +80,7 @@ meshActor.SetMapper(meshMapper)
 meshActor.GetProperty().SetRepresentationToWireframe()
 meshActor.GetProperty().SetColor(0, 0, 0)
 
-# Okay now let's do the initial weight generation
+# Okay now let's do the intitial weight generation
 deform = vtk.vtkDeformPointSet()
 deform.SetInputConnection(ele.GetOutputPort())
 deform.SetControlMeshData(pd)

@@ -38,20 +38,20 @@
  *
  * Input port 0: graph
  * Input port 1: selection
- */
+*/
 
 #ifndef vtkCollapseGraph_h
 #define vtkCollapseGraph_h
 
-#include "vtkGraphAlgorithm.h"
 #include "vtkInfovisCoreModule.h" // For export macro
+#include "vtkGraphAlgorithm.h"
 
 class VTKINFOVISCORE_EXPORT vtkCollapseGraph : public vtkGraphAlgorithm
 {
 public:
   static vtkCollapseGraph* New();
-  vtkTypeMacro(vtkCollapseGraph, vtkGraphAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkCollapseGraph,vtkGraphAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /// Convenience function provided for setting the graph input.
   void SetGraphConnection(vtkAlgorithmOutput*);
@@ -60,15 +60,19 @@ public:
 
 protected:
   vtkCollapseGraph();
-  ~vtkCollapseGraph() override;
+  ~vtkCollapseGraph();
 
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  int FillInputPortInformation(int port, vtkInformation* info);
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(
+    vtkInformation*,
+    vtkInformationVector**,
+    vtkInformationVector*);
 
 private:
-  vtkCollapseGraph(const vtkCollapseGraph&) = delete;
-  void operator=(const vtkCollapseGraph&) = delete;
+  vtkCollapseGraph(const vtkCollapseGraph&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkCollapseGraph&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

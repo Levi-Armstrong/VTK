@@ -23,7 +23,7 @@
  * vtkImageReslice.
  * @par Thanks:
  * Thanks to David Gobbi for contributing this class to VTK.
- */
+*/
 
 #ifndef vtkImageSlab_h
 #define vtkImageSlab_h
@@ -34,9 +34,9 @@
 class VTKIMAGINGGENERAL_EXPORT vtkImageSlab : public vtkThreadedImageAlgorithm
 {
 public:
-  static vtkImageSlab* New();
+  static vtkImageSlab *New();
   vtkTypeMacro(vtkImageSlab, vtkThreadedImageAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -44,9 +44,12 @@ public:
    * The default is the Z direction.
    */
   vtkSetClampMacro(Orientation, int, 0, 2);
-  void SetOrientationToX() { this->SetOrientation(0); }
-  void SetOrientationToY() { this->SetOrientation(1); }
-  void SetOrientationToZ() { this->SetOrientation(2); }
+  void SetOrientationToX() {
+    this->SetOrientation(0); };
+  void SetOrientationToY() {
+    this->SetOrientation(1); };
+  void SetOrientationToZ() {
+    this->SetOrientation(2); };
   vtkGetMacro(Orientation, int);
   //@}
 
@@ -65,12 +68,16 @@ public:
    * "Mean", "Sum", "Min", "Max".  The default is "Mean".
    */
   vtkSetClampMacro(Operation, int, VTK_IMAGE_SLAB_MIN, VTK_IMAGE_SLAB_SUM);
-  void SetOperationToMin() { this->SetOperation(VTK_IMAGE_SLAB_MIN); }
-  void SetOperationToMax() { this->SetOperation(VTK_IMAGE_SLAB_MAX); }
-  void SetOperationToMean() { this->SetOperation(VTK_IMAGE_SLAB_MEAN); }
-  void SetOperationToSum() { this->SetOperation(VTK_IMAGE_SLAB_SUM); }
+  void SetOperationToMin() {
+    this->SetOperation(VTK_IMAGE_SLAB_MIN); };
+  void SetOperationToMax() {
+    this->SetOperation(VTK_IMAGE_SLAB_MAX); };
+  void SetOperationToMean() {
+    this->SetOperation(VTK_IMAGE_SLAB_MEAN); };
+  void SetOperationToSum() {
+    this->SetOperation(VTK_IMAGE_SLAB_SUM); };
   vtkGetMacro(Operation, int);
-  const char* GetOperationAsString();
+  const char *GetOperationAsString();
   //@}
 
   //@{
@@ -80,9 +87,9 @@ public:
    * to the default midpoint integration that weighs all slices equally.
    * It is off by default.
    */
-  vtkSetMacro(TrapezoidIntegration, vtkTypeBool);
-  vtkBooleanMacro(TrapezoidIntegration, vtkTypeBool);
-  vtkGetMacro(TrapezoidIntegration, vtkTypeBool);
+  vtkSetMacro(TrapezoidIntegration, int);
+  vtkBooleanMacro(TrapezoidIntegration, int);
+  vtkGetMacro(TrapezoidIntegration, int);
   //@}
 
   //@{
@@ -93,9 +100,9 @@ public:
    * be a projection through slices 'i' through '3+i' of the input.
    * This flag is off by default.
    */
-  vtkSetMacro(MultiSliceOutput, vtkTypeBool);
-  vtkBooleanMacro(MultiSliceOutput, vtkTypeBool);
-  vtkGetMacro(MultiSliceOutput, vtkTypeBool);
+  vtkSetMacro(MultiSliceOutput, int);
+  vtkBooleanMacro(MultiSliceOutput, int);
+  vtkGetMacro(MultiSliceOutput, int);
   //@}
 
   //@{
@@ -105,21 +112,28 @@ public:
    * The default is to use the scalar type of the input data,
    * and clamp the output to the range of the input scalar type.
    */
-  void SetOutputScalarTypeToFloat() { this->SetOutputScalarType(VTK_FLOAT); }
-  void SetOutputScalarTypeToDouble() { this->SetOutputScalarType(VTK_DOUBLE); }
-  void SetOutputScalarTypeToInputScalarType() { this->SetOutputScalarType(0); }
+  void SetOutputScalarTypeToFloat() {
+    this->SetOutputScalarType(VTK_FLOAT); };
+  void SetOutputScalarTypeToDouble() {
+    this->SetOutputScalarType(VTK_DOUBLE); };
+  void SetOutputScalarTypeToInputScalarType() {
+    this->SetOutputScalarType(0); };
   vtkGetMacro(OutputScalarType, int);
   //@}
 
 protected:
   vtkImageSlab();
-  ~vtkImageSlab() override;
+  ~vtkImageSlab();
 
-  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int RequestUpdateExtent(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  void ThreadedRequestData(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector, vtkImageData*** inData, vtkImageData** outData, int ext[6],
-    int id) override;
+  virtual int RequestInformation(vtkInformation *, vtkInformationVector **,
+                                 vtkInformationVector *);
+  virtual int RequestUpdateExtent(vtkInformation *, vtkInformationVector **,
+                                  vtkInformationVector *);
+  virtual void ThreadedRequestData(vtkInformation *request,
+                                   vtkInformationVector **inputVector,
+                                   vtkInformationVector *outputVector,
+                                   vtkImageData ***inData,
+                                   vtkImageData **outData, int ext[6], int id);
 
   vtkSetMacro(OutputScalarType, int);
 
@@ -127,12 +141,12 @@ protected:
   int Orientation;
   int SliceRange[2];
   int OutputScalarType;
-  vtkTypeBool MultiSliceOutput;
-  vtkTypeBool TrapezoidIntegration;
+  int MultiSliceOutput;
+  int TrapezoidIntegration;
 
 private:
-  vtkImageSlab(const vtkImageSlab&) = delete;
-  void operator=(const vtkImageSlab&) = delete;
+  vtkImageSlab(const vtkImageSlab&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkImageSlab&) VTK_DELETE_FUNCTION;
 };
 
 #endif

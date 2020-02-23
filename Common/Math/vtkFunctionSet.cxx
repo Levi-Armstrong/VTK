@@ -14,6 +14,7 @@
 =========================================================================*/
 #include "vtkFunctionSet.h"
 
+
 vtkFunctionSet::vtkFunctionSet()
 {
   this->NumFuncs = 0;
@@ -22,7 +23,9 @@ vtkFunctionSet::vtkFunctionSet()
 
 void vtkFunctionSet::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
-  os << indent << "Number of functions: " << this->NumFuncs << "\n";
-  os << indent << "Number of independent variables: " << this->NumIndepVars << "\n";
+  this->Superclass::PrintSelf(os,indent);
+  os << indent << "Number of functions: " << this->NumFuncs
+     << "\n";
+  os << indent << "Number of independent variables: " << this->NumIndepVars
+     << "\n";
 }

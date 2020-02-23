@@ -21,7 +21,7 @@
  * This filter can be used to redistribute data from producers that can't
  * produce data in parallel. All data is produced on first process and
  * the distributed to others using the multiprocess controller.
- */
+*/
 
 #ifndef vtkTransmitPolyDataPiece_h
 #define vtkTransmitPolyDataPiece_h
@@ -34,13 +34,13 @@ class vtkMultiProcessController;
 class VTKFILTERSPARALLEL_EXPORT vtkTransmitPolyDataPiece : public vtkPolyDataAlgorithm
 {
 public:
-  static vtkTransmitPolyDataPiece* New();
+  static vtkTransmitPolyDataPiece *New();
   vtkTypeMacro(vtkTransmitPolyDataPiece, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
-   * By default this filter uses the global controller,
+   * By defualt this filter uses the global controller,
    * but this method can be used to set another instead.
    */
   virtual void SetController(vtkMultiProcessController*);
@@ -51,26 +51,26 @@ public:
   /**
    * Turn on/off creating ghost cells (on by default).
    */
-  vtkSetMacro(CreateGhostCells, vtkTypeBool);
-  vtkGetMacro(CreateGhostCells, vtkTypeBool);
-  vtkBooleanMacro(CreateGhostCells, vtkTypeBool);
+  vtkSetMacro(CreateGhostCells, int);
+  vtkGetMacro(CreateGhostCells, int);
+  vtkBooleanMacro(CreateGhostCells, int);
   //@}
 
 protected:
   vtkTransmitPolyDataPiece();
-  ~vtkTransmitPolyDataPiece() override;
+  ~vtkTransmitPolyDataPiece();
 
   // Data generation method
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  void RootExecute(vtkPolyData* input, vtkPolyData* output, vtkInformation* outInfo);
-  void SatelliteExecute(int procId, vtkPolyData* output, vtkInformation* outInfo);
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
+  void RootExecute(vtkPolyData *input, vtkPolyData *output, vtkInformation *outInfo);
+  void SatelliteExecute(int procId, vtkPolyData *output, vtkInformation *outInfo);
 
-  vtkTypeBool CreateGhostCells;
-  vtkMultiProcessController* Controller;
+  int CreateGhostCells;
+  vtkMultiProcessController *Controller;
 
 private:
-  vtkTransmitPolyDataPiece(const vtkTransmitPolyDataPiece&) = delete;
-  void operator=(const vtkTransmitPolyDataPiece&) = delete;
+  vtkTransmitPolyDataPiece(const vtkTransmitPolyDataPiece&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTransmitPolyDataPiece&) VTK_DELETE_FUNCTION;
 };
 
 #endif

@@ -15,8 +15,8 @@
 #pragma warning(disable:4702)
 #endif
 
-#include <cctype>
-#include <cstdio>
+#include <stdio.h>
+#include <ctype.h>
 #include <string>
 
 #if (METAIO_USE_NAMESPACE)
@@ -84,12 +84,15 @@ CopyInfo(const MetaObject * _object)
 
 /** Clear group information */
 void MetaTransform::
-Clear()
+Clear(void)
 {
   if(META_DEBUG) METAIO_STREAM::cout << "MetaTransform: Clear" << METAIO_STREAM::endl;
   MetaObject::Clear();
-  delete parameters;
-  parameters = nullptr;
+  if(parameters)
+    {
+    delete parameters;
+    }
+  parameters = NULL;
   parametersDimension = 0;
   transformOrder = 0;
 
@@ -105,14 +108,14 @@ Clear()
 
 /** Destroy group information */
 void MetaTransform::
-M_Destroy()
+M_Destroy(void)
 {
   MetaObject::M_Destroy();
 }
 
 /** Set Read fields */
 void MetaTransform::
-M_SetupReadFields()
+M_SetupReadFields(void)
 {
   if(META_DEBUG) METAIO_STREAM::cout << "MetaTransform: M_SetupReadFields" << METAIO_STREAM::endl;
   MetaObject::M_SetupReadFields();
@@ -151,7 +154,7 @@ M_SetupReadFields()
 }
 
 void MetaTransform::
-M_SetupWriteFields()
+M_SetupWriteFields(void)
 {
   strcpy(m_ObjectTypeName,"Transform");
   MetaObject::M_SetupWriteFields();
@@ -168,7 +171,7 @@ M_SetupWriteFields()
       m_Fields.erase(it);
       break;
       }
-    ++it;
+    it++;
     }
 
   mF = MET_GetFieldRecord("Offset",&m_Fields);
@@ -180,7 +183,7 @@ M_SetupWriteFields()
       m_Fields.erase(it);
       break;
       }
-    ++it;
+    it++;
     }
 
   mF = MET_GetFieldRecord("ElementSpacing",&m_Fields);
@@ -192,7 +195,7 @@ M_SetupWriteFields()
       m_Fields.erase(it);
       break;
       }
-    ++it;
+    it++;
     }
 
   int i;
@@ -217,7 +220,7 @@ M_SetupWriteFields()
         m_Fields.erase(it);
         break;
         }
-      ++it;
+      it++;
       }
     }
 
@@ -311,7 +314,7 @@ M_SetupWriteFields()
 }
 
 bool MetaTransform::
-M_Write()
+M_Write(void)
 {
 
   if(!MetaObject::M_Write())
@@ -349,7 +352,7 @@ M_Write()
 
 
 // Set/Get the spacing
-const double * MetaTransform::GridSpacing() const
+const double * MetaTransform::GridSpacing(void) const
 {
   return gridSpacing;
 }
@@ -363,7 +366,7 @@ void  MetaTransform::GridSpacing(const double * _gridSpacing)
 }
 
 // Set/Get the grid index
-const double * MetaTransform::GridOrigin() const
+const double * MetaTransform::GridOrigin(void) const
 {
   return gridOrigin;
 }
@@ -377,7 +380,7 @@ void  MetaTransform::GridOrigin(const double * _gridOrigin)
 }
 
 // Set/Get the region size
-const double * MetaTransform::GridRegionSize() const
+const double * MetaTransform::GridRegionSize(void) const
 {
   return gridRegionSize;
 }
@@ -391,7 +394,7 @@ void  MetaTransform::GridRegionSize(const double * _gridRegionSize)
 }
 
 // Set/Get the region index
-const double * MetaTransform::GridRegionIndex() const
+const double * MetaTransform::GridRegionIndex(void) const
 {
   return gridRegionIndex;
 }
@@ -404,7 +407,7 @@ void  MetaTransform::GridRegionIndex(const double * _gridRegionIndex)
     }
 }
 
-const double * MetaTransform::Parameters() const
+const double * MetaTransform::Parameters(void) const
 {
   return parameters;
 }
@@ -414,7 +417,10 @@ void  MetaTransform::Parameters(unsigned int dimension, const double * _paramete
 {
   parametersDimension = dimension;
 
-  delete parameters;
+  if(parameters)
+    {
+    delete parameters;
+    }
 
   parameters = new double[parametersDimension];
 
@@ -426,7 +432,7 @@ void  MetaTransform::Parameters(unsigned int dimension, const double * _paramete
 }
 
 bool MetaTransform::
-M_Read()
+M_Read(void)
 {
   if(META_DEBUG)
     {
@@ -496,7 +502,10 @@ M_Read()
     transformOrder = (unsigned int)mF->value[0];
     }
 
-  delete parameters;
+  if(parameters)
+    {
+    delete parameters;
+    }
 
   parameters = new double[parametersDimension];
 

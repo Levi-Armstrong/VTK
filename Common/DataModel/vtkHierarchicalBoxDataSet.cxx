@@ -12,24 +12,31 @@
 
 =========================================================================*/
 #include "vtkHierarchicalBoxDataSet.h"
-#include "vtkHierarchicalBoxDataIterator.h"
+#include "vtkObjectFactory.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
-#include "vtkObjectFactory.h"
+#include "vtkHierarchicalBoxDataIterator.h"
 
 vtkStandardNewMacro(vtkHierarchicalBoxDataSet);
 
 //-----------------------------------------------------------------------------
-vtkHierarchicalBoxDataSet::vtkHierarchicalBoxDataSet() = default;
+vtkHierarchicalBoxDataSet::vtkHierarchicalBoxDataSet()
+{
+
+}
 
 //-----------------------------------------------------------------------------
-vtkHierarchicalBoxDataSet::~vtkHierarchicalBoxDataSet() = default;
+vtkHierarchicalBoxDataSet::~vtkHierarchicalBoxDataSet()
+{
+
+}
 
 //-----------------------------------------------------------------------------
-void vtkHierarchicalBoxDataSet::PrintSelf(ostream& os, vtkIndent indent)
+void vtkHierarchicalBoxDataSet::PrintSelf(ostream &os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 }
+
 
 //----------------------------------------------------------------------------
 vtkCompositeDataIterator* vtkHierarchicalBoxDataSet::NewIterator()
@@ -40,13 +47,16 @@ vtkCompositeDataIterator* vtkHierarchicalBoxDataSet::NewIterator()
 }
 
 //-----------------------------------------------------------------------------
-vtkHierarchicalBoxDataSet* vtkHierarchicalBoxDataSet::GetData(vtkInformation* info)
+vtkHierarchicalBoxDataSet* vtkHierarchicalBoxDataSet::GetData(
+  vtkInformation* info)
 {
-  return info ? vtkHierarchicalBoxDataSet::SafeDownCast(info->Get(DATA_OBJECT())) : nullptr;
+  return
+    info?vtkHierarchicalBoxDataSet::SafeDownCast(info->Get(DATA_OBJECT())) : 0;
 }
 
 //----------------------------------------------------------------------------
-vtkHierarchicalBoxDataSet* vtkHierarchicalBoxDataSet::GetData(vtkInformationVector* v, int i)
+vtkHierarchicalBoxDataSet* vtkHierarchicalBoxDataSet::GetData(
+  vtkInformationVector* v, int i)
 {
   return vtkHierarchicalBoxDataSet::GetData(v->GetInformationObject(i));
 }

@@ -57,7 +57,7 @@
  *
  * @sa
  * vtkMeanValueCoordinatesInterpolator vtkProbePolyhedron vtkPolyhedron
- */
+*/
 
 #ifndef vtkDeformPointSet_h
 #define vtkDeformPointSet_h
@@ -70,6 +70,7 @@
 class vtkDoubleArray;
 class vtkPolyData;
 
+
 class VTKFILTERSGENERAL_EXPORT vtkDeformPointSet : public vtkPointSetAlgorithm
 {
 public:
@@ -77,9 +78,9 @@ public:
   /**
    * Standard methods for instantiable (i.e., concrete) class.
    */
-  static vtkDeformPointSet* New();
-  vtkTypeMacro(vtkDeformPointSet, vtkPointSetAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkDeformPointSet *New();
+  vtkTypeMacro(vtkDeformPointSet,vtkPointSetAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
   //@}
 
   //@{
@@ -87,8 +88,8 @@ public:
    * Specify the control mesh to deform the input vtkPointSet. The control
    * mesh must be a closed, non-self-intersecting, manifold mesh.
    */
-  void SetControlMeshData(vtkPolyData* controlMesh);
-  vtkPolyData* GetControlMeshData();
+  void SetControlMeshData(vtkPolyData *controlMesh);
+  vtkPolyData *GetControlMeshData();
   //@}
 
   /**
@@ -106,16 +107,16 @@ public:
    * between executions. Thus flag is used to force reexecution and
    * recomputation of weights.
    */
-  vtkSetMacro(InitializeWeights, vtkTypeBool);
-  vtkGetMacro(InitializeWeights, vtkTypeBool);
-  vtkBooleanMacro(InitializeWeights, vtkTypeBool);
+  vtkSetMacro(InitializeWeights, int);
+  vtkGetMacro(InitializeWeights, int);
+  vtkBooleanMacro(InitializeWeights, int);
   //@}
 
 protected:
   vtkDeformPointSet();
-  ~vtkDeformPointSet() override;
+  ~vtkDeformPointSet() VTK_OVERRIDE;
 
-  vtkTypeBool InitializeWeights;
+  int InitializeWeights;
 
   // Keep track of information between execution passes
   vtkIdType InitialNumberOfControlMeshPoints;
@@ -124,11 +125,13 @@ protected:
   vtkIdType InitialNumberOfPointSetCells;
   vtkSmartPointer<vtkDoubleArray> Weights;
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *, vtkInformationVector **,
+    vtkInformationVector *) VTK_OVERRIDE;
 
 private:
-  vtkDeformPointSet(const vtkDeformPointSet&) = delete;
-  void operator=(const vtkDeformPointSet&) = delete;
+  vtkDeformPointSet(const vtkDeformPointSet&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkDeformPointSet&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif

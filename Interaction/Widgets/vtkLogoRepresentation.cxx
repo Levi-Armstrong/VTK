@@ -14,19 +14,21 @@
 =========================================================================*/
 #include "vtkLogoRepresentation.h"
 #include "vtkCallbackCommand.h"
-#include "vtkCellArray.h"
-#include "vtkFloatArray.h"
-#include "vtkImageData.h"
 #include "vtkObjectFactory.h"
-#include "vtkPointData.h"
 #include "vtkPoints.h"
+#include "vtkCellArray.h"
 #include "vtkPolyData.h"
 #include "vtkPolyDataMapper2D.h"
-#include "vtkPropCollection.h"
 #include "vtkProperty2D.h"
-#include "vtkRenderer.h"
-#include "vtkTexture.h"
 #include "vtkTexturedActor2D.h"
+#include "vtkPolyData.h"
+#include "vtkTexture.h"
+#include "vtkPolyDataMapper2D.h"
+#include "vtkFloatArray.h"
+#include "vtkPointData.h"
+#include "vtkImageData.h"
+#include "vtkPropCollection.h"
+#include "vtkRenderer.h"
 #include "vtkWindow.h"
 
 vtkStandardNewMacro(vtkLogoRepresentation);
@@ -34,11 +36,12 @@ vtkStandardNewMacro(vtkLogoRepresentation);
 vtkCxxSetObjectMacro(vtkLogoRepresentation, Image, vtkImageData);
 vtkCxxSetObjectMacro(vtkLogoRepresentation, ImageProperty, vtkProperty2D);
 
+
 //-------------------------------------------------------------------------
 vtkLogoRepresentation::vtkLogoRepresentation()
 {
   // Initialize the data members
-  this->Image = nullptr;
+  this->Image = NULL;
   this->ImageProperty = vtkProperty2D::New();
 
   // Setup the pipeline
@@ -58,14 +61,10 @@ vtkLogoRepresentation::vtkLogoRepresentation()
   vtkFloatArray* tc = vtkFloatArray::New();
   tc->SetNumberOfComponents(2);
   tc->SetNumberOfTuples(4);
-  tc->InsertComponent(0, 0, 0.0);
-  tc->InsertComponent(0, 1, 0.0);
-  tc->InsertComponent(1, 0, 1.0);
-  tc->InsertComponent(1, 1, 0.0);
-  tc->InsertComponent(2, 0, 1.0);
-  tc->InsertComponent(2, 1, 1.0);
-  tc->InsertComponent(3, 0, 0.0);
-  tc->InsertComponent(3, 1, 1.0);
+  tc->InsertComponent(0,0, 0.0);  tc->InsertComponent(0,1, 0.0);
+  tc->InsertComponent(1,0, 1.0);  tc->InsertComponent(1,1, 0.0);
+  tc->InsertComponent(2,0, 1.0);  tc->InsertComponent(2,1, 1.0);
+  tc->InsertComponent(3,0, 0.0);  tc->InsertComponent(3,1, 1.0);
   this->TexturePolyData->GetPointData()->SetTCoords(tc);
   tc->Delete();
   this->TextureMapper = vtkPolyDataMapper2D::New();
@@ -76,10 +75,10 @@ vtkLogoRepresentation::vtkLogoRepresentation()
   this->ImageProperty->SetOpacity(0.25);
   this->TextureActor->SetProperty(this->ImageProperty);
 
-  // Set up parameters from the superclass
+  // Set up parameters from thw superclass
   double size[2];
   this->GetSize(size);
-  this->Position2Coordinate->SetValue(0.04 * size[0], 0.04 * size[1]);
+  this->Position2Coordinate->SetValue(0.04*size[0], 0.04*size[1]);
   this->ProportionalResize = 1;
   this->Moving = 1;
   this->SetShowBorder(vtkBorderRepresentation::BORDER_ACTIVE);
@@ -90,7 +89,7 @@ vtkLogoRepresentation::vtkLogoRepresentation()
 //-------------------------------------------------------------------------
 vtkLogoRepresentation::~vtkLogoRepresentation()
 {
-  if (this->Image)
+  if ( this->Image )
   {
     this->Image->Delete();
   }
@@ -103,13 +102,15 @@ vtkLogoRepresentation::~vtkLogoRepresentation()
 }
 
 //----------------------------------------------------------------------
-void vtkLogoRepresentation::AdjustImageSize(double o[2], double borderSize[2], double imageSize[2])
+void vtkLogoRepresentation::AdjustImageSize(double o[2],
+                                            double borderSize[2],
+                                            double imageSize[2])
 {
   // Scale the image to fit with in the border.
   // Also update the origin so the image is centered.
-  double r0 = borderSize[0] / imageSize[0];
-  double r1 = borderSize[1] / imageSize[1];
-  if (r0 > r1)
+  double r0 = borderSize[0]/imageSize[0];
+  double r1 = borderSize[1]/imageSize[1];
+  if ( r0 > r1 )
   {
     imageSize[0] *= r1;
     imageSize[1] *= r1;
@@ -120,40 +121,42 @@ void vtkLogoRepresentation::AdjustImageSize(double o[2], double borderSize[2], d
     imageSize[1] *= r0;
   }
 
-  if (imageSize[0] < borderSize[0])
+  if ( imageSize[0] < borderSize[0] )
   {
-    o[0] += (borderSize[0] - imageSize[0]) / 2.0;
+    o[0] += (borderSize[0]-imageSize[0])/2.0;
   }
-  if (imageSize[1] < borderSize[1])
+  if ( imageSize[1] < borderSize[1] )
   {
-    o[1] += (borderSize[1] - imageSize[1]) / 2.0;
+    o[1] += (borderSize[1]-imageSize[1])/2.0;
   }
 }
 
 //-------------------------------------------------------------------------
 void vtkLogoRepresentation::BuildRepresentation()
 {
-  if (this->GetMTime() > this->BuildTime ||
-    (this->Renderer && this->Renderer->GetVTKWindow() &&
-      this->Renderer->GetVTKWindow()->GetMTime() > this->BuildTime))
+  if ( this->GetMTime() > this->BuildTime ||
+       (this->Renderer && this->Renderer->GetVTKWindow() &&
+        this->Renderer->GetVTKWindow()->GetMTime() > this->BuildTime) )
   {
 
     // Determine and adjust the size of the image
-    if (this->Image)
+    if ( this->Image )
     {
       double imageSize[2], borderSize[2], o[2];
       imageSize[0] = 0.0;
       imageSize[1] = 0.0;
-      // this->Image->Update();
-      if (this->Image->GetDataDimension() == 2)
+      //this->Image->Update();
+      if ( this->Image->GetDataDimension() == 2 )
       {
         int dims[3];
         this->Image->GetDimensions(dims);
         imageSize[0] = static_cast<double>(dims[0]);
         imageSize[1] = static_cast<double>(dims[1]);
       }
-      int* p1 = this->PositionCoordinate->GetComputedDisplayValue(this->Renderer);
-      int* p2 = this->Position2Coordinate->GetComputedDisplayValue(this->Renderer);
+      int *p1 = this->PositionCoordinate->
+        GetComputedDisplayValue(this->Renderer);
+      int *p2 = this->Position2Coordinate->
+        GetComputedDisplayValue(this->Renderer);
       borderSize[0] = p2[0] - p1[0];
       borderSize[1] = p2[1] - p1[1];
       o[0] = static_cast<double>(p1[0]);
@@ -161,15 +164,14 @@ void vtkLogoRepresentation::BuildRepresentation()
 
       // this preserves the image aspect ratio. The image is
       // centered around the center of the bordered ragion.
-      this->AdjustImageSize(o, borderSize, imageSize);
+      this->AdjustImageSize(o,borderSize,imageSize);
 
       // Update the points
       this->Texture->SetInputData(this->Image);
-      this->Texture->InterpolateOn();
-      this->TexturePoints->SetPoint(0, o[0], o[1], 0.0);
-      this->TexturePoints->SetPoint(1, o[0] + imageSize[0], o[1], 0.0);
-      this->TexturePoints->SetPoint(2, o[0] + imageSize[0], o[1] + imageSize[1], 0.0);
-      this->TexturePoints->SetPoint(3, o[0], o[1] + imageSize[1], 0.0);
+      this->TexturePoints->SetPoint(0, o[0],o[1],0.0);
+      this->TexturePoints->SetPoint(1, o[0]+imageSize[0],o[1],0.0);
+      this->TexturePoints->SetPoint(2, o[0]+imageSize[0],o[1]+imageSize[1],0.0);
+      this->TexturePoints->SetPoint(3, o[0],o[1]+imageSize[1],0.0);
       // For GL backend 2 it is important to modify the point array
       this->TexturePoints->Modified();
     }
@@ -180,55 +182,52 @@ void vtkLogoRepresentation::BuildRepresentation()
 }
 
 //-------------------------------------------------------------------------
-void vtkLogoRepresentation::GetActors2D(vtkPropCollection* pc)
+void vtkLogoRepresentation::GetActors2D(vtkPropCollection *pc)
 {
   pc->AddItem(this->TextureActor);
   this->Superclass::GetActors2D(pc);
 }
 
 //-------------------------------------------------------------------------
-void vtkLogoRepresentation::ReleaseGraphicsResources(vtkWindow* w)
+void vtkLogoRepresentation::ReleaseGraphicsResources(vtkWindow *w)
 {
   this->TextureActor->ReleaseGraphicsResources(w);
   this->Superclass::ReleaseGraphicsResources(w);
 }
 
 //-------------------------------------------------------------------------
-int vtkLogoRepresentation::RenderOverlay(vtkViewport* v)
+int vtkLogoRepresentation::RenderOverlay(vtkViewport *v)
 {
   int count = 0;
-  if (this->TextureActor->GetVisibility())
+  vtkRenderer* ren = vtkRenderer::SafeDownCast(v);
+  if (ren)
   {
-    vtkRenderer* ren = vtkRenderer::SafeDownCast(v);
-    if (ren)
-    {
-      count += this->TextureActor->RenderOverlay(v);
-    }
-    // Display border on top of logo
-    count += this->Superclass::RenderOverlay(v);
+    count += this->TextureActor->RenderOverlay(v);
   }
+  // Display border on top of logo
+  count += this->Superclass::RenderOverlay(v);
   return count;
 }
 
 //-------------------------------------------------------------------------
 void vtkLogoRepresentation::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 
-  if (this->Image)
+  if ( this->Image )
   {
     os << indent << "Image:\n";
-    this->Image->PrintSelf(os, indent.GetNextIndent());
+    this->Image->PrintSelf(os,indent.GetNextIndent());
   }
   else
   {
     os << indent << "Image: (none)\n";
   }
 
-  if (this->ImageProperty)
+  if ( this->ImageProperty )
   {
     os << indent << "Image Property:\n";
-    this->ImageProperty->PrintSelf(os, indent.GetNextIndent());
+    this->ImageProperty->PrintSelf(os,indent.GetNextIndent());
   }
   else
   {

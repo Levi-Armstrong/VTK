@@ -22,13 +22,13 @@
  * calls. This an abstract class. Concrete classes are OS specific.
  * @sa
  * vtkGPUInfo vtkDirectXGPUInfoList vtkCoreGraphicsGPUInfoList
- */
+*/
 
 #ifndef vtkGPUInfoList_h
 #define vtkGPUInfoList_h
 
-#include "vtkObject.h"
 #include "vtkRenderingCoreModule.h" // For export macro
+#include "vtkObject.h"
 
 class vtkGPUInfoListArray; // STL Pimpl
 class vtkGPUInfo;
@@ -36,9 +36,9 @@ class vtkGPUInfo;
 class VTKRENDERINGCORE_EXPORT vtkGPUInfoList : public vtkObject
 {
 public:
-  static vtkGPUInfoList* New();
+  static vtkGPUInfoList *New();
   vtkTypeMacro(vtkGPUInfoList, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Build the list of vtkInfoGPU if not done yet.
@@ -65,7 +65,7 @@ public:
    * \pre valid_index: i>=0 && i<GetNumberOfGPUs()
    * \post result_exists: result!=0
    */
-  virtual vtkGPUInfo* GetGPUInfo(int i);
+  virtual vtkGPUInfo *GetGPUInfo(int i);
 
 protected:
   //@{
@@ -73,15 +73,15 @@ protected:
    * Default constructor. Set Probed to false. Set Array to NULL.
    */
   vtkGPUInfoList();
-  ~vtkGPUInfoList() override;
+  virtual ~vtkGPUInfoList();
   //@}
 
   bool Probed;
-  vtkGPUInfoListArray* Array;
+  vtkGPUInfoListArray *Array;
 
 private:
-  vtkGPUInfoList(const vtkGPUInfoList&) = delete;
-  void operator=(const vtkGPUInfoList&) = delete;
+  vtkGPUInfoList(const vtkGPUInfoList&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkGPUInfoList&) VTK_DELETE_FUNCTION;
 };
 
 #endif

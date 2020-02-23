@@ -27,24 +27,23 @@
  *
  * @par Thanks:
  * Thanks to Philippe Pebay from Sandia National Laboratories for implementing this class.
- */
+*/
 
 #ifndef vtkPDescriptiveStatistics_h
 #define vtkPDescriptiveStatistics_h
 
-#include "vtkDescriptiveStatistics.h"
 #include "vtkFiltersParallelStatisticsModule.h" // For export macro
+#include "vtkDescriptiveStatistics.h"
 
 class vtkMultiBlockDataSet;
 class vtkMultiProcessController;
 
-class VTKFILTERSPARALLELSTATISTICS_EXPORT vtkPDescriptiveStatistics
-  : public vtkDescriptiveStatistics
+class VTKFILTERSPARALLELSTATISTICS_EXPORT vtkPDescriptiveStatistics : public vtkDescriptiveStatistics
 {
 public:
   static vtkPDescriptiveStatistics* New();
   vtkTypeMacro(vtkPDescriptiveStatistics, vtkDescriptiveStatistics);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -58,17 +57,18 @@ public:
   /**
    * Execute the parallel calculations required by the Learn option.
    */
-  void Learn(vtkTable* inData, vtkTable* inParameters, vtkMultiBlockDataSet* outMeta) override;
+  virtual void Learn( vtkTable* inData,
+                      vtkTable* inParameters,
+                      vtkMultiBlockDataSet* outMeta );
 
 protected:
   vtkPDescriptiveStatistics();
-  ~vtkPDescriptiveStatistics() override;
+  ~vtkPDescriptiveStatistics();
 
   vtkMultiProcessController* Controller;
-
 private:
-  vtkPDescriptiveStatistics(const vtkPDescriptiveStatistics&) = delete;
-  void operator=(const vtkPDescriptiveStatistics&) = delete;
+  vtkPDescriptiveStatistics(const vtkPDescriptiveStatistics&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPDescriptiveStatistics&) VTK_DELETE_FUNCTION;
 };
 
 #endif

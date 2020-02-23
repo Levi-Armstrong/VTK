@@ -31,7 +31,7 @@
  *
  * @sa
  * vtkInterpolationKernel vtkGeneralizedKernel vtkVoronoiKernel
- */
+*/
 
 #ifndef vtkProbabilisticVoronoiKernel_h
 #define vtkProbabilisticVoronoiKernel_h
@@ -42,6 +42,7 @@
 class vtkIdList;
 class vtkDoubleArray;
 
+
 class VTKFILTERSPOINTS_EXPORT vtkProbabilisticVoronoiKernel : public vtkGeneralizedKernel
 {
 public:
@@ -49,9 +50,9 @@ public:
   /**
    * Standard methods for instantiation, obtaining type information, and printing.
    */
-  static vtkProbabilisticVoronoiKernel* New();
-  vtkTypeMacro(vtkProbabilisticVoronoiKernel, vtkGeneralizedKernel);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkProbabilisticVoronoiKernel *New();
+  vtkTypeMacro(vtkProbabilisticVoronoiKernel,vtkGeneralizedKernel);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   // Re-use any superclass signatures that we don't override.
@@ -68,19 +69,19 @@ public:
    * invoke ComputeWeights() and provide the interpolation basis points pIds
    * directly. The probably weighting prob are numbers 0<=prob<=1 which are
    * multiplied against the interpolation weights before normalization. They
-   * are estimates of local confidence of weights. The prob may be nullptr in
+   * are estimates of local confidence of weights. The prob may be NULL in
    * which all probabilities are considered =1.
    */
-  vtkIdType ComputeWeights(
-    double x[3], vtkIdList* pIds, vtkDoubleArray* prob, vtkDoubleArray* weights) override;
+  virtual vtkIdType ComputeWeights(double x[3], vtkIdList *pIds,
+                                   vtkDoubleArray *prob, vtkDoubleArray *weights);
 
 protected:
   vtkProbabilisticVoronoiKernel();
-  ~vtkProbabilisticVoronoiKernel() override;
+  ~vtkProbabilisticVoronoiKernel();
 
 private:
-  vtkProbabilisticVoronoiKernel(const vtkProbabilisticVoronoiKernel&) = delete;
-  void operator=(const vtkProbabilisticVoronoiKernel&) = delete;
+  vtkProbabilisticVoronoiKernel(const vtkProbabilisticVoronoiKernel&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkProbabilisticVoronoiKernel&) VTK_DELETE_FUNCTION;
 };
 
 #endif

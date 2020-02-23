@@ -23,13 +23,13 @@
  *
  * @sa
  * vtkFrustumCoverageCuller
- */
+*/
 
 #ifndef vtkCuller_h
 #define vtkCuller_h
 
-#include "vtkObject.h"
 #include "vtkRenderingCoreModule.h" // For export macro
+#include "vtkObject.h"
 
 class vtkProp;
 class vtkRenderer;
@@ -38,20 +38,21 @@ class VTKRENDERINGCORE_EXPORT vtkCuller : public vtkObject
 {
 public:
   vtkTypeMacro(vtkCuller, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * This is called outside the render loop by vtkRenderer
    */
-  virtual double Cull(vtkRenderer* ren, vtkProp** propList, int& listLength, int& initialized) = 0;
+  virtual double Cull( vtkRenderer *ren, vtkProp **propList,
+                       int& listLength, int& initialized ) = 0;
 
 protected:
   vtkCuller();
-  ~vtkCuller() override;
+  ~vtkCuller();
 
 private:
-  vtkCuller(const vtkCuller&) = delete;
-  void operator=(const vtkCuller&) = delete;
+  vtkCuller(const vtkCuller&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkCuller&) VTK_DELETE_FUNCTION;
 };
 
 #endif

@@ -50,21 +50,21 @@
  * Danny Holten. Hierarchical Edge Bundles: Visualization of Adjacency Relations
  * Relations in Hierarchical Data. IEEE Transactions on Visualization and
  * Computer Graphics, Vol. 12, No. 5, 2006. pp. 741-748.
- */
+*/
 
 #ifndef vtkGraphHierarchicalBundleEdges_h
 #define vtkGraphHierarchicalBundleEdges_h
 
-#include "vtkGraphAlgorithm.h"
 #include "vtkInfovisCoreModule.h" // For export macro
+#include "vtkGraphAlgorithm.h"
 
 class VTKINFOVISCORE_EXPORT vtkGraphHierarchicalBundleEdges : public vtkGraphAlgorithm
 {
 public:
-  static vtkGraphHierarchicalBundleEdges* New();
+  static vtkGraphHierarchicalBundleEdges *New();
 
-  vtkTypeMacro(vtkGraphHierarchicalBundleEdges, vtkGraphAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkGraphHierarchicalBundleEdges,vtkGraphAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -92,11 +92,11 @@ public:
   /**
    * Set the input type of the algorithm to vtkGraph.
    */
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  int FillInputPortInformation(int port, vtkInformation* info);
 
 protected:
   vtkGraphHierarchicalBundleEdges();
-  ~vtkGraphHierarchicalBundleEdges() override {}
+  ~vtkGraphHierarchicalBundleEdges() {}
 
   double BundlingStrength;
   bool DirectMapping;
@@ -104,11 +104,11 @@ protected:
   /**
    * Convert the vtkGraph into vtkPolyData.
    */
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 
 private:
-  vtkGraphHierarchicalBundleEdges(const vtkGraphHierarchicalBundleEdges&) = delete;
-  void operator=(const vtkGraphHierarchicalBundleEdges&) = delete;
+  vtkGraphHierarchicalBundleEdges(const vtkGraphHierarchicalBundleEdges&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkGraphHierarchicalBundleEdges&) VTK_DELETE_FUNCTION;
 };
 
 #endif

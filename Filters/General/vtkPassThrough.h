@@ -18,7 +18,7 @@
  *
  *
  * The output type is always the same as the input object type.
- */
+*/
 
 #ifndef vtkPassThrough_h
 #define vtkPassThrough_h
@@ -31,12 +31,12 @@ class VTKFILTERSGENERAL_EXPORT vtkPassThrough : public vtkPassInputTypeAlgorithm
 public:
   static vtkPassThrough* New();
   vtkTypeMacro(vtkPassThrough, vtkPassInputTypeAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Specify the first input port as optional
    */
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  int FillInputPortInformation(int port, vtkInformation* info) VTK_OVERRIDE;
 
   //@{
   /**
@@ -45,36 +45,26 @@ public:
    * this filter's input connections and it will act like a source.
    * Defaults to OFF.
    */
-  vtkSetMacro(DeepCopyInput, vtkTypeBool);
-  vtkGetMacro(DeepCopyInput, vtkTypeBool);
-  vtkBooleanMacro(DeepCopyInput, vtkTypeBool);
+  vtkSetMacro(DeepCopyInput, int);
+  vtkGetMacro(DeepCopyInput, int);
+  vtkBooleanMacro(DeepCopyInput, int);
   //@}
-
-  /**
-   * Allow the filter to execute without error when no input connection is
-   * specified. In this case, and empty vtkPolyData dataset will be created.
-   * By default, this setting is false.
-   * @{
-   */
-  vtkSetMacro(AllowNullInput, bool);
-  vtkGetMacro(AllowNullInput, bool);
-  vtkBooleanMacro(AllowNullInput, bool);
-  /**@}*/
 
 protected:
   vtkPassThrough();
-  ~vtkPassThrough() override;
+  ~vtkPassThrough() VTK_OVERRIDE;
 
-  int RequestDataObject(
-    vtkInformation* request, vtkInformationVector** inVec, vtkInformationVector* outVec) override;
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(
+    vtkInformation*,
+    vtkInformationVector**,
+    vtkInformationVector*) VTK_OVERRIDE;
 
-  vtkTypeBool DeepCopyInput;
-  bool AllowNullInput;
+  int DeepCopyInput;
 
 private:
-  vtkPassThrough(const vtkPassThrough&) = delete;
-  void operator=(const vtkPassThrough&) = delete;
+  vtkPassThrough(const vtkPassThrough&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPassThrough&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

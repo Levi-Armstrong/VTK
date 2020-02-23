@@ -64,7 +64,7 @@ class Cursor3DViewer(Testing.vtkTest):
     Note:
         root, the top-level widget for Tk,
         tkrw, the vtkTkRenderWidget and
-        tkvw, the vtkTkImageViewerWidget
+        viewer, the Image viewer
         are accessible from any function in this class
         after SetUp() has run.
     '''
@@ -77,20 +77,17 @@ class Cursor3DViewer(Testing.vtkTest):
         def OnClosing():
             self.root.quit()
 
-        def ViewerDown(tkvw):
-            viewer = tkvw.GetImageViewer()
-            ViewerSetZSlice(tkvw, viewer.GetZSlice() - 1)
+        def ViewerDown(viewer):
+            ViewerSetZSlice(viewer, viewer.GetZSlice() - 1)
 
-        def ViewerUp(tkvw):
-            viewer = tkvw.GetImageViewer()
-            ViewerSetZSlice(tkvw, viewer.GetZSlice() + 1)
+        def ViewerUp(viewer):
+            ViewerSetZSlice(viewer, viewer.GetZSlice() + 1)
 
-        def ViewerSetZSlice(tkvw, z):
-            viewer = tkvw.GetImageViewer()
+        def ViewerSetZSlice(viewer, z):
             viewer.SetZSlice(z)
             txt = 'slice: ' + str(z)
             sliceLabel.configure(text=txt)
-            tkvw.Render()
+            viewer.Render()
 
         def SetCursorFromViewer(event):
             x = int(event.x)
@@ -99,7 +96,7 @@ class Cursor3DViewer(Testing.vtkTest):
             self.root.update_idletasks()
             height = int(self.tkvw.configure()['height'][4])
             y = height - y
-            z = self.tkvw.GetImageViewer().GetZSlice()
+            z = self.viewer.GetZSlice()
             SetCursor( x / IMAGE_MAG_X, y / IMAGE_MAG_Y, z / IMAGE_MAG_Z )
 
         def SetCursor(x, y, z):
@@ -115,7 +112,7 @@ class Cursor3DViewer(Testing.vtkTest):
                 CURSOR_Z * IMAGE_MAG_Z)
 
             self.viewer.Render()
-            self.tkrw.Render()
+            self.renWin.Render()
 
         # Pipeline stuff.
         reader = vtk.vtkSLCReader()
@@ -148,11 +145,11 @@ class Cursor3DViewer(Testing.vtkTest):
         axesActor.GetProperty().SetAmbient(0.5)
 
         # Image viewer stuff.
-        viewer = vtk.vtkImageViewer()
-        viewer.SetInputConnection(imageCursor.GetOutputPort())
-        viewer.SetZSlice(CURSOR_Z*IMAGE_MAG_Z)
-        viewer.SetColorWindow(256)
-        viewer.SetColorLevel(128)
+        self.viewer = vtk.vtkImageViewer()
+        self.viewer.SetInputConnection(imageCursor.GetOutputPort())
+        self.viewer.SetZSlice(CURSOR_Z*IMAGE_MAG_Z)
+        self.viewer.SetColorWindow(256)
+        self.viewer.SetColorLevel(128)
 
         # Create transfer functions for opacity and color.
         opacity_transfer_function = vtk.vtkPiecewiseFunction()
@@ -198,9 +195,9 @@ class Cursor3DViewer(Testing.vtkTest):
         ren.AddVolume(volume)
         ren.SetBackground(0.1, 0.2, 0.4)
 
-        renWin = vtk.vtkRenderWindow()
-        renWin.AddRenderer(ren)
-        renWin.SetSize(256, 256)
+        self.renWin = vtk.vtkRenderWindow()
+        self.renWin.AddRenderer(ren)
+        self.renWin.SetSize(256, 256)
 
         # Create the GUI: two renderer widgets and a quit button.
         self.root = tkinter.Tk()
@@ -224,15 +221,15 @@ class Cursor3DViewer(Testing.vtkTest):
         viewerFrame = tkinter.Frame(displayFrame)
         viewerFrame.pack(padx=3, pady=3, side=LEFT, anchor=N,
                         fill=BOTH, expand=FALSE)
-        self.tkvw = vtkTkImageViewerWidget(viewerFrame, iv=viewer,
+        self.tkvw = vtkTkImageViewerWidget(viewerFrame, iv=self.viewer,
                         width=264, height=264)
         viewerControls = tkinter.Frame(viewerFrame)
         viewerControls.pack(side=BOTTOM, anchor=S, fill=BOTH, expand=TRUE)
         self.tkvw.pack(side=TOP, anchor=N, fill=BOTH, expand=FALSE)
         downButton = tkinter.Button(viewerControls, text="Down",
-                            command=[ViewerDown,self.tkvw])
+                            command=[ViewerDown,self.viewer])
         upButton = tkinter.Button(viewerControls, text="Up",
-                            command=[ViewerUp,self.tkvw])
+                            command=[ViewerUp,self.viewer])
         sliceLabel = tkinter.Label(viewerControls,
                             text="slice: "+str(CURSOR_Z*IMAGE_MAG_Z))
         downButton.pack(side=LEFT, expand=TRUE, fill=BOTH)
@@ -243,7 +240,7 @@ class Cursor3DViewer(Testing.vtkTest):
         renderFrame = tkinter.Frame(displayFrame)
         renderFrame.pack(padx=3, pady=3, side=LEFT, anchor=N,
                         fill=BOTH, expand=TRUE)
-        self.tkrw = vtkTkRenderWidget(renderFrame, rw=renWin,
+        self.tkrw = vtkTkRenderWidget(renderFrame, rw=self.renWin,
                         width=264, height=264)
 
         self.tkrw.pack(side=TOP, anchor=N, fill=BOTH, expand=TRUE)
@@ -259,22 +256,20 @@ class Cursor3DViewer(Testing.vtkTest):
 
         # Associate the functions with the buttons and label.
         #
-        downButton.config(command=partial(ViewerDown, self.tkvw))
-        upButton.config(command=partial(ViewerUp, self.tkvw))
+        downButton.config(command=partial(ViewerDown, self.viewer))
+        upButton.config(command=partial(ViewerUp, self.viewer))
 
     def DoIt(self):
         self.SetUp()
-        self.tkvw.Render()
+        self.viewer.Render()
         self.tkrw.Render()
         self.root.update()
         # If you want to interact and use the sliders etc,
         # uncomment the following line.
         #self.root.mainloop()
         img_file = "cursor3D.png"
-        Testing.compareImage(self.tkvw.GetImageViewer().GetRenderWindow(),
-                             Testing.getAbsImagePath(img_file))
-        # Testing.interact()
-        self.root.destroy()
+        Testing.compareImage(self.viewer.GetRenderWindow(), Testing.getAbsImagePath(img_file))
+#         Testing.interact()
 
 if __name__ == '__main__':
     cases = [(Cursor3DViewer, 'DoIt')]

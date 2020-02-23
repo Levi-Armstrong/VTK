@@ -20,35 +20,35 @@
  *
  * @sa
  * vtkSimplePointsReader
- */
+*/
 
 #ifndef vtkSimplePointsWriter_h
 #define vtkSimplePointsWriter_h
 
-#include "vtkDataSetWriter.h"
 #include "vtkIOLegacyModule.h" // For export macro
+#include "vtkDataSetWriter.h"
 
 class VTKIOLEGACY_EXPORT vtkSimplePointsWriter : public vtkDataSetWriter
 {
 public:
-  static vtkSimplePointsWriter* New();
-  vtkTypeMacro(vtkSimplePointsWriter, vtkDataSetWriter);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkSimplePointsWriter *New();
+  vtkTypeMacro(vtkSimplePointsWriter,vtkDataSetWriter);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   vtkGetMacro(DecimalPrecision, int);
   vtkSetMacro(DecimalPrecision, int);
 
 protected:
   vtkSimplePointsWriter();
-  ~vtkSimplePointsWriter() override {}
+  ~vtkSimplePointsWriter(){}
 
-  void WriteData() override;
+  void WriteData();
 
   int DecimalPrecision;
 
 private:
-  vtkSimplePointsWriter(const vtkSimplePointsWriter&) = delete;
-  void operator=(const vtkSimplePointsWriter&) = delete;
+  vtkSimplePointsWriter(const vtkSimplePointsWriter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkSimplePointsWriter&) VTK_DELETE_FUNCTION;
 };
 
 #endif

@@ -35,35 +35,35 @@ class XdmfArray;
 class VTKIOXDMF2_EXPORT vtkXdmfDataArray : public vtkObject
 {
 public:
-  static vtkXdmfDataArray* New();
-  vtkTypeMacro(vtkXdmfDataArray, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkXdmfDataArray *New();
+  vtkTypeMacro(vtkXdmfDataArray,vtkObject);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
-  vtkDataArray* FromArray(void);
+  vtkDataArray *FromArray( void );
 
-  char* ToArray(void);
+  char *ToArray( void );
 
-  vtkDataArray* FromXdmfArray(char* ArrayName = nullptr, int CopyShape = 1, int rank = 1,
-    int Components = 1, int MakeCopy = 1);
+  vtkDataArray *FromXdmfArray( char *ArrayName = NULL, int CopyShape = 1,
+   int rank = 1, int Components = 1 , int MakeCopy = 1);
 
-  char* ToXdmfArray(vtkDataArray* DataArray = nullptr, int CopyShape = 1);
+  char *ToXdmfArray( vtkDataArray *DataArray = NULL, int CopyShape = 1 );
 
-  void SetArray(char* TagName);
+  void SetArray( char *TagName );
 
-  char* GetArray(void);
+  char *GetArray( void );
 
-  void SetVtkArray(vtkDataArray* array);
+  void SetVtkArray( vtkDataArray *array);
 
-  vtkDataArray* GetVtkArray(void);
+  vtkDataArray *GetVtkArray( void );
 
 protected:
   vtkXdmfDataArray();
 
 private:
-  vtkDataArray* vtkArray;
-  xdmf2::XdmfArray* Array;
-  vtkXdmfDataArray(const vtkXdmfDataArray&) = delete;
-  void operator=(const vtkXdmfDataArray&) = delete;
+  vtkDataArray  *vtkArray;
+  xdmf2::XdmfArray  *Array;
+  vtkXdmfDataArray(const vtkXdmfDataArray&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkXdmfDataArray&) VTK_DELETE_FUNCTION;
 };
 
 #endif /* vtkXdmfDataArray_h */

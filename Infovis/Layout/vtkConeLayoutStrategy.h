@@ -13,9 +13,9 @@
 
 =========================================================================*/
 //-------------------------------------------------------------------------
-// Copyright 2008 Sandia Corporation.
-// Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
-// the U.S. Government retains certain rights in this software.
+//Copyright 2008 Sandia Corporation.
+//Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
+//the U.S. Government retains certain rights in this software.
 //-------------------------------------------------------------------------
 
 /**
@@ -41,23 +41,23 @@
  * @par Thanks:
  * Thanks to David Duke from the University of Leeds for providing this
  * implementation.
- */
+*/
 
 #ifndef vtkConeLayoutStrategy_h
 #define vtkConeLayoutStrategy_h
 
-#include "vtkGraphLayoutStrategy.h"
 #include "vtkInfovisLayoutModule.h" // For export macro
+#include "vtkGraphLayoutStrategy.h"
 
 class vtkPoints;
 
 class VTKINFOVISLAYOUT_EXPORT vtkConeLayoutStrategy : public vtkGraphLayoutStrategy
 {
 public:
-  static vtkConeLayoutStrategy* New();
+  static vtkConeLayoutStrategy *New();
 
   vtkTypeMacro(vtkConeLayoutStrategy, vtkGraphLayoutStrategy);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -79,9 +79,9 @@ public:
    * actually the spanning tree of a graph.  For "real" trees,
    * non-compressed layout is best, and is the default.
    */
-  vtkSetMacro(Compression, vtkTypeBool);
-  vtkGetMacro(Compression, vtkTypeBool);
-  vtkBooleanMacro(Compression, vtkTypeBool);
+  vtkSetMacro(Compression, int);
+  vtkGetMacro(Compression, int);
+  vtkBooleanMacro(Compression, int);
   //@}
 
   //@{
@@ -96,14 +96,15 @@ public:
   vtkGetMacro(Spacing, float);
   //@}
 
+
   /**
    * Perform the layout.
    */
-  void Layout() override;
+  void Layout();
 
 protected:
   vtkConeLayoutStrategy();
-  ~vtkConeLayoutStrategy() override;
+  ~vtkConeLayoutStrategy();
 
   /**
    * Helper operations for tree layout.  Layout is performed
@@ -113,26 +114,29 @@ protected:
    * from the initial position of the root node.
    */
 
-  double LocalPlacement(vtkIdType root, vtkPoints* points);
+  double LocalPlacement(vtkIdType root, vtkPoints *points);
 
-  void GlobalPlacement(vtkIdType root, vtkPoints* points,
-    double refX,   // absolute x-y coordinate of
-    double refY,   // parent node; z coordinate
-    double level); // derived from level.
+  void GlobalPlacement(
+    vtkIdType root,
+    vtkPoints *points,
+    double refX,         // absolute x-y coordinate of
+    double refY,         // parent node; z coordinate
+    double level );      // derived from level.
 
-  float Compactness;       // factor used in mapping layer to Z
-  vtkTypeBool Compression; // force a compact layout?
-  float Spacing;           // Scale vertical spacing of cones.
+  float Compactness;     // factor used in mapping layer to Z
+  int   Compression;     // force a compact layout?
+  float Spacing;         // Scale vertical spacing of cones.
 
   // Values accumulated for possible statistical use
   double MinRadius;
   double MaxRadius;
-  int NrCones;
+  int   NrCones;
   double SumOfRadii;
 
 private:
-  vtkConeLayoutStrategy(const vtkConeLayoutStrategy&) = delete;
-  void operator=(const vtkConeLayoutStrategy&) = delete;
+  vtkConeLayoutStrategy(const vtkConeLayoutStrategy&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkConeLayoutStrategy&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

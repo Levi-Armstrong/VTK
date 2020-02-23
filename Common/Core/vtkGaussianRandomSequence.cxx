@@ -13,16 +13,22 @@
 =========================================================================*/
 #include "vtkGaussianRandomSequence.h"
 
-// ----------------------------------------------------------------------------
-vtkGaussianRandomSequence::vtkGaussianRandomSequence() = default;
 
 // ----------------------------------------------------------------------------
-vtkGaussianRandomSequence::~vtkGaussianRandomSequence() = default;
-
-// ----------------------------------------------------------------------------
-double vtkGaussianRandomSequence::GetScaledValue(double mean, double standardDeviation)
+vtkGaussianRandomSequence::vtkGaussianRandomSequence()
 {
-  return mean + standardDeviation * this->GetValue();
+}
+
+// ----------------------------------------------------------------------------
+vtkGaussianRandomSequence::~vtkGaussianRandomSequence()
+{
+}
+
+// ----------------------------------------------------------------------------
+double vtkGaussianRandomSequence::GetScaledValue(double mean,
+                                                 double standardDeviation)
+{
+  return mean+standardDeviation*this->GetValue();
 }
 
 // ----------------------------------------------------------------------------

@@ -2,26 +2,18 @@ vtk_add_test_python(
   Canny.py
   OBBCylinder.py
   TestCellDerivs.py
-  TestCellLocators.py,NO_OUTPUT,NO_VALID
   TestClipClosedSurface.py
   TestClipOutline.py
   TestCurvatures.py
   TestDeformPointSet.py
-  TestDiscreteFlyingEdges2D.py
-  TestDiscreteFlyingEdges3D.py
-  TestDiscreteFlyingEdgesClipper2D.py
   TestDiscreteMarchingCubes.py
   TestDiscreteMarchingCubesAdjacentScalars.py
-  TestFEDiscreteClipper2D.py
   TestGraphLayoutFilter.py
-  TestMarchingCubes.py
+  TestMultiBlockStreamer.py
   TestMultiBlockFromTimeSeries.py
   TestPointConnectivityFilter.py
-  TestRemoveGhostCells.py,NO_OUTPUT,NO_VALID
+  TestRectilinearGridToTetrahedra.py
   TestSplineFilter.py
-  TestStaticCellLocator.py
-  TestStaticCellLocatorPlaneIntersection.py
-  TestSynchronizeTimeFilter.py,NO_OUTPUT,NO_VALID
   WarpToImage.py
   blankGrid.py
   clipComb.py
@@ -56,7 +48,10 @@ vtk_add_test_python(
   pointsPrecisions.py,NO_OUTPUT,NO_DATA,NO_VALID,NO_RT
   tableBasedClip.py,NO_RT
   GreenLagrangeStrain.py.py,NO_OUTPUT,NO_DATA,NO_VALID
-  TestMultiBlockStreamer.py
-  TestSampleImplicitFunctionFilter.py
-  TestRectilinearGridToTetrahedra.py
   )
+
+if ("${VTK_RENDERING_BACKEND}" STREQUAL "OpenGL2")
+  vtk_add_test_python(
+    TestSampleImplicitFunctionFilter.py
+    )
+endif()

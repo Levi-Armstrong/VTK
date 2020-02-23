@@ -26,46 +26,42 @@
  * Binary files written on one system may not be readable on other systems.
  * @sa
  * vtkFieldData vtkDataObjectWriter
- */
+*/
 
 #ifndef vtkDataObjectReader_h
 #define vtkDataObjectReader_h
 
-#include "vtkDataReader.h"
 #include "vtkIOLegacyModule.h" // For export macro
+#include "vtkDataReader.h"
 
 class vtkDataObject;
 
 class VTKIOLEGACY_EXPORT vtkDataObjectReader : public vtkDataReader
 {
 public:
-  static vtkDataObjectReader* New();
-  vtkTypeMacro(vtkDataObjectReader, vtkDataReader);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkDataObjectReader *New();
+  vtkTypeMacro(vtkDataObjectReader,vtkDataReader);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
    * Get the output field of this reader.
    */
-  vtkDataObject* GetOutput();
-  vtkDataObject* GetOutput(int idx);
-  void SetOutput(vtkDataObject*);
+  vtkDataObject *GetOutput();
+  vtkDataObject *GetOutput(int idx);
+  void SetOutput(vtkDataObject *);
   //@}
-
-  /**
-   * Actual reading happens here
-   */
-  int ReadMeshSimple(const std::string& fname, vtkDataObject* output) override;
 
 protected:
   vtkDataObjectReader();
-  ~vtkDataObjectReader() override;
+  ~vtkDataObjectReader();
 
-  int FillOutputPortInformation(int, vtkInformation*) override;
-
+  virtual int RequestData(vtkInformation *, vtkInformationVector **,
+                          vtkInformationVector *);
+  virtual int FillOutputPortInformation(int, vtkInformation*);
 private:
-  vtkDataObjectReader(const vtkDataObjectReader&) = delete;
-  void operator=(const vtkDataObjectReader&) = delete;
+  vtkDataObjectReader(const vtkDataObjectReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkDataObjectReader&) VTK_DELETE_FUNCTION;
 };
 
 #endif

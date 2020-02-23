@@ -58,16 +58,7 @@
  * two sequences with the same seed and different sequence ids will produce
  * different results. Once a sequence is initialized with an associated sequence
  * id, this id is used to obtain values from the sequence.
- *
- * This class, besides generating random sequences in sequential order, can
- * also populate a double array of specified size with a random sequence. It
- * will do so using one or more threads depending on the number of values
- * requested to generate.
- *
- * @warning
- * This class has been threaded with vtkMultiThreader. The amount of work
- * each thread performs is controlled by the #define VTK_MERSENNE_CHUNK.
- */
+*/
 
 #ifndef vtkMersenneTwister_h
 #define vtkMersenneTwister_h
@@ -82,20 +73,10 @@ class VTKCOMMONCORE_EXPORT vtkMersenneTwister : public vtkRandomSequence
 public:
   typedef vtkTypeUInt32 SequenceId;
 
-  //@{
-  /**
-   * Standard methods for instantiation, type information, and printing.
-   */
-  static vtkMersenneTwister* New();
-  vtkTypeMacro(vtkMersenneTwister, vtkRandomSequence);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
-  //@}
+  vtkTypeMacro(vtkMersenneTwister,vtkRandomSequence);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
-  /**
-   * Satisfy general API of vtkRandomSequence superclass. Initialize the
-   * sequence with a seed.
-   */
-  void Initialize(vtkTypeUInt32 seed) override { this->InitializeSequence(0, seed); }
+  static vtkMersenneTwister* New();
 
   /**
    * Initialize a new Mersenne Twister sequence, given a) a <seed> and b) a
@@ -104,7 +85,7 @@ public:
    * The return value is the id for the generated sequence, which is used as a
    * key to access values of the sequence.
    */
-  SequenceId InitializeNewSequence(vtkTypeUInt32 seed, int p = 521);
+  SequenceId InitializeNewSequence(vtkTypeUInt32 seed, int p=521);
 
   /**
    * Initialize a sequence as in InitializeNewSequence(), but additionally pass
@@ -112,7 +93,7 @@ public:
    * associated with this id, a warning is given and the sequence is reset using
    * the given parameters.
    */
-  void InitializeSequence(SequenceId id, vtkTypeUInt32 seed, int p = 521);
+  void InitializeSequence(SequenceId id, vtkTypeUInt32 seed, int p=521);
 
   /**
    * Current value
@@ -124,7 +105,7 @@ public:
    * Current value
    * \post unit_range: result>=0.0 && result<=1.0
    */
-  double GetValue() override { return this->GetValue(0); }
+  double GetValue() VTK_OVERRIDE { return this->GetValue(0); }
 
   /**
    * Move to the next number in random sequence <id>. If no sequence is
@@ -138,17 +119,17 @@ public:
    * associated with this id, a warning is given and a sequence is generated
    * with default values.
    */
-  void Next() override { return this->Next(0); }
+  void Next() VTK_OVERRIDE { return this->Next(0); }
 
 protected:
   vtkMersenneTwister();
-  ~vtkMersenneTwister() override;
+  ~vtkMersenneTwister() VTK_OVERRIDE;
 
   vtkMersenneTwisterInternals* Internal;
 
 private:
-  vtkMersenneTwister(const vtkMersenneTwister&) = delete;
-  void operator=(const vtkMersenneTwister&) = delete;
+  vtkMersenneTwister(const vtkMersenneTwister&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkMersenneTwister&) VTK_DELETE_FUNCTION;
 };
 
 #endif // #ifndef vtkMersenneTwister_h

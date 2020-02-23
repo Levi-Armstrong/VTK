@@ -19,10 +19,14 @@
 
 vtkStandardNewMacro(vtkServerSocket);
 //-----------------------------------------------------------------------------
-vtkServerSocket::vtkServerSocket() = default;
+vtkServerSocket::vtkServerSocket()
+{
+}
 
 //-----------------------------------------------------------------------------
-vtkServerSocket::~vtkServerSocket() = default;
+vtkServerSocket::~vtkServerSocket()
+{
+}
 
 //-----------------------------------------------------------------------------
 int vtkServerSocket::GetServerPort()
@@ -48,7 +52,7 @@ int vtkServerSocket::CreateServer(int port)
   {
     return -1;
   }
-  if (this->BindSocket(this->SocketDescriptor, port) != 0 ||
+  if ( this->BindSocket(this->SocketDescriptor, port) != 0||
     this->Listen(this->SocketDescriptor) != 0)
   {
     // failed to bind or listen.
@@ -66,25 +70,25 @@ vtkClientSocket* vtkServerSocket::WaitForConnection(unsigned long msec /*=0*/)
   if (this->SocketDescriptor < 0)
   {
     vtkErrorMacro("Server Socket not created yet!");
-    return nullptr;
+    return NULL;
   }
 
   int ret = this->SelectSocket(this->SocketDescriptor, msec);
   if (ret == 0)
   {
     // Timed out.
-    return nullptr;
+    return NULL;
   }
   if (ret == -1)
   {
     vtkErrorMacro("Error selecting socket.");
-    return nullptr;
+    return NULL;
   }
   int clientsock = this->Accept(this->SocketDescriptor);
   if (clientsock == -1)
   {
     vtkErrorMacro("Failed to accept the socket.");
-    return nullptr;
+    return NULL;
   }
   // Create a new vtkClientSocket and return it.
   vtkClientSocket* cs = vtkClientSocket::New();

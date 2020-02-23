@@ -25,7 +25,7 @@
  * This algorithm requires that the vtkTreeMapLayout filter has already applied to the
  * data in order to create the quadruple array (min x, max x, min y, max y) of
  * bounds for each vertex of the tree.
- */
+*/
 
 #ifndef vtkTreeMapToPolyData_h
 #define vtkTreeMapToPolyData_h
@@ -36,9 +36,9 @@
 class VTKINFOVISLAYOUT_EXPORT vtkTreeMapToPolyData : public vtkPolyDataAlgorithm
 {
 public:
-  static vtkTreeMapToPolyData* New();
-  vtkTypeMacro(vtkTreeMapToPolyData, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkTreeMapToPolyData *New();
+  vtkTypeMacro(vtkTreeMapToPolyData,vtkPolyDataAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * The field containing quadruples of the form (min x, max x, min y, max y)
@@ -46,9 +46,7 @@ public:
    * This array may be added to the tree using vtkTreeMapLayout.
    */
   virtual void SetRectanglesArrayName(const char* name)
-  {
-    this->SetInputArrayToProcess(0, 0, 0, vtkDataObject::FIELD_ASSOCIATION_VERTICES, name);
-  }
+    { this->SetInputArrayToProcess(0, 0, 0, vtkDataObject::FIELD_ASSOCIATION_VERTICES, name); }
 
   /**
    * The field containing the level of each tree node.
@@ -58,9 +56,7 @@ public:
    * may not be as efficient.
    */
   virtual void SetLevelArrayName(const char* name)
-  {
-    this->SetInputArrayToProcess(1, 0, 0, vtkDataObject::FIELD_ASSOCIATION_VERTICES, name);
-  }
+    { this->SetInputArrayToProcess(1, 0, 0, vtkDataObject::FIELD_ASSOCIATION_VERTICES, name); }
 
   //@{
   /**
@@ -78,20 +74,19 @@ public:
   vtkSetMacro(AddNormals, bool);
   //@}
 
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  int FillInputPortInformation(int port, vtkInformation* info);
 
 protected:
   vtkTreeMapToPolyData();
-  ~vtkTreeMapToPolyData() override;
+  ~vtkTreeMapToPolyData();
 
   double LevelDeltaZ;
   bool AddNormals;
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 private:
-  vtkTreeMapToPolyData(const vtkTreeMapToPolyData&) = delete;
-  void operator=(const vtkTreeMapToPolyData&) = delete;
+  vtkTreeMapToPolyData(const vtkTreeMapToPolyData&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTreeMapToPolyData&) VTK_DELETE_FUNCTION;
 };
 
 #endif

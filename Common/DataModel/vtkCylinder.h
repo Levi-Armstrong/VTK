@@ -30,7 +30,7 @@
  * The cylinder is infinite in extent. To truncate the cylinder in
  * modeling operations use the vtkImplicitBoolean in combination with
  * clipping planes.
- */
+*/
 
 #ifndef vtkCylinder_h
 #define vtkCylinder_h
@@ -41,42 +41,43 @@
 class VTKCOMMONDATAMODEL_EXPORT vtkCylinder : public vtkImplicitFunction
 {
 public:
-  vtkTypeMacro(vtkCylinder, vtkImplicitFunction);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkCylinder,vtkImplicitFunction);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Construct cylinder radius of 0.5; centered at origin with axis
    * along y coordinate axis.
    */
-  static vtkCylinder* New();
+  static vtkCylinder *New();
 
   //@{
   /**
    * Evaluate cylinder equation F(r) = r^2 - Radius^2.
    */
-  using vtkImplicitFunction::EvaluateFunction;
-  double EvaluateFunction(double x[3]) override;
+  double EvaluateFunction(double x[3]) VTK_OVERRIDE;
+  double EvaluateFunction(double x, double y, double z)
+    {return this->vtkImplicitFunction::EvaluateFunction(x, y, z); } ;
   //@}
 
   /**
    * Evaluate cylinder function gradient.
    */
-  void EvaluateGradient(double x[3], double g[3]) override;
+  void EvaluateGradient(double x[3], double g[3]) VTK_OVERRIDE;
 
   //@{
   /**
    * Set/Get the cylinder radius.
    */
-  vtkSetMacro(Radius, double);
-  vtkGetMacro(Radius, double);
+  vtkSetMacro(Radius,double);
+  vtkGetMacro(Radius,double);
   //@}
 
   //@{
   /**
    * Set/Get the cylinder center.
    */
-  vtkSetVector3Macro(Center, double);
-  vtkGetVector3Macro(Center, double);
+  vtkSetVector3Macro(Center,double);
+  vtkGetVector3Macro(Center,double);
   //@}
 
   //@{
@@ -87,20 +88,20 @@ public:
    */
   void SetAxis(double ax, double ay, double az);
   void SetAxis(double a[3]);
-  vtkGetVector3Macro(Axis, double);
+  vtkGetVector3Macro(Axis,double);
   //@}
 
 protected:
   vtkCylinder();
-  ~vtkCylinder() override {}
+  ~vtkCylinder() VTK_OVERRIDE {}
 
   double Radius;
   double Center[3];
   double Axis[3];
 
 private:
-  vtkCylinder(const vtkCylinder&) = delete;
-  void operator=(const vtkCylinder&) = delete;
+  vtkCylinder(const vtkCylinder&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkCylinder&) VTK_DELETE_FUNCTION;
 };
 
 #endif

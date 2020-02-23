@@ -13,24 +13,22 @@
 
 =========================================================================*/
 
-//
-// Note if you fix this test to fill in all the empty tests
-// then remove the cppcheck suppression in VTKcppcheckSuppressions.txt
-//
 #include "vtkMath.h"
 #include "vtkMathUtilities.h"
 #include "vtkSmartPointer.h"
-#include "vtkType.h"
 #include "vtkUnsignedCharArray.h"
 #include "vtkUnsignedShortArray.h"
+#include "vtkType.h"
 
 #include <vector>
 
 static int TestPi();
-static int TestDegreesFromRadians();
-#ifndef VTK_LEGACY_REMOVE
-static int TestRound();
+#if 0
+static int TestDoublePi();
+static int TestDoubleTwoPi();
 #endif
+static int TestDegreesFromRadians();
+static int TestRound();
 static int TestFloor();
 static int TestCeil();
 static int TestCeilLog2();
@@ -82,7 +80,6 @@ static int TestJacobiN();
 static int TestClampValue();
 static int TestClampValues();
 static int TestClampAndNormalizeValue();
-static int TestTensorFromSymmetricTensor();
 static int TestGetScalarTypeFittingRange();
 static int TestGetAdjustedScalarRange();
 static int TestExtentIsWithinOtherExtent();
@@ -94,16 +91,19 @@ static int TestInf();
 static int TestNegInf();
 static int TestNan();
 
-int UnitTestMath(int, char*[])
+int UnitTestMath(int,char *[])
 {
   int status = 0;
 
   status += TestPi();
 
-  status += TestDegreesFromRadians();
-#ifndef VTK_LEGACY_REMOVE
-  status += TestRound();
+#if 0
+  status += TestDoublePi(); // legacy
+  status += TestDoubleTwoPi(); // legacy
 #endif
+
+  status += TestDegreesFromRadians();
+  status += TestRound();
   status += TestFloor();
   status += TestCeil();
   status += TestCeilLog2();
@@ -155,7 +155,6 @@ int UnitTestMath(int, char*[])
   status += TestClampValue();
   status += TestClampValues();
   status += TestClampAndNormalizeValue();
-  status += TestTensorFromSymmetricTensor();
   status += TestGetScalarTypeFittingRange();
   status += TestGetAdjustedScalarRange();
   status += TestExtentIsWithinOtherExtent();
@@ -171,7 +170,8 @@ int UnitTestMath(int, char*[])
     return EXIT_FAILURE;
   }
 
-  vtkSmartPointer<vtkMath> math = vtkSmartPointer<vtkMath>::New();
+  vtkSmartPointer<vtkMath> math =
+    vtkSmartPointer<vtkMath>::New();
   math->Print(std::cout);
 
   return EXIT_SUCCESS;
@@ -184,7 +184,8 @@ int TestPi()
   std::cout << "Pi..";
   if (vtkMath::Pi() != std::atan(1.0) * 4.0)
   {
-    std::cout << "Expected " << vtkMath::Pi() << " but got " << std::atan(1.0) * 4.0;
+    std::cout << "Expected " << vtkMath::Pi()
+              << " but got " << std::atan(1.0) * 4.0;
     ++status;
   }
 
@@ -199,6 +200,56 @@ int TestPi()
   return status;
 }
 
+#if 0
+// Validate by comparing to atan/4
+int TestDoublePi()
+{
+  int status = 0;
+  std::cout << "DoublePi..";
+
+  if (vtkMath::DoublePi() != std::atan(1.0) * 4.0)
+  {
+    std::cout << "Expected " << vtkMath::Pi()
+              << " but got " << std::atan(1.0) * 4.0;
+    ++status;
+  }
+
+  if (status)
+  {
+    std::cout << "..FAILED" << std::endl;
+  }
+  else
+  {
+    std::cout << ".PASSED" << std::endl;
+  }
+  return status;
+}
+
+// Validate by comparing to atan/4 * 2
+int TestDoubleTwoPi()
+{
+  int status = 0;
+  std::cout << "DoubleTwoPi..";
+
+  if (vtkMath::DoubleTwoPi() != std::atan(1.0) * 4.0 * 2.0)
+  {
+    std::cout << "Expected " << vtkMath::Pi() * 2.0
+              << " but got " << std::atan(1.0) * 4.0 * 2.0;
+    ++status;
+  }
+
+  if (status)
+  {
+    std::cout << "..FAILED" << std::endl;
+  }
+  else
+  {
+    std::cout << ".PASSED" << std::endl;
+  }
+  return status;
+}
+#endif
+
 // Validate against RadiansFromDegress
 int TestDegreesFromRadians()
 {
@@ -212,12 +263,14 @@ int TestDegreesFromRadians()
     float floatRadians = vtkMath::RadiansFromDegrees(floatDegrees);
     float result = vtkMath::DegreesFromRadians(floatRadians);
     if (!vtkMathUtilities::FuzzyCompare(
-          result, floatDegrees, std::numeric_limits<float>::epsilon() * 128.0f))
+          result, floatDegrees,
+          std::numeric_limits<float>::epsilon()*128.0f))
     {
-      std::cout << "Float Expected " << floatDegrees << " but got " << result << " difference is "
-                << result - floatDegrees << " ";
-      std::cout << "eps ratio is: "
-                << (result - floatDegrees) / std::numeric_limits<float>::epsilon() << std::endl;
+      std::cout << "Float  Expected " << floatDegrees
+                << " but got " << result
+                << " difference is " << result - floatDegrees << " ";
+      std::cout << "eps ratio is: " << (result - floatDegrees)
+        / std::numeric_limits<float>::epsilon() << std::endl;
       ++status;
     }
   }
@@ -227,12 +280,14 @@ int TestDegreesFromRadians()
     double doubleRadians = vtkMath::RadiansFromDegrees(doubleDegrees);
     double result = vtkMath::DegreesFromRadians(doubleRadians);
     if (!vtkMathUtilities::FuzzyCompare(
-          result, doubleDegrees, std::numeric_limits<double>::epsilon() * 256.0))
+          result, doubleDegrees,
+          std::numeric_limits<double>::epsilon()*256.0))
     {
-      std::cout << " Double Expected " << doubleDegrees << " but got " << result
+      std::cout << " Double Expected " << doubleDegrees
+                << " but got " << result
                 << " difference is " << result - doubleDegrees;
-      std::cout << " eps ratio is: "
-                << (result - doubleDegrees) / std::numeric_limits<double>::epsilon() << std::endl;
+      std::cout << " eps ratio is: " << (result - doubleDegrees)
+        / std::numeric_limits<double>::epsilon() << std::endl;
       ++status;
     }
   }
@@ -247,7 +302,6 @@ int TestDegreesFromRadians()
   return status;
 }
 
-#ifndef VTK_LEGACY_REMOVE
 // Validate with http://en.wikipedia.org/wiki/Rounding#Rounding_to_integer
 int TestRound()
 {
@@ -255,70 +309,52 @@ int TestRound()
   std::cout << "Round..";
   int result;
   {
-    std::vector<float> values;
-    std::vector<int> expecteds;
+  std::vector<float> values;
+  std::vector<int> expecteds;
 
-    values.push_back(23.67f);
-    expecteds.push_back(24);
-    values.push_back(23.50f);
-    expecteds.push_back(24);
-    values.push_back(23.35f);
-    expecteds.push_back(23);
-    values.push_back(23.00f);
-    expecteds.push_back(23);
-    values.push_back(0.00f);
-    expecteds.push_back(0);
-    values.push_back(-23.00f);
-    expecteds.push_back(-23);
-    values.push_back(-23.35f);
-    expecteds.push_back(-23);
-    values.push_back(-23.50f);
-    expecteds.push_back(-24);
-    values.push_back(-23.67f);
-    expecteds.push_back(-24);
-    for (size_t i = 0; i < values.size(); ++i)
+  values.push_back(23.67f); expecteds.push_back(24);
+  values.push_back(23.50f); expecteds.push_back(24);
+  values.push_back(23.35f); expecteds.push_back(23);
+  values.push_back(23.00f); expecteds.push_back(23);
+  values.push_back(0.00f); expecteds.push_back(  0);
+  values.push_back(-23.00f); expecteds.push_back(-23);
+  values.push_back(-23.35f); expecteds.push_back(-23);
+  values.push_back(-23.50f); expecteds.push_back(-24);
+  values.push_back(-23.67f); expecteds.push_back(-24);
+  for ( size_t i = 0; i < values.size(); ++i)
+  {
+    result = vtkMath::Round(values[i]);
+    if (result != expecteds[i])
     {
-      result = vtkMath::Round(values[i]);
-      if (result != expecteds[i])
-      {
-        std::cout << " Float Round(" << values[i] << ") got " << result << " but expected "
-                  << expecteds[i];
-        ++status;
-      }
+      std::cout << " Float Round(" << values[i] << ") got " << result
+                << " but expected " << expecteds[i];
+      ++status;
     }
   }
+  }
   {
-    std::vector<double> values;
-    std::vector<int> expecteds;
+  std::vector<double> values;
+  std::vector<int> expecteds;
 
-    values.push_back(23.67);
-    expecteds.push_back(24);
-    values.push_back(23.50);
-    expecteds.push_back(24);
-    values.push_back(23.35);
-    expecteds.push_back(23);
-    values.push_back(23.00);
-    expecteds.push_back(23);
-    values.push_back(0.00);
-    expecteds.push_back(0);
-    values.push_back(-23.00);
-    expecteds.push_back(-23);
-    values.push_back(-23.35);
-    expecteds.push_back(-23);
-    values.push_back(-23.50);
-    expecteds.push_back(-24);
-    values.push_back(-23.67);
-    expecteds.push_back(-24);
-    for (size_t i = 0; i < values.size(); ++i)
+  values.push_back(23.67); expecteds.push_back(24);
+  values.push_back(23.50); expecteds.push_back(24);
+  values.push_back(23.35); expecteds.push_back(23);
+  values.push_back(23.00); expecteds.push_back(23);
+  values.push_back(0.00); expecteds.push_back(  0);
+  values.push_back(-23.00); expecteds.push_back(-23);
+  values.push_back(-23.35); expecteds.push_back(-23);
+  values.push_back(-23.50); expecteds.push_back(-24);
+  values.push_back(-23.67); expecteds.push_back(-24);
+  for ( size_t i = 0; i < values.size(); ++i)
+  {
+    result = vtkMath::Round(values[i]);
+    if (result != expecteds[i])
     {
-      result = vtkMath::Round(values[i]);
-      if (result != expecteds[i])
-      {
-        std::cout << " Double Round(" << values[i] << ") got " << result << " but expected "
-                  << expecteds[i];
-        ++status;
-      }
+      std::cout << " Double Round(" << values[i] << ") got " << result
+                << " but expected " << expecteds[i];
+      ++status;
     }
+  }
   }
   if (status)
   {
@@ -330,7 +366,6 @@ int TestRound()
   }
   return status;
 }
-#endif
 
 // Validate with http://en.wikipedia.org/wiki/Floor_and_ceiling_functions
 int TestFloor()
@@ -342,20 +377,17 @@ int TestFloor()
   std::vector<double> values;
   std::vector<int> expecteds;
 
-  values.push_back(2.4);
-  expecteds.push_back(2);
-  values.push_back(2.7);
-  expecteds.push_back(2);
-  values.push_back(-2.7);
-  expecteds.push_back(-3);
-  values.push_back(-2.0);
-  expecteds.push_back(-2);
-  for (size_t i = 0; i < values.size(); ++i)
+  values.push_back(2.4); expecteds.push_back(2);
+  values.push_back(2.7); expecteds.push_back(2);
+  values.push_back(-2.7); expecteds.push_back(-3);
+  values.push_back(-2.0); expecteds.push_back(-2);
+  for ( size_t i = 0; i < values.size(); ++i)
   {
     result = vtkMath::Floor(values[i]);
     if (result != expecteds[i])
     {
-      std::cout << " Floor(" << values[i] << ") got " << result << " but expected " << expecteds[i];
+      std::cout << " Floor(" << values[i] << ") got " << result
+                << " but expected " << expecteds[i];
       ++status;
     }
   }
@@ -380,20 +412,17 @@ int TestCeil()
   std::vector<double> values;
   std::vector<int> expecteds;
 
-  values.push_back(2.4);
-  expecteds.push_back(3);
-  values.push_back(2.7);
-  expecteds.push_back(3);
-  values.push_back(-2.7);
-  expecteds.push_back(-2);
-  values.push_back(-2.0);
-  expecteds.push_back(-2);
-  for (size_t i = 0; i < values.size(); ++i)
+  values.push_back(2.4); expecteds.push_back(3);
+  values.push_back(2.7); expecteds.push_back(3);
+  values.push_back(-2.7); expecteds.push_back(-2);
+  values.push_back(-2.0); expecteds.push_back(-2);
+  for ( size_t i = 0; i < values.size(); ++i)
   {
     result = vtkMath::Ceil(values[i]);
     if (result != expecteds[i])
     {
-      std::cout << " Ceil(" << values[i] << ") got " << result << " but expected " << expecteds[i];
+      std::cout << " Ceil(" << values[i] << ") got " << result
+                << " but expected " << expecteds[i];
       ++status;
     }
   }
@@ -418,22 +447,20 @@ int TestCeilLog2()
   std::vector<vtkTypeUInt64> values;
   std::vector<int> expecteds;
 
-  for (unsigned int p = 0; p < 30; ++p)
+  for ( unsigned int p = 0; p < 30; ++p)
   {
     vtkTypeUInt64 shifted = (2 << p) + 1;
-    values.push_back(shifted);
-    expecteds.push_back(p + 2);
+    values.push_back(shifted); expecteds.push_back(p + 2);
     shifted = (2 << p);
-    values.push_back(shifted);
-    expecteds.push_back(p + 1);
+    values.push_back(shifted); expecteds.push_back(p + 1);
   }
-  for (size_t i = 0; i < values.size(); ++i)
+  for ( size_t i = 0; i < values.size(); ++i)
   {
     result = vtkMath::CeilLog2(values[i]);
     if (result != expecteds[i])
     {
-      std::cout << " CeilLog2(" << values[i] << ") got " << result << " but expected "
-                << expecteds[i];
+      std::cout << " CeilLog2(" << values[i] << ") got " << result
+                << " but expected " << expecteds[i];
       ++status;
     }
   }
@@ -460,29 +487,26 @@ int TestIsPowerOfTwo()
   std::vector<bool> expecteds;
   int largestPower = std::numeric_limits<vtkTypeUInt64>::digits;
   vtkTypeUInt64 shifted = 1;
-  for (int p = 1; p < largestPower - 1; ++p)
+  for ( int p = 1; p < largestPower - 1; ++p)
   {
     shifted *= 2;
-    values.push_back(shifted);
-    expecteds.push_back(true);
+    values.push_back(shifted); expecteds.push_back(true);
     if (shifted != 2)
     {
-      values.push_back(shifted - 1);
-      expecteds.push_back(false);
+      values.push_back(shifted - 1); expecteds.push_back(false);
     }
     if (shifted < std::numeric_limits<vtkTypeUInt64>::max() - 1)
     {
-      values.push_back(shifted + 1);
-      expecteds.push_back(false);
+      values.push_back(shifted + 1); expecteds.push_back(false);
     }
   }
-  for (size_t i = 0; i < values.size(); ++i)
+  for ( size_t i = 0; i < values.size(); ++i)
   {
     result = vtkMath::IsPowerOfTwo(values[i]);
     if (result != expecteds[i])
     {
-      std::cout << " IsPowerOfTwo(" << values[i] << ") got " << result << " but expected "
-                << expecteds[i];
+      std::cout << " IsPowerOfTwo(" << values[i] << ") got " << result
+                << " but expected " << expecteds[i];
       ++status;
     }
   }
@@ -506,40 +530,25 @@ int TestNearestPowerOfTwo()
 
   std::vector<vtkTypeUInt64> values;
   std::vector<int> expecteds;
-
-  values.push_back(0);
-  expecteds.push_back(1);
-
-  int numDigits = std::numeric_limits<int>::digits;
+  int largestPower = std::numeric_limits<int>::digits;
   vtkTypeUInt64 shifted = 1;
-  for (int p = 0; p < numDigits; ++p)
+  for ( int p = 1; p < largestPower; ++p)
   {
-    values.push_back(shifted);
-    expecteds.push_back(shifted);
-    if (shifted <= INT_MAX / 2)
-    {
-      values.push_back(shifted + 1);
-      expecteds.push_back(shifted * 2);
-    }
-    if (shifted != 2)
-    {
-      values.push_back(shifted - 1);
-      expecteds.push_back(shifted);
-    }
-
     shifted *= 2;
+    values.push_back(shifted); expecteds.push_back(shifted);
+    values.push_back(shifted + 1); expecteds.push_back(shifted * 2);
+    if (shifted !=2 )
+    {
+      values.push_back(shifted - 1); expecteds.push_back(shifted);
+    }
   }
-
-  values.push_back(INT_MAX);
-  expecteds.push_back(INT_MIN);
-
-  for (size_t i = 0; i < values.size(); ++i)
+  for ( size_t i = 0; i < values.size(); ++i)
   {
     int result = vtkMath::NearestPowerOfTwo(values[i]);
     if (result != expecteds[i])
     {
-      std::cout << " NearestPowerOfTwo(" << values[i] << ") got " << result << " but expected "
-                << expecteds[i];
+      std::cout << " NearestPowerOfTwo(" << values[i] << ") got " << result
+                << " but expected " << expecteds[i];
       ++status;
     }
   }
@@ -564,19 +573,18 @@ int TestFactorial()
   std::vector<int> values;
   std::vector<vtkTypeInt64> expecteds;
   vtkTypeInt64 expected = 1;
-  for (int f = 2; f < 10; ++f)
+  for ( int f = 2; f < 10; ++f)
   {
     expected *= f;
-    values.push_back(f);
-    expecteds.push_back(expected);
+    values.push_back(f); expecteds.push_back(expected);
   }
-  for (size_t i = 0; i < values.size(); ++i)
+  for ( size_t i = 0; i < values.size(); ++i)
   {
     int result = vtkMath::Factorial(values[i]);
     if (result != expecteds[i])
     {
-      std::cout << " Factorial(" << values[i] << ") got " << result << " but expected "
-                << expecteds[i];
+      std::cout << " Factorial(" << values[i] << ") got " << result
+                << " but expected " << expecteds[i];
       ++status;
     }
   }
@@ -620,12 +628,13 @@ int TestBinomial()
     }
   }
 
-  for (size_t i = 0; i < mvalues.size(); ++i)
+  for ( size_t i = 0; i < mvalues.size(); ++i)
   {
     int result = vtkMath::Binomial(mvalues[i], nvalues[i]);
     if (result != expecteds[i])
     {
-      std::cout << " Binomial(" << mvalues[i] << ", " << nvalues[i] << ") got " << result
+      std::cout << " Binomial("
+                << mvalues[i] << ", " << nvalues[i] << ") got " << result
                 << " but expected " << expecteds[i];
       ++status;
     }
@@ -636,27 +645,29 @@ int TestBinomial()
   n = 3;
   int more = 1;
   int count = 0;
-  int* comb;
+  int *comb;
   // First, m < n should produce 0
   comb = vtkMath::BeginCombination(n, m);
-  if (comb != nullptr)
+  if (comb != NULL)
   {
     ++status;
-    std::cout << " Combinations(" << n << ", " << m << ") should return 0 "
-              << " but got " << comb;
+    std::cout << " Combinations("
+              << n << ", " << m << ") should return 0 "
+                << " but got " << comb;
   }
-  comb = vtkMath::BeginCombination(m, n);
+  comb =  vtkMath::BeginCombination(m, n);
   while (more)
   {
     ++count;
-    more = vtkMath::NextCombination(m, n, comb);
+    more = vtkMath::NextCombination (m, n, comb);
   }
   vtkMath::FreeCombination(comb);
   if (count != vtkMath::Binomial(m, n))
   {
     ++status;
-    std::cout << " Combinations(" << m << ", " << n << ") got " << count << " but expected "
-              << vtkMath::Binomial(m, n);
+    std::cout << " Combinations("
+              << m << ", " << n << ") got " << count
+                << " but expected " << vtkMath::Binomial(m, n);
   }
   if (status)
   {
@@ -683,22 +694,22 @@ int TestRandom()
   {
     float random = vtkMath::Random();
     accum += random;
-    if (random < 0.0 || random > 1.0)
+    if ( random < 0.0 || random > 1.0)
     {
-      std::cout << "Random(): " << random << " out of range" << std::endl;
+      std::cout << "Random(): " << random <<  " out of range" << std::endl;
       ++status;
     }
-    random = vtkMath::Gaussian();
+    random = vtkMath::Gaussian ();
     accum += random;
 
-    random = vtkMath::Gaussian(0.0, 1.0);
+    random = vtkMath::Gaussian (0.0, 1.0);
     accum += random;
 
-    random = vtkMath::Random(-1000.0, 1000.0);
+    random = vtkMath::Random (-1000.0, 1000.0);
     accum += random;
     if (random < -1000.0 || random > 1000.0)
     {
-      std::cout << "Random (-1000.0, 1000.0): " << random << " out of range" << std::endl;
+      std::cout << "Random (-1000.0, 1000.0): " << random <<  " out of range" << std::endl;
       ++status;
     }
   }
@@ -717,7 +728,7 @@ int TestRandom()
   return status;
 }
 
-template <typename T>
+template<typename T>
 int AddSubtract()
 {
   int status = 0;
@@ -734,9 +745,11 @@ int AddSubtract()
     for (int i = 0; i < 3; ++i)
     {
       if (!vtkMathUtilities::FuzzyCompare(
-            da[i], dd[i], std::numeric_limits<T>::epsilon() * (T)256.0))
+            da[i], dd[i],
+            std::numeric_limits<T>::epsilon() * (T) 256.0))
       {
-        std::cout << " Add/Subtract got " << dd[i] << " but expected " << da[i];
+        std::cout << " Add/Subtract got " << dd[i]
+                  << " but expected " << da[i];
       }
     }
   }
@@ -763,7 +776,7 @@ int TestAddSubtract()
   return status;
 }
 
-template <typename T>
+template<typename T>
 int MultiplyScalar()
 {
   int status = 0;
@@ -782,9 +795,11 @@ int MultiplyScalar()
     for (int i = 0; i < 3; ++i)
     {
       if (!vtkMathUtilities::FuzzyCompare(
-            da[i], db[i] * scale, std::numeric_limits<T>::epsilon() * (T)256.0))
+            da[i], db[i] * scale,
+            std::numeric_limits<T>::epsilon() * (T) 256.0))
       {
-        std::cout << " MultiplyScalar got " << da[i] << " but expected " << db[i] * scale;
+        std::cout << " MultiplyScalar got " << da[i]
+                  << " but expected " << db[i] * scale;
       }
     }
   }
@@ -832,9 +847,11 @@ int TestMultiplyScalar2D()
     for (int i = 0; i < 2; ++i)
     {
       if (!vtkMathUtilities::FuzzyCompare(
-            da[i], db[i] * scale, std::numeric_limits<double>::epsilon() * 256.0))
+            da[i], db[i] * scale,
+            std::numeric_limits<double>::epsilon() * 256.0))
       {
-        std::cout << " MultiplyScalar2D got " << da[i] << " but expected " << db[i] * scale;
+        std::cout << " MultiplyScalar2D got " << da[i]
+                  << " but expected " << db[i] * scale;
       }
     }
   }
@@ -854,9 +871,11 @@ int TestMultiplyScalar2D()
     for (int i = 0; i < 2; ++i)
     {
       if (!vtkMathUtilities::FuzzyCompare(
-            fa[i], fb[i] * scale, std::numeric_limits<float>::epsilon() * 256.0f))
+            fa[i], fb[i] * scale,
+            std::numeric_limits<float>::epsilon() * 256.0f))
       {
-        std::cout << " MultiplyScalar2D got " << fa[i] << " but expected " << fb[i] * scale;
+        std::cout << " MultiplyScalar2D got " << fa[i]
+                  << " but expected " << fb[i] * scale;
       }
     }
   }
@@ -875,7 +894,7 @@ int TestMultiplyScalar2D()
 class valueDouble3D
 {
 public:
-  valueDouble3D() = default;
+  valueDouble3D() {}
   valueDouble3D(double aa[3], double bb[3])
   {
     for (int i = 0; i < 3; ++i)
@@ -891,7 +910,7 @@ public:
 class valueFloat3D
 {
 public:
-  valueFloat3D() = default;
+  valueFloat3D() {}
   valueFloat3D(float aa[3], float bb[3])
   {
     for (int i = 0; i < 3; ++i)
@@ -909,112 +928,92 @@ int TestDot()
   std::cout << "Dot..";
 
   {
-    std::vector<valueDouble3D> values;
-    std::vector<double> expecteds;
-    for (int n = 0; n < 100; ++n)
+  std::vector<valueDouble3D> values;
+  std::vector<double> expecteds;
+  for (int n = 0; n < 100; ++n)
+  {
+    valueDouble3D v;
+    double dot = 0.0;
+    for (int i = 0; i < 3; ++i)
     {
-      valueDouble3D v;
-      double dot = 0.0;
-      for (int i = 0; i < 3; ++i)
-      {
-        v.a[i] = vtkMath::Random();
-        v.b[i] = vtkMath::Random();
-        dot += (v.a[i] * v.b[i]);
-      }
-      values.push_back(v);
-      expecteds.push_back(dot);
+      v.a[i] = vtkMath::Random();
+      v.b[i] = vtkMath::Random();
+      dot += (v.a[i] * v.b[i]);
     }
-    valueDouble3D test;
-    test.a[0] = 0.0;
-    test.a[1] = 0.0;
-    test.a[2] = 1.0;
-    test.b[0] = 1.0;
-    test.b[1] = 0.0;
-    test.b[2] = 0.0;
-    values.push_back(test);
-    expecteds.push_back(0.0);
-    test.a[0] = 0.0;
-    test.a[1] = 0.0;
-    test.a[2] = 1.0;
-    test.b[0] = 0.0;
-    test.b[1] = 1.0;
-    test.b[2] = 0.0;
-    values.push_back(test);
-    expecteds.push_back(0.0);
-    test.a[0] = 1.0;
-    test.a[1] = 0.0;
-    test.a[2] = 0.0;
-    test.b[0] = 0.0;
-    test.b[1] = 1.0;
-    test.b[2] = 0.0;
-    values.push_back(test);
-    expecteds.push_back(0.0);
+    values.push_back(v);
+    expecteds.push_back(dot);
+  }
+  valueDouble3D test;
+  test.a[0] = 0.0; test.a[1] = 0.0;   test.a[2] = 1.0;
+  test.b[0] = 1.0; test.b[1] = 0.0;   test.b[2] = 0.0;
+  values.push_back(test);
+  expecteds.push_back(0.0);
+  test.a[0] = 0.0; test.a[1] = 0.0;   test.a[2] = 1.0;
+  test.b[0] = 0.0; test.b[1] = 1.0;   test.b[2] = 0.0;
+  values.push_back(test);
+  expecteds.push_back(0.0);
+  test.a[0] = 1.0; test.a[1] = 0.0;   test.a[2] = 0.0;
+  test.b[0] = 0.0; test.b[1] = 1.0;   test.b[2] = 0.0;
+  values.push_back(test);
+  expecteds.push_back(0.0);
 
-    for (size_t i = 0; i < values.size(); ++i)
+  for ( size_t i = 0; i < values.size(); ++i)
+  {
+    double result = vtkMath::Dot(values[i].a, values[i].b);
+    if (!vtkMathUtilities::FuzzyCompare(
+          result, expecteds[i],
+          std::numeric_limits<double>::epsilon()*128.0))
     {
-      double result = vtkMath::Dot(values[i].a, values[i].b);
-      if (!vtkMathUtilities::FuzzyCompare(
-            result, expecteds[i], std::numeric_limits<double>::epsilon() * 128.0))
-      {
-        std::cout << " Dot got " << result << " but expected " << expecteds[i];
-        ++status;
-      }
+      std::cout << " Dot got " << result
+                << " but expected " << expecteds[i];
+      ++status;
     }
+  }
   }
 
   // now float
   {
-    std::vector<valueFloat3D> values;
-    std::vector<float> expecteds;
-    for (int n = 0; n < 100; ++n)
+  std::vector<valueFloat3D> values;
+  std::vector<float> expecteds;
+  for (int n = 0; n < 100; ++n)
+  {
+    valueFloat3D v;
+    float dot = 0.0;
+    for (int i = 0; i < 3; ++i)
     {
-      valueFloat3D v;
-      float dot = 0.0;
-      for (int i = 0; i < 3; ++i)
-      {
-        v.a[i] = vtkMath::Random();
-        v.b[i] = vtkMath::Random();
-        dot += (v.a[i] * v.b[i]);
-      }
-      values.push_back(v);
-      expecteds.push_back(dot);
+      v.a[i] = vtkMath::Random();
+      v.b[i] = vtkMath::Random();
+      dot += (v.a[i] * v.b[i]);
     }
-    valueFloat3D test;
-    test.a[0] = 0.0;
-    test.a[1] = 0.0;
-    test.a[2] = 1.0;
-    test.b[0] = 1.0;
-    test.b[1] = 0.0;
-    test.b[2] = 0.0;
-    values.push_back(test);
-    expecteds.push_back(0.0);
-    test.a[0] = 0.0;
-    test.a[1] = 0.0;
-    test.a[2] = 1.0;
-    test.b[0] = 0.0;
-    test.b[1] = 1.0;
-    test.b[2] = 0.0;
-    values.push_back(test);
-    expecteds.push_back(0.0);
-    test.a[0] = 1.0;
-    test.a[1] = 0.0;
-    test.a[2] = 0.0;
-    test.b[0] = 0.0;
-    test.b[1] = 1.0;
-    test.b[2] = 0.0;
-    values.push_back(test);
-    expecteds.push_back(0.0);
+    values.push_back(v);
+    expecteds.push_back(dot);
+  }
+  valueFloat3D test;
+  test.a[0] = 0.0; test.a[1] = 0.0;   test.a[2] = 1.0;
+  test.b[0] = 1.0; test.b[1] = 0.0;   test.b[2] = 0.0;
+  values.push_back(test);
+  expecteds.push_back(0.0);
+  test.a[0] = 0.0; test.a[1] = 0.0;   test.a[2] = 1.0;
+  test.b[0] = 0.0; test.b[1] = 1.0;   test.b[2] = 0.0;
+  values.push_back(test);
+  expecteds.push_back(0.0);
+  test.a[0] = 1.0; test.a[1] = 0.0;   test.a[2] = 0.0;
+  test.b[0] = 0.0; test.b[1] = 1.0;   test.b[2] = 0.0;
+  values.push_back(test);
+  expecteds.push_back(0.0);
 
-    for (size_t i = 0; i < values.size(); ++i)
+  for ( size_t i = 0; i < values.size(); ++i)
+  {
+    float result = vtkMath::Dot(values[i].a, values[i].b);
+    if (!vtkMathUtilities::FuzzyCompare(
+          result, expecteds[i],
+          std::numeric_limits<float>::epsilon()*128.0f))
     {
-      float result = vtkMath::Dot(values[i].a, values[i].b);
-      if (!vtkMathUtilities::FuzzyCompare(
-            result, expecteds[i], std::numeric_limits<float>::epsilon() * 128.0f))
-      {
-        std::cout << " Dot got " << result << " but expected " << expecteds[i];
-        ++status;
-      }
+      std::cout << " Dot got " << result
+                << " but expected " << expecteds[i];
+      ++status;
     }
+  }
   }
 
   if (status)
@@ -1045,7 +1044,7 @@ int TestOuter()
 }
 
 // Verify by anticommutative property
-template <typename T>
+template<typename T>
 int Cross()
 {
   int status = 0;
@@ -1062,16 +1061,19 @@ int Cross()
       b[i] = vtkMath::Random(-1.0, 1.0);
     }
     vtkMath::Cross(a, b, c);
-    vtkMath::MultiplyScalar(b, (T)-1.0);
+    vtkMath::MultiplyScalar(b, (T) -1.0);
     vtkMath::Cross(b, a, d);
     // a x b = -b x a
     for (int i = 0; i < 3; ++i)
     {
-      if (!vtkMathUtilities::FuzzyCompare(c[i], d[i], std::numeric_limits<T>::epsilon() * (T)128.0))
+      if (!vtkMathUtilities::FuzzyCompare(
+            c[i], d[i],
+            std::numeric_limits<T>::epsilon()*(T)128.0))
       {
-        std::cout << " Cross expected " << c[i] << " but got " << d[i];
-        std::cout << "eps ratio is: " << (c[i] - d[i]) / std::numeric_limits<T>::epsilon()
-                  << std::endl;
+        std::cout << " Cross expected " << c[i]
+                  << " but got " << d[i];
+        std::cout << "eps ratio is: " << (c[i] - d[i])
+          / std::numeric_limits<T>::epsilon() << std::endl;
         ++status;
       }
     }
@@ -1098,7 +1100,7 @@ int TestCross()
   return status;
 }
 
-template <typename T, int NDimension>
+template<typename T, int NDimension>
 int Norm()
 {
   int status = 0;
@@ -1108,7 +1110,7 @@ int Norm()
   {
     for (int i = 0; i < NDimension; ++i)
     {
-      x[i] = (T)vtkMath::Random(-10.0, 10.0);
+      x[i] = (T) vtkMath::Random(-10.0, 10.0);
     }
 
     T norm = vtkMath::Norm(x, NDimension);
@@ -1120,11 +1122,13 @@ int Norm()
 
     T unitNorm = vtkMath::Norm(x, NDimension);
     if (!vtkMathUtilities::FuzzyCompare(
-          unitNorm, (T)1.0, std::numeric_limits<T>::epsilon() * (T)128.0))
+          unitNorm, (T) 1.0,
+          std::numeric_limits<T>::epsilon()*(T)128.0))
     {
-      std::cout << "Norm Expected " << 1.0 << " but got " << unitNorm;
-      std::cout << " eps ratio is: " << ((T)1.0 - unitNorm) / std::numeric_limits<T>::epsilon()
-                << std::endl;
+      std::cout << "Norm  Expected " << 1.0
+                << " but got " << unitNorm;
+      std::cout << " eps ratio is: " <<  ((T) 1.0 - unitNorm)
+        / std::numeric_limits<T>::epsilon() << std::endl;
       ++status;
     }
   }
@@ -1137,12 +1141,12 @@ int TestNorm()
   int status = 0;
   std::cout << "Norm..";
 
-  status += Norm<double, 1>();
-  status += Norm<double, 3>();
-  status += Norm<double, 1000>();
-  status += Norm<float, 1>();
-  status += Norm<float, 3>();
-  status += Norm<float, 1000>();
+  status += Norm<double,1>();
+  status += Norm<double,3>();
+  status += Norm<double,1000>();
+  status += Norm<float,1>();
+  status += Norm<float,3>();
+  status += Norm<float,1000>();
 
   if (status)
   {
@@ -1157,7 +1161,7 @@ int TestNorm()
 
 // Validate compute Norm, should be 1.0
 
-template <typename T>
+template<typename T>
 int Normalize()
 {
   int status = 0;
@@ -1166,17 +1170,20 @@ int Normalize()
     T a[3];
     for (int i = 0; i < 3; ++i)
     {
-      a[i] = vtkMath::Random(-10000.0, 10000.0);
+      a[i] = vtkMath::Random(-10000.0,
+                             10000.0);
     }
     vtkMath::Normalize(a);
-    T value = vtkMath::Norm(a);
+    T value= vtkMath::Norm(a);
     T expected = 1.0;
     if (!vtkMathUtilities::FuzzyCompare(
-          value, expected, std::numeric_limits<T>::epsilon() * (T)128.0))
+          value, expected,
+          std::numeric_limits<T>::epsilon() * (T) 128.0))
     {
-      std::cout << " Normalize expected " << expected << " but got " << value;
-      std::cout << "eps ratio is: " << value - expected / std::numeric_limits<T>::epsilon()
-                << std::endl;
+      std::cout << " Normalize expected " << expected
+                << " but got " << value;
+      std::cout << "eps ratio is: " << value - expected
+        / std::numeric_limits<T>::epsilon() << std::endl;
       ++status;
     }
   }
@@ -1207,90 +1214,98 @@ int TestPerpendiculars()
   int status = 0;
   std::cout << "Perpendiculars..";
   {
-    // first double
-    double x[3], y[3], z[3];
-    std::vector<valueDouble3D> values;
-    std::vector<double> expecteds;
-    for (int n = 0; n < 100; ++n)
+  // first double
+  double x[3], y[3], z[3];
+  std::vector<valueDouble3D> values;
+  std::vector<double> expecteds;
+  for (int n = 0; n < 100; ++n)
+  {
+    for (int i = 0; i < 3; ++i)
     {
-      for (int i = 0; i < 3; ++i)
-      {
-        x[i] = vtkMath::Random(-10.0, 10.0);
-      }
-      vtkMath::Perpendiculars(x, y, z, vtkMath::Random(-vtkMath::Pi(), vtkMath::Pi()));
-      {
-        valueDouble3D value(x, y);
-        values.push_back(value);
-        expecteds.push_back(0.0);
-      }
-      {
-        valueDouble3D value(x, z);
-        values.push_back(value);
-        expecteds.push_back(0.0);
-      }
-      {
-        valueDouble3D value(y, z);
-        values.push_back(value);
-        expecteds.push_back(0.0);
-      }
-      vtkMath::Perpendiculars(x, y, z, 0.0);
-      {
-        valueDouble3D value(x, y);
-        values.push_back(value);
-        expecteds.push_back(0.0);
-      }
+      x[i] = vtkMath::Random(-10.0, 10.0);
     }
+    vtkMath::Perpendiculars(x, y, z,
+                            vtkMath::Random(-vtkMath::Pi(), vtkMath::Pi()));
+    {
+    valueDouble3D value(x, y);
+    values.push_back(value);
+    expecteds.push_back(0.0);
+    }
+    {
+    valueDouble3D value(x, z);
+    values.push_back(value);
+    expecteds.push_back(0.0);
+    }
+    {
+    valueDouble3D value(y, z);
+    values.push_back(value);
+    expecteds.push_back(0.0);
+    }
+    vtkMath::Perpendiculars(x, y, z,
+                            0.0);
+    {
+    valueDouble3D value(x, y);
+    values.push_back(value);
+    expecteds.push_back(0.0);
+    }
+  }
     for (size_t i = 0; i < values.size(); ++i)
     {
       double test = vtkMath::Dot(values[i].a, values[i].b);
       if (!vtkMathUtilities::FuzzyCompare(
-            expecteds[i], test, std::numeric_limits<double>::epsilon() * 256.0))
+            expecteds[i], test,
+            std::numeric_limits<double>::epsilon() * 256.0))
       {
-        std::cout << " Perpendiculars got " << test << " but expected " << expecteds[i];
+        std::cout << " Perpendiculars got " << test
+                  << " but expected " << expecteds[i];
       }
     }
   }
   {
-    // then floats
-    float x[3], y[3], z[3];
-    std::vector<valueFloat3D> values;
-    std::vector<float> expecteds;
-    for (int n = 0; n < 100; ++n)
+  // then floats
+  float x[3], y[3], z[3];
+  std::vector<valueFloat3D> values;
+  std::vector<float> expecteds;
+  for (int n = 0; n < 100; ++n)
+  {
+    for (int i = 0; i < 3; ++i)
     {
-      for (int i = 0; i < 3; ++i)
-      {
-        x[i] = vtkMath::Random(-10.0, 10.0);
-      }
-      vtkMath::Perpendiculars(x, y, z, vtkMath::Random(-vtkMath::Pi(), vtkMath::Pi()));
-      {
-        valueFloat3D value(x, y);
-        values.push_back(value);
-        expecteds.push_back(0.0);
-      }
-      {
-        valueFloat3D value(x, z);
-        values.push_back(value);
-        expecteds.push_back(0.0);
-      }
-      {
-        valueFloat3D value(y, z);
-        values.push_back(value);
-        expecteds.push_back(0.0);
-      }
-      vtkMath::Perpendiculars(x, y, z, 0.0);
-      {
-        valueFloat3D value(x, y);
-        values.push_back(value);
-        expecteds.push_back(0.0);
-      }
+      x[i] = vtkMath::Random(-10.0, 10.0);
     }
+    vtkMath::Perpendiculars(x, y, z,
+                            vtkMath::Random(-vtkMath::Pi(), vtkMath::Pi()));
+    {
+    valueFloat3D value(x, y);
+    values.push_back(value);
+    expecteds.push_back(0.0);
+    }
+    {
+    valueFloat3D value(x, z);
+    values.push_back(value);
+    expecteds.push_back(0.0);
+    }
+    {
+    valueFloat3D value(y, z);
+    values.push_back(value);
+    expecteds.push_back(0.0);
+    }
+    vtkMath::Perpendiculars(x, y, z,
+                            0.0);
+    {
+    valueFloat3D value(x, y);
+    values.push_back(value);
+    expecteds.push_back(0.0);
+    }
+  }
     for (size_t i = 0; i < values.size(); ++i)
     {
       float test = vtkMath::Dot(values[i].a, values[i].b);
       if (!vtkMathUtilities::FuzzyCompare(
-            expecteds[i], test, std::numeric_limits<float>::epsilon() * 256.0f))
+            expecteds[i], test,
+            std::numeric_limits<float>::epsilon() * 256.0f))
       {
-        std::cout << " Perpendiculars got " << test << " but expected " << expecteds[i];
+        std::cout << " Perpendiculars got " << test
+                  << " but expected " << expecteds[i];
       }
     }
   }
@@ -1306,7 +1321,7 @@ int TestPerpendiculars()
   return status;
 }
 
-template <typename T>
+template<typename T>
 int ProjectVector()
 {
   int status = 0;
@@ -1344,7 +1359,7 @@ int TestProjectVector()
   return status;
 }
 
-template <typename T>
+template<typename T>
 int ProjectVector2D()
 {
   int status = 0;
@@ -1464,76 +1479,76 @@ int TestDot2D()
   std::cout << "Dot2D..";
 
   {
-    std::vector<valueDouble2D> values;
-    std::vector<double> expecteds;
-    for (int n = 0; n < 100; ++n)
+  std::vector<valueDouble2D> values;
+  std::vector<double> expecteds;
+  for (int n = 0; n < 100; ++n)
+  {
+    valueDouble2D v;
+    double dot = 0.0;
+    for (int i = 0; i < 2; ++i)
     {
-      valueDouble2D v;
-      double dot = 0.0;
-      for (int i = 0; i < 2; ++i)
-      {
-        v.a[i] = vtkMath::Random();
-        v.b[i] = vtkMath::Random();
-        dot += (v.a[i] * v.b[i]);
-      }
-      values.push_back(v);
-      expecteds.push_back(dot);
+      v.a[i] = vtkMath::Random();
+      v.b[i] = vtkMath::Random();
+      dot += (v.a[i] * v.b[i]);
     }
-    valueDouble2D test;
-    test.a[0] = 1.0;
-    test.a[1] = 0.0;
-    test.b[0] = 0.0;
-    test.b[1] = 1.0;
-    values.push_back(test);
-    expecteds.push_back(0.0);
+    values.push_back(v);
+    expecteds.push_back(dot);
+  }
+  valueDouble2D test;
+  test.a[0] = 1.0; test.a[1] = 0.0;
+  test.b[0] = 0.0; test.b[1] = 1.0;
+  values.push_back(test);
+  expecteds.push_back(0.0);
 
-    for (size_t i = 0; i < values.size(); ++i)
+  for ( size_t i = 0; i < values.size(); ++i)
+  {
+    double result = vtkMath::Dot2D(values[i].a, values[i].b);
+    if (!vtkMathUtilities::FuzzyCompare(
+          result, expecteds[i],
+          std::numeric_limits<double>::epsilon()*128.0))
     {
-      double result = vtkMath::Dot2D(values[i].a, values[i].b);
-      if (!vtkMathUtilities::FuzzyCompare(
-            result, expecteds[i], std::numeric_limits<double>::epsilon() * 128.0))
-      {
-        std::cout << " Dot got " << result << " but expected " << expecteds[i];
-        ++status;
-      }
+      std::cout << " Dot got " << result
+                << " but expected " << expecteds[i];
+      ++status;
     }
+  }
   }
 
   // now float
   {
-    std::vector<valueFloat2D> values;
-    std::vector<float> expecteds;
-    for (int n = 0; n < 100; ++n)
+  std::vector<valueFloat2D> values;
+  std::vector<float> expecteds;
+  for (int n = 0; n < 100; ++n)
+  {
+    valueFloat2D v;
+    float dot = 0.0;
+    for (int i = 0; i < 2; ++i)
     {
-      valueFloat2D v;
-      float dot = 0.0;
-      for (int i = 0; i < 2; ++i)
-      {
-        v.a[i] = vtkMath::Random();
-        v.b[i] = vtkMath::Random();
-        dot += (v.a[i] * v.b[i]);
-      }
-      values.push_back(v);
-      expecteds.push_back(dot);
+      v.a[i] = vtkMath::Random();
+      v.b[i] = vtkMath::Random();
+      dot += (v.a[i] * v.b[i]);
     }
-    valueFloat2D test;
-    test.a[0] = 0.0;
-    test.a[1] = 1.0;
-    test.b[0] = 1.0;
-    test.b[1] = 0.0;
-    values.push_back(test);
-    expecteds.push_back(0.0);
+    values.push_back(v);
+    expecteds.push_back(dot);
+  }
+  valueFloat2D test;
+  test.a[0] = 0.0; test.a[1] = 1.0;
+  test.b[0] = 1.0; test.b[1] = 0.0;
+  values.push_back(test);
+  expecteds.push_back(0.0);
 
-    for (size_t i = 0; i < values.size(); ++i)
+  for ( size_t i = 0; i < values.size(); ++i)
+  {
+    float result = vtkMath::Dot2D(values[i].a, values[i].b);
+    if (!vtkMathUtilities::FuzzyCompare(
+          result, expecteds[i],
+          std::numeric_limits<float>::epsilon()*128.0f))
     {
-      float result = vtkMath::Dot2D(values[i].a, values[i].b);
-      if (!vtkMathUtilities::FuzzyCompare(
-            result, expecteds[i], std::numeric_limits<float>::epsilon() * 128.0f))
-      {
-        std::cout << " Dot got " << result << " but expected " << expecteds[i];
-        ++status;
-      }
+      std::cout << " Dot got " << result
+                << " but expected " << expecteds[i];
+      ++status;
     }
+  }
   }
 
   if (status)
@@ -1585,58 +1600,60 @@ int TestDeterminant2x2()
   std::cout << "Determinant2x2..";
   // Frank Matrix
   {
-    double a[2][2];
-    for (int i = 1; i <= 2; ++i)
+  double a[2][2];
+  for (int i = 1; i <= 2; ++i)
+  {
+    for (int j = 1; j <= 2; ++j)
     {
-      for (int j = 1; j <= 2; ++j)
+      if (j < i - 2)
       {
-        if (j < i - 2)
-        {
-          a[i - 1][j - 1] = 0.0;
-        }
-        else if (j == (i - 1))
-        {
-          a[i - 1][j - 1] = 2 + 1 - i;
-        }
-        else
-        {
-          a[i - 1][j - 1] = 2 + 1 - j;
-        }
+        a[i-1][j-1] = 0.0;
+      }
+      else if (j == (i - 1))
+      {
+        a[i-1][j-1] = 2 + 1 - i;
+      }
+      else
+      {
+        a[i-1][j-1] = 2 + 1 - j;
       }
     }
-    if (vtkMath::Determinant2x2(a[0], a[1]) != 1.0)
-    {
-      std::cout << "Determinant2x2 expected " << 1.0 << " but got "
-                << vtkMath::Determinant2x2(a[0], a[1]) << std::endl;
-      ++status;
-    };
+  }
+  if (vtkMath::Determinant2x2(a[0], a[1]) != 1.0)
+  {
+    std::cout << "Determinant2x2 expected " << 1.0
+              << " but got " << vtkMath::Determinant2x2(a[0], a[1])
+              << std::endl;
+    ++status;
+  };
   }
   {
-    float a[2][2];
-    for (int i = 1; i <= 2; ++i)
+  float a[2][2];
+  for (int i = 1; i <= 2; ++i)
+  {
+    for (int j = 1; j <= 2; ++j)
     {
-      for (int j = 1; j <= 2; ++j)
+      if (j < i - 2)
       {
-        if (j < i - 2)
-        {
-          a[i - 1][j - 1] = 0.0;
-        }
-        else if (j == (i - 1))
-        {
-          a[i - 1][j - 1] = 2 + 1 - i;
-        }
-        else
-        {
-          a[i - 1][j - 1] = 2 + 1 - j;
-        }
+        a[i-1][j-1] = 0.0;
+      }
+      else if (j == (i - 1))
+      {
+        a[i-1][j-1] = 2 + 1 - i;
+      }
+      else
+      {
+        a[i-1][j-1] = 2 + 1 - j;
       }
     }
-    if (vtkMath::Determinant2x2(a[0], a[1]) != 1.0)
-    {
-      std::cout << "Determinant2x2 expected " << 1.0 << " but got "
-                << vtkMath::Determinant2x2(a[0], a[1]) << std::endl;
-      ++status;
-    };
+  }
+  if (vtkMath::Determinant2x2(a[0], a[1]) != 1.0)
+  {
+    std::cout << "Determinant2x2 expected " << 1.0
+              << " but got " << vtkMath::Determinant2x2(a[0], a[1])
+              << std::endl;
+    ++status;
+  };
   }
   if (status)
   {
@@ -1656,58 +1673,60 @@ int TestDeterminant3x3()
 
   // Frank Matrix
   {
-    double a[3][3];
-    for (int i = 1; i <= 3; ++i)
+  double a[3][3];
+  for (int i = 1; i <= 3; ++i)
+  {
+    for (int j = 1; j <= 3; ++j)
     {
-      for (int j = 1; j <= 3; ++j)
+      if (j < i - 3)
       {
-        if (j < i - 3)
-        {
-          a[i - 1][j - 1] = 0.0;
-        }
-        else if (j == (i - 1))
-        {
-          a[i - 1][j - 1] = 3 + 1 - i;
-        }
-        else
-        {
-          a[i - 1][j - 1] = 3 + 1 - j;
-        }
+        a[i-1][j-1] = 0.0;
+      }
+      else if (j == (i - 1))
+      {
+        a[i-1][j-1] = 3 + 1 - i;
+      }
+      else
+      {
+        a[i-1][j-1] = 3 + 1 - j;
       }
     }
-    if (vtkMath::Determinant3x3(a[0], a[1], a[2]) != 1.0)
-    {
-      std::cout << "Determinant3x3 expected " << 1.0 << " but got "
-                << vtkMath::Determinant3x3(a[0], a[1], a[2]) << std::endl;
-      ++status;
-    };
+  }
+  if (vtkMath::Determinant3x3(a[0], a[1], a[2]) != 1.0)
+  {
+    std::cout << "Determinant3x3 expected " << 1.0
+              << " but got " << vtkMath::Determinant3x3(a[0], a[1], a[2])
+              << std::endl;
+    ++status;
+  };
   }
   {
-    float a[3][3];
-    for (int i = 1; i <= 3; ++i)
+  float a[3][3];
+  for (int i = 1; i <= 3; ++i)
+  {
+    for (int j = 1; j <= 3; ++j)
     {
-      for (int j = 1; j <= 3; ++j)
+      if (j < i - 3)
       {
-        if (j < i - 3)
-        {
-          a[i - 1][j - 1] = 0.0;
-        }
-        else if (j == (i - 1))
-        {
-          a[i - 1][j - 1] = 3 + 1 - i;
-        }
-        else
-        {
-          a[i - 1][j - 1] = 3 + 1 - j;
-        }
+        a[i-1][j-1] = 0.0;
+      }
+      else if (j == (i - 1))
+      {
+        a[i-1][j-1] = 3 + 1 - i;
+      }
+      else
+      {
+        a[i-1][j-1] = 3 + 1 - j;
       }
     }
-    if (vtkMath::Determinant3x3(a[0], a[1], a[2]) != 1.0)
-    {
-      std::cout << "Determinant3x3 expected " << 1.0 << " but got "
-                << vtkMath::Determinant3x3(a[0], a[1], a[2]) << std::endl;
-      ++status;
-    };
+  }
+  if (vtkMath::Determinant3x3(a[0], a[1], a[2]) != 1.0)
+  {
+    std::cout << "Determinant3x3 expected " << 1.0
+              << " but got " << vtkMath::Determinant3x3(a[0], a[1], a[2])
+              << std::endl;
+    ++status;
+  };
   }
 
   if (status)
@@ -1721,7 +1740,7 @@ int TestDeterminant3x3()
   return status;
 }
 
-template <typename T>
+template<typename T>
 int LUFactor3x3()
 {
   int status = 0;
@@ -1731,7 +1750,7 @@ int LUFactor3x3()
 
   for (int n = 0; n < 1000; ++n)
   {
-    for (int i = 0; i < 3; ++i)
+    for (int i =0; i < 3; ++i)
     {
       for (int j = 0; j < 3; ++j)
       {
@@ -1761,7 +1780,7 @@ int TestLUFactor3x3()
   }
   return status;
 }
-template <typename T>
+template<typename T>
 int LUSolve3x3()
 {
   int status = 0;
@@ -1781,11 +1800,11 @@ int LUSolve3x3()
 
     for (int i = 1; i <= 3; ++i)
     {
-      rhs[i - 1] = 0.0;
+      rhs[i-1] = 0.0;
       for (int j = 1; j <= 3; ++j)
       {
-        mat[i - 1][j - 1] = 1.0 / (i + j - 1);
-        rhs[i - 1] += (mat[i - 1][j - 1] * lhs[j - 1]);
+        mat[i-1][j-1] = 1.0 / (i + j - 1);
+        rhs[i-1] += (mat[i-1][j-1] * lhs[j-1]);
       }
     }
     vtkMath::LUFactor3x3(mat, index);
@@ -1793,9 +1812,11 @@ int LUSolve3x3()
     for (int i = 0; i < 3; ++i)
     {
       if (!vtkMathUtilities::FuzzyCompare(
-            lhs[i], rhs[i], std::numeric_limits<T>::epsilon() * (T)256.0))
+            lhs[i], rhs[i],
+            std::numeric_limits<T>::epsilon() * (T) 256.0))
       {
-        std::cout << " LUSolve3x3(T) expected " << lhs[i] << " but got " << rhs[i];
+        std::cout << " LUSolve3x3(T) expected " << lhs[i]
+                  << " but got " << rhs[i];
         ++status;
       }
     }
@@ -1822,7 +1843,7 @@ int TestLUSolve3x3()
   return status;
 }
 
-template <typename T>
+template<typename T>
 int LinearSolve3x3()
 {
   int status = 0;
@@ -1842,11 +1863,11 @@ int LinearSolve3x3()
 
     for (int i = 1; i <= 3; ++i)
     {
-      rhs[i - 1] = 0.0;
+      rhs[i-1] = 0.0;
       for (int j = 1; j <= 3; ++j)
       {
-        mat[i - 1][j - 1] = 1.0 / (i + j - 1);
-        rhs[i - 1] += (mat[i - 1][j - 1] * lhs[j - 1]);
+        mat[i-1][j-1] = 1.0 / (i + j - 1);
+        rhs[i-1] += (mat[i-1][j-1] * lhs[j-1]);
       }
     }
     vtkMath::LinearSolve3x3(mat, rhs, solution);
@@ -1854,9 +1875,11 @@ int LinearSolve3x3()
     for (int i = 0; i < 3; ++i)
     {
       if (!vtkMathUtilities::FuzzyCompare(
-            lhs[i], solution[i], std::numeric_limits<T>::epsilon() * (T)512.0))
+            lhs[i], solution[i],
+            std::numeric_limits<T>::epsilon() * (T) 512.0))
       {
-        std::cout << " LinearSolve3x3(T) expected " << lhs[i] << " but got " << solution[i];
+        std::cout << " LinearSolve3x3(T) expected " << lhs[i]
+                  << " but got " << solution[i];
         ++status;
       }
     }
@@ -1883,7 +1906,7 @@ int TestLinearSolve3x3()
   return status;
 }
 
-template <typename T>
+template<typename T>
 int Multiply3x3()
 {
   int status = 0;
@@ -1930,13 +1953,19 @@ int TestMultiplyMatrix()
   int status = 0;
   std::cout << "MultiplyMatrix..";
 
-  double a[3][3] = { { 1.0, 2.0, 3.0 }, { 4.0, 5.0, 6.0 }, { 7.0, 8.0, 9.0 } };
-  double b[3][3] = { { 1.0, 1.0, 1.0 }, { 1.0, 1.0, 1.0 }, { 1.0, 1.0, 1.0 } };
+  double a[3][3] =
+    {{1.0, 2.0, 3.0},
+     {4.0, 5.0, 6.0},
+     {7.0, 8.0, 9.0}};
+  double b[3][3] =
+    {{1.0, 1.0, 1.0},
+     {1.0, 1.0, 1.0},
+     {1.0, 1.0, 1.0}};
   double c[3][3];
 
-  double* aa[3];
-  double* bb[3];
-  double* cc[3];
+  double *aa[3];
+  double *bb[3];
+  double *cc[3];
   for (int i = 0; i < 3; ++i)
   {
     aa[i] = a[i];
@@ -1980,62 +2009,68 @@ int TestInvert3x3()
   int status = 0;
   std::cout << "Invert3x3..";
   {
-    // Generate a Hilbert Matrix
-    double mat[3][3];
-    double matI[3][3];
-    double expected[3][3] = { { 9.0, -36.0, 30.0 }, { -36.0, 192.0, -180.0 },
-      { 30.0, -180.0, 180.0 } };
+  // Generate a Hilbert Matrix
+  double mat[3][3];
+  double matI[3][3];
+  double expected[3][3] =
+    {{9.0, -36.0, 30.0},
+     {-36.0, 192.0, -180.0},
+     {30.0, -180.0, 180.0}};
 
-    for (int i = 1; i <= 3; ++i)
+  for (int i = 1; i <= 3; ++i)
+  {
+    for (int j = 1; j <= 3; ++j)
     {
-      for (int j = 1; j <= 3; ++j)
-      {
-        mat[i - 1][j - 1] = 1.0 / (i + j - 1);
-      }
+      mat[i-1][j-1] = 1.0 / (i + j - 1);
     }
-    vtkMath::Invert3x3(mat, matI);
-    for (int i = 0; i < 3; ++i)
+  }
+  vtkMath::Invert3x3(mat, matI);
+  for (int i = 0; i < 3; ++i)
+  {
+    for (int j = 0; j < 3; ++j)
     {
-      for (int j = 0; j < 3; ++j)
+      if (!vtkMathUtilities::FuzzyCompare(
+            matI[i][j], expected[i][j],
+            std::numeric_limits<double>::epsilon()*16384.0))
       {
-        if (!vtkMathUtilities::FuzzyCompare(
-              matI[i][j], expected[i][j], std::numeric_limits<double>::epsilon() * 16384.0))
-        {
-          std::cout << " Invert3x3(double) expected " << expected[i][j] << " but got "
-                    << matI[i][j];
-          ++status;
-        }
+        std::cout << " Invert3x3(double) expected " << expected[i][j]
+                  << " but got " << matI[i][j];
+        ++status;
       }
     }
   }
+  }
   {
-    // Generate a Hilbert Matrix
-    float mat[3][3];
-    float matI[3][3];
-    float expected[3][3] = { { 9.0f, -36.0f, 30.0f }, { -36.0f, 192.0f, -180.0f },
-      { 30.0f, -180.0f, 180.0f } };
+  // Generate a Hilbert Matrix
+  float mat[3][3];
+  float matI[3][3];
+  float expected[3][3] =
+    {{9.0f, -36.0f, 30.0f},
+     {-36.0f, 192.0f, -180.0f},
+     {30.0f, -180.0f, 180.0f}};
 
-    for (int i = 1; i <= 3; ++i)
+  for (int i = 1; i <= 3; ++i)
+  {
+    for (int j = 1; j <= 3; ++j)
     {
-      for (int j = 1; j <= 3; ++j)
+      mat[i-1][j-1] = 1.0 / (i + j - 1);
+    }
+  }
+  vtkMath::Invert3x3(mat, matI);
+  for (int i = 0; i < 3; ++i)
+  {
+    for (int j = 0; j < 3; ++j)
+    {
+      if (!vtkMathUtilities::FuzzyCompare(
+            matI[i][j], expected[i][j],
+            std::numeric_limits<float>::epsilon()*8192.0f))
       {
-        mat[i - 1][j - 1] = 1.0 / (i + j - 1);
+        std::cout << " Invert3x3(single) expected " << expected[i][j]
+                  << " but got " << matI[i][j];
+        ++status;
       }
     }
-    vtkMath::Invert3x3(mat, matI);
-    for (int i = 0; i < 3; ++i)
-    {
-      for (int j = 0; j < 3; ++j)
-      {
-        if (!vtkMathUtilities::FuzzyCompare(
-              matI[i][j], expected[i][j], std::numeric_limits<float>::epsilon() * 8192.0f))
-        {
-          std::cout << " Invert3x3(single) expected " << expected[i][j] << " but got "
-                    << matI[i][j];
-          ++status;
-        }
-      }
-    }
+  }
   }
   if (status)
   {
@@ -2048,40 +2083,43 @@ int TestInvert3x3()
   return status;
 }
 
-template <typename T, int NDimension>
+template<typename T, int NDimension>
 int InvertMatrix()
 {
   int status = 0;
 
   // Generate a Hilbert Matrix
-  T** mat = new T*[NDimension];
-  T** orig = new T*[NDimension];
-  T** matI = new T*[NDimension];
-  T** ident = new T*[NDimension];
-  int* tmp1 = new int[NDimension];
-  T* tmp2 = new T[NDimension];
+  T **mat = new T *[NDimension];
+  T **orig = new T *[NDimension];
+  T **matI = new T *[NDimension];
+  T **ident = new T *[NDimension];
+  int *tmp1 = new int [NDimension];
+  T *tmp2 = new T [NDimension];
   for (int i = 1; i <= NDimension; ++i)
   {
-    mat[i - 1] = new T[NDimension];
-    matI[i - 1] = new T[NDimension];
-    orig[i - 1] = new T[NDimension];
-    ident[i - 1] = new T[NDimension];
+    mat[i-1] = new T[NDimension];
+    matI[i-1] = new T[NDimension];
+    orig[i-1] = new T[NDimension];
+    ident[i-1] = new T[NDimension];
     for (int j = 1; j <= NDimension; ++j)
     {
-      orig[i - 1][j - 1] = mat[i - 1][j - 1] = 1.0 / (i + j - 1);
+      orig[i-1][j-1] = mat[i-1][j-1] = 1.0 / (i + j - 1);
     }
   }
   if (vtkMath::InvertMatrix(mat, matI, NDimension, tmp1, tmp2) == 0)
   {
-    delete[] mat;
-    delete[] orig;
-    delete[] matI;
-    delete[] ident;
-    delete[] tmp1;
-    delete[] tmp2;
+    delete [] mat;
+    delete [] orig;
+    delete [] matI;
+    delete [] ident;
+    delete [] tmp1;
+    delete [] tmp2;
     return status;
   }
-  vtkMath::MultiplyMatrix(orig, matI, NDimension, NDimension, NDimension, NDimension, ident);
+  vtkMath::MultiplyMatrix(orig,
+                          matI,
+                          NDimension, NDimension, NDimension, NDimension,
+                          ident);
 
   T expected;
   for (int i = 0; i < NDimension; ++i)
@@ -2097,36 +2135,38 @@ int InvertMatrix()
         expected = 0.0;
       }
       if (!vtkMathUtilities::FuzzyCompare(
-            *(ident[i] + j), expected, std::numeric_limits<T>::epsilon() * (T)100000.0))
+            *(ident[i] + j), expected,
+            std::numeric_limits<T>::epsilon() * (T) 100000.0))
       {
-        std::cout << " InvertMatrix(T) expected " << expected << " but got " << *(ident[i] + j);
-        std::cout << "eps ratio is: "
-                  << (*(ident[i] + j) - expected) / std::numeric_limits<T>::epsilon() << std::endl;
+        std::cout << " InvertMatrix(T) expected " << expected
+                  << " but got " << *(ident[i] + j);
+        std::cout << "eps ratio is: " << (*(ident[i] + j) - expected)
+          / std::numeric_limits<T>::epsilon() << std::endl;
         ++status;
       }
     }
   }
   for (int i = 0; i < NDimension; i++)
   {
-    delete[] mat[i];
-    delete[] orig[i];
-    delete[] matI[i];
-    delete[] ident[i];
+    delete [] mat[i];
+    delete [] orig[i];
+    delete [] matI[i];
+    delete [] ident[i];
   }
-  delete[] mat;
-  delete[] orig;
-  delete[] matI;
-  delete[] ident;
-  delete[] tmp1;
-  delete[] tmp2;
+  delete [] mat;
+  delete [] orig;
+  delete [] matI;
+  delete [] ident;
+  delete [] tmp1;
+  delete [] tmp2;
   return status;
 }
 int TestInvertMatrix()
 {
   int status = 0;
-  status += InvertMatrix<double, 3>();
-  status += InvertMatrix<double, 4>();
-  status += InvertMatrix<double, 5>();
+  status += InvertMatrix<double,3> ();
+  status += InvertMatrix<double,4> ();
+  status += InvertMatrix<double,5> ();
 
   if (status)
   {
@@ -2162,7 +2202,8 @@ int TestIdentity3x3()
       }
       if (expected != m[i][j])
       {
-        std::cout << " Identity expected " << expected << " but got " << m[i][j] << std::endl;
+        std::cout << " Identity expected " << expected
+                  << " but got " << m[i][j] << std::endl;
         ++status;
       }
     }
@@ -2179,7 +2220,7 @@ int TestIdentity3x3()
   return status;
 }
 
-template <typename T>
+template<typename T>
 int Matrix3x3ToQuaternion()
 {
   int status = 0;
@@ -2199,6 +2240,7 @@ int Matrix3x3ToQuaternion()
     vtkMath::Matrix3x3ToQuaternion(A, quat);
   }
   return status;
+
 }
 int TestMatrix3x3ToQuaternion()
 {
@@ -2219,7 +2261,7 @@ int TestMatrix3x3ToQuaternion()
   return status;
 }
 
-template <typename T>
+template<typename T>
 int QuaternionToMatrix3x3()
 {
   int status = 0;
@@ -2232,11 +2274,13 @@ int QuaternionToMatrix3x3()
     quat[0] = vtkMath::Random(-vtkMath::Pi(), vtkMath::Pi());
     for (int i = 1; i < 2; ++i)
     {
-      quat[i] = vtkMath::Random(-10.0, 10.0);
+      quat[i] = vtkMath::Random(-10.0,10.0);
+
     }
     vtkMath::QuaternionToMatrix3x3(quat, A);
   }
   return status;
+
 }
 
 int TestQuaternionToMatrix3x3()
@@ -2258,7 +2302,7 @@ int TestQuaternionToMatrix3x3()
   return status;
 }
 
-template <typename T>
+template<typename T>
 int MultiplyQuaternion()
 {
   int status = 0;
@@ -2300,77 +2344,79 @@ int TestOrthogonalize3x3()
   std::cout << "Orthogonalize3x3..";
 
   {
-    // Generate a random matrix
-    double mat[3][3];
-    double matO[3][3];
-    double matI[3][3];
+  // Generate a random matrix
+  double mat[3][3];
+  double matO[3][3];
+  double matI[3][3];
 
-    for (int n = 0; n < 1000; ++n)
+  for (int n = 0; n < 1000; ++n)
+  {
+    for (int i = 0; i < 3; ++i)
     {
-      for (int i = 0; i < 3; ++i)
+      for (int j = 0; j < 3; ++j)
       {
-        for (int j = 0; j < 3; ++j)
-        {
-          mat[i][j] = vtkMath::Random();
-        }
+        mat[i][j] = vtkMath::Random();
       }
-      vtkMath::Orthogonalize3x3(mat, matO);
-      vtkMath::Transpose3x3(matO, mat);
-      vtkMath::Multiply3x3(mat, matO, matI);
+    }
+    vtkMath::Orthogonalize3x3(mat, matO);
+    vtkMath::Transpose3x3(matO, mat);
+    vtkMath::Multiply3x3(mat, matO, matI);
 
-      double identity[3][3];
-      vtkMath::Identity3x3(identity);
-      for (int i = 0; i < 3; ++i)
+    double identity[3][3];
+    vtkMath::Identity3x3(identity);
+    for (int i = 0; i < 3; ++i)
+    {
+      for (int j = 0; j < 3; ++j)
       {
-        for (int j = 0; j < 3; ++j)
+        if (!vtkMathUtilities::FuzzyCompare(
+              matI[i][j], identity[i][j],
+              std::numeric_limits<double>::epsilon()*128.0))
         {
-          if (!vtkMathUtilities::FuzzyCompare(
-                matI[i][j], identity[i][j], std::numeric_limits<double>::epsilon() * 128.0))
-          {
-            std::cout << " Orthogonalize3x3 expected " << identity[i][j] << " but got "
-                      << matI[i][j];
-            ++status;
-          }
+          std::cout << " Orthogonalize3x3 expected " << identity[i][j]
+                    << " but got " << matI[i][j];
+          ++status;
         }
       }
     }
   }
+  }
 
   {
-    // Generate a random matrix
-    float mat[3][3];
-    float matO[3][3];
-    float matI[3][3];
+  // Generate a random matrix
+  float mat[3][3];
+  float matO[3][3];
+  float matI[3][3];
 
-    for (int n = 0; n < 1000; ++n)
+  for (int n = 0; n < 1000; ++n)
+  {
+    for (int i = 0; i < 3; ++i)
     {
-      for (int i = 0; i < 3; ++i)
+      for (int j = 0; j < 3; ++j)
       {
-        for (int j = 0; j < 3; ++j)
-        {
-          mat[i][j] = vtkMath::Random();
-        }
+        mat[i][j] = vtkMath::Random();
       }
-      vtkMath::Orthogonalize3x3(mat, matO);
-      vtkMath::Transpose3x3(matO, mat);
-      vtkMath::Multiply3x3(mat, matO, matI);
+    }
+    vtkMath::Orthogonalize3x3(mat, matO);
+    vtkMath::Transpose3x3(matO, mat);
+    vtkMath::Multiply3x3(mat, matO, matI);
 
-      float identity[3][3];
-      vtkMath::Identity3x3(identity);
-      for (int i = 0; i < 3; ++i)
+    float identity[3][3];
+    vtkMath::Identity3x3(identity);
+    for (int i = 0; i < 3; ++i)
+    {
+      for (int j = 0; j < 3; ++j)
       {
-        for (int j = 0; j < 3; ++j)
+        if (!vtkMathUtilities::FuzzyCompare(
+              matI[i][j], identity[i][j],
+              std::numeric_limits<float>::epsilon()*128.0f))
         {
-          if (!vtkMathUtilities::FuzzyCompare(
-                matI[i][j], identity[i][j], std::numeric_limits<float>::epsilon() * 128.0f))
-          {
-            std::cout << " Orthogonalize3x3 expected " << identity[i][j] << " but got "
-                      << matI[i][j];
-            ++status;
-          }
+          std::cout << " Orthogonalize3x3 expected " << identity[i][j]
+                    << " but got " << matI[i][j];
+          ++status;
         }
       }
     }
+  }
   }
 
   if (status)
@@ -2384,7 +2430,7 @@ int TestOrthogonalize3x3()
   return status;
 }
 
-template <typename T>
+template<typename T>
 int Diagonalize3x3()
 {
   int status = 0;
@@ -2425,9 +2471,11 @@ int Diagonalize3x3()
           expected = 0.0;
         }
         if (!vtkMathUtilities::FuzzyCompare(
-              result[i][j], expected, std::numeric_limits<T>::epsilon() * (T)128.0))
+              result[i][j], expected,
+              std::numeric_limits<T>::epsilon()*(T)128.0))
         {
-          std::cout << " Diagonalize3x3 expected " << expected << " but got " << result[i][j];
+          std::cout << " Diagonalize3x3 expected " << expected
+                    << " but got " << result[i][j];
           ++status;
         }
       }
@@ -2438,18 +2486,24 @@ int Diagonalize3x3()
   vtkMath::Identity3x3(mat);
   mat[0][0] = 5.0;
   mat[1][1] = 5.0;
-  mat[2][2] = 1.0;
+  mat[1][1] = 1.0;
 
   vtkMath::Diagonalize3x3(mat, eigen, eigenVector);
-  std::cout << "eigen: " << eigen[0] << "," << eigen[1] << "," << eigen[2] << std::endl;
+  std::cout << "eigen: "
+            << eigen[0] << ","
+            << eigen[1] << ","
+            << eigen[2] << std::endl;
 
   vtkMath::Identity3x3(mat);
   mat[0][0] = 2.0;
   mat[1][1] = 2.0;
-  mat[2][2] = 2.0;
+  mat[1][1] = 2.0;
 
   vtkMath::Diagonalize3x3(mat, eigen, eigenVector);
-  std::cout << "eigen: " << eigen[0] << "," << eigen[1] << "," << eigen[2] << std::endl;
+  std::cout << "eigen: "
+            << eigen[0] << ","
+            << eigen[1] << ","
+            << eigen[2] << std::endl;
   return status;
 }
 
@@ -2473,7 +2527,7 @@ int TestDiagonalize3x3()
   return status;
 }
 
-template <typename T>
+template<typename T>
 int SingularValueDecomposition3x3()
 {
   int status = 0;
@@ -2498,9 +2552,7 @@ int SingularValueDecomposition3x3()
     T m[3][3];
     T W[3][3];
     vtkMath::Identity3x3(W);
-    W[0][0] = w[0];
-    W[1][1] = w[1];
-    W[2][2] = w[2];
+    W[0][0] = w[0]; W[1][1] = w[1]; W[2][2] = w[2];
     vtkMath::Multiply3x3(u, W, m);
     vtkMath::Multiply3x3(m, vt, m);
 
@@ -2509,12 +2561,13 @@ int SingularValueDecomposition3x3()
       for (int j = 0; j < 3; ++j)
       {
         if (!vtkMathUtilities::FuzzyCompare(
-              m[i][j], orig[i][j], std::numeric_limits<T>::epsilon() * (T)128.0))
+              m[i][j], orig[i][j],
+              std::numeric_limits<T>::epsilon() * (T) 128.0))
         {
-          std::cout << " SingularValueDecomposition3x3 expected " << orig[i][j] << " but got "
-                    << m[i][j];
-          std::cout << " eps ratio is: "
-                    << (m[i][j] - orig[i][j]) / std::numeric_limits<T>::epsilon() << std::endl;
+          std::cout << " SingularValueDecomposition3x3 expected " << orig[i][j]
+                    << " but got " << m[i][j];
+          std::cout << " eps ratio is: " << (m[i][j] - orig[i][j])
+            / std::numeric_limits<T>::epsilon() << std::endl;
           ++status;
         }
       }
@@ -2542,7 +2595,8 @@ int TestSingularValueDecomposition3x3()
   return status;
 }
 
-template <typename T, int NDimension>
+
+template<typename T, int NDimension>
 int SolveLinearSystem()
 {
   int status = 0;
@@ -2550,14 +2604,14 @@ int SolveLinearSystem()
   for (int n = 0; n < 100; ++n)
   {
     // Generate a Random Matrix
-    T** mat = new T*[NDimension];
-    T* lhs = new T[NDimension];
-    T* rhs = new T[NDimension];
+    T **mat = new T *[NDimension];
+    T *lhs = new T [NDimension];
+    T *rhs = new T [NDimension];
 
     for (int i = 0; i < NDimension; ++i)
     {
       mat[i] = new T[NDimension];
-      lhs[i] = vtkMath::Random(-1.0, 1.0);
+      lhs[i] =vtkMath::Random(-1.0, 1.0);
       for (int j = 0; j < NDimension; ++j)
       {
         *(mat[i] + j) = vtkMath::Random(-1.0, 1.0);
@@ -2577,11 +2631,13 @@ int SolveLinearSystem()
     for (int i = 0; i < NDimension; ++i)
     {
       if (!vtkMathUtilities::FuzzyCompare(
-            lhs[i], rhs[i], std::numeric_limits<double>::epsilon() * 32768.0))
+            lhs[i], rhs[i],
+            std::numeric_limits<double>::epsilon()*32768.0))
       {
-        std::cout << " SolveLinearSystem(double) expected " << lhs[i] << " but got " << rhs[i];
-        std::cout << " eps ratio is: " << (lhs[i] - rhs[i]) / std::numeric_limits<T>::epsilon()
-                  << std::endl;
+        std::cout << " SolveLinearSystem(double) expected " << lhs[i]
+                  << " but got " << rhs[i];
+        std::cout << " eps ratio is: " << (lhs[i] - rhs[i])
+            / std::numeric_limits<T>::epsilon() << std::endl;
         ++status;
       }
     }
@@ -2597,16 +2653,17 @@ int SolveLinearSystem()
       }
       if (vtkMath::SolveLinearSystem(mat, rhs, NDimension) != 0.0)
       {
-        std::cout << " SolveLinearSystem for a zero matrix expected " << 0 << " but got 1";
+        std::cout << " SolveLinearSystem for a zero matrix expected " << 0
+                  << " but got 1" ;
       }
     }
     for (int i = 0; i < NDimension; i++)
     {
-      delete[] mat[i];
+      delete [] mat[i];
     }
-    delete[] mat;
-    delete[] rhs;
-    delete[] lhs;
+    delete [] mat;
+    delete [] rhs;
+    delete [] lhs;
   }
   return status;
 }
@@ -2617,10 +2674,10 @@ int TestSolveLinearSystem()
   int status = 0;
   std::cout << "SolveLinearSystem..";
 
-  status += SolveLinearSystem<double, 1>();
-  status += SolveLinearSystem<double, 2>();
-  status += SolveLinearSystem<double, 3>();
-  status += SolveLinearSystem<double, 50>();
+  status += SolveLinearSystem<double,1> ();
+  status += SolveLinearSystem<double,2> ();
+  status += SolveLinearSystem<double,3> ();
+  status += SolveLinearSystem<double,50> ();
 
   if (status)
   {
@@ -2639,9 +2696,9 @@ int TestSolveLeastSquares()
   int status = 0;
   std::cout << "SolveLeastSquares..";
 
-  double** m = new double*[2];
-  double** x = new double*[3];
-  double** y = new double*[3];
+  double **m = new double *[2];
+  double **x = new double *[3];
+  double **y = new double *[3];
 
   for (int i = 0; i < 2; ++i)
   {
@@ -2651,12 +2708,9 @@ int TestSolveLeastSquares()
   {
     x[i] = new double[2];
   }
-  x[0][0] = 1;
-  x[0][1] = 4;
-  x[1][0] = 1;
-  x[1][1] = 2;
-  x[2][0] = 2;
-  x[2][1] = 3;
+  x[0][0] = 1; x[0][1] = 4;
+  x[1][0] = 1; x[1][1] = 2;
+  x[2][0] = 2; x[2][1] = 3;
 
   for (int i = 0; i < 3; ++i)
   {
@@ -2675,12 +2729,14 @@ int TestSolveLeastSquares()
   expecteds.push_back(-1.0);
   results.push_back(m[1][0]);
 
-  for (size_t i = 0; i < results.size(); ++i)
+  for ( size_t i = 0; i < results.size(); ++i)
   {
     if (!vtkMathUtilities::FuzzyCompare(
-          results[i], expecteds[i], std::numeric_limits<double>::epsilon() * 128.0))
+          results[i], expecteds[i],
+          std::numeric_limits<double>::epsilon()*128.0))
     {
-      std::cout << " Solve Least Squares got " << results[i] << " but expected " << expecteds[i];
+      std::cout << " Solve Least Squares got " << results[i]
+                << " but expected " << expecteds[i];
       ++status;
     }
   }
@@ -2698,7 +2754,8 @@ int TestSolveLeastSquares()
   // Insufficient number of samples. Underdetermined.
   if (vtkMath::SolveLeastSquares(1, x, 2, y, 1, m) != 0)
   {
-    std::cout << " Solve Least Squares got " << 1 << " but expected " << 0;
+    std::cout << " Solve Least Squares got " << 1
+              << " but expected " << 0;
     ++status;
   }
 
@@ -2713,16 +2770,16 @@ int TestSolveLeastSquares()
 
   for (int i = 0; i < 3; i++)
   {
-    delete[] x[i];
-    delete[] y[i];
+    delete [] x[i];
+    delete [] y[i];
   }
   for (int i = 0; i < 2; i++)
   {
-    delete[] m[i];
+    delete [] m[i];
   }
-  delete[] x;
-  delete[] y;
-  delete[] m;
+  delete [] x;
+  delete [] y;
+  delete [] m;
 
   return status;
 }
@@ -2732,11 +2789,11 @@ int TestSolveLeastSquares()
 int TestSolveHomogeneousLeastSquares()
 {
   int status = 0;
-  std::cout << "SolveHomogeneousLeastSquares..";
+  std::cout << "SolveHomogenousLeastSquares..";
 
-  double** m = new double*[2];
-  double** x = new double*[3];
-  double** y = new double*[3];
+  double **m = new double *[2];
+  double **x = new double *[3];
+  double **y = new double *[3];
 
   for (int i = 0; i < 2; ++i)
   {
@@ -2747,12 +2804,9 @@ int TestSolveHomogeneousLeastSquares()
     x[i] = new double[2];
     y[i] = new double[1];
   }
-  x[0][0] = 1;
-  x[0][1] = 2;
-  x[1][0] = 2;
-  x[1][1] = 4;
-  x[2][0] = 3;
-  x[2][1] = 6;
+  x[0][0] = 1; x[0][1] = 2;
+  x[1][0] = 2; x[1][1] = 4;
+  x[2][0] = 3; x[2][1] = 6;
 
   vtkMath::SolveHomogeneousLeastSquares(3, x, 1, m);
 
@@ -2761,13 +2815,14 @@ int TestSolveHomogeneousLeastSquares()
   std::vector<double> results;
   std::vector<double> expecteds;
 
-  for (size_t i = 0; i < results.size(); ++i)
+  for ( size_t i = 0; i < results.size(); ++i)
   {
     if (!vtkMathUtilities::FuzzyCompare(
-          results[i], expecteds[i], std::numeric_limits<double>::epsilon() * 128.0))
+          results[i], expecteds[i],
+          std::numeric_limits<double>::epsilon()*128.0))
     {
-      std::cout << " SolveHomogeneousLeastSquares got " << results[i] << " but expected "
-                << expecteds[i];
+      std::cout << " SolveHomogeneousLeastSquares got " << results[i]
+                << " but expected " << expecteds[i];
       ++status;
     }
   }
@@ -2775,7 +2830,8 @@ int TestSolveHomogeneousLeastSquares()
   // Insufficient number of samples. Underdetermined.
   if (vtkMath::SolveHomogeneousLeastSquares(3, x, 5, m) != 0)
   {
-    std::cout << " SolveHomogeneousLeastSquares got " << 1 << " but expected " << 0;
+    std::cout << " SolveHomogeneousLeastSquares got " << 1
+              << " but expected " << 0;
     ++status;
   }
 
@@ -2790,35 +2846,35 @@ int TestSolveHomogeneousLeastSquares()
 
   for (int i = 0; i < 3; i++)
   {
-    delete[] x[i];
-    delete[] y[i];
+    delete [] x[i];
+    delete [] y[i];
   }
   for (int i = 0; i < 2; i++)
   {
-    delete[] m[i];
+    delete [] m[i];
   }
-  delete[] x;
-  delete[] y;
-  delete[] m;
+  delete [] x;
+  delete [] y;
+  delete [] m;
 
   return status;
 }
 
-template <typename T, int NDimension>
+template<typename T, int NDimension>
 int LUSolveLinearSystemEstimateMatrixCondition()
 {
   int status = 0;
 
   // Generate a Hilbert Matrix
-  T** mat = new T*[NDimension];
+  T **mat = new T *[NDimension];
   int index[NDimension];
 
   for (int i = 1; i <= NDimension; ++i)
   {
-    mat[i - 1] = new T[NDimension];
+    mat[i-1] = new T[NDimension];
     for (int j = 1; j <= NDimension; ++j)
     {
-      mat[i - 1][j - 1] = 1.0 / (i + j - 1);
+      mat[i-1][j-1] = 1.0 / (i + j - 1);
     }
   }
   vtkMath::LUFactorLinearSystem(mat, index, NDimension);
@@ -2827,18 +2883,20 @@ int LUSolveLinearSystemEstimateMatrixCondition()
 
   T expected = condition;
   if (!vtkMathUtilities::FuzzyCompare(
-        condition, expected, std::numeric_limits<T>::epsilon() * (T)128.0))
+        condition, expected,
+        std::numeric_limits<T>::epsilon() * (T) 128.0))
   {
-    std::cout << " EstimateMatrixCondition(T) expected " << expected << " but got " << condition;
-    std::cout << "eps ratio is: " << condition - expected / std::numeric_limits<T>::epsilon()
-              << std::endl;
+    std::cout << " EstimateMatrixCondition(T) expected " << expected
+              << " but got " << condition;
+    std::cout << "eps ratio is: " << condition - expected
+      / std::numeric_limits<T>::epsilon() << std::endl;
     ++status;
   }
   for (int i = 0; i < NDimension; i++)
   {
-    delete[] mat[i];
+    delete [] mat[i];
   }
-  delete[] mat;
+  delete [] mat;
   return status;
 }
 
@@ -2848,11 +2906,11 @@ int TestLUSolveLinearSystemEstimateMatrixCondition()
 {
   int status = 0;
   std::cout << "LUSolveLinearSystemEstimateMatrixCondition..";
-  status += LUSolveLinearSystemEstimateMatrixCondition<double, 10>();
-  status += LUSolveLinearSystemEstimateMatrixCondition<double, 8>();
-  status += LUSolveLinearSystemEstimateMatrixCondition<double, 6>();
-  status += LUSolveLinearSystemEstimateMatrixCondition<double, 4>();
-  status += LUSolveLinearSystemEstimateMatrixCondition<double, 3>();
+  status += LUSolveLinearSystemEstimateMatrixCondition<double,10>();
+  status += LUSolveLinearSystemEstimateMatrixCondition<double,8>();
+  status += LUSolveLinearSystemEstimateMatrixCondition<double,6>();
+  status += LUSolveLinearSystemEstimateMatrixCondition<double,4>();
+  status += LUSolveLinearSystemEstimateMatrixCondition<double,3>();
   if (status)
   {
     std::cout << "..FAILED" << std::endl;
@@ -2864,7 +2922,7 @@ int TestLUSolveLinearSystemEstimateMatrixCondition()
   return status;
 }
 
-template <typename T, int NDimension>
+template<typename T, int NDimension>
 int JacobiN()
 {
   int status = 0;
@@ -2888,12 +2946,12 @@ int JacobiN()
     }
 
     // convert to jacobiN format
-    T* origJ[NDimension];
-    T* matJ[NDimension];
-    T* eigenVectorJ[NDimension];
-    T* eigenVectorTJ[NDimension];
-    T* resultJ[NDimension];
-    T* tempJ[NDimension];
+    T *origJ[NDimension];
+    T *matJ[NDimension];
+    T *eigenVectorJ[NDimension];
+    T *eigenVectorTJ[NDimension];
+    T *resultJ[NDimension];
+    T *tempJ[NDimension];
     for (int i = 0; i < NDimension; ++i)
     {
       matJ[i] = mat[i];
@@ -2906,19 +2964,28 @@ int JacobiN()
 
     if (NDimension == 3)
     {
-      vtkMath::Jacobi(matJ, eigen, eigenVectorJ);
+      vtkMath::Jacobi(matJ,
+                       eigen,
+                       eigenVectorJ);
     }
     else
     {
-      vtkMath::JacobiN(matJ, NDimension, eigen, eigenVectorJ);
+      vtkMath::JacobiN(matJ,
+                       NDimension,
+                       eigen,
+                       eigenVectorJ);
     }
 
     // P^-1 * A * P = diagonal matrix with eigenvalues on diagonal
-    vtkMath::MultiplyMatrix(
-      origJ, eigenVectorJ, NDimension, NDimension, NDimension, NDimension, tempJ);
+    vtkMath::MultiplyMatrix(origJ,
+                            eigenVectorJ,
+                            NDimension, NDimension, NDimension, NDimension,
+                            tempJ);
     vtkMath::InvertMatrix(eigenVectorJ, eigenVectorTJ, NDimension);
-    vtkMath::MultiplyMatrix(
-      eigenVectorTJ, tempJ, NDimension, NDimension, NDimension, NDimension, resultJ);
+    vtkMath::MultiplyMatrix(eigenVectorTJ,
+                            tempJ,
+                            NDimension, NDimension, NDimension, NDimension,
+                            resultJ);
     T expected;
     for (int i = 0; i < NDimension; ++i)
     {
@@ -2933,11 +3000,13 @@ int JacobiN()
           expected = 0.0;
         }
         if (!vtkMathUtilities::FuzzyCompare(
-              result[i][j], expected, std::numeric_limits<T>::epsilon() * (T)256.0))
+              result[i][j], expected,
+              std::numeric_limits<T>::epsilon() * (T) 256.0))
         {
-          std::cout << " JacobiN expected " << expected << " but got " << result[i][j];
-          std::cout << "eps ratio is: "
-                    << (result[i][j] - expected) / std::numeric_limits<T>::epsilon() << std::endl;
+          std::cout << " JacobiN expected " << expected
+                    << " but got " << result[i][j];
+          std::cout << "eps ratio is: " << (result[i][j] - expected)
+            / std::numeric_limits<T>::epsilon() << std::endl;
           ++status;
         }
       }
@@ -2951,9 +3020,9 @@ int TestJacobiN()
 {
   int status = 0;
   std::cout << "JacobiN..";
-  status += JacobiN<double, 3>();
-  status += JacobiN<double, 10>();
-  status += JacobiN<double, 50>();
+  status += JacobiN<double,3>();
+  status += JacobiN<double,10>();
+  status += JacobiN<double,50>();
 
   if (status)
   {
@@ -2966,7 +3035,7 @@ int TestJacobiN()
   return status;
 }
 
-template <typename T>
+template<typename T>
 int RGBToHSV()
 {
   int status = 0;
@@ -2977,27 +3046,25 @@ int RGBToHSV()
   {
     std::vector<T> values;
     std::vector<T> expecteds;
-    R = (T)vtkMath::Random(0.0, 1.0);
-    G = (T)vtkMath::Random(0.0, 1.0);
-    B = (T)vtkMath::Random(0.0, 1.0);
+    R = (T) vtkMath::Random(0.0, 1.0);
+    G = (T) vtkMath::Random(0.0, 1.0);
+    B = (T) vtkMath::Random(0.0, 1.0);
 
     vtkMath::RGBToHSV(R, G, B, &H, &S, &V);
     vtkMath::HSVToRGB(H, S, V, &CR, &CG, &CB);
-    values.push_back(CR);
-    values.push_back(CG);
-    values.push_back(CB);
-    expecteds.push_back(R);
-    expecteds.push_back(G);
-    expecteds.push_back(B);
+    values.push_back(CR); values.push_back(CG); values.push_back(CB);
+    expecteds.push_back(R); expecteds.push_back(G); expecteds.push_back(B);
 
-    for (size_t i = 0; i < values.size(); ++i)
+    for ( size_t i = 0; i < values.size(); ++i)
     {
       if (!vtkMathUtilities::FuzzyCompare(
-            values[i], expecteds[i], std::numeric_limits<T>::epsilon() * (T)128.0))
+            values[i], expecteds[i],
+            std::numeric_limits<T>::epsilon() * (T) 128.0))
       {
-        std::cout << " RGBToHSV got " << values[i] << " but expected " << expecteds[i];
-        std::cout << " eps ratio is: "
-                  << (values[i] - expecteds[i]) / std::numeric_limits<T>::epsilon() << std::endl;
+        std::cout << " RGBToHSV got " << values[i]
+                  << " but expected " << expecteds[i];
+        std::cout << " eps ratio is: " << (values[i] - expecteds[i])
+          / std::numeric_limits<T>::epsilon() << std::endl;
         ++status;
       }
     }
@@ -3032,13 +3099,14 @@ int TestClampValue()
 
   double value;
   double clampedValue;
-  double range[2] = { -1.0, 1.0 };
+  double range[2] = {-1.0, 1.0};
 
   value = -800.0;
   clampedValue = vtkMath::ClampValue(value, range[0], range[1]);
   if (clampedValue != range[0])
   {
-    std::cout << " ClampValue expected " << range[0] << " but got " << value;
+    std::cout << " ClampValue expected " << range[0]
+              << " but got " << value;
     ++status;
   }
 
@@ -3046,7 +3114,8 @@ int TestClampValue()
   clampedValue = vtkMath::ClampValue(value, range[0], range[1]);
   if (clampedValue != range[1])
   {
-    std::cout << " ClampValue expected " << range[1] << " but got " << value;
+    std::cout << " ClampValue expected " << range[1]
+              << " but got " << value;
     ++status;
   }
 
@@ -3054,29 +3123,34 @@ int TestClampValue()
   clampedValue = vtkMath::ClampValue(value, range[0], range[1]);
   if (clampedValue != 0.0)
   {
-    std::cout << " ClampValue expected " << 0.0 << " but got " << value;
+    std::cout << " ClampValue expected " << 0.0
+              << " but got " << value;
     ++status;
   }
+
 
   value = -100.0;
   vtkMath::ClampValue(&value, range);
   if (value != range[0])
   {
-    std::cout << " ClampValue expected " << range[0] << " but got " << value;
+    std::cout << " ClampValue expected " << range[0]
+              << " but got " << value;
     ++status;
   }
   value = 100.0;
   vtkMath::ClampValue(&value, range);
   if (value != range[1])
   {
-    std::cout << " ClampValue expected " << range[1] << " but got " << value;
+    std::cout << " ClampValue expected " << range[1]
+              << " but got " << value;
     ++status;
   }
   value = -100.0;
   vtkMath::ClampValue(value, range, &clampedValue);
   if (clampedValue != range[0])
   {
-    std::cout << " ClampValue expected " << range[0] << " but got " << clampedValue;
+    std::cout << " ClampValue expected " << range[0]
+              << " but got " << clampedValue;
     ++status;
   }
 
@@ -3084,7 +3158,8 @@ int TestClampValue()
   vtkMath::ClampValue(value, range, &clampedValue);
   if (clampedValue != range[1])
   {
-    std::cout << " ClampValue expected " << range[1] << " but got " << clampedValue;
+    std::cout << " ClampValue expected " << range[1]
+              << " but got " << clampedValue;
     ++status;
   }
 
@@ -3092,7 +3167,8 @@ int TestClampValue()
   vtkMath::ClampValue(value, range, &clampedValue);
   if (clampedValue != value)
   {
-    std::cout << " ClampValue expected " << value << " but got " << clampedValue;
+    std::cout << " ClampValue expected " << value
+              << " but got " << clampedValue;
     ++status;
   }
 
@@ -3119,9 +3195,9 @@ int TestClampValues()
   {
     values[n] = vtkMath::Random(-2.0, 2.0);
   }
-  double range[2] = { -1.0, 1.0 };
-  vtkMath::ClampValues(values, 1000, range, clampedValues);
-  vtkMath::ClampValues(values, 1000, range);
+  double range[2] = {-1.0, 1.0};
+  vtkMath::ClampValues( values, 1000, range, clampedValues);
+  vtkMath::ClampValues( values, 1000, range);
 
   for (int n = 0; n < 1000; ++n)
   {
@@ -3131,8 +3207,8 @@ int TestClampValues()
     }
   }
 
-  vtkMath::ClampValues(nullptr, 1000, nullptr);
-  vtkMath::ClampValues(nullptr, 1000, nullptr, nullptr);
+  vtkMath::ClampValues( NULL, 1000, NULL);
+  vtkMath::ClampValues( NULL, 1000, NULL, NULL);;
 
   if (status)
   {
@@ -3153,85 +3229,45 @@ int TestClampAndNormalizeValue()
 
   double value;
   double result;
-  double range[3] = { -1.0, 1.0 };
+  double range[3] = {-1.0, 1.0};
 
   value = -100.0;
   result = vtkMath::ClampAndNormalizeValue(value, range);
   if (result != 0.0)
   {
-    std::cout << " ClampAndNormalizeValue expected " << 0.0 << " but got " << result;
+    std::cout << " ClampAndNormalizeValue expected " << 0.0
+              << " but got " << result;
     ++status;
   }
   value = 100.0;
   result = vtkMath::ClampAndNormalizeValue(value, range);
   if (result != 1.0)
   {
-    std::cout << " ClampAndNormalizeValue expected " << 1.0 << " but got " << result;
+    std::cout << " ClampAndNormalizeValue expected " << 1.0
+              << " but got " << result;
     ++status;
   }
 
-  range[0] = 0.0;
-  range[1] = 1.0;
+  range[0] = 0.0; range[1] = 1.0;
   value = 0.5;
   result = vtkMath::ClampAndNormalizeValue(value, range);
   if (result != 0.5)
   {
-    std::cout << " ClampValue expected " << 0.5 << " but got " << result;
+    std::cout << " ClampValue expected " << 0.5
+              << " but got " << result;
     ++status;
   }
 
-  range[0] = 1.0;
-  range[1] = 1.0;
+  range[0] = 1.0; range[1] = 1.0;
   value = 1.0;
   result = vtkMath::ClampAndNormalizeValue(value, range);
   if (result != 0.0)
   {
-    std::cout << " ClampValue expected " << 0.0 << " but got " << result;
+    std::cout << " ClampValue expected " << 0.0
+              << " but got " << result;
     ++status;
   }
 
-  if (status)
-  {
-    std::cout << "..FAILED" << std::endl;
-  }
-  else
-  {
-    std::cout << ".PASSED" << std::endl;
-  }
-  return status;
-}
-
-// Validate by checking symmetric tensor values
-// are in correct places
-int TestTensorFromSymmetricTensor()
-{
-  int status = 0;
-  std::cout << "TensorFromSymmetricTensor..";
-  double symmTensor[9];
-  for (int i = 0; i < 6; i++)
-  {
-    symmTensor[i] = vtkMath::Random();
-  }
-  double tensor[9];
-  vtkMath::TensorFromSymmetricTensor(symmTensor, tensor);
-  if (tensor[0] != symmTensor[0] || tensor[1] != symmTensor[3] || tensor[2] != symmTensor[5] ||
-    tensor[3] != symmTensor[3] || tensor[4] != symmTensor[1] || tensor[5] != symmTensor[4] ||
-    tensor[6] != symmTensor[5] || tensor[7] != symmTensor[4] || tensor[8] != symmTensor[2])
-  {
-    std::cout << " Unexpected results from TensorFromSymmetricTensor " << std::endl;
-    ++status;
-  }
-
-  vtkMath::TensorFromSymmetricTensor(symmTensor);
-  for (int i = 0; i < 9; i++)
-  {
-    if (symmTensor[i] != tensor[i])
-    {
-      std::cout << " Unexpected results from in place TensorFromSymmetricTensor " << std::endl;
-      ++status;
-      break;
-    }
-  }
   if (status)
   {
     std::cout << "..FAILED" << std::endl;
@@ -3252,57 +3288,64 @@ int TestGetScalarTypeFittingRange()
   double rangeMin;
   double rangeMax;
 
-  rangeMin = (double)std::numeric_limits<char>::min();
-  rangeMax = (double)std::numeric_limits<char>::max();
-  if (vtkMath::GetScalarTypeFittingRange(rangeMin, rangeMax, 1.0, 0.0) != VTK_CHAR)
+  rangeMin = (double) std::numeric_limits<char>::min();
+  rangeMax = (double) std::numeric_limits<char>::max();
+  if (vtkMath::GetScalarTypeFittingRange(
+        rangeMin, rangeMax, 1.0, 0.0) != VTK_CHAR)
   {
     std::cout << " Bad fitting range for VTK_CHAR" << std::endl;
     ++status;
   }
 
-  rangeMin = (double)std::numeric_limits<unsigned char>::min();
-  rangeMax = (double)std::numeric_limits<unsigned char>::max();
-  if (vtkMath::GetScalarTypeFittingRange(rangeMin, rangeMax, 1.0, 0.0) != VTK_UNSIGNED_CHAR)
+  rangeMin = (double) std::numeric_limits<unsigned char>::min();
+  rangeMax = (double) std::numeric_limits<unsigned char>::max();
+  if (vtkMath::GetScalarTypeFittingRange(
+        rangeMin, rangeMax, 1.0, 0.0) != VTK_UNSIGNED_CHAR)
   {
     std::cout << " Bad fitting range for VTK_UNSIGNED_CHAR " << std::endl;
     ++status;
   }
 
-  rangeMin = (double)std::numeric_limits<short>::min();
-  rangeMax = (double)std::numeric_limits<short>::max();
-  if (vtkMath::GetScalarTypeFittingRange(rangeMin, rangeMax, 1.0, 0.0) != VTK_SHORT)
+  rangeMin = (double) std::numeric_limits<short>::min();
+  rangeMax = (double) std::numeric_limits<short>::max();
+  if (vtkMath::GetScalarTypeFittingRange(
+        rangeMin, rangeMax, 1.0, 0.0) != VTK_SHORT)
   {
     std::cout << " Bad fitting range for VTK_SHORT" << std::endl;
     ++status;
   }
 
-  rangeMin = (double)std::numeric_limits<unsigned short>::min();
-  rangeMax = (double)std::numeric_limits<unsigned short>::max();
-  if (vtkMath::GetScalarTypeFittingRange(rangeMin, rangeMax, 1.0, 0.0) != VTK_UNSIGNED_SHORT)
+  rangeMin = (double) std::numeric_limits<unsigned short>::min();
+  rangeMax = (double) std::numeric_limits<unsigned short>::max();
+  if (vtkMath::GetScalarTypeFittingRange(
+        rangeMin, rangeMax, 1.0, 0.0) != VTK_UNSIGNED_SHORT)
   {
     std::cout << " Bad fitting range for VTK_UNSIGNED_SHORT" << std::endl;
     ++status;
   }
 
-  rangeMin = (double)std::numeric_limits<int>::min();
-  rangeMax = (double)std::numeric_limits<int>::max();
-  if (vtkMath::GetScalarTypeFittingRange(rangeMin, rangeMax, 1.0, 0.0) != VTK_INT)
+  rangeMin = (double) std::numeric_limits<int>::min();
+  rangeMax = (double) std::numeric_limits<int>::max();
+  if (vtkMath::GetScalarTypeFittingRange(
+        rangeMin, rangeMax, 1.0, 0.0) != VTK_INT)
   {
     std::cout << " Bad fitting range for VTK_INT" << std::endl;
     ++status;
   }
 
-  rangeMin = (double)std::numeric_limits<unsigned int>::min();
-  rangeMax = (double)std::numeric_limits<unsigned int>::max();
-  if (vtkMath::GetScalarTypeFittingRange(rangeMin, rangeMax, 1.0, 0.0) != VTK_UNSIGNED_INT)
+  rangeMin = (double) std::numeric_limits<unsigned int>::min();
+  rangeMax = (double) std::numeric_limits<unsigned int>::max();
+  if (vtkMath::GetScalarTypeFittingRange(
+        rangeMin, rangeMax, 1.0, 0.0) != VTK_UNSIGNED_INT)
   {
     std::cout << " Bad fitting range for VTK_UNSIGNED_INT" << std::endl;
     ++status;
   }
 
-  rangeMin = (double)std::numeric_limits<long>::min();
-  rangeMax = (double)std::numeric_limits<long>::max();
-  int scalarType = vtkMath::GetScalarTypeFittingRange(rangeMin, rangeMax, 1.0, 0.0);
+  rangeMin = (double) std::numeric_limits<long>::min();
+  rangeMax = (double) std::numeric_limits<long>::max();
+  int scalarType = vtkMath::GetScalarTypeFittingRange(
+    rangeMin, rangeMax, 1.0, 0.0);
   if (sizeof(long) == sizeof(int))
   {
     if (scalarType != VTK_INT)
@@ -3322,9 +3365,10 @@ int TestGetScalarTypeFittingRange()
     }
   }
 
-  rangeMin = (double)std::numeric_limits<unsigned long>::min();
-  rangeMax = (double)std::numeric_limits<unsigned long>::max();
-  scalarType = vtkMath::GetScalarTypeFittingRange(rangeMin, rangeMax, 1.0, 0.0);
+  rangeMin = (double) std::numeric_limits<unsigned long>::min();
+  rangeMax = (double) std::numeric_limits<unsigned long>::max();
+  scalarType = vtkMath::GetScalarTypeFittingRange(
+    rangeMin, rangeMax, 1.0, 0.0);
   if (sizeof(unsigned long) == sizeof(unsigned int))
   {
     if (scalarType != VTK_UNSIGNED_INT)
@@ -3344,9 +3388,10 @@ int TestGetScalarTypeFittingRange()
     }
   }
 
-  rangeMin = (double)std::numeric_limits<short>::min();
-  rangeMax = (double)std::numeric_limits<short>::max();
-  if (vtkMath::GetScalarTypeFittingRange(rangeMin, rangeMax, 1.1, 0.0) != VTK_FLOAT)
+  rangeMin = (double) std::numeric_limits<short>::min();
+  rangeMax = (double) std::numeric_limits<short>::max();
+  if (vtkMath::GetScalarTypeFittingRange(
+        rangeMin, rangeMax, 1.1, 0.0) != VTK_FLOAT)
   {
     std::cout << " Bad fitting range for VTK_FLOAT" << std::endl;
     ++status;
@@ -3369,71 +3414,86 @@ int TestGetAdjustedScalarRange()
   int status = 0;
   std::cout << "GetAdjustedScalarRange..";
 
-  vtkSmartPointer<vtkUnsignedCharArray> uc = vtkSmartPointer<vtkUnsignedCharArray>::New();
+  vtkSmartPointer<vtkUnsignedCharArray> uc =
+    vtkSmartPointer<vtkUnsignedCharArray>::New();
   uc->SetNumberOfComponents(3);
   uc->SetNumberOfTuples(100);
   for (int i = 0; i < 100; ++i)
   {
     for (int j = 0; j < 3; ++j)
     {
-      uc->SetComponent(i, j,
-        vtkMath::Random(
-          std::numeric_limits<unsigned char>::min(), std::numeric_limits<unsigned char>::max()));
+      uc->SetComponent(i, j, vtkMath::Random(
+                         std::numeric_limits<unsigned char>::min(),
+                         std::numeric_limits<unsigned char>::max()));
     }
   }
   double range[2];
   vtkMath::GetAdjustedScalarRange(uc, 1, range);
-  if (range[0] != uc->GetDataTypeMin() || range[1] != uc->GetDataTypeMax())
+  if (range[0] != uc->GetDataTypeMin() ||
+      range[1] != uc->GetDataTypeMax())
   {
-    std::cout << " GetAdjustedScalarRange(unsigned char) expected " << uc->GetDataTypeMin() << ", "
-              << uc->GetDataTypeMax() << " but got " << range[0] << ", " << range[1] << std::endl;
-    ++status;
-  }
-
-  vtkSmartPointer<vtkUnsignedShortArray> us = vtkSmartPointer<vtkUnsignedShortArray>::New();
-  us->SetNumberOfComponents(3);
-  us->SetNumberOfTuples(10000);
-  for (int i = 0; i < 10000; ++i)
-  {
-    us->SetComponent(i, 0,
-      vtkMath::Random(
-        std::numeric_limits<unsigned short>::min(), std::numeric_limits<unsigned short>::max()));
-    us->SetComponent(i, 1,
-      vtkMath::Random(std::numeric_limits<unsigned short>::min(),
-        std::numeric_limits<unsigned char>::max() + 100));
-    us->SetComponent(i, 2,
-      vtkMath::Random(
-        std::numeric_limits<unsigned short>::min(), std::numeric_limits<unsigned char>::max()));
-  }
-  vtkMath::GetAdjustedScalarRange(us, 0, range);
-  if (range[0] != us->GetDataTypeMin() || range[1] != us->GetDataTypeMax())
-  {
-    std::cout << " GetAdjustedScalarRange(unsigned short) expected " << us->GetDataTypeMin() << ", "
-              << us->GetDataTypeMax() << " but got " << range[0] << ", " << range[1] << std::endl;
-    ++status;
-  }
-
-  vtkMath::GetAdjustedScalarRange(us, 1, range);
-  if (range[0] != us->GetDataTypeMin() || range[1] != 4095.0)
-  {
-    std::cout << " GetAdjustedScalarRange(unsigned short) expected " << us->GetDataTypeMin() << ", "
-              << 4095.0 << " but got " << range[0] << ", " << range[1] << std::endl;
-    ++status;
-  }
-
-  vtkMath::GetAdjustedScalarRange(us, 2, range);
-  if (range[0] != us->GetDataTypeMin() || range[1] >= uc->GetDataTypeMax())
-  {
-    std::cout << " GetAdjustedScalarRange(unsigned short) expected " << us->GetDataTypeMin() << ", "
-              << ">= " << uc->GetDataTypeMax() << " but got " << range[0] << ", " << range[1]
+    std::cout << " GetAjustedScalarRange(unsigned char) expected "
+              << uc->GetDataTypeMin() << ", " << uc->GetDataTypeMax()
+              << " but got " << range[0] << ", " << range[1]
               << std::endl;
     ++status;
   }
 
-  // Test nullptr array
-  if (vtkMath::GetAdjustedScalarRange(nullptr, 1000, nullptr))
+  vtkSmartPointer<vtkUnsignedShortArray> us =
+    vtkSmartPointer<vtkUnsignedShortArray>::New();
+  us->SetNumberOfComponents(3);
+  us->SetNumberOfTuples(10000);
+  for (int i = 0; i < 10000; ++i)
   {
-    std::cout << " GetAdjustedScalarRange with a nullptr array expected " << 0 << " but got " << 1
+    us->SetComponent(i, 0, vtkMath::Random(
+                       std::numeric_limits<unsigned short>::min(),
+                       std::numeric_limits<unsigned short>::max()));
+    us->SetComponent(i, 1, vtkMath::Random(
+                       std::numeric_limits<unsigned short>::min(),
+                       std::numeric_limits<unsigned char>::max() + 100));
+    us->SetComponent(i, 2, vtkMath::Random(
+                       std::numeric_limits<unsigned short>::min(),
+                       std::numeric_limits<unsigned char>::max()));
+  }
+  vtkMath::GetAdjustedScalarRange(us, 0, range);
+  if (range[0] != us->GetDataTypeMin() ||
+      range[1] != us->GetDataTypeMax())
+  {
+    std::cout << " GetAjustedScalarRange(unsigned short) expected "
+              << us->GetDataTypeMin() << ", " << us->GetDataTypeMax()
+              << " but got " << range[0] << ", " << range[1]
+              << std::endl;
+    ++status;
+  }
+
+  vtkMath::GetAdjustedScalarRange(us, 1, range);
+  if (range[0] != us->GetDataTypeMin() ||
+      range[1] != 4095.0)
+  {
+    std::cout << " GetAjustedScalarRange(unsigned short) expected "
+              << us->GetDataTypeMin() << ", " << 4095.0
+              << " but got " << range[0] << ", " << range[1]
+              << std::endl;
+    ++status;
+  }
+
+  vtkMath::GetAdjustedScalarRange(us, 2, range);
+  if (range[0] != us->GetDataTypeMin() ||
+      range[1] >= uc->GetDataTypeMax())
+  {
+    std::cout << " GetAjustedScalarRange(unsigned short) expected "
+              << us->GetDataTypeMin() << ", " << ">= " << uc->GetDataTypeMax()
+              << " but got " << range[0] << ", " << range[1]
+              << std::endl;
+    ++status;
+  }
+
+  // Test NULL array
+  if (vtkMath::GetAdjustedScalarRange(NULL, 1000, NULL))
+  {
+    std::cout << " GetAjustedScalarRange with a NULL array expected "
+              << 0
+              << " but got " << 1
               << std::endl;
     ++status;
   }
@@ -3454,47 +3514,43 @@ int TestExtentIsWithinOtherExtent()
   int status = 0;
   std::cout << "ExtentIsWithinOtherExtent..";
 
-  if (vtkMath::ExtentIsWithinOtherExtent(nullptr, nullptr))
+  if (vtkMath::ExtentIsWithinOtherExtent(NULL, NULL))
   {
-    std::cout << " ExtentIsWithinOtherExtent expected 0 but got 1" << std::endl;
+    std::cout << " ExtentIsWithinOtherExtent expected 0 but got 1"
+              << std::endl;
     ++status;
   }
 
   int extent1[6];
   int extent2[6];
-  extent1[0] = 100;
-  extent1[1] = 101;
-  extent1[2] = 100;
-  extent1[3] = 101;
-  extent1[4] = 100;
-  extent1[5] = 101;
+  extent1[0] = 100; extent1[1] = 101;
+  extent1[2] = 100; extent1[3] = 101;
+  extent1[4] = 100; extent1[5] = 101;
 
-  extent2[0] = 100;
-  extent2[1] = 101;
-  extent2[2] = 100;
-  extent2[3] = 101;
-  extent2[4] = 100;
-  extent2[5] = 101;
+  extent2[0] = 100; extent2[1] = 101;
+  extent2[2] = 100; extent2[3] = 101;
+  extent2[4] = 100; extent2[5] = 101;
 
   if (!vtkMath::ExtentIsWithinOtherExtent(extent1, extent2))
   {
-    std::cout << " ExtentIsWithinOtherExtent expected 1 but got 0" << std::endl;
+    std::cout << " ExtentIsWithinOtherExtent expected 1 but got 0"
+              << std::endl;
     ++status;
   }
 
-  extent1[0] = 99;
-  extent1[1] = 101;
+  extent1[0] = 99; extent1[1] = 101;
   if (vtkMath::ExtentIsWithinOtherExtent(extent1, extent2))
   {
-    std::cout << " ExtentIsWithinOtherExtent expected 0 but got 1" << std::endl;
+    std::cout << " ExtentIsWithinOtherExtent expected 0 but got 1"
+              << std::endl;
     ++status;
   }
 
-  extent1[0] = 98;
-  extent1[1] = 99;
+  extent1[0] = 98; extent1[1] = 99;
   if (vtkMath::ExtentIsWithinOtherExtent(extent1, extent2))
   {
-    std::cout << " ExtentIsWithinOtherExtent expected 0 but got 1" << std::endl;
+    std::cout << " ExtentIsWithinOtherExtent expected 0 but got 1"
+              << std::endl;
     ++status;
   }
 
@@ -3515,9 +3571,10 @@ int TestBoundsIsWithinOtherBounds()
   int status = 0;
   std::cout << "BoundsIsWithinOtherBounds..";
 
-  if (vtkMath::BoundsIsWithinOtherBounds(nullptr, nullptr, nullptr))
+  if (vtkMath::BoundsIsWithinOtherBounds(NULL, NULL, NULL))
   {
-    std::cout << " BoundsIsWithinOtherBounds expected 0 but got 1" << std::endl;
+    std::cout << " BoundsIsWithinOtherBounds expected 0 but got 1"
+              << std::endl;
     ++status;
   }
 
@@ -3526,39 +3583,34 @@ int TestBoundsIsWithinOtherBounds()
 
   double bounds1[6];
   double bounds2[6];
-  bounds1[0] = 1 - delta[0];
-  bounds1[1] = 2 + delta[0];
-  bounds1[2] = 1;
-  bounds1[3] = 2;
-  bounds1[4] = 1;
-  bounds1[5] = 2;
+  bounds1[0] = 1 - delta[0]; bounds1[1] = 2 + delta[0];
+  bounds1[2] = 1; bounds1[3] = 2;
+  bounds1[4] = 1; bounds1[5] = 2;
 
-  bounds2[0] = 1;
-  bounds2[1] = 2;
-  bounds2[2] = 1;
-  bounds2[3] = 2;
-  bounds2[4] = 1;
-  bounds2[5] = 2;
+  bounds2[0] = 1; bounds2[1] = 2;
+  bounds2[2] = 1; bounds2[3] = 2;
+  bounds2[4] = 1; bounds2[5] = 2;
 
   if (!vtkMath::BoundsIsWithinOtherBounds(bounds1, bounds2, delta))
   {
-    std::cout << " BoundsIsWithinOtherBounds expected 1 but got 0" << std::endl;
+    std::cout << " BoundsIsWithinOtherBounds expected 1 but got 0"
+              << std::endl;
     ++status;
   }
 
-  bounds1[0] = 1 - 2.0 * delta[0];
-  bounds1[1] = 2 + 2.0 * delta[0];
+  bounds1[0] = 1 - 2.0 * delta[0]; bounds1[1] = 2 + 2.0 * delta[0];
   if (vtkMath::BoundsIsWithinOtherBounds(bounds1, bounds2, delta))
   {
-    std::cout << " BoundsIsWithinOtherBounds expected 0 but got 1" << std::endl;
+    std::cout << " BoundsIsWithinOtherBounds expected 0 but got 1"
+              << std::endl;
     ++status;
   }
 
-  bounds1[0] = 1 - 4.0 * delta[0];
-  bounds1[1] = 1 - 2.0 * delta[0];
+  bounds1[0] = 1 - 4.0 * delta[0]; bounds1[1] = 1 - 2.0 * delta[0];
   if (vtkMath::BoundsIsWithinOtherBounds(bounds1, bounds2, delta))
   {
-    std::cout << " BoundsIsWithinOtherBounds expected 0 but got 1" << std::endl;
+    std::cout << " BoundsIsWithinOtherBounds expected 0 but got 1"
+              << std::endl;
     ++status;
   }
 
@@ -3579,9 +3631,10 @@ int TestPointIsWithinBounds()
   int status = 0;
   std::cout << "PointIsWithinBounds..";
 
-  if (vtkMath::PointIsWithinBounds(nullptr, nullptr, nullptr))
+  if (vtkMath::PointIsWithinBounds(NULL, NULL, NULL))
   {
-    std::cout << " PointIsWithinBounds expected 0 but got 1" << std::endl;
+    std::cout << " PointIsWithinBounds expected 0 but got 1"
+              << std::endl;
     ++status;
   }
 
@@ -3591,12 +3644,9 @@ int TestPointIsWithinBounds()
   delta[2] = std::numeric_limits<double>::epsilon() * 256.0;
 
   double bounds1[6];
-  bounds1[0] = 1.0;
-  bounds1[1] = 2.0;
-  bounds1[2] = 1.0;
-  bounds1[3] = 2.0;
-  bounds1[4] = 1.0;
-  bounds1[5] = 2.0;
+  bounds1[0] = 1.0; bounds1[1] = 2.0;
+  bounds1[2] = 1.0; bounds1[3] = 2.0;
+  bounds1[4] = 1.0; bounds1[5] = 2.0;
 
   double point[3];
   point[0] = bounds1[0] - delta[0];
@@ -3605,7 +3655,8 @@ int TestPointIsWithinBounds()
 
   if (!vtkMath::PointIsWithinBounds(point, bounds1, delta))
   {
-    std::cout << " PointIsWithinBounds expected 1 but got 0" << std::endl;
+    std::cout << " PointIsWithinBounds expected 1 but got 0"
+              << std::endl;
     ++status;
   }
 
@@ -3615,7 +3666,8 @@ int TestPointIsWithinBounds()
 
   if (vtkMath::PointIsWithinBounds(point, bounds1, delta))
   {
-    std::cout << " PointIsWithinBounds expected 0 but got 1" << std::endl;
+    std::cout << " PointIsWithinBounds expected 0 but got 1"
+              << std::endl;
     ++status;
   }
 
@@ -3625,7 +3677,8 @@ int TestPointIsWithinBounds()
 
   if (vtkMath::PointIsWithinBounds(point, bounds1, delta))
   {
-    std::cout << " PointIsOtherBounds expected 0 but got 1" << std::endl;
+    std::cout << " PointIsOtherBounds expected 0 but got 1"
+              << std::endl;
     ++status;
   }
 
@@ -3665,17 +3718,20 @@ int TestSolve3PointCircle()
     vtkMath::Cross(a, b, aCrossb);
 
     double expectedRadius;
-    expectedRadius = (vtkMath::Norm(a) * vtkMath::Norm(b) * vtkMath::Norm(aMinusb)) /
+    expectedRadius =
+      (vtkMath::Norm(a) * vtkMath::Norm(b) * vtkMath::Norm(aMinusb)) /
       (2.0 * vtkMath::Norm(aCrossb));
 
     double radius;
     radius = vtkMath::Solve3PointCircle(A, B, C, center);
     if (!vtkMathUtilities::FuzzyCompare(
-          radius, expectedRadius, std::numeric_limits<double>::epsilon() * 1024.0))
+          radius, expectedRadius,
+          std::numeric_limits<double>::epsilon()*1024.0))
     {
-      std::cout << " Solve3PointCircle radius expected " << expectedRadius << " but got " << radius;
-      std::cout << "eps ratio is: "
-                << (expectedRadius - radius) / std::numeric_limits<double>::epsilon() << std::endl;
+      std::cout << " Solve3PointCircle radius expected " << expectedRadius
+                << " but got " << radius;
+      std::cout << "eps ratio is: " << (expectedRadius - radius)
+        / std::numeric_limits<double>::epsilon() << std::endl;
       ++status;
     }
 
@@ -3692,19 +3748,20 @@ int TestSolve3PointCircle()
 
     double expectedCenter[3];
     vtkMath::MultiplyScalar(
-      abMinusbaCrossaCrossb, 1.0 / (2.0 * vtkMath::Norm(aCrossb) * vtkMath::Norm(aCrossb)));
+      abMinusbaCrossaCrossb,
+      1.0 / (2.0 * vtkMath::Norm(aCrossb) * vtkMath::Norm(aCrossb)));
     vtkMath::Add(abMinusbaCrossaCrossb, C, expectedCenter);
 
     for (int i = 0; i < 3; ++i)
     {
       if (!vtkMathUtilities::FuzzyCompare(
-            center[i], expectedCenter[i], std::numeric_limits<double>::epsilon() * 1024.0))
+            center[i], expectedCenter[i],
+          std::numeric_limits<double>::epsilon()*1024.0))
       {
-        std::cout << " Solve3PointCircle center expected " << expectedCenter[i] << " but got "
-                  << center[i];
-        std::cout << "eps ratio is: "
-                  << (expectedCenter[i] - center[i]) / std::numeric_limits<double>::epsilon()
-                  << std::endl;
+        std::cout << " Solve3PointCircle center expected " << expectedCenter[i]
+                  << " but got " << center[i];
+        std::cout << "eps ratio is: " << (expectedCenter[i] - center[i])
+          / std::numeric_limits<double>::epsilon() << std::endl;
         ++status;
       }
     }

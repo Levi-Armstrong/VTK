@@ -18,10 +18,14 @@
 
 vtkStandardNewMacro(vtkStructuredExtent);
 //----------------------------------------------------------------------------
-vtkStructuredExtent::vtkStructuredExtent() = default;
+vtkStructuredExtent::vtkStructuredExtent()
+{
+}
 
 //----------------------------------------------------------------------------
-vtkStructuredExtent::~vtkStructuredExtent() = default;
+vtkStructuredExtent::~vtkStructuredExtent()
+{
+}
 
 //----------------------------------------------------------------------------
 void vtkStructuredExtent::PrintSelf(ostream& os, vtkIndent indent)

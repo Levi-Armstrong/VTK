@@ -33,9 +33,11 @@ v16.SetDataSpacing(3.2, 3.2, 1.5)
 # The volume will be displayed by ray-cast alpha compositing.
 # A ray-cast mapper is needed to do the ray-casting, and a
 # compositing function is needed to do the compositing along the ray.
-volumeMapper = vtk.vtkGPUVolumeRayCastMapper()
+rayCastFunction = vtk.vtkVolumeRayCastCompositeFunction()
+
+volumeMapper = vtk.vtkVolumeRayCastMapper()
 volumeMapper.SetInputConnection(v16.GetOutputPort())
-volumeMapper.SetBlendModeToComposite()
+volumeMapper.SetVolumeRayCastFunction(rayCastFunction)
 
 # The color transfer function maps voxel intensities to colors.
 # It is modality-specific, and often anatomy-specific as well.
@@ -97,7 +99,7 @@ ren.AddViewProp(volume)
 
 # Set up an initial view of the volume.  The focal point will be the
 # center of the volume, and the camera position will be 400mm to the
-# patient's left (which is our right).
+# patient's left (whis is our right).
 camera =  ren.GetActiveCamera()
 c = volume.GetCenter()
 camera.SetFocalPoint(c[0], c[1], c[2])

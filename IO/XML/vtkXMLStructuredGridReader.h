@@ -24,7 +24,7 @@
  *
  * @sa
  * vtkXMLPStructuredGridReader
- */
+*/
 
 #ifndef vtkXMLStructuredGridReader_h
 #define vtkXMLStructuredGridReader_h
@@ -37,39 +37,39 @@ class vtkStructuredGrid;
 class VTKIOXML_EXPORT vtkXMLStructuredGridReader : public vtkXMLStructuredDataReader
 {
 public:
-  vtkTypeMacro(vtkXMLStructuredGridReader, vtkXMLStructuredDataReader);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
-  static vtkXMLStructuredGridReader* New();
+  vtkTypeMacro(vtkXMLStructuredGridReader,vtkXMLStructuredDataReader);
+  void PrintSelf(ostream& os, vtkIndent indent);
+  static vtkXMLStructuredGridReader *New();
 
   //@{
   /**
    * Get the reader's output.
    */
-  vtkStructuredGrid* GetOutput();
-  vtkStructuredGrid* GetOutput(int idx);
+  vtkStructuredGrid *GetOutput();
+  vtkStructuredGrid *GetOutput(int idx);
   //@}
 
 protected:
   vtkXMLStructuredGridReader();
-  ~vtkXMLStructuredGridReader() override;
+  ~vtkXMLStructuredGridReader();
 
-  const char* GetDataSetName() override;
-  void SetOutputExtent(int* extent) override;
+  const char* GetDataSetName();
+  void SetOutputExtent(int* extent);
 
-  void SetupPieces(int numPieces) override;
-  void DestroyPieces() override;
-  void SetupOutputData() override;
+  void SetupPieces(int numPieces);
+  void DestroyPieces();
+  void SetupOutputData();
 
-  int ReadPiece(vtkXMLDataElement* ePiece) override;
-  int ReadPieceData() override;
-  int FillOutputPortInformation(int, vtkInformation*) override;
+  int ReadPiece(vtkXMLDataElement* ePiece);
+  int ReadPieceData();
+  virtual int FillOutputPortInformation(int, vtkInformation*);
 
   // The elements representing the points for each piece.
   vtkXMLDataElement** PointElements;
 
 private:
-  vtkXMLStructuredGridReader(const vtkXMLStructuredGridReader&) = delete;
-  void operator=(const vtkXMLStructuredGridReader&) = delete;
+  vtkXMLStructuredGridReader(const vtkXMLStructuredGridReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkXMLStructuredGridReader&) VTK_DELETE_FUNCTION;
 };
 
 #endif

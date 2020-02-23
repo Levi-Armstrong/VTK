@@ -13,17 +13,17 @@
 
 =========================================================================*/
 
-#include "vtkRegressionTestImage.h"
 #include "vtkTestUtilities.h"
+#include "vtkRegressionTestImage.h"
 
 #include "vtkActor.h"
 #include "vtkImageActor.h"
 #include "vtkImageMapper3D.h"
 #include "vtkNew.h"
 #include "vtkPolyDataMapper.h"
+#include "vtkRenderer.h"
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
-#include "vtkRenderer.h"
 #include "vtkSphereSource.h"
 #include "vtkWindowToImageFilter.h"
 
@@ -39,23 +39,23 @@ int TestWindowToImageFilter(int argc, char* argv[])
   mapper->SetInputConnection(sphereSource->GetOutputPort());
 
   vtkNew<vtkActor> actor;
-  actor->SetMapper(mapper);
+  actor->SetMapper(mapper.Get());
 
   vtkNew<vtkRenderer> renderer;
   vtkNew<vtkRenderWindow> renderWindow;
-  renderWindow->AddRenderer(renderer);
+  renderWindow->AddRenderer(renderer.Get());
   renderWindow->SetMultiSamples(0);
 
   vtkNew<vtkRenderWindowInteractor> renderWindowInteractor;
-  renderWindowInteractor->SetRenderWindow(renderWindow);
+  renderWindowInteractor->SetRenderWindow(renderWindow.Get());
 
-  renderer->AddActor(actor);
+  renderer->AddActor(actor.Get());
 
   renderWindow->Render();
 
   // Take the partial screenshot
   vtkNew<vtkWindowToImageFilter> windowToImageFilter;
-  windowToImageFilter->SetInput(renderWindow);
+  windowToImageFilter->SetInput(renderWindow.Get());
   windowToImageFilter->SetInputBufferTypeToRGB();
   windowToImageFilter->SetViewport(0.5, 0.5, 0.8, 1.0);
   windowToImageFilter->ReadFrontBufferOff(); // read from the back buffer
@@ -65,14 +65,14 @@ int TestWindowToImageFilter(int argc, char* argv[])
   vtkNew<vtkImageActor> imageActor;
   imageActor->GetMapper()->SetInputData(windowToImageFilter->GetOutput());
 
-  renderer->RemoveActor(actor);
-  renderer->AddActor(imageActor);
+  renderer->RemoveActor(actor.Get());
+  renderer->AddActor(imageActor.Get());
 
   renderWindow->Render();
   renderer->ResetCamera();
   renderWindow->Render();
 
-  int retVal = vtkRegressionTestImage(renderWindow);
+  int retVal = vtkRegressionTestImage(renderWindow.Get());
   if (retVal == vtkRegressionTester::DO_INTERACTOR)
   {
     renderWindowInteractor->Start();

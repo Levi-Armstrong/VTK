@@ -25,7 +25,7 @@
 vtkStandardNewMacro(vtkImageSobel2D);
 
 //----------------------------------------------------------------------------
-// Construct an instance of vtkImageSobel2D filter.
+// Construct an instance of vtkImageSobel2D fitler.
 vtkImageSobel2D::vtkImageSobel2D()
 {
   this->KernelSize[0] = 3;
@@ -44,11 +44,13 @@ void vtkImageSobel2D::PrintSelf(ostream& os, vtkIndent indent)
 }
 
 //----------------------------------------------------------------------------
-int vtkImageSobel2D::RequestInformation(
-  vtkInformation* request, vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+int vtkImageSobel2D::RequestInformation (vtkInformation *request,
+                                         vtkInformationVector **inputVector,
+                                         vtkInformationVector *outputVector)
 {
-  int retval = this->Superclass::RequestInformation(request, inputVector, outputVector);
-  vtkInformation* outInfo = outputVector->GetInformationObject(0);
+  int retval =
+    this->Superclass::RequestInformation(request, inputVector, outputVector);
+  vtkInformation *outInfo = outputVector->GetInformationObject(0);
   vtkDataObject::SetPointDataActiveScalarInfo(outInfo, VTK_DOUBLE, 2);
   return retval;
 }
@@ -58,8 +60,11 @@ int vtkImageSobel2D::RequestInformation(
 // it handles boundaries. Pixels are just replicated to get values
 // out of extent.
 template <class T>
-void vtkImageSobel2DExecute(vtkImageSobel2D* self, vtkImageData* inData, T* inPtr,
-  vtkImageData* outData, int* outExt, double* outPtr, int id, vtkInformation* inInfo)
+void vtkImageSobel2DExecute(vtkImageSobel2D *self,
+                            vtkImageData *inData, T *inPtr,
+                            vtkImageData *outData, int *outExt,
+                            double *outPtr, int id,
+                            vtkInformation *inInfo)
 {
   double r0, r1, *r;
   // For looping though output (and input) pixels.
@@ -74,8 +79,8 @@ void vtkImageSobel2DExecute(vtkImageSobel2D* self, vtkImageData* inData, T* inPt
   T *inPtrL, *inPtrR;
   double sum;
   // Boundary of input image
-  int inWholeMin0, inWholeMax0;
-  int inWholeMin1, inWholeMax1;
+  int inWholeMin0,inWholeMax0;
+  int inWholeMin1,inWholeMax1;
   int inWholeExt[6];
   unsigned long count = 0;
   unsigned long target;
@@ -90,15 +95,12 @@ void vtkImageSobel2DExecute(vtkImageSobel2D* self, vtkImageData* inData, T* inPt
   // Get information to march through data
   inData->GetIncrements(inInc0, inInc1, inInc2);
   outData->GetIncrements(outInc0, outInc1, outInc2);
-  min0 = outExt[0];
-  max0 = outExt[1];
-  min1 = outExt[2];
-  max1 = outExt[3];
-  min2 = outExt[4];
-  max2 = outExt[5];
+  min0 = outExt[0];   max0 = outExt[1];
+  min1 = outExt[2];   max1 = outExt[3];
+  min2 = outExt[4];   max2 = outExt[5];
 
   // We want the input pixel to correspond to output
-  inPtr = static_cast<T*>(inData->GetScalarPointer(min0, min1, min2));
+  inPtr = static_cast<T *>(inData->GetScalarPointer(min0,min1,min2));
 
   // The data spacing is important for computing the gradient.
   // Scale so it has the same range as gradient.
@@ -107,7 +109,7 @@ void vtkImageSobel2DExecute(vtkImageSobel2D* self, vtkImageData* inData, T* inPt
   r1 = 0.125 / r[1];
   // ignore r2
 
-  target = static_cast<unsigned long>((max2 - min2 + 1) * (max1 - min1 + 1) / 50.0);
+  target = static_cast<unsigned long>((max2-min2+1)*(max1-min1+1)/50.0);
   target++;
 
   // loop through pixels of output
@@ -121,9 +123,9 @@ void vtkImageSobel2DExecute(vtkImageSobel2D* self, vtkImageData* inData, T* inPt
     {
       if (!id)
       {
-        if (!(count % target))
+        if (!(count%target))
         {
-          self->UpdateProgress(count / (50.0 * target));
+          self->UpdateProgress(count/(50.0*target));
         }
         count++;
       }
@@ -172,14 +174,18 @@ void vtkImageSobel2DExecute(vtkImageSobel2D* self, vtkImageData* inData, T* inPt
 // templated function for the input region type.  The output region
 // must be of type double.  This method does handle boundary conditions.
 // The third axis is the component axis for the output.
-void vtkImageSobel2D::ThreadedRequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** inputVector, vtkInformationVector* vtkNotUsed(outputVector),
-  vtkImageData*** inData, vtkImageData** outData, int outExt[6], int id)
+void vtkImageSobel2D::ThreadedRequestData(
+  vtkInformation *vtkNotUsed(request),
+  vtkInformationVector **inputVector,
+  vtkInformationVector *vtkNotUsed(outputVector),
+  vtkImageData ***inData,
+  vtkImageData **outData,
+  int outExt[6], int id)
 {
   void *inPtr, *outPtr;
   int inExt[6], wholeExt[6];
 
-  vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
+  vtkInformation *inInfo = inputVector[0]->GetInformationObject(0);
   inInfo->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT(), wholeExt);
   this->InternalRequestUpdateExtent(inExt, outExt, wholeExt);
 
@@ -198,13 +204,15 @@ void vtkImageSobel2D::ThreadedRequestData(vtkInformation* vtkNotUsed(request),
   // this filter cannot handle multi component input.
   if (inData[0][0]->GetNumberOfScalarComponents() != 1)
   {
-    vtkWarningMacro("Expecting input with only one component.\n");
+    vtkWarningMacro("Expecting input with only one compenent.\n");
   }
 
   switch (inData[0][0]->GetScalarType())
   {
-    vtkTemplateMacro(vtkImageSobel2DExecute(this, inData[0][0], static_cast<VTK_TT*>(inPtr),
-      outData[0], outExt, static_cast<double*>(outPtr), id, inInfo));
+    vtkTemplateMacro(
+      vtkImageSobel2DExecute(this, inData[0][0],
+                             static_cast<VTK_TT *>(inPtr), outData[0], outExt,
+                             static_cast<double *>(outPtr),id, inInfo));
     default:
       vtkErrorMacro(<< "Execute: Unknown ScalarType");
       return;

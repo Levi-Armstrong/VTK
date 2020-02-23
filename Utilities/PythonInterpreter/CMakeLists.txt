@@ -1,10 +1,10 @@
-set(classes
-  vtkPythonInteractiveInterpreter
-  vtkPythonInterpreter)
+set (Module_SRCS
+  vtkPythonInterpreter.cxx
+  vtkPythonInteractiveInterpreter.cxx
+)
 
-set(headers
+set (${vtk-module}_HDRS
   vtkPythonStdStreamCaptureHelper.h)
 
-vtk_module_add_module(VTK::PythonInterpreter
-  CLASSES ${classes}
-  HEADERS ${headers})
+vtk_module_library(vtkPythonInterpreter
+  ${Module_SRCS})

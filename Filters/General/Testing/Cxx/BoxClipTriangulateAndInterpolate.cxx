@@ -30,18 +30,19 @@
 #include "vtkPointData.h"
 #include "vtkPolyDataMapper.h"
 #include "vtkProperty.h"
+#include "vtkRenderer.h"
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
-#include "vtkRenderer.h"
 #include "vtkUnstructuredGrid.h"
 
 #include "vtkSmartPointer.h"
-#define VTK_CREATE(type, var) vtkSmartPointer<type> var = vtkSmartPointer<type>::New()
+#define VTK_CREATE(type, var)                                   \
+  vtkSmartPointer<type> var = vtkSmartPointer<type>::New()
 
 const int NumImagesX = 6;
 const int NumImagesY = 2;
 
-static void CreateHex(vtkUnstructuredGrid* hex)
+static void CreateHex(vtkUnstructuredGrid *hex)
 {
   VTK_CREATE(vtkPoints, points);
   points->Allocate(24);
@@ -56,7 +57,7 @@ static void CreateHex(vtkUnstructuredGrid* hex)
   hex->SetPoints(points);
 
   VTK_CREATE(vtkCellArray, cells);
-  cells->AllocateExact(1, 8);
+  cells->Allocate(8);
   cells->InsertNextCell(8);
   cells->InsertCellPoint(0);
   cells->InsertCellPoint(1);
@@ -83,7 +84,7 @@ static void CreateHex(vtkUnstructuredGrid* hex)
   hex->GetPointData()->SetScalars(data);
 }
 
-static void CreateQuad(vtkPolyData* quad)
+static void CreateQuad(vtkPolyData *quad)
 {
   VTK_CREATE(vtkPoints, points);
   points->Allocate(12);
@@ -94,7 +95,7 @@ static void CreateQuad(vtkPolyData* quad)
   quad->SetPoints(points);
 
   VTK_CREATE(vtkCellArray, cells);
-  cells->AllocateExact(1, 4);
+  cells->Allocate(4);
   cells->InsertNextCell(4);
   cells->InsertCellPoint(0);
   cells->InsertCellPoint(1);
@@ -113,7 +114,7 @@ static void CreateQuad(vtkPolyData* quad)
   quad->GetPointData()->SetScalars(data);
 }
 
-static void CreateLine(vtkPolyData* line)
+static void CreateLine(vtkPolyData *line)
 {
   VTK_CREATE(vtkPoints, points);
   points->Allocate(12);
@@ -124,7 +125,7 @@ static void CreateLine(vtkPolyData* line)
   line->SetPoints(points);
 
   VTK_CREATE(vtkCellArray, cells);
-  cells->AllocateExact(1, 4);
+  cells->Allocate(4);
   cells->InsertNextCell(4);
   cells->InsertCellPoint(0);
   cells->InsertCellPoint(1);
@@ -143,28 +144,37 @@ static void CreateLine(vtkPolyData* line)
   line->GetPointData()->SetScalars(data);
 }
 
-static void SetClipAsHexahedron(vtkBoxClipDataSet* clip, double xmin, double xmax, double ymin,
-  double ymax, double zmin, double zmax)
+static void SetClipAsHexahedron(vtkBoxClipDataSet *clip,
+                                double xmin, double xmax,
+                                double ymin, double ymax,
+                                double zmin, double zmax)
 {
-  double lowPoint[3] = { xmin, ymin, zmin };
-  double highPoint[3] = { xmax, ymax, zmax };
-  const double negXVec[3] = { -1.0, 0.0, 0.0 };
-  const double negYVec[3] = { 0.0, -1.0, 0.0 };
-  const double negZVec[3] = { 0.0, 0.0, -1.0 };
-  const double posXVec[3] = { 1.0, 0.0, 0.0 };
-  const double posYVec[3] = { 0.0, 1.0, 0.0 };
-  const double posZVec[3] = { 0.0, 0.0, 1.0 };
+  double lowPoint[3] = {xmin, ymin, zmin};
+  double highPoint[3] = {xmax, ymax, zmax};
+  const double negXVec[3] = {-1.0, 0.0, 0.0};
+  const double negYVec[3] = {0.0, -1.0, 0.0};
+  const double negZVec[3] = {0.0, 0.0, -1.0};
+  const double posXVec[3] = {1.0, 0.0, 0.0};
+  const double posYVec[3] = {0.0, 1.0, 0.0};
+  const double posZVec[3] = {0.0, 0.0, 1.0};
 
-  clip->SetBoxClip(negXVec, lowPoint, negYVec, lowPoint, negZVec, lowPoint, posXVec, highPoint,
-    posYVec, highPoint, posZVec, highPoint);
+  clip->SetBoxClip(negXVec, lowPoint,
+                   negYVec, lowPoint,
+                   negZVec, lowPoint,
+                   posXVec, highPoint,
+                   posYVec, highPoint,
+                   posZVec, highPoint);
 }
 
-static void AddToRenderWindow(
-  vtkRenderWindow* renwin, vtkBoxClipDataSet* boxclip, int x = 0, int y = 0)
+static void AddToRenderWindow(vtkRenderWindow *renwin,
+                              vtkBoxClipDataSet *boxclip,
+                              int x = 0, int y = 0)
 {
   VTK_CREATE(vtkRenderer, renderer);
-  renderer->SetViewport(static_cast<double>(x) / NumImagesX, static_cast<double>(y) / NumImagesY,
-    static_cast<double>(x + 1) / NumImagesX, static_cast<double>(y + 1) / NumImagesY);
+  renderer->SetViewport(static_cast<double>(x)/NumImagesX,
+                        static_cast<double>(y)/NumImagesY,
+                        static_cast<double>(x+1)/NumImagesX,
+                        static_cast<double>(y+1)/NumImagesY);
 
   VTK_CREATE(vtkDataSetSurfaceFilter, surface1);
   surface1->SetInputConnection(boxclip->GetOutputPort(0));
@@ -190,7 +200,7 @@ static void AddToRenderWindow(
   renwin->AddRenderer(renderer);
 }
 
-int BoxClipTriangulateAndInterpolate(int, char*[])
+int BoxClipTriangulateAndInterpolate(int, char *[])
 {
   VTK_CREATE(vtkRenderWindow, renwin);
   renwin->SetSize(600, 400);

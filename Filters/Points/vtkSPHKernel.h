@@ -50,7 +50,7 @@
  * @sa
  * vtkSPHKernel vtkSPHQuinticKernel vtkInterpolationKernel vtkGaussianKernel
  * vtkShepardKernel vtkLinearKernel
- */
+*/
 
 #ifndef vtkSPHKernel_h
 #define vtkSPHKernel_h
@@ -64,6 +64,7 @@ class vtkDoubleArray;
 class vtkDataArray;
 class vtkFloatArray;
 
+
 class VTKFILTERSPOINTS_EXPORT vtkSPHKernel : public vtkInterpolationKernel
 {
 public:
@@ -71,25 +72,25 @@ public:
   /**
    * Standard methods for instantiation, obtaining type information, and printing.
    */
-  vtkTypeMacro(vtkSPHKernel, vtkInterpolationKernel);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkSPHKernel,vtkInterpolationKernel);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   //@{
   /**
-   * The user defined initial particle spatial step. This is also referred to as
+   * The user defined intial particle spatial step. This is also referred to as
    * the smoothing length.
    */
-  vtkSetClampMacro(SpatialStep, double, 0.0, VTK_FLOAT_MAX);
-  vtkGetMacro(SpatialStep, double);
+  vtkSetClampMacro(SpatialStep,double,0.0,VTK_FLOAT_MAX);
+  vtkGetMacro(SpatialStep,double);
   //@}
 
   //@{
   /**
    * The domain dimension, default to 3.
    */
-  vtkSetClampMacro(Dimension, int, 1, 3);
-  vtkGetMacro(Dimension, int);
+  vtkSetClampMacro(Dimension,int,1,3);
+  vtkGetMacro(Dimension,int);
   //@}
 
   //@{
@@ -97,7 +98,7 @@ public:
    * Return the cutoff factor. This is hard wired into the kernel (e.g., the
    * vtkSPHQuinticKernel has a cutoff factor = 3.0).
    */
-  vtkGetMacro(CutoffFactor, double);
+  vtkGetMacro(CutoffFactor,double);
   //@}
 
   //@{
@@ -108,7 +109,7 @@ public:
    * factor times the spatial step size.
    */
   virtual void SetCutoffArray(vtkDataArray*);
-  vtkGetObjectMacro(CutoffArray, vtkDataArray);
+  vtkGetObjectMacro(CutoffArray,vtkDataArray);
   //@}
 
   //@{
@@ -117,7 +118,7 @@ public:
    * compute local particle volumes.
    */
   virtual void SetDensityArray(vtkDataArray*);
-  vtkGetObjectMacro(DensityArray, vtkDataArray);
+  vtkGetObjectMacro(DensityArray,vtkDataArray);
   //@}
 
   //@{
@@ -126,14 +127,15 @@ public:
    * compute local particle volumes.
    */
   virtual void SetMassArray(vtkDataArray*);
-  vtkGetObjectMacro(MassArray, vtkDataArray);
+  vtkGetObjectMacro(MassArray,vtkDataArray);
   //@}
 
   /**
    * Produce the computational parameters for the kernel. Invoke this method
    * after setting initial values like SpatialStep.
    */
-  void Initialize(vtkAbstractPointLocator* loc, vtkDataSet* ds, vtkPointData* pd) override;
+  virtual void Initialize(vtkAbstractPointLocator *loc, vtkDataSet *ds,
+                          vtkPointData *pd);
 
   /**
    * Given a point x (and optional associated ptId), determine the points
@@ -143,20 +145,22 @@ public:
    * is called before ComputeWeights(). Note that while ptId is optional in most
    * cases, if a cutoff array is provided, then ptId must be provided.
    */
-  vtkIdType ComputeBasis(double x[3], vtkIdList* pIds, vtkIdType ptId = 0) override;
+  virtual vtkIdType ComputeBasis(double x[3], vtkIdList *pIds, vtkIdType ptId=0);
 
   /**
    * Given a point x, and a list of basis points pIds, compute interpolation
    * weights associated with these basis points.
    */
-  vtkIdType ComputeWeights(double x[3], vtkIdList* pIds, vtkDoubleArray* weights) override;
+  virtual vtkIdType ComputeWeights(double x[3], vtkIdList *pIds,
+                                   vtkDoubleArray *weights);
 
   /**
    * Given a point x, and a list of basis points pIds, compute interpolation
    * weights, plus derivative weights, associated with these basis points.
    */
-  virtual vtkIdType ComputeDerivWeights(
-    double x[3], vtkIdList* pIds, vtkDoubleArray* weights, vtkDoubleArray* gradWeights);
+  virtual vtkIdType ComputeDerivWeights(double x[3], vtkIdList *pIds,
+                                        vtkDoubleArray *weights,
+                                        vtkDoubleArray *gradWeights);
 
   /**
    * Compute weighting factor given a normalized distance from a sample point.
@@ -176,36 +180,36 @@ public:
    * the dimension of the kernel. The returned value is only valid after the
    * kernel is initialized.
    */
-  vtkGetMacro(NormFactor, double);
+  vtkGetMacro(NormFactor,double);
   //@}
 
 protected:
   vtkSPHKernel();
-  ~vtkSPHKernel() override;
+  ~vtkSPHKernel();
 
   // Instance variables
-  double SpatialStep; // also known as smoothing length h
-  int Dimension;      // sptial dimension of the kernel
+  double SpatialStep; //also known as smoothing length h
+  int Dimension; //sptial dimension of the kernel
 
   // Optional arrays aid in the interpolation process (computes volume)
-  vtkDataArray* CutoffArray;
-  vtkDataArray* DensityArray;
-  vtkDataArray* MassArray;
+  vtkDataArray *CutoffArray;
+  vtkDataArray *DensityArray;
+  vtkDataArray *MassArray;
 
   // Internal data members generated during construction and initialization
   // Terminology is spatial step = smoothing length h
-  double CutoffFactor;     // varies across each kernel, e.g. cubic=2, quartic=2.5, quintic=3
-  double Cutoff;           // the spatial step * cutoff factor
-  double Sigma;            // normalization constant
-  double DistNorm;         // distance normalization factor 1/(spatial step)
-  double NormFactor;       // dimensional normalization factor sigma/(spatial step)^Dimension
-  double DefaultVolume;    // if mass and density arrays not specified, use this
-  bool UseCutoffArray;     // if single component cutoff array provided
-  bool UseArraysForVolume; // if both mass and density arrays are present
+  double CutoffFactor; //varies across each kernel, e.g. cubic=2, quartic=2.5, quintic=3
+  double Cutoff; //the spatial step * cutoff factor
+  double Sigma; //normalization constant
+  double DistNorm; //distance normalization factor 1/(spatial step)
+  double NormFactor; //dimensional normalization factor sigma/(spatial step)^Dimension
+  double DefaultVolume; //if mass and density arrays not specified, use this
+  bool UseCutoffArray; //if single component cutoff array provided
+  bool UseArraysForVolume; //if both mass and density arrays are present
 
 private:
-  vtkSPHKernel(const vtkSPHKernel&) = delete;
-  void operator=(const vtkSPHKernel&) = delete;
+  vtkSPHKernel(const vtkSPHKernel&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkSPHKernel&) VTK_DELETE_FUNCTION;
 };
 
 #endif

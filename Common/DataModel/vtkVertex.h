@@ -17,22 +17,22 @@
  * @brief   a cell that represents a 3D point
  *
  * vtkVertex is a concrete implementation of vtkCell to represent a 3D point.
- */
+*/
 
 #ifndef vtkVertex_h
 #define vtkVertex_h
 
-#include "vtkCell.h"
 #include "vtkCommonDataModelModule.h" // For export macro
+#include "vtkCell.h"
 
 class vtkIncrementalPointLocator;
 
 class VTKCOMMONDATAMODEL_EXPORT vtkVertex : public vtkCell
 {
 public:
-  static vtkVertex* New();
-  vtkTypeMacro(vtkVertex, vtkCell);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkVertex *New();
+  vtkTypeMacro(vtkVertex,vtkCell);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Make a new vtkVertex object with the same information as this object.
@@ -42,19 +42,23 @@ public:
   /**
    * See the vtkCell API for descriptions of these methods.
    */
-  int GetCellType() override { return VTK_VERTEX; }
-  int GetCellDimension() override { return 0; }
-  int GetNumberOfEdges() override { return 0; }
-  int GetNumberOfFaces() override { return 0; }
-  vtkCell* GetEdge(int) override { return nullptr; }
-  vtkCell* GetFace(int) override { return nullptr; }
-  void Clip(double value, vtkDataArray* cellScalars, vtkIncrementalPointLocator* locator,
-    vtkCellArray* pts, vtkPointData* inPd, vtkPointData* outPd, vtkCellData* inCd, vtkIdType cellId,
-    vtkCellData* outCd, int insideOut) override;
-  int EvaluatePosition(const double x[3], double closestPoint[3], int& subId, double pcoords[3],
-    double& dist2, double weights[]) override;
-  void EvaluateLocation(int& subId, const double pcoords[3], double x[3], double* weights) override;
-  double* GetParametricCoords() override;
+  int GetCellType() VTK_OVERRIDE {return VTK_VERTEX;};
+  int GetCellDimension() VTK_OVERRIDE {return 0;};
+  int GetNumberOfEdges() VTK_OVERRIDE {return 0;};
+  int GetNumberOfFaces() VTK_OVERRIDE {return 0;};
+  vtkCell *GetEdge(int)  VTK_OVERRIDE {return 0;};
+  vtkCell *GetFace(int)  VTK_OVERRIDE {return 0;};
+  void Clip(double value, vtkDataArray *cellScalars,
+            vtkIncrementalPointLocator *locator, vtkCellArray *pts,
+            vtkPointData *inPd, vtkPointData *outPd,
+            vtkCellData *inCd, vtkIdType cellId, vtkCellData *outCd,
+            int insideOut) VTK_OVERRIDE;
+  int EvaluatePosition(double x[3], double* closestPoint,
+                       int& subId, double pcoords[3],
+                       double& dist2, double *weights) VTK_OVERRIDE;
+  void EvaluateLocation(int& subId, double pcoords[3], double x[3],
+                        double *weights) VTK_OVERRIDE;
+  double *GetParametricCoords() VTK_OVERRIDE;
   //@}
 
   /**
@@ -64,7 +68,7 @@ public:
    * (1D cell).  If the return value of the method is != 0, then the point is
    * inside the cell.
    */
-  int CellBoundary(int subId, const double pcoords[3], vtkIdList* pts) override;
+  int CellBoundary(int subId, double pcoords[3], vtkIdList *pts) VTK_OVERRIDE;
 
   /**
    * Generate contouring primitives. The scalar list cellScalars are
@@ -72,60 +76,68 @@ public:
    * points list that merges points as they are inserted (i.e., prevents
    * duplicates).
    */
-  void Contour(double value, vtkDataArray* cellScalars, vtkIncrementalPointLocator* locator,
-    vtkCellArray* verts1, vtkCellArray* lines, vtkCellArray* verts2, vtkPointData* inPd,
-    vtkPointData* outPd, vtkCellData* inCd, vtkIdType cellId, vtkCellData* outCd) override;
+  void Contour(double value, vtkDataArray *cellScalars,
+               vtkIncrementalPointLocator *locator, vtkCellArray *verts1,
+               vtkCellArray *lines, vtkCellArray *verts2,
+               vtkPointData *inPd, vtkPointData *outPd,
+               vtkCellData *inCd, vtkIdType cellId, vtkCellData *outCd) VTK_OVERRIDE;
 
   /**
    * Return the center of the triangle in parametric coordinates.
    */
-  int GetParametricCenter(double pcoords[3]) override;
+  int GetParametricCenter(double pcoords[3]) VTK_OVERRIDE;
 
   /**
    * Intersect with a ray. Return parametric coordinates (both line and cell)
    * and global intersection coordinates, given ray definition and tolerance.
    * The method returns non-zero value if intersection occurs.
    */
-  int IntersectWithLine(const double p1[3], const double p2[3], double tol, double& t, double x[3],
-    double pcoords[3], int& subId) override;
+  int IntersectWithLine(double p1[3], double p2[3], double tol, double& t,
+                        double x[3], double pcoords[3], int& subId) VTK_OVERRIDE;
 
   /**
    * Triangulate the vertex. This method fills pts and ptIds with information
    * from the only point in the vertex.
    */
-  int Triangulate(int index, vtkIdList* ptIds, vtkPoints* pts) override;
+  int Triangulate(int index, vtkIdList *ptIds, vtkPoints *pts) VTK_OVERRIDE;
 
   /**
    * Get the derivative of the vertex. Returns (0.0, 0.0, 0.0) for all
    * dimensions.
    */
-  void Derivatives(
-    int subId, const double pcoords[3], const double* values, int dim, double* derivs) override;
+  void Derivatives(int subId, double pcoords[3], double *values,
+                   int dim, double *derivs) VTK_OVERRIDE;
 
-  static void InterpolationFunctions(const double pcoords[3], double weights[1]);
-  static void InterpolationDerivs(const double pcoords[3], double derivs[3]);
+  /**
+   * @deprecated Replaced by vtkVertex::InterpolateFunctions as of VTK 5.2
+   */
+  static void InterpolationFunctions(double pcoords[3], double weights[1]);
+  /**
+   * @deprecated Replaced by vtkVertex::InterpolateDerivs as of VTK 5.2
+   */
+  static void InterpolationDerivs(double pcoords[3], double derivs[3]);
   //@{
   /**
    * Compute the interpolation functions/derivatives
    * (aka shape functions/derivatives)
    */
-  void InterpolateFunctions(const double pcoords[3], double weights[1]) override
+  void InterpolateFunctions(double pcoords[3], double weights[1]) VTK_OVERRIDE
   {
-    vtkVertex::InterpolationFunctions(pcoords, weights);
+    vtkVertex::InterpolationFunctions(pcoords,weights);
   }
-  void InterpolateDerivs(const double pcoords[3], double derivs[3]) override
+  void InterpolateDerivs(double pcoords[3], double derivs[3]) VTK_OVERRIDE
   {
-    vtkVertex::InterpolationDerivs(pcoords, derivs);
+    vtkVertex::InterpolationDerivs(pcoords,derivs);
   }
   //@}
 
 protected:
   vtkVertex();
-  ~vtkVertex() override {}
+  ~vtkVertex() VTK_OVERRIDE {}
 
 private:
-  vtkVertex(const vtkVertex&) = delete;
-  void operator=(const vtkVertex&) = delete;
+  vtkVertex(const vtkVertex&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkVertex&) VTK_DELETE_FUNCTION;
 };
 
 //----------------------------------------------------------------------------
@@ -136,3 +148,5 @@ inline int vtkVertex::GetParametricCenter(double pcoords[3])
 }
 
 #endif
+
+

@@ -32,23 +32,24 @@
  * @par Thanks:
  * Thanks to Jason Shepherd from Sandia National Laboratories
  * for help developing this class.
- */
+*/
 
 #ifndef vtkStackedTreeLayoutStrategy_h
 #define vtkStackedTreeLayoutStrategy_h
 
-#include "vtkAreaLayoutStrategy.h"
 #include "vtkInfovisLayoutModule.h" // For export macro
+#include "vtkAreaLayoutStrategy.h"
 
 class vtkTree;
 class vtkDataArray;
 
-class VTKINFOVISLAYOUT_EXPORT vtkStackedTreeLayoutStrategy : public vtkAreaLayoutStrategy
+class VTKINFOVISLAYOUT_EXPORT vtkStackedTreeLayoutStrategy :
+  public vtkAreaLayoutStrategy
 {
 public:
   static vtkStackedTreeLayoutStrategy* New();
-  vtkTypeMacro(vtkStackedTreeLayoutStrategy, vtkAreaLayoutStrategy);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkStackedTreeLayoutStrategy,vtkAreaLayoutStrategy);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Perform the layout of the input tree, and store the sector
@@ -56,14 +57,15 @@ public:
    * (innerRadius, outerRadius, startAngle, endAngle)
    * in a data array.
    */
-  void Layout(vtkTree* inputTree, vtkDataArray* sectorArray, vtkDataArray* sizeArray) override;
+  virtual void Layout(vtkTree *inputTree, vtkDataArray *sectorArray,
+      vtkDataArray* sizeArray);
 
   /**
    * Fill edgeRoutingTree with points suitable for routing edges of
    * an overlaid graph.
    */
-  void LayoutEdgePoints(vtkTree* inputTree, vtkDataArray* sectorArray, vtkDataArray* sizeArray,
-    vtkTree* edgeRoutingTree) override;
+  virtual void LayoutEdgePoints(vtkTree *inputTree, vtkDataArray *sectorArray,
+      vtkDataArray* sizeArray, vtkTree *edgeRoutingTree);
 
   //@{
   /**
@@ -136,11 +138,11 @@ public:
   /**
    * Returns the vertex id that contains pnt (or -1 if no one contains it).
    */
-  vtkIdType FindVertex(vtkTree* tree, vtkDataArray* array, float pnt[2]) override;
+  virtual vtkIdType FindVertex(vtkTree* tree, vtkDataArray* array, float pnt[2]);
 
 protected:
   vtkStackedTreeLayoutStrategy();
-  ~vtkStackedTreeLayoutStrategy() override;
+  ~vtkStackedTreeLayoutStrategy();
 
   float InteriorRadius;
   float RingThickness;
@@ -150,15 +152,18 @@ protected:
   bool Reverse;
   double InteriorLogSpacingValue;
 
-  void ComputeEdgeRoutingPoints(vtkTree* inputTree, vtkDataArray* coordsArray, vtkTree* outputTree);
+  void ComputeEdgeRoutingPoints(
+      vtkTree* inputTree, vtkDataArray* coordsArray, vtkTree* outputTree);
 
-  void LayoutChildren(vtkTree* tree, vtkDataArray* coordsArray, vtkDataArray* sizeArray,
-    vtkIdType nchildren, vtkIdType parent, vtkIdType begin, float parentInnerRad,
-    float parentOuterRad, float parentStartAng, float parentEndAng);
+  void LayoutChildren(
+      vtkTree *tree, vtkDataArray *coordsArray, vtkDataArray *sizeArray,
+      vtkIdType nchildren, vtkIdType parent, vtkIdType begin,
+      float parentInnerRad, float parentOuterRad,
+      float parentStartAng, float parentEndAng);
 
 private:
-  vtkStackedTreeLayoutStrategy(const vtkStackedTreeLayoutStrategy&) = delete;
-  void operator=(const vtkStackedTreeLayoutStrategy&) = delete;
+  vtkStackedTreeLayoutStrategy(const vtkStackedTreeLayoutStrategy&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkStackedTreeLayoutStrategy&) VTK_DELETE_FUNCTION;
 };
 
 #endif

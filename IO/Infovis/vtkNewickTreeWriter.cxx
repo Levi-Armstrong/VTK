@@ -29,25 +29,27 @@ vtkNewickTreeWriter::vtkNewickTreeWriter()
   this->EdgeWeightArrayName = "weight";
   this->NodeNameArrayName = "node name";
 
-  this->EdgeWeightArray = nullptr;
-  this->NodeNameArray = nullptr;
+  this->EdgeWeightArray = NULL;
+  this->NodeNameArray = NULL;
 }
 
 //----------------------------------------------------------------------------
 void vtkNewickTreeWriter::WriteData()
 {
-  vtkDebugMacro(<< "Writing vtk tree data...");
+  vtkDebugMacro(<<"Writing vtk tree data...");
 
   vtkTree* const input = this->GetInput();
 
-  this->EdgeWeightArray = input->GetEdgeData()->GetAbstractArray(this->EdgeWeightArrayName.c_str());
+  this->EdgeWeightArray =
+    input->GetEdgeData()->GetAbstractArray(this->EdgeWeightArrayName.c_str());
 
-  this->NodeNameArray = input->GetVertexData()->GetAbstractArray(this->NodeNameArrayName.c_str());
+  this->NodeNameArray =
+    input->GetVertexData()->GetAbstractArray(this->NodeNameArrayName.c_str());
 
-  ostream* fp = this->OpenVTKFile();
-  if (!fp)
+  ostream *fp = this->OpenVTKFile();
+  if(!fp)
   {
-    vtkErrorMacro("Failed to open output stream");
+    vtkErrorMacro("Falied to open output stream");
     return;
   }
 
@@ -60,7 +62,8 @@ void vtkNewickTreeWriter::WriteData()
 }
 
 //----------------------------------------------------------------------------
-void vtkNewickTreeWriter::WriteVertex(ostream* fp, vtkTree* const input, vtkIdType vertex)
+void vtkNewickTreeWriter::WriteVertex(ostream *fp, vtkTree* const input,
+                                      vtkIdType vertex)
 {
   vtkIdType numChildren = input->GetNumberOfChildren(vertex);
   if (numChildren > 0)
@@ -80,7 +83,7 @@ void vtkNewickTreeWriter::WriteVertex(ostream* fp, vtkTree* const input, vtkIdTy
   if (this->NodeNameArray)
   {
     vtkStdString name = this->NodeNameArray->GetVariantValue(vertex).ToString();
-    if (!name.empty())
+    if (name != "")
     {
       *fp << name;
     }
@@ -102,7 +105,7 @@ void vtkNewickTreeWriter::WriteVertex(ostream* fp, vtkTree* const input, vtkIdTy
 }
 
 //----------------------------------------------------------------------------
-int vtkNewickTreeWriter::FillInputPortInformation(int, vtkInformation* info)
+int vtkNewickTreeWriter::FillInputPortInformation(int, vtkInformation *info)
 {
   info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkTree");
   return 1;
@@ -123,7 +126,7 @@ vtkTree* vtkNewickTreeWriter::GetInput(int port)
 //----------------------------------------------------------------------------
 void vtkNewickTreeWriter::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
   os << indent << "EdgeWeightArrayName: " << this->EdgeWeightArrayName << endl;
   os << indent << "NodeNameArrayName: " << this->NodeNameArrayName << endl;
 }

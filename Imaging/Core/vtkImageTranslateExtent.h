@@ -16,22 +16,22 @@
  * @class   vtkImageTranslateExtent
  * @brief   Changes extent, nothing else.
  *
- * vtkImageTranslateExtent shift the whole extent, but does not
+ * vtkImageTranslateExtent  shift the whole extent, but does not
  * change the data.
- */
+*/
 
 #ifndef vtkImageTranslateExtent_h
 #define vtkImageTranslateExtent_h
 
-#include "vtkImageAlgorithm.h"
 #include "vtkImagingCoreModule.h" // For export macro
+#include "vtkImageAlgorithm.h"
 
 class VTKIMAGINGCORE_EXPORT vtkImageTranslateExtent : public vtkImageAlgorithm
 {
 public:
-  static vtkImageTranslateExtent* New();
-  vtkTypeMacro(vtkImageTranslateExtent, vtkImageAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkImageTranslateExtent *New();
+  vtkTypeMacro(vtkImageTranslateExtent,vtkImageAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -43,18 +43,18 @@ public:
 
 protected:
   vtkImageTranslateExtent();
-  ~vtkImageTranslateExtent() override {}
+  ~vtkImageTranslateExtent() {}
 
   int Translation[3];
 
-  int RequestUpdateExtent(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int RequestUpdateExtent (vtkInformation *, vtkInformationVector **, vtkInformationVector *);
+  virtual int RequestInformation (vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 
 private:
-  vtkImageTranslateExtent(const vtkImageTranslateExtent&) = delete;
-  void operator=(const vtkImageTranslateExtent&) = delete;
+  vtkImageTranslateExtent(const vtkImageTranslateExtent&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkImageTranslateExtent&) VTK_DELETE_FUNCTION;
 };
 
 #endif

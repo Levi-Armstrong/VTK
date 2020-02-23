@@ -23,13 +23,13 @@
  *    degree zero.
  *
  *
- */
+*/
 
 #ifndef vtkRemoveIsolatedVertices_h
 #define vtkRemoveIsolatedVertices_h
 
-#include "vtkGraphAlgorithm.h"
 #include "vtkInfovisCoreModule.h" // For export macro
+#include "vtkGraphAlgorithm.h"
 
 class vtkDataSet;
 
@@ -37,18 +37,22 @@ class VTKINFOVISCORE_EXPORT vtkRemoveIsolatedVertices : public vtkGraphAlgorithm
 {
 public:
   static vtkRemoveIsolatedVertices* New();
-  vtkTypeMacro(vtkRemoveIsolatedVertices, vtkGraphAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkRemoveIsolatedVertices,vtkGraphAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
 protected:
   vtkRemoveIsolatedVertices();
-  ~vtkRemoveIsolatedVertices() override;
+  ~vtkRemoveIsolatedVertices();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(
+    vtkInformation*,
+    vtkInformationVector**,
+    vtkInformationVector*);
 
 private:
-  vtkRemoveIsolatedVertices(const vtkRemoveIsolatedVertices&) = delete;
-  void operator=(const vtkRemoveIsolatedVertices&) = delete;
+  vtkRemoveIsolatedVertices(const vtkRemoveIsolatedVertices&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkRemoveIsolatedVertices&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

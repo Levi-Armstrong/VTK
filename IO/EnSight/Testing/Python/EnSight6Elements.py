@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import vtk
+from vtk.test import Testing
 from vtk.util.misc import vtkGetDataRoot
 VTK_DATA_ROOT = vtkGetDataRoot()
 
@@ -20,7 +21,7 @@ geom = vtk.vtkGeometryFilter()
 geom.SetInputConnection(reader.GetOutputPort())
 calc = vtk.vtkArrayCalculator()
 calc.SetInputConnection(geom.GetOutputPort())
-calc.SetAttributeTypeToPointData()
+calc.SetAttributeModeToUsePointData()
 calc.SetFunction("pointCVectors_r . pointCVectors_i + pointScalars")
 calc.AddScalarArrayName("pointScalars",0)
 calc.AddVectorArrayName("pointCVectors_r",0,1,2)

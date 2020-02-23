@@ -13,75 +13,70 @@
 
 =========================================================================*/
 #include "vtkImporter.h"
-#include "vtkCellData.h"
-#include "vtkDataArray.h"
-#include "vtkDataSet.h"
-#include "vtkPointData.h"
-#include "vtkPolyData.h"
-#include "vtkRenderWindow.h"
 #include "vtkRendererCollection.h"
+#include "vtkRenderWindow.h"
 
-#include <sstream>
 
-vtkCxxSetObjectMacro(vtkImporter, RenderWindow, vtkRenderWindow);
+vtkCxxSetObjectMacro(vtkImporter,RenderWindow,vtkRenderWindow);
 
-vtkImporter::vtkImporter()
+vtkImporter::vtkImporter ()
 {
-  this->Renderer = nullptr;
-  this->RenderWindow = nullptr;
+  this->Renderer = NULL;
+  this->RenderWindow = NULL;
 }
 
-vtkImporter::~vtkImporter()
+vtkImporter::~vtkImporter ()
 {
-  this->SetRenderWindow(nullptr);
+  this->SetRenderWindow(NULL);
 
   if (this->Renderer)
   {
-    this->Renderer->UnRegister(nullptr);
-    this->Renderer = nullptr;
+    this->Renderer->UnRegister( NULL );
+    this->Renderer = NULL;
   }
+
 }
 
 void vtkImporter::ReadData()
 {
   // this->Import actors, cameras, lights and properties
-  this->ImportActors(this->Renderer);
-  this->ImportCameras(this->Renderer);
-  this->ImportLights(this->Renderer);
-  this->ImportProperties(this->Renderer);
+  this->ImportActors (this->Renderer);
+  this->ImportCameras (this->Renderer);
+  this->ImportLights (this->Renderer);
+  this->ImportProperties (this->Renderer);
 }
 
-void vtkImporter::Read()
+void vtkImporter::Read ()
 {
-  vtkRenderer* renderer;
+  vtkRenderer *renderer;
 
   // if there is no render window, create one
-  if (this->RenderWindow == nullptr)
+  if (this->RenderWindow == NULL)
   {
-    vtkDebugMacro(<< "Creating a RenderWindow\n");
-    this->RenderWindow = vtkRenderWindow::New();
+    vtkDebugMacro( <<"Creating a RenderWindow\n");
+    this->RenderWindow = vtkRenderWindow::New ();
   }
 
   // Get the first renderer in the render window
   renderer = this->RenderWindow->GetRenderers()->GetFirstRenderer();
-  if (renderer == nullptr)
+  if (renderer == NULL)
   {
-    vtkDebugMacro(<< "Creating a Renderer\n");
-    this->Renderer = vtkRenderer::New();
+    vtkDebugMacro( <<"Creating a Renderer\n");
+    this->Renderer = vtkRenderer::New ();
     renderer = this->Renderer;
-    this->RenderWindow->AddRenderer(renderer);
+    this->RenderWindow->AddRenderer (renderer);
   }
   else
   {
     if (this->Renderer)
     {
-      this->Renderer->UnRegister(nullptr);
+      this->Renderer->UnRegister(NULL);
     }
     this->Renderer = renderer;
-    this->Renderer->Register(this);
+    this->Renderer->Register( this );
   }
 
-  if (this->ImportBegin())
+  if (this->ImportBegin ())
   {
     this->ReadData();
     this->ImportEnd();
@@ -90,10 +85,10 @@ void vtkImporter::Read()
 
 void vtkImporter::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 
   os << indent << "Render Window: ";
-  if (this->RenderWindow)
+  if ( this->RenderWindow )
   {
     os << this->RenderWindow << "\n";
   }
@@ -103,7 +98,7 @@ void vtkImporter::PrintSelf(ostream& os, vtkIndent indent)
   }
 
   os << indent << "Renderer: ";
-  if (this->Renderer)
+  if ( this->Renderer )
   {
     os << this->Renderer << "\n";
   }
@@ -111,65 +106,11 @@ void vtkImporter::PrintSelf(ostream& os, vtkIndent indent)
   {
     os << "(none)\n";
   }
+
 }
 
-//----------------------------------------------------------------------------
-std::string vtkImporter::GetArrayDescription(vtkDataArray* array, vtkIndent indent)
-{
-  std::stringstream ss;
-  ss << indent;
-  if (array->GetName())
-  {
-    ss << array->GetName() << " : ";
-  }
-  ss << array->GetDataTypeAsString() << " : ";
 
-  int nComp = array->GetNumberOfComponents();
-  double range[2];
-  for (int j = 0; j < nComp; j++)
-  {
-    array->GetRange(range, j);
-    ss << "[" << range[0] << ", " << range[1] << "] ";
-  }
-  ss << "\n";
-  return ss.str();
-}
 
-//----------------------------------------------------------------------------
-std::string vtkImporter::GetDataSetDescription(vtkDataSet* ds, vtkIndent indent)
-{
-  std::stringstream ss;
-  ss << indent << "Number of points: " << ds->GetNumberOfPoints() << "\n";
 
-  vtkPolyData* pd = vtkPolyData::SafeDownCast(ds);
-  if (pd)
-  {
-    ss << indent << "Number of polygons: " << pd->GetNumberOfPolys() << "\n";
-    ss << indent << "Number of lines: " << pd->GetNumberOfLines() << "\n";
-    ss << indent << "Number of vertices: " << pd->GetNumberOfVerts() << "\n";
-  }
-  else
-  {
-    ss << indent << "Number of cells: " << ds->GetNumberOfCells() << "\n";
-  }
 
-  vtkPointData* pointData = ds->GetPointData();
-  vtkCellData* cellData = ds->GetCellData();
-  int nbPointData = pointData->GetNumberOfArrays();
-  int nbCellData = cellData->GetNumberOfArrays();
 
-  ss << indent << nbPointData << " point data array(s):\n";
-  for (vtkIdType i = 0; i < nbPointData; i++)
-  {
-    vtkDataArray* array = pointData->GetArray(i);
-    ss << vtkImporter::GetArrayDescription(array, indent.GetNextIndent());
-  }
-
-  ss << indent << nbCellData << " cell data array(s):\n";
-  for (vtkIdType i = 0; i < nbCellData; i++)
-  {
-    vtkDataArray* array = cellData->GetArray(i);
-    ss << vtkImporter::GetArrayDescription(array, indent.GetNextIndent());
-  }
-  return ss.str();
-}

@@ -25,7 +25,7 @@
 
 uniform sampler2D texData;
 
-in vec2 tcoordVC;
+varying vec2 tcoordVC;
 
 void main()
 {

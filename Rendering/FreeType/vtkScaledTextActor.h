@@ -21,7 +21,7 @@
  *
  * @sa
  * vtkTextActor vtkActor2D vtkTextMapper
- */
+*/
 
 #ifndef vtkScaledTextActor_h
 #define vtkScaledTextActor_h
@@ -32,21 +32,22 @@
 class VTKRENDERINGFREETYPE_EXPORT vtkScaledTextActor : public vtkTextActor
 {
 public:
-  vtkTypeMacro(vtkScaledTextActor, vtkTextActor);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkScaledTextActor,vtkTextActor);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Instantiate object with a rectangle in normaled view coordinates
    * of (0.2,0.85, 0.8, 0.95).
    */
-  static vtkScaledTextActor* New();
+  static vtkScaledTextActor *New();
 
 protected:
-  vtkScaledTextActor();
-
+   vtkScaledTextActor();
 private:
-  vtkScaledTextActor(const vtkScaledTextActor&) = delete;
-  void operator=(const vtkScaledTextActor&) = delete;
+  vtkScaledTextActor(const vtkScaledTextActor&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkScaledTextActor&) VTK_DELETE_FUNCTION;
 };
 
+
 #endif
+

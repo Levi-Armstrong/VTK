@@ -25,9 +25,9 @@
 #include "vtkCellData.h"
 #include "vtkDataArray.h"
 #include "vtkFloatArray.h"
+#include "vtkMath.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
-#include "vtkMath.h"
 #include "vtkObjectFactory.h"
 #include "vtkPointData.h"
 #include "vtkPoints.h"
@@ -37,12 +37,18 @@
 
 vtkStandardNewMacro(vtkBoxLayoutStrategy);
 
-vtkBoxLayoutStrategy::vtkBoxLayoutStrategy() = default;
+vtkBoxLayoutStrategy::vtkBoxLayoutStrategy()
+{
+}
 
-vtkBoxLayoutStrategy::~vtkBoxLayoutStrategy() = default;
+vtkBoxLayoutStrategy::~vtkBoxLayoutStrategy()
+{
+}
 
 void vtkBoxLayoutStrategy::Layout(
-  vtkTree* inputTree, vtkDataArray* coordsArray, vtkDataArray* vtkNotUsed(sizeArray))
+    vtkTree* inputTree,
+    vtkDataArray* coordsArray,
+    vtkDataArray* vtkNotUsed(sizeArray))
 {
   if (!inputTree)
   {
@@ -53,7 +59,8 @@ void vtkBoxLayoutStrategy::Layout(
     vtkErrorMacro("Area array not defined.");
     return;
   }
-  vtkSmartPointer<vtkTreeDFSIterator> dfs = vtkSmartPointer<vtkTreeDFSIterator>::New();
+  vtkSmartPointer<vtkTreeDFSIterator> dfs =
+    vtkSmartPointer<vtkTreeDFSIterator>::New();
   dfs->SetTree(inputTree);
   float coords[4];
   vtkSmartPointer<vtkAdjacentVertexIterator> children =
@@ -63,13 +70,12 @@ void vtkBoxLayoutStrategy::Layout(
     vtkIdType vertex = dfs->Next();
     if (vertex == inputTree->GetRoot())
     {
-      coords[0] = 0;
-      coords[1] = 1;
-      coords[2] = 0;
-      coords[3] = 1;
+      coords[0] = 0; coords[1] = 1; coords[2] = 0; coords[3] = 1;
       coordsArray->SetTuple(vertex, coords);
-      inputTree->GetPoints()->SetPoint(
-        vertex, (coords[0] + coords[1]) / 2.0, (coords[2] + coords[3]) / 2.0, 0.0);
+      inputTree->GetPoints()->SetPoint(vertex,
+        (coords[0] + coords[1])/2.0,
+        (coords[2] + coords[3])/2.0,
+        0.0);
     }
     double doubleCoords[4];
     coordsArray->GetTuple(vertex, doubleCoords);
@@ -89,13 +95,14 @@ void vtkBoxLayoutStrategy::Layout(
     if (!inputTree->IsLeaf(vertex))
     {
       // Divide the available space with simple algo
-      int xDivisions = static_cast<int>(sqrt(static_cast<double>(nchildren)) + 1); // Ceiling
+      int xDivisions =
+        static_cast<int>(sqrt(static_cast<double>(nchildren))+1); // Ceiling
       int yDivisions = xDivisions;
 
       // Okay try shrinking the bounds
-      if ((xDivisions - 1) * yDivisions >= nchildren)
+      if ((xDivisions-1)*yDivisions >= nchildren)
         --xDivisions;
-      if (xDivisions * (yDivisions - 1) >= nchildren)
+      if (xDivisions*(yDivisions-1) >= nchildren)
         --yDivisions;
 
       // Get the children
@@ -116,14 +123,20 @@ void vtkBoxLayoutStrategy::Layout(
           vtkIdType child = children->Next();
 
           // Give children their positions
-          coords[0] = parentMinX + xDelta * j;                  // minX
-          coords[1] = parentMinX + xDelta * (j + 1.0);          // maxX
-          coords[2] = parentMinY + ySpace - yDelta * (i + 1.0); // minY
-          coords[3] = parentMinY + ySpace - yDelta * i;         // maxY
+          coords[0] =
+            parentMinX + xDelta * j;// minX
+          coords[1] =
+            parentMinX + xDelta * (j + 1.0);// maxX
+          coords[2] =
+            parentMinY + ySpace - yDelta * (i + 1.0);// minY
+          coords[3] =
+            parentMinY + ySpace - yDelta*i;// maxY
 
           coordsArray->SetTuple(child, coords);
-          inputTree->GetPoints()->SetPoint(
-            child, (coords[0] + coords[1]) / 2.0, (coords[2] + coords[3]) / 2.0, 0.0);
+          inputTree->GetPoints()->SetPoint(child,
+            (coords[0] + coords[1])/2.0,
+            (coords[2] + coords[3])/2.0,
+            0.0);
         }
       }
     }
@@ -132,5 +145,5 @@ void vtkBoxLayoutStrategy::Layout(
 
 void vtkBoxLayoutStrategy::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 }

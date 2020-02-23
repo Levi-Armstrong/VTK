@@ -24,9 +24,11 @@ vtkDummyCommunicator::vtkDummyCommunicator()
   this->MaximumNumberOfProcesses = 1;
 }
 
-vtkDummyCommunicator::~vtkDummyCommunicator() = default;
+vtkDummyCommunicator::~vtkDummyCommunicator()
+{
+}
 
-void vtkDummyCommunicator::PrintSelf(ostream& os, vtkIndent indent)
+void vtkDummyCommunicator::PrintSelf(ostream &os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 }

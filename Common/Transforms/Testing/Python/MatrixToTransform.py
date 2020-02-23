@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 import vtk
+from vtk.test import Testing
 from vtk.util.misc import vtkGetDataRoot
 VTK_DATA_ROOT = vtkGetDataRoot()
 
-# This example demonstrates how to use a matrix in place of a transform
+# This example demonstrates how to use a matrix in place of a transfrom
 # via vtkMatrixToLinearTransform and vtkMatrixToHomogeneousTransform.
 # create a rendering window
 renWin = vtk.vtkRenderWindow()

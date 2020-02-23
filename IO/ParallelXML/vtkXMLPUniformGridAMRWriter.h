@@ -24,7 +24,7 @@
  * vtkXMLUniformGridAMRWriter to communicate information about data blocks
  * to the root node so that the root node can write the XML file describing the
  * structure correctly.
- */
+*/
 
 #ifndef vtkXMLPUniformGridAMRWriter_h
 #define vtkXMLPUniformGridAMRWriter_h
@@ -39,7 +39,7 @@ class VTKIOPARALLELXML_EXPORT vtkXMLPUniformGridAMRWriter : public vtkXMLUniform
 public:
   static vtkXMLPUniformGridAMRWriter* New();
   vtkTypeMacro(vtkXMLPUniformGridAMRWriter, vtkXMLUniformGridAMRWriter);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -58,22 +58,22 @@ public:
    * is set to flag only on process 0 and all other processes have
    * WriteMetaFile set to 0 by default.
    */
-  void SetWriteMetaFile(int flag) override;
+  virtual void SetWriteMetaFile(int flag);
 
 protected:
   vtkXMLPUniformGridAMRWriter();
-  ~vtkXMLPUniformGridAMRWriter() override;
+  ~vtkXMLPUniformGridAMRWriter();
 
   /**
    * Overridden to reduce information about data-types across all processes.
    */
-  void FillDataTypes(vtkCompositeDataSet*) override;
+  virtual void FillDataTypes(vtkCompositeDataSet*);
 
   vtkMultiProcessController* Controller;
-
 private:
-  vtkXMLPUniformGridAMRWriter(const vtkXMLPUniformGridAMRWriter&) = delete;
-  void operator=(const vtkXMLPUniformGridAMRWriter&) = delete;
+  vtkXMLPUniformGridAMRWriter(const vtkXMLPUniformGridAMRWriter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkXMLPUniformGridAMRWriter&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif

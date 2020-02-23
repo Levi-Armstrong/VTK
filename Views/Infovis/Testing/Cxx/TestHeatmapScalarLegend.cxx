@@ -14,8 +14,8 @@
 =========================================================================*/
 
 #include "vtkHeatmapItem.h"
-#include "vtkIntArray.h"
 #include "vtkNew.h"
+#include "vtkIntArray.h"
 #include "vtkStringArray.h"
 #include "vtkTable.h"
 
@@ -23,9 +23,9 @@
 #include "vtkContextScene.h"
 #include "vtkContextTransform.h"
 #include "vtkContextView.h"
+#include "vtkRenderer.h"
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
-#include "vtkRenderer.h"
 
 #include "vtkRegressionTestImage.h"
 
@@ -48,19 +48,19 @@ int TestHeatmapScalarLegend(int argc, char* argv[])
   column->SetValue(1, 2);
   column->SetValue(2, 1);
 
-  table->AddColumn(tableNames);
-  table->AddColumn(column);
+  table->AddColumn(tableNames.GetPointer());
+  table->AddColumn(column.GetPointer());
 
   vtkNew<vtkHeatmapItem> heatmap;
-  heatmap->SetTable(table);
+  heatmap->SetTable(table.GetPointer());
 
   vtkNew<vtkContextTransform> trans;
   trans->SetInteractive(true);
-  trans->AddItem(heatmap);
+  trans->AddItem(heatmap.GetPointer());
   trans->Translate(125, 125);
 
   vtkNew<vtkContextView> contextView;
-  contextView->GetScene()->AddItem(trans);
+  contextView->GetScene()->AddItem(trans.GetPointer());
 
   contextView->GetRenderWindow()->SetMultiSamples(0);
   contextView->GetRenderWindow()->Render();

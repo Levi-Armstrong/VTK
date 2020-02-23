@@ -1,8 +1,8 @@
 set(TestOrientedGlyphContour_ARGS "--PlaybackFile" "DATA{../Data/Input/TestOrientedGlyphContourEventLog.txt}")
 set(TerrainPolylineEditor_ARGS -ProjectionMode 2 -HeightOffset 100)
-vtk_add_test_cxx(vtkInteractionWidgetsCxxTests tests
-  BoxWidget.cxx
+vtk_add_test_cxx(${vtk-module}CxxTests tests
   BoxWidget2.cxx
+  BoxWidget.cxx
   ImagePlaneWidget.cxx
   TerrainPolylineEditor.cxx
   TestAffineWidget.cxx
@@ -17,40 +17,36 @@ vtk_add_test_cxx(vtkInteractionWidgetsCxxTests tests
   TestCellCentersPointPlacer.cxx
   TestCenteredSliderWidget2D.cxx
   TestCheckerboardWidget.cxx
-  TestCoincidentHandleWidgets.cxx
   TestConstrainedHandleWidget.cxx
   TestContourWidget2.cxx
   TestDijkstraImageGeodesicPath.cxx
-  TestDistanceWidget.cxx
   TestDistanceWidget3D.cxx
+  TestDistanceWidget.cxx
   TestFinitePlaneWidget.cxx
   TestFixedSizeHandleRepresentation3D.cxx
   TestFocalPlaneContour.cxx
-  TestHandleWidget.cxx
   TestHandleWidget2D.cxx
+  TestHandleWidget.cxx
   TestImageActorContourWidget.cxx
+  TestImageTracerWidget.cxx
   TestImplicitCylinderWidget.cxx
   TestImplicitCylinderWidget2.cxx
-  TestImplicitPlaneWidget.cxx
-  TestImplicitPlaneWidget2.cxx
-  TestImplicitPlaneWidget2LockNormalToCamera.cxx
   TestImplicitPlaneWidget2b.cxx
+  TestImplicitPlaneWidget2.cxx
   TestImplicitPlaneWidget3.cxx
-  TestLightWidget.cxx
-  TestLogoWidget.cxx
+  TestImplicitPlaneWidget2LockNormalToCamera.cxx
+  TestImplicitPlaneWidget.cxx
   TestLogoWidgetAlphaBlending.cxx
+  TestLogoWidget.cxx
   TestLogoWidgetDepthPeeling.cxx
-  TestMeasurementCubeHandleRepresentation3D.cxx
   TestMultipleViewports.cxx
   TestOrientationMarkerWidget.cxx
   TestOrientationMarkerWidget2.cxx
   TestOrthoPlanes.cxx
   TestParallelopipedWidget.cxx
   TestPickingManagerSeedWidget.cxx
-  TestPickingManagerSeedWidget2.cxx
   TestPlaybackWidget.cxx
   TestPointHandleRepresentation3D.cxx
-  TestPolylineWidget.cxx
   TestProgrammaticPlacement.cxx
   TestProgressBarWidget.cxx
   TestProp3DButtonRepresentation.cxx,NO_VALID
@@ -58,18 +54,17 @@ vtk_add_test_cxx(vtkInteractionWidgetsCxxTests tests
   TestResliceCursorWidget2.cxx
   TestResliceCursorWidget3.cxx
   TestScalarBarWidget.cxx
-  TestSeedWidget.cxx
   TestSeedWidget2.cxx
+  TestSeedWidget.cxx
   TestSeedWidgetNonUniformRepresentations.cxx
-  TestSliderWidget.cxx
   TestSliderWidget2D.cxx
-  TestSliderWidgetMultipleViewports.cxx
-  TestSphereWidget2CenterCursor.cxx
-  TestSphereWidgetZoomInOut.cxx
+  TestSliderWidget.cxx
   TestSplineWidget.cxx
+  TestSphereWidgetZoomInOut.cxx
+  TestSphereWidget2CenterCursor.cxx
   TestTextWidget.cxx
   )
-vtk_add_test_cxx(vtkInteractionWidgetsCxxTests no_valid_tests
+vtk_add_test_cxx(${vtk-module}CxxTests no_valid_tests
   NO_VALID
   vtkAngleRepresentation2DTest1.cxx
   vtkAngleRepresentation3DTest1.cxx
@@ -96,29 +91,39 @@ vtk_add_test_cxx(vtkInteractionWidgetsCxxTests no_valid_tests
   )
 
 # Tests with data
-vtk_add_test_cxx(vtkInteractionWidgetsCxxTests data_tests
-  TestButtonWidget.cxx
-  TestButtonWidgetMultipleViewports.cxx
+vtk_add_test_cxx(${vtk-module}CxxTests data_tests
   TestDijkstraGraphGeodesicPath.cxx
-  TestLineWidget.cxx
   TestLineWidget2.cxx
+  TestLineWidget.cxx
   TestOrientedGlyphContour.cxx
   TestPlaneWidget.cxx
   TestPointWidget.cxx
-  TestPolyPlane.cxx,NO_VALID
   TestPolygonalHandleRepresentations.cxx
   TestPolygonalRepresentationHandleWidget.cxx
   TestPolygonalSurfaceConstrainedDistanceWidget.cxx
+  TestPolyPlane.cxx,NO_VALID
   TestSphereHandleWidget.cxx
   TestSurfaceConstrainedHandleWidget.cxx
   TestTensorProbeWidget.cxx
-  TestImageTracerWidget.cxx
   )
 
 if(NOT VTK_OPENGL_HAS_OSMESA)
-  vtk_add_test_cxx(vtkInteractionWidgetsCxxTests ogl_tests
+  vtk_add_test_cxx(${vtk-module}CxxTests ogl_tests
     TestPickingManagerWidgets.cxx
     )
+endif()
+
+# These tests depend on volume rendering classes not build for OpenGL2
+if(VTK_RENDERING_BACKEND STREQUAL "OpenGL")
+  vtk_add_test_cxx(${vtk-module}CxxTests tests
+    TestImageCroppingRegionsWidget.cxx
+    )
+
+  if(NOT VTK_LEGACY_REMOVE)
+    vtk_add_test_cxx(${vtk-module}CxxTests tests
+      TestButtonWidget.cxx
+      )
+  endif()
 endif()
 
 set(all_tests
@@ -127,7 +132,7 @@ set(all_tests
   ${data_tests}
   ${ogl_tests}
   )
-vtk_test_cxx_executable(vtkInteractionWidgetsCxxTests all_tests
+vtk_test_cxx_executable(${vtk-module}CxxTests all_tests
   RENDERING_FACTORY
   )
 
@@ -135,7 +140,7 @@ vtk_test_cxx_executable(vtkInteractionWidgetsCxxTests all_tests
 if(NOT VTK_TEST_TIMEOUT_TerrainPolylineEditor)
   set(VTK_TEST_TIMEOUT_TerrainPolylineEditor 90)
 endif()
-set_tests_properties(VTK::InteractionWidgetsCxx-TerrainPolylineEditor
+set_tests_properties(${vtk-module}Cxx-TerrainPolylineEditor
   PROPERTIES TIMEOUT ${VTK_TEST_TIMEOUT_TerrainPolylineEditor})
 
 if(NOT VTK_OPENGL_HAS_OSMESA)
@@ -143,7 +148,7 @@ if(NOT VTK_OPENGL_HAS_OSMESA)
   if(NOT VTK_TEST_TIMEOUT_TestPickingManagerSeedWidget)
     set(VTK_TEST_TIMEOUT_TestPickingManagerSeedWidget 60)
   endif()
-  set_tests_properties(VTK::InteractionWidgetsCxx-TestPickingManagerSeedWidget
+  set_tests_properties(${vtk-module}Cxx-TestPickingManagerSeedWidget
     PROPERTIES TIMEOUT ${VTK_TEST_TIMEOUT_TestPickingManagerSeedWidget})
 endif()
 
@@ -152,6 +157,6 @@ endif()
 if(NOT VTK_TEST_TIMEOUT_TestSphereHandleWidget)
   set(VTK_TEST_TIMEOUT_TestSphereHandleWidget 300)
 endif()
-set_tests_properties(VTK::InteractionWidgetsCxx-TestSphereHandleWidget
+set_tests_properties(${vtk-module}Cxx-TestSphereHandleWidget
     PROPERTIES TIMEOUT ${VTK_TEST_TIMEOUT_TestSphereHandleWidget}
                RUN_SERIAL ON)

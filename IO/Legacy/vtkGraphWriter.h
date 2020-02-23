@@ -20,13 +20,13 @@
  * vtkGraph data files in vtk format. See text for format details.
  * @warning
  * Binary files written on one system may not be readable on other systems.
- */
+*/
 
 #ifndef vtkGraphWriter_h
 #define vtkGraphWriter_h
 
-#include "vtkDataWriter.h"
 #include "vtkIOLegacyModule.h" // For export macro
+#include "vtkDataWriter.h"
 
 class vtkGraph;
 class vtkMolecule;
@@ -34,9 +34,9 @@ class vtkMolecule;
 class VTKIOLEGACY_EXPORT vtkGraphWriter : public vtkDataWriter
 {
 public:
-  static vtkGraphWriter* New();
-  vtkTypeMacro(vtkGraphWriter, vtkDataWriter);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkGraphWriter *New();
+  vtkTypeMacro(vtkGraphWriter,vtkDataWriter);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -48,17 +48,17 @@ public:
 
 protected:
   vtkGraphWriter() {}
-  ~vtkGraphWriter() override {}
+  ~vtkGraphWriter() {}
 
-  void WriteData() override;
+  void WriteData();
 
-  void WriteMoleculeData(ostream* fp, vtkMolecule* m);
+  void WriteMoleculeData(ostream *fp, vtkMolecule *m);
 
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  virtual int FillInputPortInformation(int port, vtkInformation *info);
 
 private:
-  vtkGraphWriter(const vtkGraphWriter&) = delete;
-  void operator=(const vtkGraphWriter&) = delete;
+  vtkGraphWriter(const vtkGraphWriter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkGraphWriter&) VTK_DELETE_FUNCTION;
 };
 
 #endif

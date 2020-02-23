@@ -30,8 +30,8 @@
 #include "vtkSelectionNode.h"
 #include "vtkSmartPointer.h"
 
-#include <algorithm>
 #include <vector>
+#include <algorithm>
 
 vtkStandardNewMacro(vtkAnnotationLayers);
 vtkCxxSetObjectMacro(vtkAnnotationLayers, CurrentAnnotation, vtkAnnotation);
@@ -42,16 +42,19 @@ public:
   std::vector<vtkSmartPointer<vtkAnnotation> > Annotations;
 };
 
-vtkAnnotationLayers::vtkAnnotationLayers()
-  : Implementation(new Internals())
+vtkAnnotationLayers::vtkAnnotationLayers() :
+  Implementation(new Internals())
 {
   this->CurrentAnnotation = vtkAnnotation::New();
 
   // Start with an empty index selection
-  vtkSmartPointer<vtkSelection> sel = vtkSmartPointer<vtkSelection>::New();
-  vtkSmartPointer<vtkSelectionNode> node = vtkSmartPointer<vtkSelectionNode>::New();
+  vtkSmartPointer<vtkSelection> sel =
+    vtkSmartPointer<vtkSelection>::New();
+  vtkSmartPointer<vtkSelectionNode> node =
+    vtkSmartPointer<vtkSelectionNode>::New();
   node->SetContentType(vtkSelectionNode::INDICES);
-  vtkSmartPointer<vtkIdTypeArray> ids = vtkSmartPointer<vtkIdTypeArray>::New();
+  vtkSmartPointer<vtkIdTypeArray> ids =
+    vtkSmartPointer<vtkIdTypeArray>::New();
   node->SetSelectionList(ids);
   sel->AddNode(node);
   this->CurrentAnnotation->SetSelection(sel);
@@ -81,7 +84,7 @@ vtkSelection* vtkAnnotationLayers::GetCurrentSelection()
   {
     return this->CurrentAnnotation->GetSelection();
   }
-  return nullptr;
+  return 0;
 }
 
 unsigned int vtkAnnotationLayers::GetNumberOfAnnotations()
@@ -93,7 +96,7 @@ vtkAnnotation* vtkAnnotationLayers::GetAnnotation(unsigned int idx)
 {
   if (idx >= this->Implementation->Annotations.size())
   {
-    return nullptr;
+    return 0;
   }
   return this->Implementation->Annotations[idx];
 }
@@ -106,8 +109,11 @@ void vtkAnnotationLayers::AddAnnotation(vtkAnnotation* annotation)
 
 void vtkAnnotationLayers::RemoveAnnotation(vtkAnnotation* annotation)
 {
-  this->Implementation->Annotations.erase(std::remove(this->Implementation->Annotations.begin(),
-                                            this->Implementation->Annotations.end(), annotation),
+  this->Implementation->Annotations.erase(
+    std::remove(
+      this->Implementation->Annotations.begin(),
+      this->Implementation->Annotations.end(),
+      annotation),
     this->Implementation->Annotations.end());
   this->Modified();
 }
@@ -146,7 +152,8 @@ void vtkAnnotationLayers::DeepCopy(vtkDataObject* other)
   this->Implementation->Annotations.clear();
   for (unsigned int a = 0; a < obj->GetNumberOfAnnotations(); ++a)
   {
-    vtkSmartPointer<vtkAnnotation> ann = vtkSmartPointer<vtkAnnotation>::New();
+    vtkSmartPointer<vtkAnnotation> ann =
+      vtkSmartPointer<vtkAnnotation>::New();
     ann->DeepCopy(obj->GetAnnotation(a));
     this->AddAnnotation(ann);
   }
@@ -212,7 +219,7 @@ void vtkAnnotationLayers::PrintSelf(ostream& os, vtkIndent indent)
 
 vtkAnnotationLayers* vtkAnnotationLayers::GetData(vtkInformation* info)
 {
-  return info ? vtkAnnotationLayers::SafeDownCast(info->Get(DATA_OBJECT())) : nullptr;
+  return info ? vtkAnnotationLayers::SafeDownCast(info->Get(DATA_OBJECT())) : 0;
 }
 
 vtkAnnotationLayers* vtkAnnotationLayers::GetData(vtkInformationVector* v, int i)

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import sys
 import vtk
+from vtk.test import Testing
 from vtk.util.misc import vtkGetDataRoot
 VTK_DATA_ROOT = vtkGetDataRoot()
 
@@ -739,7 +740,7 @@ QLWedgeContourMapper.SetInputConnection(QLwedgeContours.GetOutputPort())
 QLWedgeContourMapper.ScalarVisibilityOff()
 QLWedgeMapper = vtk.vtkDataSetMapper()
 QLWedgeMapper.SetInputData(QLWedgeGrid)
-QLWedgeMapper.ScalarVisibilityOff()
+aWedgeMapper.ScalarVisibilityOff()
 QLWedgeActor = vtk.vtkActor()
 QLWedgeActor.SetMapper(QLWedgeMapper)
 QLWedgeActor.GetProperty().SetRepresentationToWireframe()
@@ -819,10 +820,10 @@ BQwedgeContours.SetInputData(BQWedgeGrid)
 BQwedgeContours.SetValue(0, 0.5)
 BQWedgeContourMapper = vtk.vtkDataSetMapper()
 BQWedgeContourMapper.SetInputConnection(BQwedgeContours.GetOutputPort())
-BQWedgeContourMapper.ScalarVisibilityOff()
+# BQWedgeContourMapper.ScalarVisibilityOff()
 BQWedgeMapper = vtk.vtkDataSetMapper()
 BQWedgeMapper.SetInputData(BQWedgeGrid)
-BQWedgeMapper.ScalarVisibilityOff()
+# BQWedgeMapper.ScalarVisibilityOff()
 BQWedgeActor = vtk.vtkActor()
 BQWedgeActor.SetMapper(BQWedgeMapper)
 BQWedgeActor.GetProperty().SetRepresentationToWireframe()

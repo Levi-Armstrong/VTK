@@ -21,9 +21,8 @@
  * synchronized template algorithm.
  *
  * @sa
- * vtkContourFilter vtkSynchronizedTemplates3D vtkThreadedSynchronizedTemplates3D
- * vtkSynchronizedTemplatesCutter3D
- */
+ * vtkContourFilter vtkSynchronizedTemplates3D vtkThreadedSynchronizedTemplates3D vtkSynchronizedTemplatesCutter3D
+*/
 
 #ifndef vtkThreadedSynchronizedTemplatesCutter3D_h
 #define vtkThreadedSynchronizedTemplatesCutter3D_h
@@ -33,27 +32,25 @@
 
 class vtkImplicitFunction;
 
-#if !defined(VTK_LEGACY_REMOVE)
-class VTKFILTERSSMP_EXPORT vtkThreadedSynchronizedTemplatesCutter3D
-  : public vtkThreadedSynchronizedTemplates3D
+class VTKFILTERSSMP_EXPORT vtkThreadedSynchronizedTemplatesCutter3D : public vtkThreadedSynchronizedTemplates3D
 {
 public:
-  static vtkThreadedSynchronizedTemplatesCutter3D* New();
+  static vtkThreadedSynchronizedTemplatesCutter3D *New();
 
-  vtkTypeMacro(vtkThreadedSynchronizedTemplatesCutter3D, vtkThreadedSynchronizedTemplates3D);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkThreadedSynchronizedTemplatesCutter3D,vtkThreadedSynchronizedTemplates3D);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Needed by templated functions.
    */
-  void ThreadedExecute(vtkImageData* data, vtkInformation* outInfo, int);
+  void ThreadedExecute(vtkImageData *data, vtkInformation *outInfo, int);
 
   //@{
   /**
    * Specify the implicit function to perform the cutting.
    */
   virtual void SetCutFunction(vtkImplicitFunction*);
-  vtkGetObjectMacro(CutFunction, vtkImplicitFunction);
+  vtkGetObjectMacro(CutFunction,vtkImplicitFunction);
   //@}
 
   //@{
@@ -70,24 +67,23 @@ public:
    * Override GetMTime because we delegate to vtkContourValues and refer to
    * vtkImplicitFunction.
    */
-  vtkMTimeType GetMTime() override;
+  vtkMTimeType GetMTime();
 
 protected:
   vtkThreadedSynchronizedTemplatesCutter3D();
-  ~vtkThreadedSynchronizedTemplatesCutter3D() override;
+  ~vtkThreadedSynchronizedTemplatesCutter3D();
 
-  vtkImplicitFunction* CutFunction;
+  vtkImplicitFunction *CutFunction;
   int OutputPointsPrecision;
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int RequestData(vtkInformation *,
+                          vtkInformationVector **,
+                          vtkInformationVector *);
 
-  int FillOutputPortInformation(int port, vtkInformation* info) override;
-
+  virtual int FillOutputPortInformation(int port, vtkInformation* info);
 private:
-  vtkThreadedSynchronizedTemplatesCutter3D(
-    const vtkThreadedSynchronizedTemplatesCutter3D&) = delete;
-  void operator=(const vtkThreadedSynchronizedTemplatesCutter3D&) = delete;
+  vtkThreadedSynchronizedTemplatesCutter3D(const vtkThreadedSynchronizedTemplatesCutter3D&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkThreadedSynchronizedTemplatesCutter3D&) VTK_DELETE_FUNCTION;
 };
 
-#endif // VTK_LEGACY_REMOVE
 #endif

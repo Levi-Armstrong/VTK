@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import vtk
+from vtk.test import Testing
 from vtk.util.misc import vtkGetDataRoot
 VTK_DATA_ROOT = vtkGetDataRoot()
 
@@ -9,18 +10,16 @@ sphere.SetRadius(2.0)
 
 sphereMapper = vtk.vtkPolyDataMapper()
 sphereMapper.SetInputConnection(sphere.GetOutputPort())
+sphereMapper.ImmediateModeRenderingOn()
 
 sphereActor = vtk.vtkActor()
 sphereActor.SetMapper(sphereMapper)
 
 rt = vtk.vtkRTAnalyticSource()
-rt.SetWholeExtent(-40, 60, -25, 75, 0, 0)
-rt.Update()
-im = rt.GetOutput()
-im.SetDirectionMatrix(-1, 0, 0, 0, -1, 0, 0, 0, 1)
+rt.SetWholeExtent(-50, 50, -50, 50, 0, 0)
 
 voi = vtk.vtkExtractVOI()
-voi.SetInputData(im)
+voi.SetInputConnection(rt.GetOutputPort())
 voi.SetVOI(-11, 39, 5, 45, 0, 0)
 voi.SetSampleRate(5, 5, 1)
 
@@ -33,6 +32,7 @@ tris.SetInputConnection(surf.GetOutputPort())
 
 mapper = vtk.vtkPolyDataMapper()
 mapper.SetInputConnection(tris.GetOutputPort())
+mapper.ImmediateModeRenderingOn()
 mapper.SetScalarRange(130, 280)
 
 actor = vtk.vtkActor()
@@ -51,10 +51,6 @@ ren.ResetCamera()
 
 renWin = vtk.vtkRenderWindow()
 renWin.AddRenderer(ren)
-
-dm = voi.GetOutput().GetDirectionMatrix()
-if dm.GetElement(0, 0) != -1 or dm.GetElement(1, 1) != -1 or dm.GetElement(2, 2) != 1:
-	print("ERROR: vtkExtractVOI not passing DirectionMatrix unchanged")
 
 iren = vtk.vtkRenderWindowInteractor()
 iren.SetRenderWindow(renWin)

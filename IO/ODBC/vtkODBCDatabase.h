@@ -46,7 +46,7 @@
  * @warning
  * The password supplied as an argument to the Open call will override
  * whatever password is set (if any) in the DSN definition.  To use
- * the password from the DSN definition, pass in nullptr for
+ * the password from the DSN definition, pass in NULL for
  * the password argument.
  *
  * @warning
@@ -67,7 +67,7 @@
  *
  * @sa
  * vtkODBCQuery
- */
+*/
 
 #ifndef vtkODBCDatabase_h
 #define vtkODBCDatabase_h
@@ -87,50 +87,50 @@ class VTKIOODBC_EXPORT vtkODBCDatabase : public vtkSQLDatabase
 
 public:
   vtkTypeMacro(vtkODBCDatabase, vtkSQLDatabase);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
-  static vtkODBCDatabase* New();
+  void PrintSelf(ostream& os, vtkIndent indent);
+  static vtkODBCDatabase *New();
 
   /**
    * Open a new connection to the database.  You need to set the
    * filename before calling this function.  Returns true if the
    * database was opened successfully; false otherwise.
    */
-  bool Open(const char* password) override;
+  bool Open(const char* password);
 
   /**
    * Close the connection to the database.
    */
-  void Close() override;
+  void Close();
 
   /**
    * Return whether the database has an open connection
    */
-  bool IsOpen() override;
+  bool IsOpen();
 
   /**
    * Return an empty query on this database.
    */
-  vtkSQLQuery* GetQueryInstance() override;
+  vtkSQLQuery* GetQueryInstance();
 
   /**
    * Get the last error text from the database
    */
-  const char* GetLastErrorText() override;
+  const char* GetLastErrorText();
 
   /**
    * Get the list of tables from the database
    */
-  vtkStringArray* GetTables() override;
+  vtkStringArray* GetTables();
 
   /**
    * Get the list of fields for a particular table
    */
-  vtkStringArray* GetRecord(const char* table) override;
+  vtkStringArray* GetRecord(const char *table);
 
   /**
    * Return whether a feature is supported by the database.
    */
-  bool IsSupported(int feature) override;
+  bool IsSupported(int feature);
 
   //@{
   /**
@@ -149,82 +149,86 @@ public:
   vtkGetStringMacro(DatabaseName);
   vtkSetStringMacro(Password);
 
-  bool HasError() override;
+  bool HasError();
 
   //@{
   /**
    * String representing database type (e.g. "ODBC").
    */
-  const char* GetDatabaseType() override { return this->DatabaseType; }
+  vtkGetStringMacro(DatabaseType);
   //@}
 
-  vtkStdString GetURL() override;
+  vtkStdString GetURL();
 
   /**
    * Return the SQL string with the syntax to create a column inside a
    * "CREATE TABLE" SQL statement.
    * NB2: if a column has type SERIAL in the schema, this will be turned
-   * into INT NOT nullptr. Therefore, one should not pass
-   * NOT nullptr as an attribute of a column whose type is SERIAL.
+   * into INT NOT NULL. Therefore, one should not pass
+   * NOT NULL as an attribute of a column whose type is SERIAL.
    */
-  vtkStdString GetColumnSpecification(
-    vtkSQLDatabaseSchema* schema, int tblHandle, int colHandle) override;
+  virtual vtkStdString GetColumnSpecification( vtkSQLDatabaseSchema* schema,
+                                               int tblHandle,
+                                               int colHandle );
 
   /**
    * Return the SQL string with the syntax to create an index inside a
    * "CREATE TABLE" SQL statement.
    */
-  vtkStdString GetIndexSpecification(
-    vtkSQLDatabaseSchema* schema, int tblHandle, int idxHandle, bool& skipped) override;
+  virtual vtkStdString GetIndexSpecification( vtkSQLDatabaseSchema* schema,
+                                              int tblHandle,
+                                              int idxHandle,
+                                              bool& skipped );
 
   /**
    * Create a new database, optionally dropping any existing database of the same name.
    * Returns true when the database is properly created and false on failure.
    */
-  bool CreateDatabase(const char* dbName, bool dropExisting);
+  bool CreateDatabase( const char* dbName, bool dropExisting );
 
   /**
    * Drop a database if it exists.
    * Returns true on success and false on failure.
    */
-  bool DropDatabase(const char* dbName);
+  bool DropDatabase( const char* dbName );
 
   /**
    * This will only handle URLs of the form
    * odbc://[user@]datsourcename[:port]/[dbname].  Anything
    * more complicated than that needs to be set up manually.
    */
-  bool ParseURL(const char* url) override;
+  bool ParseURL(const char *url);
 
 protected:
   vtkODBCDatabase();
-  ~vtkODBCDatabase() override;
+  ~vtkODBCDatabase();
 
   vtkSetStringMacro(LastErrorText);
 
 private:
-  vtkStringArray* Tables;
-  vtkStringArray* Record;
+  vtkStringArray *Tables;
+  vtkStringArray *Record;
 
-  char* LastErrorText;
+  char *LastErrorText;
 
-  char* HostName;
-  char* UserName;
-  char* Password;
-  char* DataSourceName;
-  char* DatabaseName;
+  char *HostName;
+  char *UserName;
+  char *Password;
+  char *DataSourceName;
+  char *DatabaseName;
   int ServerPort;
 
-  vtkODBCInternals* Internals;
+  vtkODBCInternals *Internals;
 
   // We want this to be private, a user of this class
   // should not be setting this for any reason
   vtkSetStringMacro(DatabaseType);
 
-  char* DatabaseType;
+  char *DatabaseType;
 
-  vtkODBCDatabase(const vtkODBCDatabase&) = delete;
-  void operator=(const vtkODBCDatabase&) = delete;
+  vtkODBCDatabase(const vtkODBCDatabase &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkODBCDatabase &) VTK_DELETE_FUNCTION;
 };
 
 #endif // vtkODBCDatabase_h
+

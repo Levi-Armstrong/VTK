@@ -16,20 +16,22 @@
 // This example tests laying out widgets in multiple viewports.
 
 // First include the required header files for the VTK classes we are using.
-#include "vtkActor.h"
-#include "vtkBorderRepresentation.h"
-#include "vtkBorderWidget.h"
-#include "vtkCommand.h"
-#include "vtkHandleWidget.h"
 #include "vtkNew.h"
-#include "vtkPlaneSource.h"
+#include "vtkBorderWidget.h"
+#include "vtkBorderRepresentation.h"
+#include "vtkHandleWidget.h"
 #include "vtkPointHandleRepresentation2D.h"
 #include "vtkPolyDataMapper.h"
+#include "vtkActor.h"
+#include "vtkRenderer.h"
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
-#include "vtkRenderer.h"
+#include "vtkCommand.h"
+#include "vtkActor.h"
+#include "vtkPolyDataMapper.h"
+#include "vtkPlaneSource.h"
 
-int TestMultipleViewports(int, char*[])
+int TestMultipleViewports( int , char *[] )
 {
   // Create the RenderWindow, Renderers
   //
@@ -37,47 +39,47 @@ int TestMultipleViewports(int, char*[])
   vtkNew<vtkRenderer> ren1;
   vtkNew<vtkRenderWindow> renWin;
 
-  ren0->SetBackground(0, 0, 0);
+  ren0->SetBackground(0,0,0);
   ren0->SetViewport(0, 0, 0.5, 1);
-  ren1->SetBackground(0.1, 0.1, 0.1);
+  ren1->SetBackground(0.1,0.1,0.1);
   ren1->SetViewport(0.5, 0, 1, 1);
 
-  renWin->AddRenderer(ren0);
-  renWin->AddRenderer(ren1);
+  renWin->AddRenderer(ren0.GetPointer());
+  renWin->AddRenderer(ren1.GetPointer());
 
   vtkNew<vtkRenderWindowInteractor> iren;
-  iren->SetRenderWindow(renWin);
+  iren->SetRenderWindow(renWin.GetPointer());
 
   vtkNew<vtkPlaneSource> plane;
   vtkNew<vtkPolyDataMapper> planeMapper;
   planeMapper->SetInputConnection(plane->GetOutputPort());
   vtkNew<vtkActor> planeActor;
-  planeActor->SetMapper(planeMapper);
-  ren1->AddActor(planeActor);
+  planeActor->SetMapper(planeMapper.GetPointer());
+  ren1->AddActor(planeActor.GetPointer());
 
   iren->Initialize();
-  renWin->SetSize(300, 150);
+  renWin->SetSize(300,150);
   renWin->Render();
 
   // Create widgets in different viewports. Note that SetCurrentRenderer()
   // should be set to prevent the automated detection of renderer which
   // screws things up with multiple renderers.
   vtkNew<vtkBorderWidget> borderWidget;
-  borderWidget->SetInteractor(iren);
-  borderWidget->SetCurrentRenderer(ren0);
+  borderWidget->SetInteractor(iren.GetPointer());
+  borderWidget->SetCurrentRenderer(ren0.GetPointer());
   vtkNew<vtkBorderRepresentation> borderRep;
   borderRep->GetPositionCoordinate()->SetValue(0.1, 0.5);
   borderRep->GetPosition2Coordinate()->SetValue(0.4, 0.1);
   borderRep->SetShowBorderToOn();
-  borderWidget->SetRepresentation(borderRep);
+  borderWidget->SetRepresentation(borderRep.GetPointer());
   borderWidget->On();
 
   vtkNew<vtkHandleWidget> handleWidget;
-  handleWidget->SetCurrentRenderer(ren1);
-  handleWidget->SetInteractor(iren);
+  handleWidget->SetCurrentRenderer(ren1.GetPointer());
+  handleWidget->SetInteractor(iren.GetPointer());
   vtkNew<vtkPointHandleRepresentation2D> handleRep;
   handleRep->SetWorldPosition(plane->GetOrigin());
-  handleWidget->SetRepresentation(handleRep);
+  handleWidget->SetRepresentation(handleRep.GetPointer());
   handleWidget->On();
 
   // Remove the observers so we can go interactive. Without this the "-I"
@@ -85,4 +87,5 @@ int TestMultipleViewports(int, char*[])
   iren->Start();
 
   return EXIT_SUCCESS;
+
 }

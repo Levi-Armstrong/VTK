@@ -37,24 +37,19 @@
  * facilitates parallel processing, where the client application handles
  * events, and remote representations of the widget are slaves to the
  * client (and do not handle events).
- */
+*/
 
 #ifndef vtkWidgetRepresentation_h
 #define vtkWidgetRepresentation_h
 
 #include "vtkInteractionWidgetsModule.h" // For export macro
-#include "vtkNew.h"                      // for ivars
 #include "vtkProp.h"
 #include "vtkWeakPointer.h" // needed for vtkWeakPointer iVar.
 
 class vtkAbstractPropPicker;
-class vtkAbstractWidget;
-class vtkMatrix4x4;
 class vtkPickingManager;
-class vtkProp3D;
-class vtkRenderWindowInteractor;
 class vtkRenderer;
-class vtkTransform;
+
 
 class VTKINTERACTIONWIDGETS_EXPORT vtkWidgetRepresentation : public vtkProp
 {
@@ -63,8 +58,8 @@ public:
   /**
    * Standard methods for instances of this class.
    */
-  vtkTypeMacro(vtkWidgetRepresentation, vtkProp);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkWidgetRepresentation,vtkProp);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   //@{
@@ -73,7 +68,7 @@ public:
    * Enabled by default.
    */
   vtkBooleanMacro(PickingManaged, bool);
-  void SetPickingManaged(bool managed);
+  vtkSetMacro(PickingManaged, bool);
   vtkGetMacro(PickingManaged, bool);
   //@}
 
@@ -94,7 +89,7 @@ public:
    * in order to avoid reference loops.  Be sure that the representation
    * lifetime does not extend beyond the renderer lifetime.
    */
-  virtual void SetRenderer(vtkRenderer* ren);
+  virtual void SetRenderer(vtkRenderer *ren);
   virtual vtkRenderer* GetRenderer();
   virtual void BuildRepresentation() = 0;
   //@}
@@ -135,32 +130,10 @@ public:
   virtual void StartWidgetInteraction(double eventPos[2]) { (void)eventPos; }
   virtual void WidgetInteraction(double newEventPos[2]) { (void)newEventPos; }
   virtual void EndWidgetInteraction(double newEventPos[2]) { (void)newEventPos; }
-  virtual int ComputeInteractionState(int X, int Y, int modify = 0);
-  virtual int GetInteractionState() { return this->InteractionState; }
+  virtual int ComputeInteractionState(int X, int Y, int modify=0);
+  virtual int GetInteractionState()
+    {return this->InteractionState;}
   virtual void Highlight(int vtkNotUsed(highlightOn)) {}
-
-  //@{
-  // Widgets were originally designed to be driven by 2D mouse events
-  // With Virtual Reality and multitouch we get mnore complex events
-  // that may involve multiple pointers as well as 3D pointers and
-  // orientations. As such we provide pointers to the interactor
-  // widget and an event type so that representations can access the
-  // values they need.
-  virtual void StartComplexInteraction(
-    vtkRenderWindowInteractor*, vtkAbstractWidget*, unsigned long /* event */, void* /*callData*/)
-  {
-  }
-  virtual void ComplexInteraction(
-    vtkRenderWindowInteractor*, vtkAbstractWidget*, unsigned long /* event */, void* /* callData */)
-  {
-  }
-  virtual void EndComplexInteraction(
-    vtkRenderWindowInteractor*, vtkAbstractWidget*, unsigned long /* event */, void* /* callData */)
-  {
-  }
-  virtual int ComputeComplexInteractionState(vtkRenderWindowInteractor* iren,
-    vtkAbstractWidget* widget, unsigned long event, void* callData, int modify = 0);
-  //@}
 
   //@{
   /**
@@ -170,8 +143,8 @@ public:
    * The PlaceFactor will make the widget larger (PlaceFactor > 1) or smaller
    * (PlaceFactor < 1). By default, PlaceFactor is set to 0.5.
    */
-  vtkSetClampMacro(PlaceFactor, double, 0.01, VTK_DOUBLE_MAX);
-  vtkGetMacro(PlaceFactor, double);
+  vtkSetClampMacro(PlaceFactor,double,0.01,VTK_DOUBLE_MAX);
+  vtkGetMacro(PlaceFactor,double);
   //@}
 
   //@{
@@ -184,8 +157,8 @@ public:
    * with respect to the viewport. (As a corollary, the value of this ivar is often
    * set by subclasses of this class during instance instantiation.)
    */
-  vtkSetClampMacro(HandleSize, double, 0.001, 1000);
-  vtkGetMacro(HandleSize, double);
+  vtkSetClampMacro(HandleSize,double,0.001,1000);
+  vtkGetMacro(HandleSize,double);
   //@}
 
   //@{
@@ -193,9 +166,9 @@ public:
    * Some subclasses use this data member to keep track of whether to render
    * or not (i.e., to minimize the total number of renders).
    */
-  vtkGetMacro(NeedToRender, vtkTypeBool);
-  vtkSetClampMacro(NeedToRender, vtkTypeBool, 0, 1);
-  vtkBooleanMacro(NeedToRender, vtkTypeBool);
+  vtkGetMacro( NeedToRender, int );
+  vtkSetClampMacro( NeedToRender, int, 0, 1 );
+  vtkBooleanMacro( NeedToRender, int );
   //@}
 
   /**
@@ -205,46 +178,21 @@ public:
    * (i.e., not implementing the Render() methods properly) or leaking graphics resources
    * (i.e., not implementing ReleaseGraphicsResources() properly).
    */
-  double* GetBounds() VTK_SIZEHINT(6) override { return nullptr; }
-  void ShallowCopy(vtkProp* prop) override;
-  void GetActors(vtkPropCollection*) override {}
-  void GetActors2D(vtkPropCollection*) override {}
-  void GetVolumes(vtkPropCollection*) override {}
-  void ReleaseGraphicsResources(vtkWindow*) override {}
-  int RenderOverlay(vtkViewport* vtkNotUsed(viewport)) override { return 0; }
-  int RenderOpaqueGeometry(vtkViewport* vtkNotUsed(viewport)) override { return 0; }
-  int RenderTranslucentPolygonalGeometry(vtkViewport* vtkNotUsed(viewport)) override { return 0; }
-  int RenderVolumetricGeometry(vtkViewport* vtkNotUsed(viewport)) override { return 0; }
-  vtkTypeBool HasTranslucentPolygonalGeometry() override { return 0; }
-
-  /**
-   * Register internal Pickers in the Picking Manager.
-   * Must be reimplemented by concrete widget representations to register
-   * their pickers.
-   */
-  virtual void RegisterPickers();
-
-  /**
-   * Unregister internal pickers from the Picking Manager.
-   */
-  virtual void UnRegisterPickers();
-
-  //@{
-  /**
-   * Axis labels
-   */
-  enum Axis
-  {
-    NONE = -1,
-    XAxis = 0,
-    YAxis = 1,
-    ZAxis = 2
-  };
-  //@}
+  virtual double *GetBounds() {return NULL;}
+  virtual void ShallowCopy(vtkProp *prop);
+  virtual void GetActors(vtkPropCollection *) {}
+  virtual void GetActors2D(vtkPropCollection *) {}
+  virtual void GetVolumes(vtkPropCollection *) {}
+  virtual void ReleaseGraphicsResources(vtkWindow *) {}
+  virtual int RenderOverlay(vtkViewport *vtkNotUsed(viewport)) {return 0;}
+  virtual int RenderOpaqueGeometry(vtkViewport *vtkNotUsed(viewport)) {return 0;}
+  virtual int RenderTranslucentPolygonalGeometry(vtkViewport *vtkNotUsed(viewport)) {return 0;}
+  virtual int RenderVolumetricGeometry(vtkViewport *vtkNotUsed(viewport)) {return 0;}
+  virtual int HasTranslucentPolygonalGeometry() { return 0; }
 
 protected:
   vtkWidgetRepresentation();
-  ~vtkWidgetRepresentation() override;
+  ~vtkWidgetRepresentation();
 
   // The renderer in which this widget is placed
   vtkWeakPointer<vtkRenderer> Renderer;
@@ -258,21 +206,39 @@ protected:
 
   // Instance variable and members supporting suclasses
   double PlaceFactor; // Used to control how widget is placed around bounding box
-  int Placed;         // Indicate whether widget has been placed
-  void AdjustBounds(double bounds[6], double newBounds[6], double center[3]);
-  double InitialBounds[6]; // initial bounds on place widget (valid after PlaceWidget)
-  double InitialLength;    // initial length on place widget
+  int    Placed; // Indicate whether widget has been placed
+  void   AdjustBounds(double bounds[6], double newBounds[6], double center[3]);
+  double InitialBounds[6]; //initial bounds on place widget (valid after PlaceWidget)
+  double InitialLength; //initial length on place widget
 
   // Sizing handles is tricky because the procedure requires information
   // relative to the last pick, as well as a live renderer to perform
   // coordinate conversions. In some cases, a pick is never made so handle
   // sizing has to follow a different path. The following ivars help with
   // this process.
-  int ValidPick; // indicate when valid picks are made
+  int    ValidPick; //indicate when valid picks are made
 
   // This variable controls whether the picking is managed by the Picking
   // Manager or not. True by default.
   bool PickingManaged;
+
+  /**
+   * Register internal Pickers in the Picking Manager.
+   * Must be reimplemented by concrete widget representations to register
+   * their pickers.
+   */
+  virtual void RegisterPickers();
+
+  /**
+   * Unregister internal pickers from the Picking Manager.
+   */
+  virtual void UnRegisterPickers();
+
+  /**
+   * Update the pickers registered in the Picking Manager when pickers are
+   * modified.
+   */
+  virtual void PickersModified();
 
   /**
    * Return the picking manager associated on the context on which the widget
@@ -285,39 +251,27 @@ protected:
    * managed or directly using the registered picker, and return the assembly
    * path.
    */
-  vtkAssemblyPath* GetAssemblyPath(double X, double Y, double Z, vtkAbstractPropPicker* picker);
-  vtkAssemblyPath* GetAssemblyPath3DPoint(double pos[3], vtkAbstractPropPicker* picker);
+  vtkAssemblyPath* GetAssemblyPath(double X, double Y, double Z,
+                                   vtkAbstractPropPicker* picker);
 
-  // Helper function to cull events if they are not near to the actual widget
-  // representation. This is needed typically in situations of extreme zoom
-  // for 3D widgets. The current event position, and 3D bounds of the widget
-  // are provided.
-  bool NearbyEvent(int X, int Y, double bounds[6]);
 
   // Members use to control handle size. The two methods return a "radius"
   // in world coordinates. Note that the HandleSize data member is used
   // internal to the SizeHandles__() methods.
-  double HandleSize; // controlling relative size of widget handles
+  double HandleSize; //controlling relative size of widget handles
   double SizeHandlesRelativeToViewport(double factor, double pos[3]);
-  double SizeHandlesInPixels(double factor, double pos[3]);
+  double SizeHandlesInPixels(double factor,double pos[3]);
 
   // Try and reduce multiple renders
-  vtkTypeBool NeedToRender;
+  int NeedToRender;
 
   // This is the time that the representation was built. This data member
   // can be used to reduce the time spent building the widget.
-  vtkTimeStamp BuildTime;
-
-  // update the pose of a prop based on two sets of
-  // position, orientation vectors
-  void UpdatePropPose(vtkProp3D* prop, const double* pos1, const double* orient1,
-    const double* pos2, const double* orient2);
-  vtkNew<vtkTransform> TempTransform;
-  vtkNew<vtkMatrix4x4> TempMatrix;
+  vtkTimeStamp  BuildTime;
 
 private:
-  vtkWidgetRepresentation(const vtkWidgetRepresentation&) = delete;
-  void operator=(const vtkWidgetRepresentation&) = delete;
+  vtkWidgetRepresentation(const vtkWidgetRepresentation&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkWidgetRepresentation&) VTK_DELETE_FUNCTION;
 };
 
 #endif

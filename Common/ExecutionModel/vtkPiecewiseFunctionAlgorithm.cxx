@@ -15,10 +15,10 @@
 #include "vtkPiecewiseFunctionAlgorithm.h"
 
 #include "vtkCommand.h"
-#include "vtkDataObject.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
 #include "vtkObjectFactory.h"
+#include "vtkDataObject.h"
 #include "vtkStreamingDemandDrivenPipeline.h"
 
 vtkStandardNewMacro(vtkPiecewiseFunctionAlgorithm);
@@ -33,7 +33,9 @@ vtkPiecewiseFunctionAlgorithm::vtkPiecewiseFunctionAlgorithm()
 }
 
 //----------------------------------------------------------------------------
-vtkPiecewiseFunctionAlgorithm::~vtkPiecewiseFunctionAlgorithm() = default;
+vtkPiecewiseFunctionAlgorithm::~vtkPiecewiseFunctionAlgorithm()
+{
+}
 
 //----------------------------------------------------------------------------
 void vtkPiecewiseFunctionAlgorithm::PrintSelf(ostream& os, vtkIndent indent)
@@ -70,17 +72,18 @@ vtkDataObject* vtkPiecewiseFunctionAlgorithm::GetInput(int port)
 {
   if (this->GetNumberOfInputConnections(port) < 1)
   {
-    return nullptr;
+    return 0;
   }
   return this->GetExecutive()->GetInputData(port, 0);
 }
 
 //----------------------------------------------------------------------------
-vtkTypeBool vtkPiecewiseFunctionAlgorithm::ProcessRequest(
-  vtkInformation* request, vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+int vtkPiecewiseFunctionAlgorithm::ProcessRequest(vtkInformation* request,
+                                         vtkInformationVector** inputVector,
+                                         vtkInformationVector* outputVector)
 {
   // generate the data
-  if (request->Has(vtkDemandDrivenPipeline::REQUEST_DATA()))
+  if(request->Has(vtkDemandDrivenPipeline::REQUEST_DATA()))
   {
     return this->RequestData(request, inputVector, outputVector);
   }
@@ -108,8 +111,10 @@ int vtkPiecewiseFunctionAlgorithm::FillInputPortInformation(
 //----------------------------------------------------------------------------
 // This is the superclasses style of Execute method.  Convert it into
 // an imaging style Execute method.
-int vtkPiecewiseFunctionAlgorithm::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* vtkNotUsed(outputVector))
+int vtkPiecewiseFunctionAlgorithm::RequestData(
+  vtkInformation* vtkNotUsed(request),
+  vtkInformationVector** vtkNotUsed(inputVector),
+  vtkInformationVector* vtkNotUsed(outputVector))
 {
   return 0;
 }

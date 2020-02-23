@@ -34,7 +34,7 @@
  *
  * @sa
  * vtkShrinkFilter
- */
+*/
 
 #ifndef vtkShrinkPolyData_h
 #define vtkShrinkPolyData_h
@@ -45,34 +45,33 @@
 class VTKFILTERSGENERAL_EXPORT vtkShrinkPolyData : public vtkPolyDataAlgorithm
 {
 public:
-  static vtkShrinkPolyData* New();
-  vtkTypeMacro(vtkShrinkPolyData, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkShrinkPolyData *New();
+  vtkTypeMacro(vtkShrinkPolyData,vtkPolyDataAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   //@{
   /**
    * Set the fraction of shrink for each cell.
    */
-  vtkSetClampMacro(ShrinkFactor, double, 0.0, 1.0);
+  vtkSetClampMacro(ShrinkFactor,double,0.0,1.0);
   //@}
 
   //@{
   /**
    * Get the fraction of shrink for each cell.
    */
-  vtkGetMacro(ShrinkFactor, double);
+  vtkGetMacro(ShrinkFactor,double);
   //@}
 
 protected:
-  vtkShrinkPolyData(double sf = 0.5);
-  ~vtkShrinkPolyData() override {}
+  vtkShrinkPolyData(double sf=0.5);
+  ~vtkShrinkPolyData() VTK_OVERRIDE {}
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *) VTK_OVERRIDE;
   double ShrinkFactor;
-
 private:
-  vtkShrinkPolyData(const vtkShrinkPolyData&) = delete;
-  void operator=(const vtkShrinkPolyData&) = delete;
+  vtkShrinkPolyData(const vtkShrinkPolyData&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkShrinkPolyData&) VTK_DELETE_FUNCTION;
 };
 
 #endif

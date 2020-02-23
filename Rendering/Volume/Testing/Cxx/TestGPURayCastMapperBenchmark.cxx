@@ -19,11 +19,11 @@
 #include "vtkImageData.h"
 #include "vtkNew.h"
 #include "vtkPiecewiseFunction.h"
-#include "vtkRTAnalyticSource.h"
 #include "vtkRegressionTestImage.h"
+#include "vtkRenderer.h"
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
-#include "vtkRenderer.h"
+#include "vtkRTAnalyticSource.h"
 #include "vtkTimerLog.h"
 #include "vtkVolume.h"
 #include "vtkVolumeProperty.h"
@@ -34,7 +34,9 @@ int TestGPURayCastMapperBenchmark(int argc, char* argv[])
   cout << "CTEST_FULL_OUTPUT (Avoid ctest truncation of output)" << endl;
 
   vtkNew<vtkRTAnalyticSource> wavelet;
-  wavelet->SetWholeExtent(-127, 128, -127, 128, -127, 128);
+  wavelet->SetWholeExtent(-127, 128,
+                          -127, 128,
+                          -127, 128);
   wavelet->SetCenter(0.0, 0.0, 0.0);
 
   vtkNew<vtkGPUVolumeRayCastMapper> volumeMapper;
@@ -50,26 +52,27 @@ int TestGPURayCastMapperBenchmark(int argc, char* argv[])
   pwf->AddPoint(37.3531, 0.0);
   pwf->AddPoint(276.829, 1.0);
 
-  volumeProperty->SetColor(ctf);
-  volumeProperty->SetScalarOpacity(pwf);
+  volumeProperty->SetColor(ctf.GetPointer());
+  volumeProperty->SetScalarOpacity(pwf.GetPointer());
 
   vtkNew<vtkVolume> volume;
-  volume->SetMapper(volumeMapper);
-  volume->SetProperty(volumeProperty);
+  volume->SetMapper(volumeMapper.GetPointer());
+  volume->SetProperty(volumeProperty.GetPointer());
 
   vtkNew<vtkRenderWindow> renderWindow;
   renderWindow->SetSize(900, 900);
   renderWindow->Render(); // make sure we have an OpenGL context.
 
   vtkNew<vtkRenderer> renderer;
-  renderer->AddVolume(volume);
+  renderer->AddVolume(volume.GetPointer());
   renderer->ResetCamera();
-  renderWindow->AddRenderer(renderer);
+  renderWindow->AddRenderer(renderer.GetPointer());
 
   vtkNew<vtkRenderWindowInteractor> iren;
-  iren->SetRenderWindow(renderWindow);
+  iren->SetRenderWindow(renderWindow.GetPointer());
 
-  int valid = volumeMapper->IsRenderSupported(renderWindow, volumeProperty);
+  int valid = volumeMapper->IsRenderSupported(renderWindow.GetPointer(),
+                                              volumeProperty.GetPointer());
   int retVal;
   if (valid)
   {
@@ -102,9 +105,9 @@ int TestGPURayCastMapperBenchmark(int argc, char* argv[])
     double elapsed = timer->GetElapsedTime();
     cerr << "Interactive Render Time: " << elapsed / numRenders << endl;
 
-    renderer->GetActiveCamera()->SetPosition(0, 0, 1);
-    renderer->GetActiveCamera()->SetFocalPoint(0, 0, 0);
-    renderer->GetActiveCamera()->SetViewUp(0, 1, 0);
+    renderer->GetActiveCamera()->SetPosition(0,0,1);
+    renderer->GetActiveCamera()->SetFocalPoint(0,0,0);
+    renderer->GetActiveCamera()->SetViewUp(0,1,0);
     renderer->ResetCamera();
 
     renderWindow->SetSize(300, 300);
@@ -112,8 +115,8 @@ int TestGPURayCastMapperBenchmark(int argc, char* argv[])
 
     iren->Initialize();
 
-    retVal = vtkRegressionTestImage(renderWindow);
-    if (retVal == vtkRegressionTester::DO_INTERACTOR)
+    retVal = vtkRegressionTestImage( renderWindow.GetPointer() );
+    if( retVal == vtkRegressionTester::DO_INTERACTOR)
     {
       iren->Start();
     }
@@ -124,5 +127,6 @@ int TestGPURayCastMapperBenchmark(int argc, char* argv[])
     cout << "Required extensions not supported." << endl;
   }
 
-  return !((retVal == vtkTesting::PASSED) || (retVal == vtkTesting::DO_INTERACTOR));
+  return !((retVal == vtkTesting::PASSED) ||
+           (retVal == vtkTesting::DO_INTERACTOR));
 }

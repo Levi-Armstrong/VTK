@@ -28,7 +28,7 @@
  * Analysis Centre (CIPAC).
  * @sa
  * vtkNIFTIImageReader
- */
+*/
 
 #ifndef vtkNIFTIImageWriter_h
 #define vtkNIFTIImageWriter_h
@@ -46,14 +46,14 @@ public:
   /**
    * Static method for construction.
    */
-  static vtkNIFTIImageWriter* New();
+  static vtkNIFTIImageWriter *New();
   vtkTypeMacro(vtkNIFTIImageWriter, vtkImageWriter);
   //@}
 
   /**
    * Print information about this object.
    */
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   //@{
   /**
@@ -88,20 +88,20 @@ public:
   vtkSetMacro(TimeSpacing, double);
   //@}
 
-  //@{
-  /**
-   * Set the slope and intercept for calibrating the scalar values.
-   * Other programs that read the NIFTI file can use the equation
-   * v = u*RescaleSlope + RescaleIntercept to rescale the data to
-   * real values.  If both the slope and the intercept are zero,
-   * then the SclSlope and SclIntercept in the header info provided
-   * via SetNIFTIHeader() are used instead.
-   */
-  vtkSetMacro(RescaleSlope, double);
-  vtkGetMacro(RescaleSlope, double);
-  vtkSetMacro(RescaleIntercept, double);
-  vtkGetMacro(RescaleIntercept, double);
-  //@}
+   //@{
+   /**
+    * Set the slope and intercept for calibrating the scalar values.
+    * Other programs that read the NIFTI file can use the equation
+    * v = u*RescaleSlope + RescaleIntercept to rescale the data to
+    * real values.  If both the slope and the intercept are zero,
+    * then the SclSlope and SclIntercept in the header info provided
+    * via SetNIFTIHeader() are used instead.
+    */
+   vtkSetMacro(RescaleSlope, double);
+   vtkGetMacro(RescaleSlope, double);
+   vtkSetMacro(RescaleIntercept, double);
+   vtkGetMacro(RescaleIntercept, double);
+   //@}
 
   //@{
   /**
@@ -133,18 +133,18 @@ public:
    * The last column of the matrix will be used for the offset.
    * In the NIFTI header, the qform_code will be set to 1.
    */
-  void SetQFormMatrix(vtkMatrix4x4*);
-  vtkMatrix4x4* GetQFormMatrix() { return this->QFormMatrix; }
+  void SetQFormMatrix(vtkMatrix4x4 *);
+  vtkMatrix4x4 *GetQFormMatrix() { return this->QFormMatrix; }
 
   /**
    * Set a matrix for the "sform" transformation stored in the file.
    * Unlike the qform matrix, the sform matrix can contain scaling
    * information.  Before being stored in the NIFTI header, the
-   * first three columns of the matrix will be multiplied by the voxel
+   * first three columns of the matrix will be multipled by the voxel
    * spacing. In the NIFTI header, the sform_code will be set to 2.
    */
-  void SetSFormMatrix(vtkMatrix4x4*);
-  vtkMatrix4x4* GetSFormMatrix() { return this->SFormMatrix; }
+  void SetSFormMatrix(vtkMatrix4x4 *);
+  vtkMatrix4x4 *GetSFormMatrix() { return this->SFormMatrix; }
 
   //@{
   /**
@@ -154,24 +154,25 @@ public:
    * header will be ignored if you have called SetQFormMatrix() or
    * SetSFormMatrix() to provide the orientation information for the file.
    */
-  void SetNIFTIHeader(vtkNIFTIImageHeader* hdr);
-  vtkNIFTIImageHeader* GetNIFTIHeader();
+  void SetNIFTIHeader(vtkNIFTIImageHeader *hdr);
+  vtkNIFTIImageHeader *GetNIFTIHeader();
   //@}
 
 protected:
   vtkNIFTIImageWriter();
-  ~vtkNIFTIImageWriter() override;
+  ~vtkNIFTIImageWriter();
 
   /**
    * Generate the header information for the file.
    */
-  int GenerateHeader(vtkInformation* info, bool singleFile);
+  int GenerateHeader(vtkInformation *info, bool singleFile);
 
   /**
    * The main execution method, which writes the file.
    */
-  int RequestData(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  virtual int RequestData(vtkInformation *request,
+                          vtkInformationVector** inputVector,
+                          vtkInformationVector* outputVector);
 
   /**
    * Make a new filename by replacing extension "ext1" with "ext2".
@@ -179,7 +180,8 @@ protected:
    * long, and must be lower case.  A new string is returned that must
    * be deleted by the caller.
    */
-  static char* ReplaceExtension(const char* fname, const char* ext1, const char* ext2);
+  static char *ReplaceExtension(
+    const char *fname, const char *ext1, const char *ext2);
 
   //@{
   /**
@@ -206,21 +208,21 @@ protected:
   /**
    * The orientation matrices for the NIFTI file.
    */
-  vtkMatrix4x4* QFormMatrix;
-  vtkMatrix4x4* SFormMatrix;
+  vtkMatrix4x4 *QFormMatrix;
+  vtkMatrix4x4 *SFormMatrix;
   //@}
 
   /**
    * A description of how the file was produced.
    */
-  char* Description;
+  char *Description;
 
   //@{
   /**
    * The header information.
    */
-  vtkNIFTIImageHeader* NIFTIHeader;
-  vtkNIFTIImageHeader* OwnHeader;
+  vtkNIFTIImageHeader *NIFTIHeader;
+  vtkNIFTIImageHeader *OwnHeader;
   int NIFTIVersion;
   //@}
 
@@ -230,8 +232,8 @@ protected:
   bool PlanarRGB;
 
 private:
-  vtkNIFTIImageWriter(const vtkNIFTIImageWriter&) = delete;
-  void operator=(const vtkNIFTIImageWriter&) = delete;
+  vtkNIFTIImageWriter(const vtkNIFTIImageWriter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkNIFTIImageWriter&) VTK_DELETE_FUNCTION;
 };
 
 #endif // vtkNIFTIImageWriter_h

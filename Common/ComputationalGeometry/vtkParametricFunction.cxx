@@ -14,9 +14,10 @@
 =========================================================================*/
 #include "vtkParametricFunction.h"
 
+
 //----------------------------------------------------------------------------
-vtkParametricFunction::vtkParametricFunction()
-  : MinimumU(0.0)
+vtkParametricFunction::vtkParametricFunction() :
+    MinimumU(0.0)
   , MaximumU(1.0)
   , MinimumV(0.0)
   , MaximumV(1.0)
@@ -33,13 +34,17 @@ vtkParametricFunction::vtkParametricFunction()
 {
 }
 
+
 //----------------------------------------------------------------------------
-vtkParametricFunction::~vtkParametricFunction() = default;
+vtkParametricFunction::~vtkParametricFunction()
+{
+}
+
 
 //----------------------------------------------------------------------------
 void vtkParametricFunction::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 
   os << indent << "Minimum U: " << this->MinimumU << "\n";
   os << indent << "Maximum U: " << this->MaximumU << "\n";

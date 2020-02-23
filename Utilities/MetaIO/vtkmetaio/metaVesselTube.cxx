@@ -16,8 +16,8 @@
 
 #include "metaVesselTube.h"
 
-#include <cctype>
-#include <cstdio>
+#include <stdio.h>
+#include <ctype.h>
 #include <string>
 
 
@@ -125,7 +125,7 @@ MetaVesselTube::
   while(it != m_PointList.end())
     {
     VesselTubePnt* pnt = *it;
-    ++it;
+    it++;
     delete pnt;
     }
   m_PointList.clear();
@@ -170,7 +170,7 @@ PointDim(const char* pointDim)
 }
 
 const char* MetaVesselTube::
-PointDim() const
+PointDim(void) const
 {
   return m_PointDim;
 }
@@ -182,7 +182,7 @@ NPoints(int npnt)
 }
 
 int MetaVesselTube::
-NPoints() const
+NPoints(void) const
 {
   return m_NPoints;
 }
@@ -194,7 +194,7 @@ Root(bool root)
 }
 
 bool MetaVesselTube::
-Root() const
+Root(void) const
 {
   return m_Root;
 }
@@ -207,7 +207,7 @@ Artery(bool artery)
 }
 
 bool MetaVesselTube::
-Artery() const
+Artery(void) const
 {
   return m_Artery;
 }
@@ -220,14 +220,14 @@ ParentPoint(int parentpoint)
 }
 
 int MetaVesselTube::
-ParentPoint() const
+ParentPoint(void) const
 {
   return m_ParentPoint;
 }
 
 /** Clear VesselTube information */
 void MetaVesselTube::
-Clear()
+Clear(void)
 {
   if(META_DEBUG)
     {
@@ -239,7 +239,7 @@ Clear()
   while(it != m_PointList.end())
     {
     VesselTubePnt* pnt = *it;
-    ++it;
+    it++;
     delete pnt;
     }
   m_PointList.clear();
@@ -254,14 +254,14 @@ Clear()
 
 /** Destroy VesselTube information */
 void MetaVesselTube::
-M_Destroy()
+M_Destroy(void)
 {
   MetaObject::M_Destroy();
 }
 
 /** Set Read fields */
 void MetaVesselTube::
-M_SetupReadFields()
+M_SetupReadFields(void)
 {
   if(META_DEBUG)
     {
@@ -303,7 +303,7 @@ M_SetupReadFields()
 }
 
 void MetaVesselTube::
-M_SetupWriteFields()
+M_SetupWriteFields(void)
 {
   strcpy(m_ObjectTypeName,"Tube");
   strcpy(m_ObjectSubTypeName,"Vessel");
@@ -366,7 +366,7 @@ M_SetupWriteFields()
 
 
 bool MetaVesselTube::
-M_Read()
+M_Read(void)
 {
   if(META_DEBUG)
     {
@@ -468,7 +468,7 @@ M_Read()
   int posID = -1;
 
   int pntDim;
-  char** pntVal = nullptr;
+  char** pntVal = NULL;
   MET_StringToWordArray(m_PointDim, &pntDim, &pntVal);
 
   if(META_DEBUG)
@@ -965,7 +965,7 @@ M_Read()
 }
 
 MET_ValueEnumType MetaVesselTube::
-ElementType() const
+ElementType(void) const
 {
   return m_ElementType;
 }
@@ -977,7 +977,7 @@ ElementType(MET_ValueEnumType _elementType)
 }
 
 bool MetaVesselTube::
-M_Write()
+M_Write(void)
 {
 
   if(!MetaObject::M_Write())
@@ -1073,7 +1073,7 @@ M_Write()
       MET_SwapByteIfSystemMSB(&id,MET_INT);
       MET_DoubleToValue((double)id,m_ElementType,data,i++);
 
-      ++it;
+      it++;
       }
 
     m_WriteStream->write((char *)data,
@@ -1141,7 +1141,7 @@ M_Write()
       *m_WriteStream << (*it)->m_ID << " ";
 
       *m_WriteStream << METAIO_STREAM::endl;
-      ++it;
+      it++;
       }
     }
   return true;

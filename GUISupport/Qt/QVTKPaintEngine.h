@@ -9,61 +9,72 @@
 
 =========================================================================*/
 
+/*========================================================================
+ For general information about using VTK and Qt, see:
+ http://www.trolltech.com/products/3rdparty/vtksupport.html
+=========================================================================*/
+
+/*========================================================================
+ !!! WARNING for those who want to contribute code to this file.
+ !!! If you use a commercial edition of Qt, you can modify this code.
+ !!! If you use an open source version of Qt, you are free to modify
+ !!! and use this code within the guidelines of the GPL license.
+ !!! Unfortunately, you cannot contribute the changes back into this
+ !!! file.  Doing so creates a conflict between the GPL and BSD-like VTK
+ !!! license.
+=========================================================================*/
+
+// .NAME QVTKPaintEngine - directs QPainter calls to a VTK window
+
 #ifndef QVTK_PAINT_ENGINE_HPP
 #define QVTK_PAINT_ENGINE_HPP
 
 #include "QVTKWin32Header.h"
 #include <QPaintEngine>
-#include <vtkSetGet.h>
 class QVTKWidget;
 class QVTKPaintEngineInternal;
 
-/**
- * @class QVTKPaintEngine
- * @brief directs QPainter calls to a VTK window
- *
- * A paint engine class to direct QPainter calls into a VTK window.
- * @deprecated Only used in conjunction with QVTKWidget which has also been
- * deprecated.
- */
+//!  A paint engine class to direct QPainter calls into a VTK window
 class QVTKPaintEngine : public QPaintEngine
 {
 public:
-  VTK_LEGACY(QVTKPaintEngine());
-  ~QVTKPaintEngine() override;
+  QVTKPaintEngine();
+  ~QVTKPaintEngine();
 
   // Description:
   // begin painting on device (QVTKWidget)
-  bool begin(QPaintDevice* dev) override;
+  bool begin(QPaintDevice* dev);
 
   // Description:
   // end painting on device
-  bool end() override;
+  bool end();
 
   // Description:
   // returns type User
-  QPaintEngine::Type type() const override;
+  QPaintEngine::Type type() const;
 
   // Description:
   // updateState
-  void updateState(const QPaintEngineState&) override;
+  void updateState(const QPaintEngineState&);
 
   // Description:
   // draw a pixmap
-  void drawPixmap(const QRectF& r, const QPixmap& pm, const QRectF& sr) override;
+  void drawPixmap(const QRectF& r, const QPixmap& pm, const QRectF& sr);
 
   // Description:
   // draw a path
-  void drawPath(const QPainterPath& path) override;
+  void drawPath(const QPainterPath& path);
 
   // Description:
   // draw a polygon
-  void drawPolygon(const QPointF* points, int pointCount, PolygonDrawMode mode) override;
-  void drawPolygon(const QPoint* points, int pointCount, PolygonDrawMode mode) override;
+  void drawPolygon(const QPointF* points, int pointCount, PolygonDrawMode mode);
+  void drawPolygon(const QPoint* points, int pointCount, PolygonDrawMode mode);
 
 protected:
+
   QVTKWidget* Widget;
   QVTKPaintEngineInternal* Internal;
 };
 
 #endif
+

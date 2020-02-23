@@ -16,16 +16,20 @@
 #include "vtkTextPropertyCollection.h"
 #include "vtkObjectFactory.h"
 
-vtkStandardNewMacro(vtkTextPropertyCollection);
+vtkStandardNewMacro(vtkTextPropertyCollection)
 
 //----------------------------------------------------------------------------
 void vtkTextPropertyCollection::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 }
 
 //----------------------------------------------------------------------------
-vtkTextPropertyCollection::vtkTextPropertyCollection() = default;
+vtkTextPropertyCollection::vtkTextPropertyCollection()
+{
+}
 
 //----------------------------------------------------------------------------
-vtkTextPropertyCollection::~vtkTextPropertyCollection() = default;
+vtkTextPropertyCollection::~vtkTextPropertyCollection()
+{
+}

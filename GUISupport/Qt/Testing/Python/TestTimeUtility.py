@@ -5,6 +5,7 @@ import os
 import PyQt4
 
 import vtk
+from vtk.test import Testing
 
 class TestTimeUtility(Testing.vtkTest):
   def testConvertBack(self):

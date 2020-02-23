@@ -13,39 +13,40 @@
 
 =========================================================================*/
 #include "vtkParametricTorus.h"
-#include "vtkMath.h"
 #include "vtkObjectFactory.h"
+#include "vtkMath.h"
 
 vtkStandardNewMacro(vtkParametricTorus);
 
 //----------------------------------------------------------------------------
-vtkParametricTorus::vtkParametricTorus()
-  : RingRadius(1.0)
-  , CrossSectionRadius(0.5)
+vtkParametricTorus::vtkParametricTorus() :
+  RingRadius(1.0), CrossSectionRadius(0.5)
 {
   this->MinimumU = 0;
-  this->MaximumU = 2 * vtkMath::Pi();
   this->MinimumV = 0;
+  this->MaximumU = 2 * vtkMath::Pi();
   this->MaximumV = 2 * vtkMath::Pi();
 
   this->JoinU = 1;
   this->JoinV = 1;
   this->TwistU = 0;
   this->TwistV = 0;
-  this->ClockwiseOrdering = 0;
+  this->ClockwiseOrdering = 1;
   this->DerivativesAvailable = 1;
 }
 
 //----------------------------------------------------------------------------
-vtkParametricTorus::~vtkParametricTorus() = default;
+vtkParametricTorus::~vtkParametricTorus()
+{
+}
 
 //----------------------------------------------------------------------------
 void vtkParametricTorus::Evaluate(double uvw[3], double Pt[3], double Duvw[9])
 {
   double u = uvw[0];
   double v = uvw[1];
-  double* Du = Duvw;
-  double* Dv = Duvw + 3;
+  double *Du = Duvw;
+  double *Dv = Duvw + 3;
 
   double cu = cos(u);
   double su = sin(u);
@@ -54,24 +55,23 @@ void vtkParametricTorus::Evaluate(double uvw[3], double Pt[3], double Duvw[9])
   double t = this->RingRadius + this->CrossSectionRadius * cv;
 
   // The point
-  // Pt[0] = t * cu;
-  // Pt[1] = t * su;
-  Pt[0] = t * su;
-  Pt[1] = t * cu;
+  Pt[0] = t * cu;
+  Pt[1] = t * su;
   Pt[2] = this->CrossSectionRadius * sv;
 
-  // The derivatives are:
-  Du[0] = t * cu;
-  Du[1] = -t * su;
+  //The derivatives are:
+  Du[0] = -t * su;
+  Du[1] = t * cu;
   Du[2] = 0;
-  Dv[0] = -this->CrossSectionRadius * sv * su;
-  Dv[1] = -this->CrossSectionRadius * sv * cu;
+  Dv[0] = -this->CrossSectionRadius * sv * cu;
+  Dv[1] = -this->CrossSectionRadius * sv * su;
   Dv[2] = this->CrossSectionRadius * cv;
 }
 
 //----------------------------------------------------------------------------
-double vtkParametricTorus::EvaluateScalar(
-  double* vtkNotUsed(uv[3]), double* vtkNotUsed(Pt[3]), double* vtkNotUsed(Duv[9]))
+double vtkParametricTorus::EvaluateScalar(double* vtkNotUsed(uv[3]),
+                                          double* vtkNotUsed(Pt[3]),
+                                          double* vtkNotUsed(Duv[9]))
 {
   return 0;
 }
@@ -79,7 +79,7 @@ double vtkParametricTorus::EvaluateScalar(
 //----------------------------------------------------------------------------
 void vtkParametricTorus::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 
   os << indent << "Ring Radius: " << this->RingRadius << "\n";
   os << indent << "Cross-Sectional Radius: " << this->CrossSectionRadius << "\n";

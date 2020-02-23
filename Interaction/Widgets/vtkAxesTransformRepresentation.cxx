@@ -13,30 +13,32 @@
 
 =========================================================================*/
 #include "vtkAxesTransformRepresentation.h"
-#include "vtkActor.h"
-#include "vtkBox.h"
-#include "vtkCamera.h"
-#include "vtkCellArray.h"
-#include "vtkCoordinate.h"
-#include "vtkCylinderSource.h"
-#include "vtkDoubleArray.h"
-#include "vtkFollower.h"
-#include "vtkGlyph3D.h"
-#include "vtkInteractorObserver.h"
-#include "vtkMath.h"
-#include "vtkObjectFactory.h"
-#include "vtkPointData.h"
 #include "vtkPointHandleRepresentation3D.h"
+#include "vtkPolyDataMapper.h"
 #include "vtkPoints.h"
+#include "vtkCellArray.h"
 #include "vtkPolyData.h"
 #include "vtkPolyDataMapper.h"
-#include "vtkProperty.h"
-#include "vtkRenderer.h"
-#include "vtkSmartPointer.h"
-#include "vtkTransform.h"
-#include "vtkTransformPolyDataFilter.h"
+#include "vtkActor.h"
 #include "vtkVectorText.h"
+#include "vtkFollower.h"
+#include "vtkCamera.h"
+#include "vtkProperty.h"
+#include "vtkCoordinate.h"
+#include "vtkRenderer.h"
+#include "vtkObjectFactory.h"
+#include "vtkInteractorObserver.h"
+#include "vtkMath.h"
 #include "vtkWindow.h"
+#include "vtkSmartPointer.h"
+#include "vtkBox.h"
+#include "vtkGlyph3D.h"
+#include "vtkCylinderSource.h"
+#include "vtkDoubleArray.h"
+#include "vtkPointData.h"
+#include "vtkTransformPolyDataFilter.h"
+#include "vtkTransform.h"
+#include "vtkSmartPointer.h"
 
 vtkStandardNewMacro(vtkAxesTransformRepresentation);
 
@@ -44,8 +46,8 @@ vtkStandardNewMacro(vtkAxesTransformRepresentation);
 vtkAxesTransformRepresentation::vtkAxesTransformRepresentation()
 {
   // By default, use one of these handles
-  this->OriginRepresentation = vtkPointHandleRepresentation3D::New();
-  this->SelectionRepresentation = vtkPointHandleRepresentation3D::New();
+  this->OriginRepresentation  = vtkPointHandleRepresentation3D::New();
+  this->SelectionRepresentation  = vtkPointHandleRepresentation3D::New();
 
   // The line
   this->LinePoints = vtkPoints::New();
@@ -99,7 +101,7 @@ vtkAxesTransformRepresentation::vtkAxesTransformRepresentation()
   // The bounding box
   this->BoundingBox = vtkBox::New();
 
-  this->LabelFormat = nullptr;
+  this->LabelFormat = NULL;
 
   this->Tolerance = 1;
 
@@ -121,8 +123,8 @@ vtkAxesTransformRepresentation::~vtkAxesTransformRepresentation()
   this->LabelMapper->Delete();
   this->LabelActor->Delete();
 
-  delete[] this->LabelFormat;
-  this->LabelFormat = nullptr;
+  delete [] this->LabelFormat;
+  this->LabelFormat = NULL;
 
   this->GlyphPoints->Delete();
   this->GlyphVectors->Delete();
@@ -147,7 +149,7 @@ double* vtkAxesTransformRepresentation::GetOriginWorldPosition()
 {
   if (!this->OriginRepresentation)
   {
-    static double temp[3] = { 0, 0, 0 };
+    static double temp[3]=  {0, 0, 0};
     return temp;
   }
   return this->OriginRepresentation->GetWorldPosition();
@@ -179,7 +181,7 @@ void vtkAxesTransformRepresentation::GetOriginDisplayPosition(double pos[3])
 }
 
 //----------------------------------------------------------------------
-double* vtkAxesTransformRepresentation::GetBounds()
+double *vtkAxesTransformRepresentation::GetBounds()
 {
   this->BuildRepresentation();
 
@@ -204,8 +206,8 @@ void vtkAxesTransformRepresentation::StartWidgetInteraction(double e[2])
   this->LastEventPosition[2] = 0.0;
 
   // Get the coordinates of the three handles
-  //   this->OriginRepresentation->GetWorldPosition(this->StartP1);
-  //   this->SelectionRepresentation->GetWorldPosition(this->StartP2);
+//   this->OriginRepresentation->GetWorldPosition(this->StartP1);
+//   this->SelectionRepresentation->GetWorldPosition(this->StartP2);
 }
 
 //----------------------------------------------------------------------
@@ -222,9 +224,9 @@ void vtkAxesTransformRepresentation::WidgetInteraction(double e[2])
 int vtkAxesTransformRepresentation::ComputeInteractionState(int X, int Y, int vtkNotUsed(modify))
 {
   // Check if we are on the origin. Use the handle to determine this.
-  int p1State = this->OriginRepresentation->ComputeInteractionState(X, Y, 0);
+  int p1State = this->OriginRepresentation->ComputeInteractionState(X,Y,0);
 
-  if (p1State == vtkHandleRepresentation::Nearby)
+  if ( p1State == vtkHandleRepresentation::Nearby )
   {
     this->InteractionState = vtkAxesTransformRepresentation::OnOrigin;
   }
@@ -234,7 +236,7 @@ int vtkAxesTransformRepresentation::ComputeInteractionState(int X, int Y, int vt
   }
 
   // Okay if we're near a handle return, otherwise test the line
-  if (this->InteractionState != vtkAxesTransformRepresentation::Outside)
+  if ( this->InteractionState != vtkAxesTransformRepresentation::Outside )
   {
     return this->InteractionState;
   }
@@ -245,11 +247,11 @@ int vtkAxesTransformRepresentation::ComputeInteractionState(int X, int Y, int vt
 //----------------------------------------------------------------------
 void vtkAxesTransformRepresentation::BuildRepresentation()
 {
-  if (this->GetMTime() > this->BuildTime ||
-    this->OriginRepresentation->GetMTime() > this->BuildTime ||
-    this->SelectionRepresentation->GetMTime() > this->BuildTime ||
-    (this->Renderer && this->Renderer->GetVTKWindow() &&
-      this->Renderer->GetVTKWindow()->GetMTime() > this->BuildTime))
+  if ( this->GetMTime() > this->BuildTime ||
+       this->OriginRepresentation->GetMTime() > this->BuildTime ||
+       this->SelectionRepresentation->GetMTime() > this->BuildTime ||
+       (this->Renderer && this->Renderer->GetVTKWindow() &&
+        this->Renderer->GetVTKWindow()->GetMTime() > this->BuildTime) )
   {
 
     this->BuildTime.Modified();
@@ -257,15 +259,18 @@ void vtkAxesTransformRepresentation::BuildRepresentation()
 }
 
 //----------------------------------------------------------------------
-void vtkAxesTransformRepresentation::ReleaseGraphicsResources(vtkWindow* w)
+void vtkAxesTransformRepresentation::
+ReleaseGraphicsResources(vtkWindow *w)
 {
   this->LineActor->ReleaseGraphicsResources(w);
   this->LabelActor->ReleaseGraphicsResources(w);
   this->GlyphActor->ReleaseGraphicsResources(w);
 }
 
+
 //----------------------------------------------------------------------
-int vtkAxesTransformRepresentation::RenderOpaqueGeometry(vtkViewport* v)
+int vtkAxesTransformRepresentation::
+RenderOpaqueGeometry(vtkViewport *v)
 {
   this->BuildRepresentation();
 
@@ -277,7 +282,8 @@ int vtkAxesTransformRepresentation::RenderOpaqueGeometry(vtkViewport* v)
 }
 
 //----------------------------------------------------------------------
-int vtkAxesTransformRepresentation::RenderTranslucentPolygonalGeometry(vtkViewport* v)
+int vtkAxesTransformRepresentation::
+RenderTranslucentPolygonalGeometry(vtkViewport *v)
 {
   this->BuildRepresentation();
 
@@ -289,19 +295,19 @@ int vtkAxesTransformRepresentation::RenderTranslucentPolygonalGeometry(vtkViewpo
 }
 
 //----------------------------------------------------------------------
-void vtkAxesTransformRepresentation::SetLabelScale(double scale[3])
+void vtkAxesTransformRepresentation::SetLabelScale( double scale[3] )
 {
-  this->LabelActor->SetScale(scale);
+  this->LabelActor->SetScale( scale );
 }
 
 //----------------------------------------------------------------------
-double* vtkAxesTransformRepresentation::GetLabelScale()
+double * vtkAxesTransformRepresentation::GetLabelScale()
 {
   return this->LabelActor->GetScale();
 }
 
 //----------------------------------------------------------------------------
-vtkProperty* vtkAxesTransformRepresentation::GetLabelProperty()
+vtkProperty * vtkAxesTransformRepresentation::GetLabelProperty()
 {
   return this->LabelActor->GetProperty();
 }
@@ -310,7 +316,7 @@ vtkProperty* vtkAxesTransformRepresentation::GetLabelProperty()
 void vtkAxesTransformRepresentation::PrintSelf(ostream& os, vtkIndent indent)
 {
   os << indent << "Label Format: ";
-  if (this->LabelFormat)
+  if ( this->LabelFormat )
   {
     os << this->LabelFormat << endl;
   }
@@ -323,9 +329,9 @@ void vtkAxesTransformRepresentation::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "InteractionState: " << this->InteractionState << endl;
 
   os << indent << "Origin Representation: ";
-  if (this->OriginRepresentation)
+  if ( this->OriginRepresentation )
   {
-    this->OriginRepresentation->PrintSelf(os, indent.GetNextIndent());
+    this->OriginRepresentation->PrintSelf(os,indent.GetNextIndent());
   }
   else
   {
@@ -333,14 +339,14 @@ void vtkAxesTransformRepresentation::PrintSelf(ostream& os, vtkIndent indent)
   }
 
   os << indent << "Selection Representation: " << endl;
-  if (this->SelectionRepresentation)
+  if ( this->SelectionRepresentation )
   {
-    this->SelectionRepresentation->PrintSelf(os, indent.GetNextIndent());
+    this->SelectionRepresentation->PrintSelf(os,indent.GetNextIndent());
   }
   else
   {
     os << "(none)\n";
   }
 
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 }

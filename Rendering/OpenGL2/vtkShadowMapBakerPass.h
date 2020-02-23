@@ -36,42 +36,42 @@
  *
  * @sa
  * vtkRenderPass, vtkOpaquePass, vtkShadowMapPass
- */
+*/
 
 #ifndef vtkShadowMapBakerPass_h
 #define vtkShadowMapBakerPass_h
 
-#include "vtkOpenGLRenderPass.h"
 #include "vtkRenderingOpenGL2Module.h" // For export macro
-#include "vtkSmartPointer.h"           // for ivars
-#include <vector>                      // STL Header
+#include "vtkSmartPointer.h" // for ivars
+#include <vector> // STL Header
+#include "vtkRenderPass.h"
 
 class vtkOpenGLRenderWindow;
 class vtkInformationIntegerKey;
 class vtkCamera;
 class vtkLight;
-class vtkOpenGLFramebufferObject;
+class vtkFrameBufferObject;
 class vtkTextureObject;
 
-class VTKRENDERINGOPENGL2_EXPORT vtkShadowMapBakerPass : public vtkOpenGLRenderPass
+class VTKRENDERINGOPENGL2_EXPORT vtkShadowMapBakerPass : public vtkRenderPass
 {
 public:
-  static vtkShadowMapBakerPass* New();
-  vtkTypeMacro(vtkShadowMapBakerPass, vtkOpenGLRenderPass);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkShadowMapBakerPass *New();
+  vtkTypeMacro(vtkShadowMapBakerPass,vtkRenderPass);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Perform rendering according to a render state \p s.
    * \pre s_exists: s!=0
    */
-  void Render(const vtkRenderState* s) override;
+  virtual void Render(const vtkRenderState *s);
 
   /**
    * Release graphics resources and ask components to release their own
    * resources.
    * \pre w_exists: w!=0
    */
-  void ReleaseGraphicsResources(vtkWindow* w) override;
+  void ReleaseGraphicsResources(vtkWindow *w);
 
   //@{
   /**
@@ -80,8 +80,8 @@ public:
    * It defaults to a vtkCameraPass with a sequence of
    * vtkLightPass/vtkOpaquePass.
    */
-  vtkGetObjectMacro(OpaqueSequence, vtkRenderPass);
-  virtual void SetOpaqueSequence(vtkRenderPass* opaqueSequence);
+  vtkGetObjectMacro(OpaqueSequence,vtkRenderPass);
+  virtual void SetOpaqueSequence(vtkRenderPass *opaqueSequence);
   //@}
 
   //@{
@@ -91,8 +91,8 @@ public:
    * It is usually set to a vtkCompositeZPass (Parallel package).
    * Initial value is a NULL pointer.
    */
-  vtkGetObjectMacro(CompositeZPass, vtkRenderPass);
-  virtual void SetCompositeZPass(vtkRenderPass* compositeZPass);
+  vtkGetObjectMacro(CompositeZPass,vtkRenderPass);
+  virtual void SetCompositeZPass(vtkRenderPass *compositeZPass);
   //@}
 
   //@{
@@ -101,8 +101,8 @@ public:
    * (shadow maps are square). Initial value is 256. The greater the better.
    * Resolution does not have to be a power-of-two value.
    */
-  vtkSetMacro(Resolution, unsigned int);
-  vtkGetMacro(Resolution, unsigned int);
+  vtkSetMacro(Resolution,unsigned int);
+  vtkGetMacro(Resolution,unsigned int);
   //@}
 
   /**
@@ -123,7 +123,7 @@ public:
    * positional with an angle less than 180 degrees.
    * \pre l_exists: l!=0
    */
-  bool LightCreatesShadow(vtkLight* l);
+  bool LightCreatesShadow(vtkLight *l);
 
   /**
    * INTERNAL USE ONLY
@@ -131,7 +131,7 @@ public:
 
    * Give access to the baked shadow maps.
    */
-  std::vector<vtkSmartPointer<vtkTextureObject> >* GetShadowMaps();
+  std::vector<vtkSmartPointer<vtkTextureObject> > *GetShadowMaps();
 
   /**
    * INTERNAL USE ONLY.
@@ -139,7 +139,7 @@ public:
 
    * Give access the cameras builds from the ligths.
    */
-  std::vector<vtkSmartPointer<vtkCamera> >* GetLightCameras();
+  std::vector<vtkSmartPointer<vtkCamera> > *GetLightCameras();
 
   /**
    * INTERNAL USE ONLY.
@@ -158,7 +158,7 @@ public:
   // Set NeedUpate to false. Called by vtkShadowMapPass.
   void SetUpToDate();
 
-protected:
+ protected:
   /**
    * Default constructor. DelegatetPass is set to NULL.
    */
@@ -167,13 +167,7 @@ protected:
   /**
    * Destructor.
    */
-  ~vtkShadowMapBakerPass() override;
-
-  // vtkOpenGLRenderPass virtuals:
-  bool PreReplaceShaderValues(std::string& vertexShader, std::string& geometryShader,
-    std::string& fragmentShader, vtkAbstractMapper* mapper, vtkProp* prop) override;
-  bool SetShaderParameters(vtkShaderProgram* program, vtkAbstractMapper* mapper, vtkProp* prop,
-    vtkOpenGLVertexArrayObject* VAO = nullptr) override;
+  virtual ~vtkShadowMapBakerPass();
 
   /**
    * Helper method to compute the mNearest point in a given direction.
@@ -182,8 +176,12 @@ protected:
    * pt: origin of the direction
    * dir: direction
    */
-  void PointNearFar(
-    double* v, double* pt, double* dir, double& mNear, double& mFar, bool initialized);
+  void PointNearFar(double *v,
+                    double *pt,
+                    double *dir,
+                    double &mNear,
+                    double &mFar,
+                    bool initialized);
 
   /**
    * Compute the min/max of the projection of a box in a given direction.
@@ -191,24 +189,30 @@ protected:
    * pt: origin of the direction
    * dir: direction
    */
-  void BoxNearFar(double* bb, double* pt, double* dir, double& mNear, double& mFar);
+  void BoxNearFar(double *bb,
+                  double *pt,
+                  double *dir,
+                  double &mNear,
+                  double &mFar);
 
   /**
    * Build a camera from spot light parameters.
    * \pre light_exists: light!=0
    * \pre lcamera_exists: lcamera!=0
    */
-  void BuildCameraLight(vtkLight* light, double* boundingBox, vtkCamera* lcamera);
+  void BuildCameraLight(vtkLight *light,
+                        double *boundingBox,
+                        vtkCamera *lcamera);
 
   /**
    * Check if shadow mapping is supported by the current OpenGL context.
    * \pre w_exists: w!=0
    */
-  void CheckSupport(vtkOpenGLRenderWindow* w);
+  void CheckSupport(vtkOpenGLRenderWindow *w);
 
-  vtkRenderPass* OpaqueSequence;
+  vtkRenderPass *OpaqueSequence;
 
-  vtkRenderPass* CompositeZPass;
+  vtkRenderPass *CompositeZPass;
 
   unsigned int Resolution;
 
@@ -217,18 +221,18 @@ protected:
   /**
    * Graphics resources.
    */
-  vtkOpenGLFramebufferObject* FrameBufferObject;
+  vtkFrameBufferObject *FrameBufferObject;
 
-  std::vector<vtkSmartPointer<vtkTextureObject> >* ShadowMaps;
-  std::vector<vtkSmartPointer<vtkCamera> >* LightCameras;
+  std::vector<vtkSmartPointer<vtkTextureObject> > *ShadowMaps;
+  std::vector<vtkSmartPointer<vtkCamera> > *LightCameras;
+
 
   vtkTimeStamp LastRenderTime;
   bool NeedUpdate;
-  size_t CurrentLightIndex;
 
 private:
-  vtkShadowMapBakerPass(const vtkShadowMapBakerPass&) = delete;
-  void operator=(const vtkShadowMapBakerPass&) = delete;
+  vtkShadowMapBakerPass(const vtkShadowMapBakerPass&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkShadowMapBakerPass&) VTK_DELETE_FUNCTION;
 };
 
 #endif

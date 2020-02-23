@@ -19,7 +19,7 @@
  * It iterates over the corner points of a cell.
  * @sa
  * vtkGenericPointIterator, vtkBridgeDataSet
- */
+*/
 
 #ifndef vtkBridgePointIteratorOnCell_h
 #define vtkBridgePointIteratorOnCell_h
@@ -34,51 +34,51 @@ class vtkIdList;
 class VTKTESTINGGENERICBRIDGE_EXPORT vtkBridgePointIteratorOnCell : public vtkGenericPointIterator
 {
 public:
-  static vtkBridgePointIteratorOnCell* New();
-  vtkTypeMacro(vtkBridgePointIteratorOnCell, vtkGenericPointIterator);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkBridgePointIteratorOnCell *New();
+  vtkTypeMacro(vtkBridgePointIteratorOnCell,vtkGenericPointIterator);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Move iterator to first position if any (loop initialization).
    */
-  void Begin() override;
+  void Begin();
 
   /**
    * Is there no point at iterator position? (exit condition).
    */
-  vtkTypeBool IsAtEnd() override;
+  int IsAtEnd();
 
   /**
    * Move iterator to next position. (loop progression).
    * \pre not_off: !IsAtEnd()
    */
-  void Next() override;
+  void Next();
 
   /**
    * Point at iterator position.
    * \pre not_off: !IsAtEnd()
    * \post result_exists: result!=0
    */
-  double* GetPosition() override;
+  double *GetPosition();
 
   /**
    * Point at iterator position.
    * \pre not_off: !IsAtEnd()
    * \pre x_exists: x!=0
    */
-  void GetPosition(double x[3]) override;
+  void GetPosition(double x[3]);
 
   /**
    * Unique identifier for the point, could be non-contiguous
    * \pre not_off: !IsAtEnd()
    */
-  vtkIdType GetId() override;
+  vtkIdType GetId();
 
   /**
    * The iterator will iterate over the point of a cell
    * \pre cell_exists: cell!=0
    */
-  void InitWithCell(vtkBridgeCell* cell);
+  void InitWithCell(vtkBridgeCell *cell);
 
 protected:
   /**
@@ -89,16 +89,16 @@ protected:
   /**
    * Destructor.
    */
-  ~vtkBridgePointIteratorOnCell() override;
+  virtual ~vtkBridgePointIteratorOnCell();
 
-  vtkBridgeDataSet* DataSet; // the structure on which the object iterates.
-  vtkIdType Cursor;          // current position
+  vtkBridgeDataSet *DataSet; // the structure on which the objet iterates.
+  vtkIdType Cursor; // current position
 
-  vtkIdList* PtIds; // list of points of the cell
+  vtkIdList *PtIds; // list of points of the cell
 
 private:
-  vtkBridgePointIteratorOnCell(const vtkBridgePointIteratorOnCell&) = delete;
-  void operator=(const vtkBridgePointIteratorOnCell&) = delete;
+  vtkBridgePointIteratorOnCell(const vtkBridgePointIteratorOnCell&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkBridgePointIteratorOnCell&) VTK_DELETE_FUNCTION;
 };
 
 #endif

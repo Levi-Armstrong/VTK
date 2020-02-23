@@ -15,8 +15,8 @@
 #include "vtkMoleculeToAtomBallFilter.h"
 
 #include "vtkCellArray.h"
-#include "vtkMolecule.h"
 #include "vtkObjectFactory.h"
+#include "vtkMolecule.h"
 #include "vtkPeriodicTable.h"
 #include "vtkPointData.h"
 #include "vtkPoints.h"
@@ -24,55 +24,59 @@
 #include "vtkSphereSource.h"
 #include "vtkUnsignedShortArray.h"
 
-#include <vector>
-
 vtkStandardNewMacro(vtkMoleculeToAtomBallFilter);
 
 //----------------------------------------------------------------------------
 vtkMoleculeToAtomBallFilter::vtkMoleculeToAtomBallFilter()
-  : Resolution(50)
-  , RadiusScale(0.8)
-  , RadiusSource(CovalentRadius)
+  : Resolution(50),
+    RadiusScale(0.8),
+    RadiusSource(CovalentRadius)
 {
 }
 
 //----------------------------------------------------------------------------
-vtkMoleculeToAtomBallFilter::~vtkMoleculeToAtomBallFilter() = default;
+vtkMoleculeToAtomBallFilter::~vtkMoleculeToAtomBallFilter()
+{
+}
 
 //----------------------------------------------------------------------------
 int vtkMoleculeToAtomBallFilter::RequestData(
-  vtkInformation*, vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+  vtkInformation *,
+  vtkInformationVector **inputVector,
+  vtkInformationVector *outputVector)
 {
-  vtkMolecule* input = vtkMolecule::SafeDownCast(vtkDataObject::GetData(inputVector[0]));
-  vtkPolyData* output = vtkPolyData::SafeDownCast(vtkDataObject::GetData(outputVector));
+  vtkMolecule *input = vtkMolecule::SafeDownCast
+    (vtkDataObject::GetData(inputVector[0]));
+  vtkPolyData *output = vtkPolyData::SafeDownCast
+    (vtkDataObject::GetData(outputVector));
 
   // Need this for radius / color lookups
-  vtkPeriodicTable* pTab = vtkPeriodicTable::New();
+  vtkPeriodicTable *pTab = vtkPeriodicTable::New();
 
   // Extract data from input molecule
   vtkIdType numAtoms = input->GetNumberOfAtoms();
 
   // Prep the output
   output->Initialize();
-  vtkCellArray* polys = vtkCellArray::New();
-  vtkPoints* points = vtkPoints::New();
-  vtkUnsignedShortArray* atomicNums = vtkUnsignedShortArray::New();
-  atomicNums->SetName(input->GetAtomicNumberArrayName());
+  vtkCellArray *polys = vtkCellArray::New();
+  vtkPoints *points = vtkPoints::New();
+  vtkUnsignedShortArray *atomicNums = vtkUnsignedShortArray::New();
 
   // Initialize a SphereSource
-  vtkSphereSource* sphereSource = vtkSphereSource::New();
+  vtkSphereSource *sphereSource = vtkSphereSource::New();
   sphereSource->SetThetaResolution(this->Resolution);
   sphereSource->SetPhiResolution(this->Resolution);
   sphereSource->Update();
 
   // Preallocate memory
-  points->Allocate(numAtoms * sphereSource->GetOutput()->GetPoints()->GetNumberOfPoints());
-  polys->AllocateEstimate(numAtoms * sphereSource->GetOutput()->GetPolys()->GetNumberOfCells(), 3);
-  atomicNums->Allocate(numAtoms * sphereSource->GetOutput()->GetPoints()->GetNumberOfPoints());
+  points->Allocate(numAtoms * sphereSource->GetOutput()->GetPoints()->
+                   GetNumberOfPoints());
+  polys->Allocate(numAtoms * sphereSource->GetOutput()->GetPolys()->
+                  GetNumberOfCells());
+  atomicNums->Allocate(points->GetNumberOfPoints());
 
   // Initialize some variables for later
-  vtkIdType numCellPoints;
-  const vtkIdType* cellPoints;
+  vtkIdType numCellPoints, *cellPoints;
   double scaledRadius;
   unsigned short atomicNum;
   vtkVector3f pos;
@@ -107,15 +111,16 @@ int vtkMoleculeToAtomBallFilter::RequestData(
       scaledRadius *= 1.1;
     }
 
+
     // Update sphere source
     sphereSource->SetRadius(scaledRadius);
     sphereSource->SetCenter(pos.Cast<double>().GetData());
     sphereSource->Update();
 
     // Extract polydata from sphere
-    vtkPolyData* sphere = sphereSource->GetOutput();
-    vtkPoints* spherePoints = sphere->GetPoints();
-    vtkCellArray* spherePolys = sphere->GetPolys();
+    vtkPolyData *sphere = sphereSource->GetOutput();
+    vtkPoints *spherePoints = sphere->GetPoints();
+    vtkCellArray *spherePolys = sphere->GetPolys();
 
     // Get offset for the new point IDs that will be added to points
     vtkIdType pointOffset = points->GetNumberOfPoints();
@@ -133,13 +138,14 @@ int vtkMoleculeToAtomBallFilter::RequestData(
     spherePolys->InitTraversal();
     while (spherePolys->GetNextCell(numCellPoints, cellPoints) != 0)
     {
-      std::vector<vtkIdType> newCellPoints(numCellPoints);
+      vtkIdType *newCellPoints = new vtkIdType[numCellPoints];
       for (vtkIdType i = 0; i < numCellPoints; ++i)
       {
         // The new point ids should be offset by the pointOffset above
         newCellPoints[i] = cellPoints[i] + pointOffset;
       }
-      polys->InsertNextCell(numCellPoints, newCellPoints.data());
+      polys->InsertNextCell(numCellPoints, newCellPoints);
+      delete [] newCellPoints;
     }
   }
 
@@ -161,7 +167,7 @@ int vtkMoleculeToAtomBallFilter::RequestData(
 //----------------------------------------------------------------------------
 void vtkMoleculeToAtomBallFilter::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 
   os << indent << "RadiusSource: ";
   switch (RadiusSource)

@@ -26,7 +26,7 @@ is the number of steps taken.
 
 uniform sampler2D texLIC;
 
-in vec2 tcoordVC;
+varying vec2 tcoordVC;
 
 void main(void)
 {

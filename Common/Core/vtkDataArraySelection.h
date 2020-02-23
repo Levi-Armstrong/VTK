@@ -21,7 +21,7 @@
  * be passed in the source's output.  This is primarily intended to
  * allow file readers to configure what data arrays are read from the
  * file.
- */
+*/
 
 #ifndef vtkDataArraySelection_h
 #define vtkDataArraySelection_h
@@ -34,25 +34,19 @@ class vtkDataArraySelectionInternals;
 class VTKCOMMONCORE_EXPORT vtkDataArraySelection : public vtkObject
 {
 public:
-  vtkTypeMacro(vtkDataArraySelection, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkDataArraySelection,vtkObject);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
   static vtkDataArraySelection* New();
 
   /**
    * Enable the array with the given name.  Creates a new entry if
    * none exists.
-   *
-   * This method will call `this->Modified()` if the enable state for the
-   * array changed.
    */
   void EnableArray(const char* name);
 
   /**
    * Disable the array with the given name.  Creates a new entry if
    * none exists.
-   *
-   * This method will call `this->Modified()` if the enable state for the
-   * array changed.
    */
   void DisableArray(const char* name);
 
@@ -60,107 +54,81 @@ public:
    * Return whether the array with the given name is enabled.  If
    * there is no entry, the array is assumed to be disabled.
    */
-  int ArrayIsEnabled(const char* name) const;
+  int ArrayIsEnabled(const char* name);
 
   /**
    * Return whether the array with the given name exists.
    */
-  int ArrayExists(const char* name) const;
+  int ArrayExists(const char* name);
 
   /**
    * Enable all arrays that currently have an entry.
-   *
-   * This method will call `this->Modified()` if the enable state for any of the known
-   * arrays is changed.
    */
   void EnableAllArrays();
 
   /**
    * Disable all arrays that currently have an entry.
-   *
-   * This method will call `this->Modified()` if the enable state for any of the known
-   * arrays is changed.
    */
   void DisableAllArrays();
 
   /**
    * Get the number of arrays that currently have an entry.
    */
-  int GetNumberOfArrays() const;
+  int GetNumberOfArrays();
 
   /**
    * Get the number of arrays that are enabled.
    */
-  int GetNumberOfArraysEnabled() const;
+  int GetNumberOfArraysEnabled();
 
   /**
    * Get the name of the array entry at the given index.
    */
-  const char* GetArrayName(int index) const;
+  const char* GetArrayName(int index);
 
   /**
    * Get an index of the array with the given name.
    */
-  int GetArrayIndex(const char* name) const;
+  int GetArrayIndex(const char *name);
 
   /**
    * Get the index of an array with the given name among those
    * that are enabled.  Returns -1 if the array is not enabled.
    */
-  int GetEnabledArrayIndex(const char* name) const;
+  int GetEnabledArrayIndex(const char* name);
 
+  //@{
   /**
    * Get whether the array at the given index is enabled.
    */
-  int GetArraySetting(int index) const;
-
-  /**
-   * Get whether the array is enabled/disable using its name.
-   */
-  int GetArraySetting(const char* name) const { return this->ArrayIsEnabled(name); }
-
-  /**
-   * Set array setting given the name. If the array doesn't exist, it will be
-   * added.
-   *
-   * This method will call `this->Modified()` if the enable state for the
-   * array changed.
-   */
-  void SetArraySetting(const char* name, int status);
+  int GetArraySetting(const char* name)
+  {
+    return this->GetArraySetting(this->GetArrayIndex(name));
+  }
+  int GetArraySetting(int index);
+  //@}
 
   /**
    * Remove all array entries.
-   *
-   * This method will call `this->Modified()` if the arrays were cleared.
    */
   void RemoveAllArrays();
 
   /**
    * Add to the list of arrays that have entries.  For arrays that
    * already have entries, the settings are untouched.  For arrays
-   * that don't already have an entry, they are assumed to be enabled
-   * by default. The state can also be passed as the second argument.
+   * that don't already have an entry, they are assumed to be enabled.
    * This method should be called only by the filter owning this
    * object.
-   *
-   * This method **does not** call `this->Modified()`.
-   *
-   * Also note for arrays already known to this instance (i.e.
-   * `this->ArrayExists(name) == true`, this method has no effect.
    */
-  int AddArray(const char* name, bool state = true);
+  int AddArray(const char* name);
 
   /**
    * Remove an array setting given its index.
-   *
-   * This method **does not** call `this->Modified()`.
    */
   void RemoveArrayByIndex(int index);
 
   /**
    * Remove an array setting given its name.
-   *
-   * This method **does not** call `this->Modified()`.
    */
   void RemoveArrayByName(const char* name);
 
@@ -174,51 +142,27 @@ public:
    * should be called only by the filter owning this object.  The
    * signature with the default must have a different name due to a
    * bug in the Borland C++ 5.5 compiler.
-   *
-   * This method **does not** call `this->Modified()`.
    */
   void SetArrays(const char* const* names, int numArrays);
-  void SetArraysWithDefault(const char* const* names, int numArrays, int defaultStatus);
+  void SetArraysWithDefault(const char* const* names, int numArrays,
+                            int defaultStatus);
   //@}
 
   /**
    * Copy the selections from the given vtkDataArraySelection instance.
-   *
-   * This method will call `this->Modified()` if the array selections changed.
    */
   void CopySelections(vtkDataArraySelection* selections);
 
-  /**
-   * Update `this` to include values from `other`. For arrays that don't
-   * exist in `this` but exist in `other`, they will get added to `this` with
-   * the same array setting as in `other`. Array settings for arrays already in
-   * `this` are left unchanged.
-   *
-   * This method will call `this->Modified()` if the array selections changed.
-   */
-  void Union(vtkDataArraySelection* other);
-
-  //@{
-  /**
-   * Get/Set enabled state for any unknown arrays. Default is 0 i.e. not
-   * enabled. When set to 1, `ArrayIsEnabled` will return 1 for any
-   * array not explicitly specified.
-   */
-  vtkSetMacro(UnknownArraySetting, int);
-  vtkGetMacro(UnknownArraySetting, int);
-  //@}
 protected:
   vtkDataArraySelection();
-  ~vtkDataArraySelection() override;
+  ~vtkDataArraySelection() VTK_OVERRIDE;
 
   // Internal implementation details.
   vtkDataArraySelectionInternals* Internal;
 
-  int UnknownArraySetting;
-
 private:
-  vtkDataArraySelection(const vtkDataArraySelection&) = delete;
-  void operator=(const vtkDataArraySelection&) = delete;
+  vtkDataArraySelection(const vtkDataArraySelection&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkDataArraySelection&) VTK_DELETE_FUNCTION;
 };
 
 #endif

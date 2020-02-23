@@ -19,11 +19,15 @@
 
 vtkStandardNewMacro(vtkHierarchicalPolyDataMapper);
 
-vtkHierarchicalPolyDataMapper::vtkHierarchicalPolyDataMapper() = default;
+vtkHierarchicalPolyDataMapper::vtkHierarchicalPolyDataMapper()
+{
+}
 
-vtkHierarchicalPolyDataMapper::~vtkHierarchicalPolyDataMapper() = default;
+vtkHierarchicalPolyDataMapper::~vtkHierarchicalPolyDataMapper()
+{
+}
 
 void vtkHierarchicalPolyDataMapper::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 }

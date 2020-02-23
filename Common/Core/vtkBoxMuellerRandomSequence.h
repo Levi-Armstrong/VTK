@@ -21,7 +21,7 @@
  *
  * It based is calculation from a uniformly distributed pseudo random sequence.
  * The initial sequence is a vtkMinimalStandardRandomSequence.
- */
+*/
 
 #ifndef vtkBoxMuellerRandomSequence_h
 #define vtkBoxMuellerRandomSequence_h
@@ -29,55 +29,44 @@
 #include "vtkCommonCoreModule.h" // For export macro
 #include "vtkGaussianRandomSequence.h"
 
-class VTKCOMMONCORE_EXPORT vtkBoxMuellerRandomSequence : public vtkGaussianRandomSequence
+class VTKCOMMONCORE_EXPORT vtkBoxMuellerRandomSequence: public vtkGaussianRandomSequence
 {
 public:
-  //@{
-  /**
-   * Standard methods for instantiation, type information, and printing.
-   */
-  static vtkBoxMuellerRandomSequence* New();
-  vtkTypeMacro(vtkBoxMuellerRandomSequence, vtkGaussianRandomSequence);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
-  //@}
+  vtkTypeMacro(vtkBoxMuellerRandomSequence,vtkGaussianRandomSequence);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
-  /**
-   * Satisfy general API of vtkRandomSequence superclass. Initialize the
-   * sequence with a seed.
-   */
-  void Initialize(vtkTypeUInt32 vtkNotUsed(seed)) override {}
+  static vtkBoxMuellerRandomSequence* New();
 
   /**
    * Current value.
    */
-  double GetValue() override;
+  double GetValue() VTK_OVERRIDE;
 
   /**
    * Move to the next number in the random sequence.
    */
-  void Next() override;
+  void Next() VTK_OVERRIDE;
 
   /**
    * Return the uniformly distributed sequence of random numbers.
    */
-  vtkRandomSequence* GetUniformSequence();
+  vtkRandomSequence *GetUniformSequence();
 
   /**
    * Set the uniformly distributed sequence of random numbers.
    * Default is a .
    */
-  void SetUniformSequence(vtkRandomSequence* uniformSequence);
+  void SetUniformSequence(vtkRandomSequence *uniformSequence);
 
 protected:
   vtkBoxMuellerRandomSequence();
-  ~vtkBoxMuellerRandomSequence() override;
+  ~vtkBoxMuellerRandomSequence() VTK_OVERRIDE;
 
-  vtkRandomSequence* UniformSequence;
+  vtkRandomSequence *UniformSequence;
   double Value;
-
 private:
-  vtkBoxMuellerRandomSequence(const vtkBoxMuellerRandomSequence&) = delete;
-  void operator=(const vtkBoxMuellerRandomSequence&) = delete;
+  vtkBoxMuellerRandomSequence(const vtkBoxMuellerRandomSequence&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkBoxMuellerRandomSequence&) VTK_DELETE_FUNCTION;
 };
 
 #endif // #ifndef vtkBoxMuellerRandomSequence_h

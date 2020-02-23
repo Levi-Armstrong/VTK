@@ -15,10 +15,10 @@
 
 #include "vtkTooltipItem.h"
 
-#include "vtkBrush.h"
 #include "vtkContext2D.h"
 #include "vtkContextScene.h"
 #include "vtkPen.h"
+#include "vtkBrush.h"
 #include "vtkTextProperty.h"
 #include "vtkTransform2D.h"
 
@@ -34,8 +34,7 @@
 vtkStandardNewMacro(vtkTooltipItem);
 
 //-----------------------------------------------------------------------------
-vtkTooltipItem::vtkTooltipItem()
-  : PositionVector(0, 0)
+vtkTooltipItem::vtkTooltipItem() : PositionVector(0, 0)
 {
   this->Position = this->PositionVector.GetData();
   this->TextProperties = vtkTextProperty::New();
@@ -58,7 +57,7 @@ vtkTooltipItem::~vtkTooltipItem()
 }
 
 //-----------------------------------------------------------------------------
-void vtkTooltipItem::SetPosition(const vtkVector2f& pos)
+void vtkTooltipItem::SetPosition(const vtkVector2f &pos)
 {
   this->PositionVector = pos;
 }
@@ -70,7 +69,7 @@ vtkVector2f vtkTooltipItem::GetPositionVector()
 }
 
 //-----------------------------------------------------------------------------
-void vtkTooltipItem::SetText(const vtkStdString& text)
+void vtkTooltipItem::SetText(const vtkStdString &text)
 {
   if (this->Text != text)
   {
@@ -86,10 +85,13 @@ vtkStdString vtkTooltipItem::GetText()
 }
 
 //-----------------------------------------------------------------------------
-void vtkTooltipItem::Update() {}
+void vtkTooltipItem::Update()
+{
+
+}
 
 //-----------------------------------------------------------------------------
-bool vtkTooltipItem::Paint(vtkContext2D* painter)
+bool vtkTooltipItem::Paint(vtkContext2D *painter)
 {
   // This is where everything should be drawn, or dispatched to other methods.
   vtkDebugMacro(<< "Paint event called in vtkTooltipItem.");
@@ -123,35 +125,29 @@ bool vtkTooltipItem::Paint(vtkContext2D* painter)
   float position[2];
   painter->GetTransform()->GetScale(scale);
   painter->GetTransform()->GetPosition(position);
-  bounds[0] = vtkVector2f(
-    this->PositionVector.GetX() - 5 / scale[0], this->PositionVector.GetY() - 3 / scale[1]);
-  bounds[1].Set(bounds[1].GetX() + 10 / scale[0], bounds[1].GetY() + 10 / scale[1]);
+  bounds[0] = vtkVector2f(this->PositionVector.GetX()-5/scale[0],
+                          this->PositionVector.GetY()-3/scale[1]);
+  bounds[1].Set(bounds[1].GetX()+10/scale[0], bounds[1].GetY()+10/scale[1]);
   // Pull the tooltip back in if it will go off the edge of the screen.
-  float maxX = (this->Scene->GetViewWidth() - position[0]) / scale[0];
+  float maxX = (this->Scene->GetViewWidth() - position[0])/scale[0];
   if (bounds[0].GetX() >= maxX - bounds[1].GetX())
   {
     bounds[0].SetX(maxX - bounds[1].GetX());
   }
-  float maxY = (this->Scene->GetViewHeight() - position[1]) / scale[1];
-  if (bounds[0].GetY() >= maxY - bounds[1].GetY())
-  {
-    bounds[0].SetY(maxY - bounds[1].GetY());
-  }
-
   // Draw a rectangle as background, and then center our text in there
   painter->DrawRect(bounds[0].GetX(), bounds[0].GetY(), bounds[1].GetX(), bounds[1].GetY());
-  painter->DrawString(bounds[0].GetX() + 5 / scale[0], bounds[0].GetY() + 3 / scale[1], this->Text);
+  painter->DrawString(bounds[0].GetX()+5/scale[0], bounds[0].GetY()+3/scale[1], this->Text);
 
   // restore painter settings
-  painter->ApplyPen(previousPen);
-  painter->ApplyBrush(previousBrush);
-  painter->ApplyTextProp(previousTextProp);
+  painter->ApplyPen(previousPen.GetPointer());
+  painter->ApplyBrush(previousBrush.GetPointer());
+  painter->ApplyTextProp(previousTextProp.GetPointer());
 
   return true;
 }
 
 //-----------------------------------------------------------------------------
-void vtkTooltipItem::PrintSelf(ostream& os, vtkIndent indent)
+void vtkTooltipItem::PrintSelf(ostream &os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 }

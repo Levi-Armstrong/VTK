@@ -22,7 +22,7 @@
  * and is therefore much faster.
  * @sa
  * vtkCleanPolyData
- */
+*/
 
 #ifndef vtkMergePoints_h
 #define vtkMergePoints_h
@@ -33,9 +33,9 @@
 class VTKCOMMONDATAMODEL_EXPORT vtkMergePoints : public vtkPointLocator
 {
 public:
-  static vtkMergePoints* New();
-  vtkTypeMacro(vtkMergePoints, vtkPointLocator);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkMergePoints *New();
+  vtkTypeMacro(vtkMergePoints,vtkPointLocator);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   //@{
   /**
@@ -43,11 +43,9 @@ public:
    * Return id of previously inserted point if this is true, otherwise return
    * -1.
    */
-  vtkIdType IsInsertedPoint(const double x[3]) override;
-  vtkIdType IsInsertedPoint(double x, double y, double z) override
-  {
-    return this->vtkPointLocator::IsInsertedPoint(x, y, z);
-  }
+  vtkIdType IsInsertedPoint(const double x[3]) VTK_OVERRIDE;
+  vtkIdType IsInsertedPoint(double x, double  y, double z) VTK_OVERRIDE
+    {return this->vtkPointLocator::IsInsertedPoint(x, y, z); };
   //@}
 
   /**
@@ -58,15 +56,17 @@ public:
    * Note this combines the functionality of IsInsertedPoint() followed
    * by a call to InsertNextPoint().
    */
-  int InsertUniquePoint(const double x[3], vtkIdType& ptId) override;
+  int InsertUniquePoint(const double x[3], vtkIdType &ptId) VTK_OVERRIDE;
 
 protected:
   vtkMergePoints() {}
-  ~vtkMergePoints() override {}
+  ~vtkMergePoints() VTK_OVERRIDE {}
 
 private:
-  vtkMergePoints(const vtkMergePoints&) = delete;
-  void operator=(const vtkMergePoints&) = delete;
+  vtkMergePoints(const vtkMergePoints&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkMergePoints&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+

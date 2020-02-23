@@ -51,7 +51,8 @@ vtkGenericVertexAttributeMapping::~vtkGenericVertexAttributeMapping()
 
 //----------------------------------------------------------------------------
 void vtkGenericVertexAttributeMapping::AddMapping(
-  const char* attributeName, const char* arrayName, int fieldAssociation, int component)
+  const char* attributeName, const char* arrayName, int fieldAssociation,
+  int component)
 {
   if (!attributeName || !arrayName)
   {
@@ -61,7 +62,8 @@ void vtkGenericVertexAttributeMapping::AddMapping(
 
   if (this->RemoveMapping(attributeName))
   {
-    vtkWarningMacro("Replacing existing mapping for attribute " << attributeName);
+    vtkWarningMacro("Replacing existing mapping for attribute "
+      << attributeName);
   }
 
   vtkInternal::vtkInfo info;
@@ -75,18 +77,20 @@ void vtkGenericVertexAttributeMapping::AddMapping(
 
 //----------------------------------------------------------------------------
 void vtkGenericVertexAttributeMapping::AddMapping(
-  int unit, const char* arrayName, int fieldAssociation, int component)
+  int unit, const char* arrayName, int fieldAssociation,
+  int component)
 {
   std::ostringstream attributeName;
   attributeName << unit;
 
   if (this->RemoveMapping(attributeName.str().c_str()))
   {
-    vtkWarningMacro("Replacing existing mapping for attribute " << attributeName.str().c_str());
+    vtkWarningMacro("Replacing existing mapping for attribute "
+      << attributeName.str().c_str());
   }
 
   vtkInternal::vtkInfo info;
-  info.AttributeName = attributeName.str();
+  info.AttributeName = attributeName.str().c_str();
   info.ArrayName = arrayName;
   info.FieldAssociation = fieldAssociation;
   info.Component = component;
@@ -98,7 +102,8 @@ void vtkGenericVertexAttributeMapping::AddMapping(
 bool vtkGenericVertexAttributeMapping::RemoveMapping(const char* attributeName)
 {
   vtkInternal::VectorType::iterator iter;
-  for (iter = this->Internal->Mappings.begin(); iter != this->Internal->Mappings.end(); ++iter)
+  for (iter=this->Internal->Mappings.begin();
+    iter != this->Internal->Mappings.end(); ++iter)
   {
     if (iter->AttributeName == attributeName)
     {
@@ -108,6 +113,7 @@ bool vtkGenericVertexAttributeMapping::RemoveMapping(const char* attributeName)
   }
   return false;
 }
+
 
 //----------------------------------------------------------------------------
 void vtkGenericVertexAttributeMapping::RemoveAllMappings()
@@ -127,7 +133,7 @@ const char* vtkGenericVertexAttributeMapping::GetAttributeName(unsigned int inde
   if (index >= this->Internal->Mappings.size())
   {
     vtkErrorMacro("Invalid index " << index);
-    return nullptr;
+    return 0;
   }
   return this->Internal->Mappings[index].AttributeName.c_str();
 }
@@ -138,7 +144,7 @@ const char* vtkGenericVertexAttributeMapping::GetArrayName(unsigned int index)
   if (index >= this->Internal->Mappings.size())
   {
     vtkErrorMacro("Invalid index " << index);
-    return nullptr;
+    return 0;
   }
   return this->Internal->Mappings[index].ArrayName.c_str();
 }
@@ -180,10 +186,15 @@ int vtkGenericVertexAttributeMapping::GetTextureUnit(unsigned int index)
 void vtkGenericVertexAttributeMapping::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
-  vtkInternal::VectorType::iterator iter;
-  for (iter = this->Internal->Mappings.begin(); iter != this->Internal->Mappings.end(); ++iter)
+   vtkInternal::VectorType::iterator iter;
+  for (iter=this->Internal->Mappings.begin();
+    iter != this->Internal->Mappings.end(); ++iter)
   {
-    os << indent << "Mapping: " << iter->AttributeName.c_str() << ", " << iter->ArrayName.c_str()
-       << ", " << iter->FieldAssociation << ", " << iter->Component << endl;
+    os << indent << "Mapping: "
+      << iter->AttributeName.c_str() << ", "
+      << iter->ArrayName.c_str() << ", "
+      << iter->FieldAssociation << ", "
+      << iter->Component << endl;
   }
 }
+

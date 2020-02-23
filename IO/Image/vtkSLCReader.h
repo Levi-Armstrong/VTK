@@ -20,7 +20,7 @@
  * vtkSLCReader reads an SLC file and creates a structured point dataset.
  * The size of the volume and the data spacing is set from the SLC file
  * header.
- */
+*/
 
 #ifndef vtkSLCReader_h
 #define vtkSLCReader_h
@@ -31,48 +31,64 @@
 class VTKIOIMAGE_EXPORT vtkSLCReader : public vtkImageReader2
 {
 public:
-  static vtkSLCReader* New();
-  vtkTypeMacro(vtkSLCReader, vtkImageReader2);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkSLCReader *New();
+  vtkTypeMacro(vtkSLCReader,vtkImageReader2);
+  void PrintSelf(ostream& os, vtkIndent indent);
+
+  //@{
+  /**
+   * Set/Get the name of the file to read.
+   */
+  vtkSetStringMacro(FileName);
+  vtkGetStringMacro(FileName);
+  //@}
 
   //@{
   /**
    * Was there an error on the last read performed?
    */
-  vtkGetMacro(Error, int);
+  vtkGetMacro(Error,int);
   //@}
 
   /**
    * Is the given file an SLC file?
    */
-  int CanReadFile(const char* fname) override;
+  int CanReadFile(const char* fname);
   /**
    * .slc
    */
-  const char* GetFileExtensions() override { return ".slc"; }
+  virtual const char* GetFileExtensions()
+  {
+      return ".slc";
+  }
 
   /**
    * SLC
    */
-  const char* GetDescriptiveName() override { return "SLC"; }
+  virtual const char* GetDescriptiveName()
+  {
+      return "SLC";
+  }
 
 protected:
   vtkSLCReader();
-  ~vtkSLCReader() override;
+  ~vtkSLCReader();
 
   // Reads the file name and builds a vtkStructuredPoints dataset.
-  void ExecuteDataWithInformation(vtkDataObject*, vtkInformation*) override;
+  virtual void ExecuteDataWithInformation(vtkDataObject*, vtkInformation*);
 
-  int RequestInformation(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  virtual int RequestInformation(vtkInformation* request,
+                                 vtkInformationVector** inputVector,
+                                 vtkInformationVector* outputVector);
 
   // Decodes an array of eight bit run-length encoded data.
-  unsigned char* Decode8BitData(unsigned char* in_ptr, int size);
+  unsigned char *Decode8BitData( unsigned char *in_ptr, int size );
   int Error;
-
 private:
-  vtkSLCReader(const vtkSLCReader&) = delete;
-  void operator=(const vtkSLCReader&) = delete;
+  vtkSLCReader(const vtkSLCReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkSLCReader&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+

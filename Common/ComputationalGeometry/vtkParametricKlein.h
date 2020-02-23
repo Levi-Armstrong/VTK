@@ -35,7 +35,7 @@
  * Andrew Maclean andrew.amaclean@gmail.com for creating and contributing the
  * class.
  *
- */
+*/
 
 #ifndef vtkParametricKlein_h
 #define vtkParametricKlein_h
@@ -46,8 +46,8 @@
 class VTKCOMMONCOMPUTATIONALGEOMETRY_EXPORT vtkParametricKlein : public vtkParametricFunction
 {
 public:
-  vtkTypeMacro(vtkParametricKlein, vtkParametricFunction);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkParametricKlein,vtkParametricFunction);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Construct a Klein Bottle with the following parameters:
@@ -55,15 +55,15 @@ public:
    * MinimumV = -Pi, MaximumV = Pi,
    * JoinU = 0, JoinV = 1,
    * TwistU = 0, TwistV = 0,
-   * ClockwiseOrdering = 0,
+   * ClockwiseOrdering = 1,
    * DerivativesAvailable = 1,
    */
-  static vtkParametricKlein* New(); //! Initialise the parameters for the Klein bottle
+  static vtkParametricKlein *New();  //! Initialise the parameters for the Klein bottle
 
   /**
    * Return the parametric dimension of the class.
    */
-  int GetDimension() override { return 2; }
+  int GetDimension() VTK_OVERRIDE {return 2;}
 
   /**
    * A Klein bottle.
@@ -73,12 +73,12 @@ public:
    * \f$Pt = (x, y, z), Du = (dx/du, dy/du, dz/du), Dv = (dx/dv, dy/dv, dz/dv)\f$ .
    * Then the normal is \f$N = Du X Dv\f$ .
    */
-  void Evaluate(double uvw[3], double Pt[3], double Duvw[9]) override;
+  void Evaluate(double uvw[3], double Pt[3], double Duvw[9]) VTK_OVERRIDE;
 
   /**
    * Calculate a user defined scalar using one or all of uvw, Pt, Duvw.
 
-   * uvw are the parameters with Pt being the cartesian point,
+   * uvw are the parameters with Pt being the the cartesian point,
    * Duvw are the derivatives of this point with respect to u, v and w.
    * Pt, Duvw are obtained from Evaluate().
 
@@ -88,15 +88,15 @@ public:
    * If the user does not need to calculate a scalar, then the
    * instantiated function should return zero.
    */
-  double EvaluateScalar(double uvw[3], double Pt[3], double Duvw[9]) override;
+  double EvaluateScalar(double uvw[3], double Pt[3], double Duvw[9]) VTK_OVERRIDE;
 
 protected:
   vtkParametricKlein();
-  ~vtkParametricKlein() override;
+  ~vtkParametricKlein() VTK_OVERRIDE;
 
 private:
-  vtkParametricKlein(const vtkParametricKlein&) = delete;
-  void operator=(const vtkParametricKlein&) = delete;
+  vtkParametricKlein(const vtkParametricKlein&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkParametricKlein&) VTK_DELETE_FUNCTION;
 };
 
 #endif

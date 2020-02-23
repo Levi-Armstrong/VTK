@@ -26,7 +26,8 @@
 #include "vtkVariant.h"
 
 #include "vtkSmartPointer.h"
-#define VTK_CREATE(type, name) vtkSmartPointer<type> name = vtkSmartPointer<type>::New()
+#define VTK_CREATE(type, name) \
+  vtkSmartPointer<type> name = vtkSmartPointer<type>::New()
 
 int TestThresholdTable(int vtkNotUsed(argc), char* vtkNotUsed(argv)[])
 {
@@ -78,8 +79,7 @@ int TestThresholdTable(int vtkNotUsed(argc), char* vtkNotUsed(argv)[])
   }
   else if (intArrOut->GetNumberOfTuples() != 2)
   {
-    cerr << "int threshold should have 2 tuples, instead has " << intArrOut->GetNumberOfTuples()
-         << endl;
+    cerr << "int threshold should have 2 tuples, instead has " << intArrOut->GetNumberOfTuples() << endl;
     errors++;
   }
   else
@@ -101,8 +101,7 @@ int TestThresholdTable(int vtkNotUsed(argc), char* vtkNotUsed(argv)[])
   threshold->SetMode(vtkThresholdTable::ACCEPT_LESS_THAN);
   threshold->Update();
   output = threshold->GetOutput();
-  vtkDoubleArray* doubleArrOut =
-    vtkArrayDownCast<vtkDoubleArray>(output->GetColumnByName("doubleArr"));
+  vtkDoubleArray* doubleArrOut = vtkArrayDownCast<vtkDoubleArray>(output->GetColumnByName("doubleArr"));
 
   // Perform error checking
   if (!doubleArrOut)
@@ -112,8 +111,7 @@ int TestThresholdTable(int vtkNotUsed(argc), char* vtkNotUsed(argv)[])
   }
   else if (doubleArrOut->GetNumberOfTuples() != 3)
   {
-    cerr << "double threshold should have 3 tuples, instead has " << intArrOut->GetNumberOfTuples()
-         << endl;
+    cerr << "double threshold should have 3 tuples, instead has " << intArrOut->GetNumberOfTuples() << endl;
     errors++;
   }
   else
@@ -141,8 +139,7 @@ int TestThresholdTable(int vtkNotUsed(argc), char* vtkNotUsed(argv)[])
   threshold->SetMode(vtkThresholdTable::ACCEPT_OUTSIDE);
   threshold->Update();
   output = threshold->GetOutput();
-  vtkStringArray* stringArrOut =
-    vtkArrayDownCast<vtkStringArray>(output->GetColumnByName("stringArr"));
+  vtkStringArray* stringArrOut = vtkArrayDownCast<vtkStringArray>(output->GetColumnByName("stringArr"));
 
   // Perform error checking
   if (!stringArrOut)
@@ -152,8 +149,7 @@ int TestThresholdTable(int vtkNotUsed(argc), char* vtkNotUsed(argv)[])
   }
   else if (stringArrOut->GetNumberOfTuples() != 3)
   {
-    cerr << "string threshold should have 3 tuples, instead has "
-         << stringArrOut->GetNumberOfTuples() << endl;
+    cerr << "string threshold should have 3 tuples, instead has " << stringArrOut->GetNumberOfTuples() << endl;
     errors++;
   }
   else

@@ -14,8 +14,7 @@
 =========================================================================*/
 /**
  * @class   vtkInteractorStyleRubberBandPick
- * @brief   Like TrackBallCamera, but this can pick props underneath a rubber band selection
- * rectangle.
+ * @brief   Like TrackBallCamera, but this can pick props underneath a rubber band selection rectangle.
  *
  *
  * This interactor style allows the user to draw a rectangle in the render
@@ -28,7 +27,7 @@
  *
  * @sa
  * vtkAreaPicker
- */
+*/
 
 #ifndef vtkInteractorStyleRubberBandPick_h
 #define vtkInteractorStyleRubberBandPick_h
@@ -38,13 +37,12 @@
 
 class vtkUnsignedCharArray;
 
-class VTKINTERACTIONSTYLE_EXPORT vtkInteractorStyleRubberBandPick
-  : public vtkInteractorStyleTrackballCamera
+class VTKINTERACTIONSTYLE_EXPORT vtkInteractorStyleRubberBandPick : public vtkInteractorStyleTrackballCamera
 {
 public:
-  static vtkInteractorStyleRubberBandPick* New();
+  static vtkInteractorStyleRubberBandPick *New();
   vtkTypeMacro(vtkInteractorStyleRubberBandPick, vtkInteractorStyleTrackballCamera);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   void StartSelect();
 
@@ -52,15 +50,15 @@ public:
   /**
    * Event bindings
    */
-  void OnMouseMove() override;
-  void OnLeftButtonDown() override;
-  void OnLeftButtonUp() override;
-  void OnChar() override;
+  virtual void OnMouseMove();
+  virtual void OnLeftButtonDown();
+  virtual void OnLeftButtonUp();
+  virtual void OnChar();
   //@}
 
 protected:
   vtkInteractorStyleRubberBandPick();
-  ~vtkInteractorStyleRubberBandPick() override;
+  ~vtkInteractorStyleRubberBandPick();
 
   virtual void Pick();
   void RedrawRubberBand();
@@ -70,13 +68,13 @@ protected:
 
   int Moving;
 
-  vtkUnsignedCharArray* PixelArray;
+  vtkUnsignedCharArray *PixelArray;
 
   int CurrentMode;
 
 private:
-  vtkInteractorStyleRubberBandPick(const vtkInteractorStyleRubberBandPick&) = delete;
-  void operator=(const vtkInteractorStyleRubberBandPick&) = delete;
+  vtkInteractorStyleRubberBandPick(const vtkInteractorStyleRubberBandPick&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkInteractorStyleRubberBandPick&) VTK_DELETE_FUNCTION;
 };
 
 #endif

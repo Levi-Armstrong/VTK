@@ -33,7 +33,7 @@
  * @par Thanks:
  * Thanks to Jason Shepherd from Sandia National Laboratories
  * for help developing this class.
- */
+*/
 
 #ifndef vtkAreaLayout_h
 #define vtkAreaLayout_h
@@ -46,18 +46,16 @@ class vtkAreaLayoutStrategy;
 class VTKINFOVISLAYOUT_EXPORT vtkAreaLayout : public vtkTreeAlgorithm
 {
 public:
-  static vtkAreaLayout* New();
-  vtkTypeMacro(vtkAreaLayout, vtkTreeAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkAreaLayout *New();
+  vtkTypeMacro(vtkAreaLayout,vtkTreeAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * The array name to use for retrieving the relative size of each vertex.
    * If this array is not found, use constant size for each vertex.
    */
   virtual void SetSizeArrayName(const char* name)
-  {
-    this->SetInputArrayToProcess(0, 0, 0, vtkDataObject::FIELD_ASSOCIATION_VERTICES, name);
-  }
+    { this->SetInputArrayToProcess(0, 0, 0, vtkDataObject::FIELD_ASSOCIATION_VERTICES, name); }
 
   //@{
   /**
@@ -85,13 +83,13 @@ public:
    * The strategy to use when laying out the tree map.
    */
   vtkGetObjectMacro(LayoutStrategy, vtkAreaLayoutStrategy);
-  void SetLayoutStrategy(vtkAreaLayoutStrategy* strategy);
+  void SetLayoutStrategy(vtkAreaLayoutStrategy * strategy);
   //@}
 
   /**
    * Get the modification time of the layout algorithm.
    */
-  vtkMTimeType GetMTime() override;
+  virtual vtkMTimeType GetMTime();
 
   /**
    * Get the vertex whose area contains the point, or return -1
@@ -102,22 +100,23 @@ public:
   /**
    * The bounding area information for a certain vertex id.
    */
-  void GetBoundingArea(vtkIdType id, float* sinfo);
+  void GetBoundingArea(vtkIdType id, float *sinfo);
 
 protected:
   vtkAreaLayout();
-  ~vtkAreaLayout() override;
+  ~vtkAreaLayout();
 
   char* AreaArrayName;
-  bool EdgeRoutingPoints;
+  bool  EdgeRoutingPoints;
   char* EdgeRoutingPointsArrayName;
   vtkAreaLayoutStrategy* LayoutStrategy;
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 
 private:
-  vtkAreaLayout(const vtkAreaLayout&) = delete;
-  void operator=(const vtkAreaLayout&) = delete;
+
+  vtkAreaLayout(const vtkAreaLayout&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkAreaLayout&) VTK_DELETE_FUNCTION;
 };
 
 #endif

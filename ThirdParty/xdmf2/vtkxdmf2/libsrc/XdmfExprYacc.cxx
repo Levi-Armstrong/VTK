@@ -36,12 +36,6 @@
 /* Identify Bison output.  */
 #define YYBISON 1
 
-/* Do not use alloca().  */
-#define YYSTACK_USE_ALLOCA 0
-
-/* Use the default max depth.  */
-#define YYMAXDEPTH 0
-
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
 

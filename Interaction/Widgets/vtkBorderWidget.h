@@ -68,15 +68,16 @@
  *
  * @sa
  * vtkInteractorObserver vtkCameraInterpolator
- */
+*/
 
 #ifndef vtkBorderWidget_h
 #define vtkBorderWidget_h
 
-#include "vtkAbstractWidget.h"
 #include "vtkInteractionWidgetsModule.h" // For export macro
+#include "vtkAbstractWidget.h"
 
 class vtkBorderRepresentation;
+
 
 class VTKINTERACTIONWIDGETS_EXPORT vtkBorderWidget : public vtkAbstractWidget
 {
@@ -84,14 +85,14 @@ public:
   /**
    * Method to instantiate class.
    */
-  static vtkBorderWidget* New();
+  static vtkBorderWidget *New();
 
   //@{
   /**
    * Standard methods for class.
    */
-  vtkTypeMacro(vtkBorderWidget, vtkAbstractWidget);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkBorderWidget,vtkAbstractWidget);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   //@{
@@ -101,10 +102,11 @@ public:
    * "move" the widget, and no selection is possible. Otherwise the
    * SelectRegion() method is invoked.
    */
-  vtkSetMacro(Selectable, vtkTypeBool);
-  vtkGetMacro(Selectable, vtkTypeBool);
-  vtkBooleanMacro(Selectable, vtkTypeBool);
+  vtkSetMacro(Selectable,int);
+  vtkGetMacro(Selectable,int);
+  vtkBooleanMacro(Selectable,int);
   //@}
+
 
   //@{
   /**
@@ -112,37 +114,34 @@ public:
    * If not, the cursor will not change to "resize" type when mouse
    * over the boundary.
    */
-  vtkSetMacro(Resizable, vtkTypeBool);
-  vtkGetMacro(Resizable, vtkTypeBool);
-  vtkBooleanMacro(Resizable, vtkTypeBool);
+  vtkSetMacro(Resizable,int);
+  vtkGetMacro(Resizable,int);
+  vtkBooleanMacro(Resizable,int);
   //@}
+
 
   /**
    * Specify an instance of vtkWidgetRepresentation used to represent this
    * widget in the scene. Note that the representation is a subclass of vtkProp
    * so it can be added to the renderer independent of the widget.
    */
-  void SetRepresentation(vtkBorderRepresentation* r)
-  {
-    this->Superclass::SetWidgetRepresentation(reinterpret_cast<vtkWidgetRepresentation*>(r));
-  }
+  void SetRepresentation(vtkBorderRepresentation *r)
+    {this->Superclass::SetWidgetRepresentation(reinterpret_cast<vtkWidgetRepresentation*>(r));}
 
   /**
    * Return the representation as a vtkBorderRepresentation.
    */
-  vtkBorderRepresentation* GetBorderRepresentation()
-  {
-    return reinterpret_cast<vtkBorderRepresentation*>(this->WidgetRep);
-  }
+  vtkBorderRepresentation *GetBorderRepresentation()
+    {return reinterpret_cast<vtkBorderRepresentation*>(this->WidgetRep);}
 
   /**
    * Create the default widget representation if one is not set.
    */
-  void CreateDefaultRepresentation() override;
+  virtual void CreateDefaultRepresentation();
 
 protected:
   vtkBorderWidget();
-  ~vtkBorderWidget() override;
+  ~vtkBorderWidget();
 
   /**
    * Subclasses generally implement this method. The SelectRegion() method
@@ -151,11 +150,11 @@ protected:
    */
   virtual void SelectRegion(double eventPos[2]);
 
-  // enable the selection of the region interior to the widget
-  vtkTypeBool Selectable;
-  vtkTypeBool Resizable;
+  //enable the selection of the region interior to the widget
+  int Selectable;
+  int Resizable;
 
-  // processes the registered events
+  //processes the registered events
   static void SelectAction(vtkAbstractWidget*);
   static void TranslateAction(vtkAbstractWidget*);
   static void EndSelectAction(vtkAbstractWidget*);
@@ -163,27 +162,21 @@ protected:
 
   // Special internal methods to support subclasses handling events.
   // If a non-zero value is returned, the subclass is handling the event.
-  virtual int SubclassSelectAction() { return 0; }
-  virtual int SubclassTranslateAction() { return 0; }
-  virtual int SubclassEndSelectAction() { return 0; }
-  virtual int SubclassMoveAction() { return 0; }
+  virtual int SubclassSelectAction() {return 0;}
+  virtual int SubclassTranslateAction() {return 0;}
+  virtual int SubclassEndSelectAction() {return 0;}
+  virtual int SubclassMoveAction() {return 0;}
 
   // helper methods for cursoe management
-  void SetCursor(int State) override;
+  virtual void SetCursor(int State);
 
-  // widget state
+  //widget state
   int WidgetState;
-  enum _WidgetState
-  {
-    Start = 0,
-    Define,
-    Manipulate,
-    Selected
-  };
+  enum _WidgetState{Start=0,Define,Manipulate,Selected};
 
 private:
-  vtkBorderWidget(const vtkBorderWidget&) = delete;
-  void operator=(const vtkBorderWidget&) = delete;
+  vtkBorderWidget(const vtkBorderWidget&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkBorderWidget&) VTK_DELETE_FUNCTION;
 };
 
 #endif

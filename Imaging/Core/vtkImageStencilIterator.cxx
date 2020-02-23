@@ -17,4 +17,6 @@
 
 #include "vtkImageStencilIterator.h"
 
-vtkInstantiateTemplateMacro(template class VTKIMAGINGCORE_EXPORT vtkImageStencilIterator);
+vtkInstantiateTemplateMacro(
+  template class VTKIMAGINGCORE_EXPORT vtkImageStencilIterator
+)

@@ -20,32 +20,32 @@
  * on the Microsoft Windows platform. The data type of the file is
  * unsigned char regardless of the input type.
  * @sa
- * vtkGenericMovieWriter
- */
+ * vtkGenericMovieWriter vtkMPEG2Writer
+*/
 
 #ifndef vtkAVIWriter_h
 #define vtkAVIWriter_h
 
-#include "vtkGenericMovieWriter.h"
 #include "vtkIOMovieModule.h" // For export macro
+#include "vtkGenericMovieWriter.h"
 
 class vtkAVIWriterInternal;
 
 class VTKIOMOVIE_EXPORT vtkAVIWriter : public vtkGenericMovieWriter
 {
 public:
-  static vtkAVIWriter* New();
-  vtkTypeMacro(vtkAVIWriter, vtkGenericMovieWriter);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkAVIWriter *New();
+  vtkTypeMacro(vtkAVIWriter,vtkGenericMovieWriter);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
    * These methods start writing an AVI file, write a frame to the file
    * and then end the writing process.
    */
-  void Start() override;
-  void Write() override;
-  void End() override;
+  void Start();
+  void Write();
+  void End();
   //@}
 
   //@{
@@ -102,19 +102,22 @@ public:
 
 protected:
   vtkAVIWriter();
-  ~vtkAVIWriter() override;
+  ~vtkAVIWriter();
 
-  vtkAVIWriterInternal* Internals;
+  vtkAVIWriterInternal *Internals;
 
   int Rate;
   int Time;
   int Quality;
   int PromptCompressionOptions;
-  char* CompressorFourCC;
+  char *CompressorFourCC;
 
 private:
-  vtkAVIWriter(const vtkAVIWriter&) = delete;
-  void operator=(const vtkAVIWriter&) = delete;
+  vtkAVIWriter(const vtkAVIWriter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkAVIWriter&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+
+

@@ -33,37 +33,40 @@
  *
  * @sa
  * vtkContourWidget vtkContourLineInterpolator vtkDijkstraImageGeodesicPath
- */
+*/
 
 #ifndef vtkDijkstraImageContourLineInterpolator_h
 #define vtkDijkstraImageContourLineInterpolator_h
 
-#include "vtkContourLineInterpolator.h"
 #include "vtkInteractionWidgetsModule.h" // For export macro
+#include "vtkContourLineInterpolator.h"
 
 class vtkDijkstraImageGeodesicPath;
 class vtkImageData;
 
 class VTKINTERACTIONWIDGETS_EXPORT vtkDijkstraImageContourLineInterpolator
-  : public vtkContourLineInterpolator
+                       : public vtkContourLineInterpolator
 {
 public:
   //@{
   /**
    * Standard methods for instances of this class.
    */
-  vtkTypeMacro(vtkDijkstraImageContourLineInterpolator, vtkContourLineInterpolator);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkDijkstraImageContourLineInterpolator,
+                              vtkContourLineInterpolator);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
-  static vtkDijkstraImageContourLineInterpolator* New();
+  static vtkDijkstraImageContourLineInterpolator *New();
 
   /**
    * Subclasses that wish to interpolate a line segment must implement this.
    * For instance vtkBezierContourLineInterpolator adds nodes between idx1
    * and idx2, that allow the contour to adhere to a bezier curve.
    */
-  int InterpolateLine(vtkRenderer* ren, vtkContourRepresentation* rep, int idx1, int idx2) override;
+  virtual int InterpolateLine( vtkRenderer *ren,
+                               vtkContourRepresentation *rep,
+                               int idx1, int idx2 );
 
   //@{
   /**
@@ -71,27 +74,29 @@ public:
    * If not set, the interpolator uses the image data input to the image actor.
    * The image actor is obtained from the expected vtkImageActorPointPlacer.
    */
-  virtual void SetCostImage(vtkImageData*);
-  vtkGetObjectMacro(CostImage, vtkImageData);
+  virtual void SetCostImage( vtkImageData* );
+  vtkGetObjectMacro( CostImage, vtkImageData );
   //@}
 
   //@{
   /**
    * access to the internal dijkstra path
    */
-  vtkGetObjectMacro(DijkstraImageGeodesicPath, vtkDijkstraImageGeodesicPath);
+  vtkGetObjectMacro( DijkstraImageGeodesicPath, vtkDijkstraImageGeodesicPath );
   //@}
 
 protected:
   vtkDijkstraImageContourLineInterpolator();
-  ~vtkDijkstraImageContourLineInterpolator() override;
+  ~vtkDijkstraImageContourLineInterpolator();
 
-  vtkImageData* CostImage;
-  vtkDijkstraImageGeodesicPath* DijkstraImageGeodesicPath;
+  vtkImageData *CostImage;
+  vtkDijkstraImageGeodesicPath *DijkstraImageGeodesicPath;
 
 private:
-  vtkDijkstraImageContourLineInterpolator(const vtkDijkstraImageContourLineInterpolator&) = delete;
-  void operator=(const vtkDijkstraImageContourLineInterpolator&) = delete;
+  vtkDijkstraImageContourLineInterpolator(
+    const vtkDijkstraImageContourLineInterpolator&) VTK_DELETE_FUNCTION;
+  void operator=(const
+    vtkDijkstraImageContourLineInterpolator&) VTK_DELETE_FUNCTION;
 };
 
 #endif

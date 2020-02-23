@@ -35,26 +35,25 @@
  *
  * @par Thanks:
  * Thanks to Philippe Pebay from Sandia National Laboratories for implementing this class.
- */
+*/
 
 #ifndef vtkPContingencyStatistics_h
 #define vtkPContingencyStatistics_h
 
-#include "vtkContingencyStatistics.h"
 #include "vtkFiltersParallelStatisticsModule.h" // For export macro
+#include "vtkContingencyStatistics.h"
 
 #include <vector> // STL Header
 
 class vtkMultiBlockDataSet;
 class vtkMultiProcessController;
 
-class VTKFILTERSPARALLELSTATISTICS_EXPORT vtkPContingencyStatistics
-  : public vtkContingencyStatistics
+class VTKFILTERSPARALLELSTATISTICS_EXPORT vtkPContingencyStatistics : public vtkContingencyStatistics
 {
 public:
   static vtkPContingencyStatistics* New();
   vtkTypeMacro(vtkPContingencyStatistics, vtkContingencyStatistics);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -68,28 +67,39 @@ public:
   /**
    * Execute the parallel calculations required by the Learn option.
    */
-  void Learn(vtkTable*, vtkTable*, vtkMultiBlockDataSet*) override;
+  virtual void Learn( vtkTable*,
+                      vtkTable*,
+                      vtkMultiBlockDataSet* );
 
 protected:
   vtkPContingencyStatistics();
-  ~vtkPContingencyStatistics() override;
+  ~vtkPContingencyStatistics();
 
   /**
    * Reduce the collection of local contingency tables to the global one
    */
-  bool Reduce(vtkIdType&, char*, vtkStdString&, vtkIdType&, vtkIdType*, std::vector<vtkIdType>&);
+  bool Reduce( vtkIdType&,
+               char*,
+               vtkStdString&,
+               vtkIdType&,
+               vtkIdType*,
+               std::vector<vtkIdType>& );
 
   /**
    * Broadcast reduced contingency table to all processes
    */
-  bool Broadcast(vtkIdType, vtkStdString&, std::vector<vtkStdString>&, vtkIdType,
-    std::vector<vtkIdType>&, vtkIdType);
+  bool Broadcast( vtkIdType,
+                  vtkStdString&,
+                  std::vector<vtkStdString>&,
+                  vtkIdType,
+                  std::vector<vtkIdType>&,
+                  vtkIdType );
 
   vtkMultiProcessController* Controller;
-
 private:
-  vtkPContingencyStatistics(const vtkPContingencyStatistics&) = delete;
-  void operator=(const vtkPContingencyStatistics&) = delete;
+  vtkPContingencyStatistics(const vtkPContingencyStatistics&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPContingencyStatistics&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

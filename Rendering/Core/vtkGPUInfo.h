@@ -21,20 +21,20 @@
  * several GPUs. The values are set by vtkGPUInfoList.
  * @sa
  * vtkGPUInfoList vtkDirectXGPUInfoList vtkCoreGraphicsGPUInfoList
- */
+*/
 
 #ifndef vtkGPUInfo_h
 #define vtkGPUInfo_h
 
-#include "vtkObject.h"
 #include "vtkRenderingCoreModule.h" // For export macro
+#include "vtkObject.h"
 
 class VTKRENDERINGCORE_EXPORT vtkGPUInfo : public vtkObject
 {
 public:
   static vtkGPUInfo* New();
   vtkTypeMacro(vtkGPUInfo, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -70,15 +70,15 @@ public:
 
 protected:
   vtkGPUInfo();
-  ~vtkGPUInfo() override;
+  ~vtkGPUInfo();
 
   vtkTypeUInt64 DedicatedVideoMemory;
   vtkTypeUInt64 DedicatedSystemMemory;
   vtkTypeUInt64 SharedSystemMemory;
 
 private:
-  vtkGPUInfo(const vtkGPUInfo&) = delete;
-  void operator=(const vtkGPUInfo&) = delete;
+  vtkGPUInfo(const vtkGPUInfo&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkGPUInfo&) VTK_DELETE_FUNCTION;
 };
 
 #endif

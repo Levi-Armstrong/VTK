@@ -27,24 +27,26 @@
  * with objects other than vtkImplicitFunction.
  * @sa
  * vtkImplicitFunction vtkImageStencil vtkPolyDataToImageStencil
- */
+*/
 
 #ifndef vtkImageStencilSource_h
 #define vtkImageStencilSource_h
 
-#include "vtkImageStencilAlgorithm.h"
+
 #include "vtkImagingCoreModule.h" // For export macro
+#include "vtkImageStencilAlgorithm.h"
 
 class vtkImageStencilData;
 class vtkImageData;
 
-class VTKIMAGINGCORE_EXPORT vtkImageStencilSource : public vtkImageStencilAlgorithm
+class VTKIMAGINGCORE_EXPORT vtkImageStencilSource :
+  public vtkImageStencilAlgorithm
 {
 public:
-  static vtkImageStencilSource* New();
+  static vtkImageStencilSource *New();
   vtkTypeMacro(vtkImageStencilSource, vtkImageStencilAlgorithm);
 
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -91,23 +93,25 @@ public:
   /**
    * Report object referenced by instances of this class.
    */
-  void ReportReferences(vtkGarbageCollector*) override;
+  void ReportReferences(vtkGarbageCollector*) VTK_OVERRIDE;
 
 protected:
   vtkImageStencilSource();
-  ~vtkImageStencilSource() override;
+  ~vtkImageStencilSource();
 
-  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int RequestInformation(vtkInformation *, vtkInformationVector **,
+                                 vtkInformationVector *);
 
-  vtkImageData* InformationInput;
+  vtkImageData *InformationInput;
 
   int OutputWholeExtent[6];
   double OutputOrigin[3];
   double OutputSpacing[3];
 
 private:
-  vtkImageStencilSource(const vtkImageStencilSource&) = delete;
-  void operator=(const vtkImageStencilSource&) = delete;
+  vtkImageStencilSource(const vtkImageStencilSource&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkImageStencilSource&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

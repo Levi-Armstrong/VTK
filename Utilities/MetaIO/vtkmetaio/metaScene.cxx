@@ -36,8 +36,8 @@
 #include "metaTubeGraph.h"
 #include "metaFEMObject.h"
 
-#include <cctype>
-#include <cstdio>
+#include <stdio.h>
+#include <ctype.h>
 #include <string>
 
 #if (METAIO_USE_NAMESPACE)
@@ -115,7 +115,7 @@ NObjects(int nobjects)
 }
 
 int MetaScene::
-NObjects() const
+NObjects(void) const
 {
   return m_NObjects;
 }
@@ -148,7 +148,7 @@ Read(const char *_headerName)
 
   M_SetupReadFields();
 
-  if(_headerName != nullptr)
+  if(_headerName != NULL)
     {
     strcpy(m_FileName, _headerName);
     }
@@ -177,7 +177,7 @@ Read(const char *_headerName)
     return false;
     }
 
-  if(_headerName != nullptr)
+  if(_headerName != NULL)
     {
     strcpy(m_FileName, _headerName);
     }
@@ -385,7 +385,7 @@ Write(const char *_headName)
     METAIO_STREAM::cout << "MetaScene: Write" << METAIO_STREAM::endl;
     }
 
-  if(_headName != nullptr)
+  if(_headName != NULL)
     {
     FileName(_headName);
     }
@@ -416,7 +416,7 @@ Write(const char *_headName)
   if(!m_WriteStream->rdbuf()->is_open())
     {
     delete m_WriteStream;
-    m_WriteStream = nullptr;
+    m_WriteStream = 0;
     return false;
     }
 
@@ -424,7 +424,7 @@ Write(const char *_headName)
 
   m_WriteStream->close();
   delete m_WriteStream;
-  m_WriteStream = nullptr;
+  m_WriteStream = 0;
 
   /** Then we write all the objects in the scene */
   ObjectListType::iterator it = m_ObjectList.begin();
@@ -432,7 +432,7 @@ Write(const char *_headName)
     {
     (*it)->BinaryData(this->BinaryData());
     (*it)->Append(_headName);
-    ++it;
+    it++;
     }
 
   return true;
@@ -440,7 +440,7 @@ Write(const char *_headName)
 
 /** Clear tube information */
 void MetaScene::
-Clear()
+Clear(void)
 {
   if(META_DEBUG)
     {
@@ -452,7 +452,7 @@ Clear()
   while(it != m_ObjectList.end())
     {
     MetaObject* object = *it;
-    ++it;
+    it++;
     delete object;
     }
 
@@ -462,14 +462,14 @@ Clear()
 
 /** Destroy tube information */
 void MetaScene::
-M_Destroy()
+M_Destroy(void)
 {
   MetaObject::M_Destroy();
 }
 
 /** Set Read fields */
 void MetaScene::
-M_SetupReadFields()
+M_SetupReadFields(void)
 {
   if(META_DEBUG)
     {
@@ -491,7 +491,7 @@ M_SetupReadFields()
 }
 
 void MetaScene::
-M_SetupWriteFields()
+M_SetupWriteFields(void)
 {
   this->ClearFields();
 
@@ -522,7 +522,7 @@ M_SetupWriteFields()
 
 
 bool MetaScene::
-M_Read()
+M_Read(void)
 {
   if(META_DEBUG)
     {
@@ -558,7 +558,7 @@ M_Read()
 }
 
 bool MetaScene::
-M_Write()
+M_Write(void)
 {
   if(!MetaObject::M_Write())
     {

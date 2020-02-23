@@ -23,30 +23,31 @@
  *
  * @sa
  * vtkInteractorStyleSwitchBase vtkRenderWindowInteractor
- */
+*/
 
 #ifndef vtkInteractorStyleSwitchBase_h
 #define vtkInteractorStyleSwitchBase_h
 
-#include "vtkInteractorStyle.h"
 #include "vtkRenderingCoreModule.h" // For export macro
+#include "vtkInteractorStyle.h"
 
-class VTKRENDERINGCORE_EXPORT vtkInteractorStyleSwitchBase : public vtkInteractorStyle
+class VTKRENDERINGCORE_EXPORT vtkInteractorStyleSwitchBase
+  : public vtkInteractorStyle
 {
 public:
-  static vtkInteractorStyleSwitchBase* New();
+  static vtkInteractorStyleSwitchBase *New();
   vtkTypeMacro(vtkInteractorStyleSwitchBase, vtkInteractorStyle);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
-  vtkRenderWindowInteractor* GetInteractor() override;
+  vtkRenderWindowInteractor* GetInteractor();
 
 protected:
   vtkInteractorStyleSwitchBase();
-  ~vtkInteractorStyleSwitchBase() override;
+  ~vtkInteractorStyleSwitchBase();
 
 private:
-  vtkInteractorStyleSwitchBase(const vtkInteractorStyleSwitchBase&) = delete;
-  void operator=(const vtkInteractorStyleSwitchBase&) = delete;
+  vtkInteractorStyleSwitchBase(const vtkInteractorStyleSwitchBase&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkInteractorStyleSwitchBase&) VTK_DELETE_FUNCTION;
 };
 
 #endif

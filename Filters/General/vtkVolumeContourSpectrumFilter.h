@@ -39,23 +39,24 @@
  * C. Bajaj, V. Pascucci, D. Schikore,
  * "The contour spectrum",
  * IEEE Visualization, 167-174, 1997.
- */
+*/
 
 #ifndef vtkVolumeContourSpectrumFilter_h
 #define vtkVolumeContourSpectrumFilter_h
 
-#include "vtkDataObjectAlgorithm.h"
 #include "vtkFiltersGeneralModule.h" // For export macro
+#include  "vtkDataObjectAlgorithm.h"
 
 class vtkReebGraph;
 class vtkTable;
 
-class VTKFILTERSGENERAL_EXPORT vtkVolumeContourSpectrumFilter : public vtkDataObjectAlgorithm
+class VTKFILTERSGENERAL_EXPORT vtkVolumeContourSpectrumFilter :
+  public vtkDataObjectAlgorithm
 {
 public:
   static vtkVolumeContourSpectrumFilter* New();
   vtkTypeMacro(vtkVolumeContourSpectrumFilter, vtkDataObjectAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   //@{
   /**
@@ -88,20 +89,20 @@ public:
 
 protected:
   vtkVolumeContourSpectrumFilter();
-  ~vtkVolumeContourSpectrumFilter() override;
+  ~vtkVolumeContourSpectrumFilter() VTK_OVERRIDE;
 
   vtkIdType ArcId, FieldId;
   int NumberOfSamples;
 
-  int FillInputPortInformation(int portNumber, vtkInformation*) override;
-  int FillOutputPortInformation(int portNumber, vtkInformation* info) override;
+  int FillInputPortInformation(int portNumber, vtkInformation *) VTK_OVERRIDE;
+  int FillOutputPortInformation(int portNumber, vtkInformation *info) VTK_OVERRIDE;
 
-  int RequestData(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  int RequestData(vtkInformation *request,
+    vtkInformationVector **inputVector, vtkInformationVector *outputVector) VTK_OVERRIDE;
 
 private:
-  vtkVolumeContourSpectrumFilter(const vtkVolumeContourSpectrumFilter&) = delete;
-  void operator=(const vtkVolumeContourSpectrumFilter&) = delete;
+  vtkVolumeContourSpectrumFilter(const vtkVolumeContourSpectrumFilter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkVolumeContourSpectrumFilter&) VTK_DELETE_FUNCTION;
 };
 
 #endif

@@ -16,21 +16,23 @@
 
 #include "vtkInformation.h" // For vtkErrorWithObjectMacro
 
+
 //----------------------------------------------------------------------------
-vtkInformationObjectBaseKey ::vtkInformationObjectBaseKey(
-  const char* name, const char* location, const char* requiredClass)
-  : vtkInformationKey(name, location)
+vtkInformationObjectBaseKey
+::vtkInformationObjectBaseKey(const char* name, const char* location,
+                              const char* requiredClass):
+  vtkInformationKey(name, location)
 {
   vtkCommonInformationKeyManager::Register(this);
 
-  this->RequiredClass = nullptr;
+  this->RequiredClass = 0;
   this->SetRequiredClass(requiredClass);
 }
 
 //----------------------------------------------------------------------------
 vtkInformationObjectBaseKey::~vtkInformationObjectBaseKey()
 {
-  delete[] this->RequiredClass;
+  delete [] this->RequiredClass;
 }
 
 //----------------------------------------------------------------------------
@@ -40,15 +42,18 @@ void vtkInformationObjectBaseKey::PrintSelf(ostream& os, vtkIndent indent)
 }
 
 //----------------------------------------------------------------------------
-void vtkInformationObjectBaseKey::Set(vtkInformation* info, vtkObjectBase* value)
+void vtkInformationObjectBaseKey::Set(vtkInformation* info,
+                                      vtkObjectBase* value)
 {
-  if (value && this->RequiredClass && !value->IsA(this->RequiredClass))
+  if(value && this->RequiredClass && !value->IsA(this->RequiredClass))
   {
-    vtkErrorWithObjectMacro(info,
-      "Cannot store object of type " << value->GetClassName() << " with key " << this->Location
-                                     << "::" << this->Name << " which requires objects of type "
-                                     << this->RequiredClass << ".  Removing the key instead.");
-    this->SetAsObjectBase(info, nullptr);
+    vtkErrorWithObjectMacro(
+      info,
+      "Cannot store object of type " << value->GetClassName()
+      << " with key " << this->Location << "::" << this->Name
+      << " which requires objects of type "
+      << this->RequiredClass << ".  Removing the key instead.");
+    this->SetAsObjectBase(info, 0);
     return;
   }
   this->SetAsObjectBase(info, value);
@@ -61,13 +66,15 @@ vtkObjectBase* vtkInformationObjectBaseKey::Get(vtkInformation* info)
 }
 
 //----------------------------------------------------------------------------
-void vtkInformationObjectBaseKey::ShallowCopy(vtkInformation* from, vtkInformation* to)
+void vtkInformationObjectBaseKey::ShallowCopy(vtkInformation* from,
+                                       vtkInformation* to)
 {
   this->Set(to, this->Get(from));
 }
 
 //----------------------------------------------------------------------------
-void vtkInformationObjectBaseKey::Report(vtkInformation* info, vtkGarbageCollector* collector)
+void vtkInformationObjectBaseKey::Report(vtkInformation* info,
+                                         vtkGarbageCollector* collector)
 {
   this->ReportAsObjectBase(info, collector);
 }

@@ -1,28 +1,40 @@
-set(classes
-  vtkAmoebaMinimizer
-  vtkFunctionSet
-  vtkInitialValueProblemSolver
-  vtkMatrix3x3
-  vtkMatrix4x4
-  vtkPolynomialSolversUnivariate
-  vtkQuaternionInterpolator
-  vtkRungeKutta2
-  vtkRungeKutta4
-  vtkRungeKutta45)
+set(Module_SRCS
+  vtkAmoebaMinimizer.cxx
+  vtkFunctionSet.cxx
+  vtkInitialValueProblemSolver.cxx
+  vtkMatrix3x3.cxx
+  vtkMatrix4x4.cxx
+  vtkPolynomialSolversUnivariate.cxx
+  vtkQuaternionInterpolator.cxx
+  vtkRungeKutta2.cxx
+  vtkRungeKutta4.cxx
+  vtkRungeKutta45.cxx
 
-set(template_classes
-  vtkQuaternion)
+  # Header only classes
+  vtkQuaternion.h
+  vtkTuple.h
+  )
 
-set(headers
-  vtkTuple.h)
+set_source_files_properties(
+  vtkQuaternion
+  vtkTuple
+  WRAP_EXCLUDE
+  )
+
+set(
+  ${vtk-module}_HDRS
+  vtkQuaternion.txx
+  )
 
 if(CMAKE_COMPILER_IS_GNUCXX)
   set_source_files_properties(vtkPolynomialSolversUnivariate.cxx
-    PROPERTIES
-      COMPILE_FLAGS -O0)
+    PROPERTIES COMPILE_FLAGS -O0)
 endif()
 
-vtk_module_add_module(VTK::CommonMath
-  CLASSES           ${classes}
-  TEMPLATE_CLASSES  ${template_classes}
-  HEADERS           ${headers})
+set_source_files_properties(
+  vtkFunctionSet
+  vtkInitialValueProblemSolver
+  ABSTRACT
+  )
+
+vtk_module_library(vtkCommonMath ${Module_SRCS})

@@ -22,24 +22,23 @@
  *
  * @par Thanks:
  * This class was written by Philippe Pebay, Kitware SAS 2012.
- */
+*/
 
 #ifndef vtkPAutoCorrelativeStatistics_h
 #define vtkPAutoCorrelativeStatistics_h
 
-#include "vtkAutoCorrelativeStatistics.h"
 #include "vtkFiltersParallelStatisticsModule.h" // For export macro
+#include "vtkAutoCorrelativeStatistics.h"
 
 class vtkMultiBlockDataSet;
 class vtkMultiProcessController;
 
-class VTKFILTERSPARALLELSTATISTICS_EXPORT vtkPAutoCorrelativeStatistics
-  : public vtkAutoCorrelativeStatistics
+class VTKFILTERSPARALLELSTATISTICS_EXPORT vtkPAutoCorrelativeStatistics : public vtkAutoCorrelativeStatistics
 {
 public:
   static vtkPAutoCorrelativeStatistics* New();
   vtkTypeMacro(vtkPAutoCorrelativeStatistics, vtkAutoCorrelativeStatistics);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -53,23 +52,26 @@ public:
   /**
    * Execute the parallel calculations required by the Learn option.
    */
-  void Learn(vtkTable* inData, vtkTable* inParameters, vtkMultiBlockDataSet* outMeta) override;
+  virtual void Learn( vtkTable* inData,
+                      vtkTable* inParameters,
+                      vtkMultiBlockDataSet* outMeta );
 
   /**
    * Execute the calculations required by the Test option.
    * NB: Not implemented for more than 1 processor
    */
-  void Test(vtkTable*, vtkMultiBlockDataSet*, vtkTable*) override;
+  virtual void Test( vtkTable*,
+                     vtkMultiBlockDataSet*,
+                     vtkTable* );
 
 protected:
   vtkPAutoCorrelativeStatistics();
-  ~vtkPAutoCorrelativeStatistics() override;
+  ~vtkPAutoCorrelativeStatistics();
 
   vtkMultiProcessController* Controller;
-
 private:
-  vtkPAutoCorrelativeStatistics(const vtkPAutoCorrelativeStatistics&) = delete;
-  void operator=(const vtkPAutoCorrelativeStatistics&) = delete;
+  vtkPAutoCorrelativeStatistics(const vtkPAutoCorrelativeStatistics&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPAutoCorrelativeStatistics&) VTK_DELETE_FUNCTION;
 };
 
 #endif

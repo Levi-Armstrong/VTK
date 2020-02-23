@@ -36,8 +36,8 @@
 #ifndef Q_VTK_INTERACTOR_ADAPTER_H
 #define Q_VTK_INTERACTOR_ADAPTER_H
 
-#include "QVTKWin32Header.h"
 #include "vtkGUISupportQtModule.h" // For export macro
+#include "QVTKWin32Header.h"
 #include <QtCore/QObject>
 
 class vtkRenderWindowInteractor;
@@ -53,16 +53,11 @@ class VTKGUISUPPORTQT_EXPORT QVTKInteractorAdapter : public QObject
 public:
   // Description:
   // Constructor: takes QObject parent
-  QVTKInteractorAdapter(QObject* parent = nullptr);
+  QVTKInteractorAdapter(QObject* parent);
 
   // Description:
   // Destructor
-  ~QVTKInteractorAdapter() override;
-
-  // Description:
-  // Set the device pixel ratio, this defaults to 1.0, but in Qt 5 can be != 1.0.
-  void SetDevicePixelRatio(float ratio, vtkRenderWindowInteractor* iren = nullptr);
-  float GetDevicePixelRatio() { return this->DevicePixelRatio; }
+  ~QVTKInteractorAdapter();
 
   // Description:
   // Process a QEvent and send it to the interactor
@@ -71,8 +66,6 @@ public:
 
 protected:
   int AccumulatedDelta;
-  float DevicePixelRatio;
-  static const double DevicePixelRatioTolerance;
 };
 
 #endif

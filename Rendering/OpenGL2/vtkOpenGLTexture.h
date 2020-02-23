@@ -18,7 +18,7 @@
  *
  * vtkOpenGLTexture is a concrete implementation of the abstract class
  * vtkTexture. vtkOpenGLTexture interfaces to the OpenGL rendering library.
- */
+*/
 
 #ifndef vtkOpenGLTexture_h
 #define vtkOpenGLTexture_h
@@ -33,25 +33,25 @@ class vtkTextureObject;
 class VTKRENDERINGOPENGL2_EXPORT vtkOpenGLTexture : public vtkTexture
 {
 public:
-  static vtkOpenGLTexture* New();
+  static vtkOpenGLTexture *New();
   vtkTypeMacro(vtkOpenGLTexture, vtkTexture);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Renders a texture map. It first checks the object's modified time
    * to make sure the texture maps Input is valid, then it invokes the
    * Load() method.
    */
-  void Render(vtkRenderer* ren) override;
+  virtual void Render(vtkRenderer* ren);
 
   /**
    * Implement base class method.
    */
-  void Load(vtkRenderer*) override;
+  void Load(vtkRenderer*);
 
   // Descsription:
   // Clean up after the rendering is complete.
-  void PostRender(vtkRenderer*) override;
+  virtual void PostRender(vtkRenderer*);
 
   /**
    * Release any graphics resources that are being consumed by this texture.
@@ -59,7 +59,7 @@ public:
    * resources to release. Using the same texture object in multiple
    * render windows is NOT currently supported.
    */
-  void ReleaseGraphicsResources(vtkWindow*) override;
+  void ReleaseGraphicsResources(vtkWindow*);
 
   /**
    * copy the renderers read buffer into this texture
@@ -70,25 +70,25 @@ public:
   /**
    * Provide for specifying a format for the texture
    */
-  vtkGetMacro(IsDepthTexture, int);
-  vtkSetMacro(IsDepthTexture, int);
+  vtkGetMacro(IsDepthTexture,int);
+  vtkSetMacro(IsDepthTexture,int);
   //@}
 
   //@{
   /**
    * What type of texture map GL_TEXTURE_2D versus GL_TEXTURE_RECTANGLE
    */
-  vtkGetMacro(TextureType, int);
-  vtkSetMacro(TextureType, int);
+  vtkGetMacro(TextureType,int);
+  vtkSetMacro(TextureType,int);
   //@}
 
   vtkGetObjectMacro(TextureObject, vtkTextureObject);
-  void SetTextureObject(vtkTextureObject*);
+  void SetTextureObject(vtkTextureObject *);
 
   /**
    * Return the texture unit used for this texture
    */
-  int GetTextureUnit() override;
+  virtual int GetTextureUnit();
 
   /**
    * Is this Texture Translucent?
@@ -96,29 +96,30 @@ public:
    * only fully transparent pixels and fully opaque pixels and the
    * Interpolate flag is turn off.
    */
-  int IsTranslucent() override;
+  virtual int IsTranslucent();
 
 protected:
   vtkOpenGLTexture();
-  ~vtkOpenGLTexture() override;
+  ~vtkOpenGLTexture();
 
-  vtkTimeStamp LoadTime;
-  vtkWeakPointer<vtkRenderWindow> RenderWindow; // RenderWindow used for previous render
+  vtkTimeStamp   LoadTime;
+  vtkWeakPointer<vtkRenderWindow> RenderWindow;   // RenderWindow used for previous render
 
   bool ExternalTextureObject;
-  vtkTextureObject* TextureObject;
+  vtkTextureObject *TextureObject;
 
   int IsDepthTexture;
   int TextureType;
   int PrevBlendParams[4];
 
   // used when the texture exceeds the GL limit
-  unsigned char* ResampleToPowerOfTwo(
-    int& xsize, int& ysize, unsigned char* dptr, int bpp, int maxTexSize);
+  unsigned char *ResampleToPowerOfTwo(int &xsize, int &ysize,
+                                      unsigned char *dptr, int bpp);
+
 
 private:
-  vtkOpenGLTexture(const vtkOpenGLTexture&) = delete;
-  void operator=(const vtkOpenGLTexture&) = delete;
+  vtkOpenGLTexture(const vtkOpenGLTexture&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkOpenGLTexture&) VTK_DELETE_FUNCTION;
 };
 
 #endif

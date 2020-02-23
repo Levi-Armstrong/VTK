@@ -19,34 +19,41 @@
  * vtkImageSobel2D computes a vector field from a scalar field by using
  * Sobel functions.  The number of vector components is 2 because
  * the input is an image.  Output is always doubles.
- */
+*/
 
 #ifndef vtkImageSobel2D_h
 #define vtkImageSobel2D_h
 
-#include "vtkImageSpatialAlgorithm.h"
+
 #include "vtkImagingGeneralModule.h" // For export macro
+#include "vtkImageSpatialAlgorithm.h"
 
 class VTKIMAGINGGENERAL_EXPORT vtkImageSobel2D : public vtkImageSpatialAlgorithm
 {
 public:
-  static vtkImageSobel2D* New();
-  vtkTypeMacro(vtkImageSobel2D, vtkImageSpatialAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkImageSobel2D *New();
+  vtkTypeMacro(vtkImageSobel2D,vtkImageSpatialAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
 protected:
   vtkImageSobel2D();
-  ~vtkImageSobel2D() override {}
+  ~vtkImageSobel2D() {}
 
-  void ThreadedRequestData(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector, vtkImageData*** inData, vtkImageData** outData,
-    int outExt[6], int id) override;
-  int RequestInformation(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  void ThreadedRequestData(vtkInformation *request,
+                           vtkInformationVector **inputVector,
+                           vtkInformationVector *outputVector,
+                           vtkImageData ***inData, vtkImageData **outData,
+                           int outExt[6], int id);
+  virtual int RequestInformation (vtkInformation *request,
+                                  vtkInformationVector **inputVector,
+                                  vtkInformationVector *outputVector);
 
 private:
-  vtkImageSobel2D(const vtkImageSobel2D&) = delete;
-  void operator=(const vtkImageSobel2D&) = delete;
+  vtkImageSobel2D(const vtkImageSobel2D&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkImageSobel2D&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+
+

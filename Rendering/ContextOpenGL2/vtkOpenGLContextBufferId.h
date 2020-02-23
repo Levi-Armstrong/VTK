@@ -20,13 +20,13 @@
  *
  * An 2D array where each element is the id of an entity drawn at the given
  * pixel.
- */
+*/
 
 #ifndef vtkOpenGLContextBufferId_h
 #define vtkOpenGLContextBufferId_h
 
-#include "vtkAbstractContextBufferId.h"
 #include "vtkRenderingContextOpenGL2Module.h" // For export macro
+#include "vtkAbstractContextBufferId.h"
 
 class vtkTextureObject;
 class vtkOpenGLRenderWindow;
@@ -35,31 +35,31 @@ class VTKRENDERINGCONTEXTOPENGL2_EXPORT vtkOpenGLContextBufferId : public vtkAbs
 {
 public:
   vtkTypeMacro(vtkOpenGLContextBufferId, vtkAbstractContextBufferId);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  virtual void PrintSelf(ostream &os, vtkIndent indent);
 
   /**
    * Creates a 2D Painter object.
    */
-  static vtkOpenGLContextBufferId* New();
+  static vtkOpenGLContextBufferId *New();
 
   /**
    * Release any graphics resources that are being consumed by this object.
    */
-  void ReleaseGraphicsResources() override;
+  virtual void ReleaseGraphicsResources();
 
   //@{
   /**
    * Set/Get the OpenGL context owning the texture object resource.
    */
-  void SetContext(vtkRenderWindow* context) override;
-  vtkRenderWindow* GetContext() override;
+  virtual void SetContext(vtkRenderWindow *context);
+  virtual vtkRenderWindow *GetContext();
   //@}
 
   /**
    * Returns if the context supports the required extensions.
    * \pre context_is_set: this->GetContext()!=0
    */
-  bool IsSupported() override;
+  virtual bool IsSupported();
 
   /**
    * Allocate the memory for at least Width*Height elements.
@@ -67,19 +67,20 @@ public:
    * \pre positive_height: GetHeight()>0
    * \pre context_is_set: this->GetContext()!=0
    */
-  void Allocate() override;
+  virtual void Allocate();
 
   /**
    * Tell if the buffer has been allocated.
    */
-  bool IsAllocated() const override;
+  virtual bool IsAllocated() const;
 
   /**
    * Copy the contents of the current read buffer to the internal texture
    * starting at lower left corner of the framebuffer (srcXmin,srcYmin).
    * \pre is_allocated: this->IsAllocated()
    */
-  void SetValues(int srcXmin, int srcYmin) override;
+  virtual void SetValues(int srcXmin,
+                         int srcYmin);
 
   /**
    * Return item under abscissa x and ordinate y.
@@ -89,18 +90,18 @@ public:
    * \pre is_allocated: IsAllocated()
    * \post valid_result: result>=-1
    */
-  vtkIdType GetPickedItem(int x, int y) override;
+  virtual vtkIdType GetPickedItem(int x, int y);
 
 protected:
   vtkOpenGLContextBufferId();
-  ~vtkOpenGLContextBufferId() override;
+  virtual ~vtkOpenGLContextBufferId();
 
-  vtkOpenGLRenderWindow* Context;
-  vtkTextureObject* Texture;
+  vtkOpenGLRenderWindow *Context;
+  vtkTextureObject *Texture;
 
 private:
-  vtkOpenGLContextBufferId(const vtkOpenGLContextBufferId&) = delete;
-  void operator=(const vtkOpenGLContextBufferId&) = delete;
+  vtkOpenGLContextBufferId(const vtkOpenGLContextBufferId &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkOpenGLContextBufferId &) VTK_DELETE_FUNCTION;
 };
 
 #endif // #ifndef vtkOpenGLContextBufferId_h

@@ -19,27 +19,28 @@
  * vtkRTAnalyticSource just produces images with pixel values determined
  * by a Maximum*Gaussian*XMag*sin(XFreq*x)*sin(YFreq*y)*cos(ZFreq*z)
  * Values are float scalars on point data with name "RTData".
- */
+*/
 
 #ifndef vtkRTAnalyticSource_h
 #define vtkRTAnalyticSource_h
 
-#include "vtkImageAlgorithm.h"
 #include "vtkImagingCoreModule.h" // For export macro
+#include "vtkImageAlgorithm.h"
 
 class VTKIMAGINGCORE_EXPORT vtkRTAnalyticSource : public vtkImageAlgorithm
 {
 public:
-  static vtkRTAnalyticSource* New();
-  vtkTypeMacro(vtkRTAnalyticSource, vtkImageAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkRTAnalyticSource *New();
+  vtkTypeMacro(vtkRTAnalyticSource,vtkImageAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
    * Set/Get the extent of the whole output image. Initial value is
    * {-10,10,-10,10,-10,10}
    */
-  void SetWholeExtent(int xMinx, int xMax, int yMin, int yMax, int zMin, int zMax);
+  void SetWholeExtent(int xMinx, int xMax, int yMin, int yMax,
+                      int zMin, int zMax);
   vtkGetVector6Macro(WholeExtent, int);
   //@}
 
@@ -135,7 +136,9 @@ protected:
   /**
    * Destructor.
    */
-  ~vtkRTAnalyticSource() override {}
+  ~vtkRTAnalyticSource()
+  {
+  }
 
   double XFreq;
   double YFreq;
@@ -149,15 +152,17 @@ protected:
   double Maximum;
   int SubsampleRate;
 
-  int RequestInformation(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
-  void ExecuteDataWithInformation(vtkDataObject* data, vtkInformation* outInfo) override;
+  virtual int RequestInformation(vtkInformation *request,
+                                 vtkInformationVector **inputVector,
+                                 vtkInformationVector *outputVector);
+  virtual void ExecuteDataWithInformation(vtkDataObject *data, vtkInformation *outInfo);
 
-  int FillOutputPortInformation(int port, vtkInformation* info) override;
+  int FillOutputPortInformation(int port, vtkInformation* info);
 
 private:
-  vtkRTAnalyticSource(const vtkRTAnalyticSource&) = delete;
-  void operator=(const vtkRTAnalyticSource&) = delete;
+  vtkRTAnalyticSource(const vtkRTAnalyticSource&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkRTAnalyticSource&) VTK_DELETE_FUNCTION;
 };
+
 
 #endif

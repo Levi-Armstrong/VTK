@@ -36,7 +36,7 @@ vtkStandardNewMacro(vtkRowQueryToTable);
 vtkRowQueryToTable::vtkRowQueryToTable()
 {
   this->SetNumberOfInputPorts(0);
-  this->Query = nullptr;
+  this->Query = NULL;
 }
 
 vtkRowQueryToTable::~vtkRowQueryToTable()
@@ -44,14 +44,14 @@ vtkRowQueryToTable::~vtkRowQueryToTable()
   if (this->Query)
   {
     this->Query->Delete();
-    this->Query = nullptr;
+    this->Query = NULL;
   }
 }
 
 void vtkRowQueryToTable::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
-  os << indent << "Query: " << (this->Query ? "" : "nullptr") << endl;
+  os << indent << "Query: " << (this->Query ? "" : "NULL") << endl;
   if (this->Query)
   {
     this->Query->PrintSelf(os, indent.GetNextIndent());
@@ -63,7 +63,7 @@ vtkCxxSetObjectMacro(vtkRowQueryToTable, Query, vtkRowQuery);
 vtkMTimeType vtkRowQueryToTable::GetMTime()
 {
   vtkMTimeType mTime = this->Superclass::GetMTime();
-  if (this->Query != nullptr)
+  if (this->Query != NULL)
   {
     vtkMTimeType time = this->Query->GetMTime();
     mTime = (time > mTime ? time : mTime);
@@ -71,10 +71,12 @@ vtkMTimeType vtkRowQueryToTable::GetMTime()
   return mTime;
 }
 
-int vtkRowQueryToTable::RequestData(vtkInformation*, vtkInformationVector** vtkNotUsed(inputVector),
+int vtkRowQueryToTable::RequestData(
+  vtkInformation*,
+  vtkInformationVector** vtkNotUsed(inputVector),
   vtkInformationVector* outputVector)
 {
-  if (this->Query == nullptr)
+  if (this->Query == NULL)
   {
     vtkErrorMacro("Query undefined.");
     return 0;
@@ -148,10 +150,10 @@ int vtkRowQueryToTable::RequestData(vtkInformation*, vtkInformationVector** vtkN
 
     // Update progress every 100 rows
     numRows++;
-    if ((numRows % 100) == 0)
+    if ((numRows%100)==0)
     {
       // 1% for every 100 rows, and then 'spin around'
-      progressGuess = ((numRows / 100) % 100) * .01;
+      progressGuess = ((numRows/100)%100)*.01;
       this->UpdateProgress(progressGuess);
     }
   }
@@ -159,3 +161,5 @@ int vtkRowQueryToTable::RequestData(vtkInformation*, vtkInformationVector** vtkN
 
   return 1;
 }
+
+

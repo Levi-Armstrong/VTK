@@ -26,26 +26,27 @@
 #include "vtkGradientFilter.h"
 #include "vtkPolyDataMapper.h"
 #include "vtkRegressionTestImage.h"
+#include "vtkRenderer.h"
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
-#include "vtkRenderer.h"
 #include "vtkStdString.h"
 #include "vtkTubeFilter.h"
 #include "vtkUnstructuredGridReader.h"
 
 #include "vtkSmartPointer.h"
-#define VTK_CREATE(type, var) vtkSmartPointer<type> var = vtkSmartPointer<type>::New()
+#define VTK_CREATE(type, var) \
+  vtkSmartPointer<type> var = vtkSmartPointer<type>::New()
 
-int UnstructuredGridFastGradients(int argc, char* argv[])
+int UnstructuredGridFastGradients(int argc, char *argv[])
 {
   int i;
   // Need to get the data root.
-  const char* data_root = nullptr;
-  for (i = 0; i < argc - 1; i++)
+  const char *data_root = NULL;
+  for (i = 0; i < argc-1; i++)
   {
     if (strcmp("-D", argv[i]) == 0)
     {
-      data_root = argv[i + 1];
+      data_root = argv[i+1];
       break;
     }
   }
@@ -86,7 +87,8 @@ int UnstructuredGridFastGradients(int argc, char* argv[])
 
   VTK_CREATE(vtkAssignAttribute, vectors);
   vectors->SetInputConnection(gradients->GetOutputPort());
-  vectors->Assign("Gradients", vtkDataSetAttributes::VECTORS, vtkAssignAttribute::POINT_DATA);
+  vectors->Assign("Gradients", vtkDataSetAttributes::VECTORS,
+                  vtkAssignAttribute::POINT_DATA);
 
   VTK_CREATE(vtkArrowSource, arrow);
 
@@ -118,7 +120,7 @@ int UnstructuredGridFastGradients(int argc, char* argv[])
   renwin->SetSize(350, 500);
 
   renderer->ResetCamera();
-  vtkCamera* camera = renderer->GetActiveCamera();
+  vtkCamera *camera = renderer->GetActiveCamera();
   camera->Elevation(-80.0);
   camera->OrthogonalizeViewUp();
   camera->Azimuth(135.0);

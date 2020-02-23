@@ -23,7 +23,7 @@
 vtkStandardNewMacro(vtkImageDilateErode3D);
 
 //----------------------------------------------------------------------------
-// Construct an instance of vtkImageDilateErode3D filter.
+// Construct an instance of vtkImageDilateErode3D fitler.
 // By default zero values are dilated.
 vtkImageDilateErode3D::vtkImageDilateErode3D()
 {
@@ -46,14 +46,14 @@ vtkImageDilateErode3D::~vtkImageDilateErode3D()
   if (this->Ellipse)
   {
     this->Ellipse->Delete();
-    this->Ellipse = nullptr;
+    this->Ellipse = NULL;
   }
 }
 
 //----------------------------------------------------------------------------
 void vtkImageDilateErode3D::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 
   os << indent << "DilateValue: " << this->DilateValue << "\n";
   os << indent << "ErodeValue: " << this->ErodeValue << "\n";
@@ -88,18 +88,22 @@ void vtkImageDilateErode3D::SetKernelSize(int size0, int size1, int size2)
   if (modified)
   {
     this->Modified();
-    this->Ellipse->SetWholeExtent(
-      0, this->KernelSize[0] - 1, 0, this->KernelSize[1] - 1, 0, this->KernelSize[2] - 1);
-    this->Ellipse->SetCenter(static_cast<double>(this->KernelSize[0] - 1) * 0.5,
-      static_cast<double>(this->KernelSize[1] - 1) * 0.5,
-      static_cast<double>(this->KernelSize[2] - 1) * 0.5);
-    this->Ellipse->SetRadius(static_cast<double>(this->KernelSize[0]) * 0.5,
-      static_cast<double>(this->KernelSize[1]) * 0.5,
-      static_cast<double>(this->KernelSize[2]) * 0.5);
+    this->Ellipse->SetWholeExtent(0, this->KernelSize[0]-1,
+                                  0, this->KernelSize[1]-1,
+                                  0, this->KernelSize[2]-1);
+    this->Ellipse->SetCenter(static_cast<double>(this->KernelSize[0]-1)*0.5,
+                             static_cast<double>(this->KernelSize[1]-1)*0.5,
+                             static_cast<double>(this->KernelSize[2]-1)*0.5);
+    this->Ellipse->SetRadius(static_cast<double>(this->KernelSize[0])*0.5,
+                             static_cast<double>(this->KernelSize[1])*0.5,
+                             static_cast<double>(this->KernelSize[2])*0.5);
     // make sure scalars have been allocated (needed if multithreaded is used)
-    vtkInformation* ellipseOutInfo = this->Ellipse->GetExecutive()->GetOutputInformation(0);
-    ellipseOutInfo->Set(vtkStreamingDemandDrivenPipeline::UPDATE_EXTENT(), 0,
-      this->KernelSize[0] - 1, 0, this->KernelSize[1] - 1, 0, this->KernelSize[2] - 1);
+    vtkInformation *ellipseOutInfo =
+      this->Ellipse->GetExecutive()->GetOutputInformation(0);
+    ellipseOutInfo->Set(vtkStreamingDemandDrivenPipeline::UPDATE_EXTENT(),
+                        0, this->KernelSize[0]-1,
+                        0, this->KernelSize[1]-1,
+                        0, this->KernelSize[2]-1);
     this->Ellipse->Update();
   }
 }
@@ -110,9 +114,11 @@ void vtkImageDilateErode3D::SetKernelSize(int size0, int size1, int size2)
 // If the filter needs to be faster, the function could be duplicated
 // for strictly center (no boundary ) processing.
 template <class T>
-void vtkImageDilateErode3DExecute(vtkImageDilateErode3D* self, vtkImageData* mask,
-  vtkImageData* inData, T* inPtr, vtkImageData* outData, int* outExt, T* outPtr, int id,
-  vtkInformation* inInfo)
+void vtkImageDilateErode3DExecute(vtkImageDilateErode3D *self,
+                                  vtkImageData *mask,
+                                  vtkImageData *inData, T *inPtr,
+                                  vtkImageData *outData, int *outExt,
+                                  T *outPtr, int id, vtkInformation *inInfo)
 {
   int *kernelMiddle, *kernelSize;
   // For looping though output (and input) pixels.
@@ -149,12 +155,9 @@ void vtkImageDilateErode3DExecute(vtkImageDilateErode3D* self, vtkImageData* mas
   inImageMin2 = inImageExt[4];
   inImageMax2 = inImageExt[5];
   outData->GetIncrements(outInc0, outInc1, outInc2);
-  outMin0 = outExt[0];
-  outMax0 = outExt[1];
-  outMin1 = outExt[2];
-  outMax1 = outExt[3];
-  outMin2 = outExt[4];
-  outMax2 = outExt[5];
+  outMin0 = outExt[0];   outMax0 = outExt[1];
+  outMin1 = outExt[2];   outMax1 = outExt[3];
+  outMin2 = outExt[4];   outMax2 = outExt[5];
   numComps = outData->GetNumberOfScalarComponents();
 
   // Get ivars of this object (easier than making friends)
@@ -162,22 +165,22 @@ void vtkImageDilateErode3DExecute(vtkImageDilateErode3D* self, vtkImageData* mas
   dilateValue = static_cast<T>(self->GetDilateValue());
   kernelSize = self->GetKernelSize();
   kernelMiddle = self->GetKernelMiddle();
-  hoodMin0 = -kernelMiddle[0];
-  hoodMin1 = -kernelMiddle[1];
-  hoodMin2 = -kernelMiddle[2];
+  hoodMin0 = - kernelMiddle[0];
+  hoodMin1 = - kernelMiddle[1];
+  hoodMin2 = - kernelMiddle[2];
   hoodMax0 = hoodMin0 + kernelSize[0] - 1;
   hoodMax1 = hoodMin1 + kernelSize[1] - 1;
   hoodMax2 = hoodMin2 + kernelSize[2] - 1;
 
   // Setup mask info
-  maskPtr = static_cast<unsigned char*>(mask->GetScalarPointer());
+  maskPtr = static_cast<unsigned char *>(mask->GetScalarPointer());
   mask->GetIncrements(maskInc0, maskInc1, maskInc2);
 
   // in and out should be marching through corresponding pixels.
-  inPtr = static_cast<T*>(inData->GetScalarPointer(outMin0, outMin1, outMin2));
+  inPtr = static_cast<T *>(inData->GetScalarPointer(outMin0, outMin1, outMin2));
 
-  target =
-    static_cast<unsigned long>(numComps * (outMax2 - outMin2 + 1) * (outMax1 - outMin1 + 1) / 50.0);
+  target = static_cast<unsigned long>(numComps*(outMax2-outMin2+1)*
+                                      (outMax1-outMin1+1)/50.0);
   target++;
 
   // loop through components
@@ -190,13 +193,14 @@ void vtkImageDilateErode3DExecute(vtkImageDilateErode3D* self, vtkImageData* mas
     {
       outPtr1 = outPtr2;
       inPtr1 = inPtr2;
-      for (outIdx1 = outMin1; !self->AbortExecute && outIdx1 <= outMax1; ++outIdx1)
+      for (outIdx1 = outMin1;
+           !self->AbortExecute && outIdx1 <= outMax1; ++outIdx1)
       {
         if (!id)
         {
-          if (!(count % target))
+          if (!(count%target))
           {
-            self->UpdateProgress(count / (50.0 * target));
+            self->UpdateProgress(count/(50.0*target));
           }
           count++;
         }
@@ -213,8 +217,8 @@ void vtkImageDilateErode3DExecute(vtkImageDilateErode3D* self, vtkImageData* mas
             // loop through neighborhood pixels
             // as sort of a hack to handle boundaries,
             // input pointer will be marching through data that does not exist.
-            hoodPtr2 = inPtr0 - kernelMiddle[0] * inInc0 - kernelMiddle[1] * inInc1 -
-              kernelMiddle[2] * inInc2;
+            hoodPtr2 = inPtr0 - kernelMiddle[0] * inInc0
+              - kernelMiddle[1] * inInc1 - kernelMiddle[2] * inInc2;
             maskPtr2 = maskPtr;
             for (hoodIdx2 = hoodMin2; hoodIdx2 <= hoodMax2; ++hoodIdx2)
             {
@@ -227,9 +231,12 @@ void vtkImageDilateErode3DExecute(vtkImageDilateErode3D* self, vtkImageData* mas
                 for (hoodIdx0 = hoodMin0; hoodIdx0 <= hoodMax0; ++hoodIdx0)
                 {
                   // A quick but rather expensive way to handle boundaries
-                  if (outIdx0 + hoodIdx0 >= inImageMin0 && outIdx0 + hoodIdx0 <= inImageMax0 &&
-                    outIdx1 + hoodIdx1 >= inImageMin1 && outIdx1 + hoodIdx1 <= inImageMax1 &&
-                    outIdx2 + hoodIdx2 >= inImageMin2 && outIdx2 + hoodIdx2 <= inImageMax2)
+                  if ( outIdx0 + hoodIdx0 >= inImageMin0 &&
+                       outIdx0 + hoodIdx0 <= inImageMax0 &&
+                       outIdx1 + hoodIdx1 >= inImageMin1 &&
+                       outIdx1 + hoodIdx1 <= inImageMax1 &&
+                       outIdx2 + hoodIdx2 >= inImageMin2 &&
+                       outIdx2 + hoodIdx2 <= inImageMax2)
                   {
                     if (*hoodPtr0 == dilateValue && *maskPtr0)
                     {
@@ -265,18 +272,22 @@ void vtkImageDilateErode3DExecute(vtkImageDilateErode3D* self, vtkImageData* mas
 //----------------------------------------------------------------------------
 // This method contains the first switch statement that calls the correct
 // templated function for the input and output Data types.
-// It handles image boundaries, so the image does not shrink.
-void vtkImageDilateErode3D::ThreadedRequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** inputVector, vtkInformationVector* vtkNotUsed(outputVector),
-  vtkImageData*** inData, vtkImageData** outData, int outExt[6], int id)
+// It hanldes image boundaries, so the image does not shrink.
+void vtkImageDilateErode3D::ThreadedRequestData(
+  vtkInformation *vtkNotUsed(request),
+  vtkInformationVector **inputVector,
+  vtkInformationVector *vtkNotUsed(outputVector),
+  vtkImageData ***inData,
+  vtkImageData **outData,
+  int outExt[6], int id)
 {
   int inExt[6], wholeExt[6];
-  vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
+  vtkInformation *inInfo = inputVector[0]->GetInformationObject(0);
   inInfo->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT(), wholeExt);
-  this->InternalRequestUpdateExtent(inExt, outExt, wholeExt);
-  void* inPtr = inData[0][0]->GetScalarPointerForExtent(inExt);
-  void* outPtr = outData[0]->GetScalarPointerForExtent(outExt);
-  vtkImageData* mask;
+  this->InternalRequestUpdateExtent(inExt,outExt,wholeExt);
+  void *inPtr = inData[0][0]->GetScalarPointerForExtent(inExt);
+  void *outPtr = outData[0]->GetScalarPointerForExtent(outExt);
+  vtkImageData *mask;
 
   // Error checking on mask
   mask = this->Ellipse->GetOutput();
@@ -290,15 +301,18 @@ void vtkImageDilateErode3D::ThreadedRequestData(vtkInformation* vtkNotUsed(reque
   if (outData[0]->GetScalarType() != inData[0][0]->GetScalarType())
   {
     vtkErrorMacro(<< "Execute: output ScalarType, "
-                  << vtkImageScalarTypeNameMacro(outData[0]->GetScalarType())
-                  << " must match input scalar type");
+      << vtkImageScalarTypeNameMacro(outData[0]->GetScalarType())
+      << " must match input scalar type");
     return;
   }
 
   switch (inData[0][0]->GetScalarType())
   {
-    vtkTemplateMacro(vtkImageDilateErode3DExecute(this, mask, inData[0][0],
-      static_cast<VTK_TT*>(inPtr), outData[0], outExt, static_cast<VTK_TT*>(outPtr), id, inInfo));
+    vtkTemplateMacro(
+      vtkImageDilateErode3DExecute(this, mask, inData[0][0],
+                                   static_cast<VTK_TT *>(inPtr),outData[0],
+                                   outExt,
+                                   static_cast<VTK_TT *>(outPtr),id, inInfo));
     default:
       vtkErrorMacro(<< "Execute: Unknown ScalarType");
       return;
@@ -306,8 +320,9 @@ void vtkImageDilateErode3D::ThreadedRequestData(vtkInformation* vtkNotUsed(reque
 }
 
 //----------------------------------------------------------------------------
-int vtkImageDilateErode3D::RequestData(
-  vtkInformation* request, vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+int vtkImageDilateErode3D::RequestData(vtkInformation *request,
+                                        vtkInformationVector **inputVector,
+                                        vtkInformationVector *outputVector)
 {
   this->Ellipse->Update();
   return this->Superclass::RequestData(request, inputVector, outputVector);

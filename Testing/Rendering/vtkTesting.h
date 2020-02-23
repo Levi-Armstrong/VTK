@@ -57,15 +57,15 @@
  *    Test failed
  *    }
  *
- */
+*/
 
 #ifndef vtkTesting_h
 #define vtkTesting_h
 
-#include "vtkObject.h"
 #include "vtkTestingRenderingModule.h" // For export macro
-#include <string>                      // STL Header used for argv
-#include <vector>                      // STL Header used for argv
+#include "vtkObject.h"
+#include <vector> // STL Header used for argv
+#include <string> // STL Header used for argv
 
 class vtkAlgorithm;
 class vtkRenderWindow;
@@ -74,29 +74,21 @@ class vtkDataArray;
 class vtkDataSet;
 class vtkRenderWindowInteractor;
 
-/**
- * A unit test may return this value to tell ctest to skip the test. This can
- * be used to abort a test when an unsupported runtime configuration is
- * detected.
- */
-const int VTK_SKIP_RETURN_CODE = 125;
-
 class VTKTESTINGRENDERING_EXPORT vtkTesting : public vtkObject
 {
 public:
-  static vtkTesting* New();
-  vtkTypeMacro(vtkTesting, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkTesting *New();
+  vtkTypeMacro(vtkTesting,vtkObject);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
-  enum ReturnValue
-  {
+  enum ReturnValue {
     FAILED = 0,
     PASSED = 1,
     NOT_RUN = 2,
     DO_INTERACTOR = 3
   };
 
-  static int Test(int argc, char* argv[], vtkRenderWindow* rw, double thresh);
+  static int Test(int argc, char *argv[], vtkRenderWindow *rw, double thresh);
 
   /**
    * This method is intended to be a comprehensive, one line replacement for
@@ -153,8 +145,9 @@ public:
    * return vtkTesting::InteractorEventLoop( argc, argv, iren );
    * }
    */
-  static int InteractorEventLoop(
-    int argc, char* argv[], vtkRenderWindowInteractor* iren, const char* stream = nullptr);
+  static int InteractorEventLoop(int argc, char *argv[],
+                                 vtkRenderWindowInteractor *iren,
+                                 const char *stream = NULL);
 
   //@{
   /**
@@ -162,9 +155,9 @@ public:
    * default use back buffer first, then try the front buffer if the
    * test fails when comparing to the back buffer.
    */
-  vtkBooleanMacro(FrontBuffer, vtkTypeBool);
-  vtkGetMacro(FrontBuffer, vtkTypeBool);
-  void SetFrontBuffer(vtkTypeBool frontBuffer);
+  vtkBooleanMacro(FrontBuffer, int);
+  vtkGetMacro(FrontBuffer, int);
+  void SetFrontBuffer(int frontBuffer);
   //@}
 
   /**
@@ -178,7 +171,7 @@ public:
    * the output to the output stream os. Includes timing information
    * in the output.
    */
-  virtual int RegressionTestAndCaptureOutput(double thresh, ostream& os);
+  virtual int RegressionTestAndCaptureOutput(double thresh, ostream &os);
 
   /**
    * Perform the test and return the result. At the same time, write
@@ -186,15 +179,16 @@ public:
    * same as RegressionTestAndCaptureOutput, but does not include
    * timing information in the output.
    */
-  virtual int RegressionTest(double thresh, ostream& os);
+  virtual int RegressionTest(double thresh,ostream &os);
 
   //@{
   /**
    * Perform the test and return result. The test image will be read from the
    * png file at pngFileName.
    */
-  virtual int RegressionTest(const std::string& pngFileName, double thresh);
-  virtual int RegressionTest(const std::string& pngFileName, double thresh, ostream& os);
+  virtual int RegressionTest(const std::string &pngFileName, double thresh);
+  virtual int RegressionTest(const std::string &pngFileName,
+                             double thresh, ostream& os);
   //@}
 
   //@{
@@ -202,7 +196,8 @@ public:
    * Compare the image with the valid image.
    */
   virtual int RegressionTest(vtkAlgorithm* imageSource, double thresh);
-  virtual int RegressionTest(vtkAlgorithm* imageSource, double thresh, ostream& os);
+  virtual int RegressionTest(vtkAlgorithm* imageSource, double thresh,
+                             ostream& os);
   //@}
 
   /**
@@ -211,13 +206,13 @@ public:
    * (this includes instances of vtkPoints) Compare the result of
    * each L2 comutation to "tol".
    */
-  int CompareAverageOfL2Norm(vtkDataSet* pdA, vtkDataSet* pdB, double tol);
+  int CompareAverageOfL2Norm(vtkDataSet *pdA, vtkDataSet *pdB, double tol);
 
   /**
    * Compute the average L2 norm between two data arrays "daA" and "daB"
    * and compare against "tol".
    */
-  int CompareAverageOfL2Norm(vtkDataArray* daA, vtkDataArray* daB, double tol);
+  int CompareAverageOfL2Norm(vtkDataArray *daA, vtkDataArray *daB, double tol);
 
   //@{
   /**
@@ -232,7 +227,7 @@ public:
    * Set/Get the name of the valid image file
    */
   vtkSetStringMacro(ValidImageFileName);
-  const char* GetValidImageFileName();
+  const char *GetValidImageFileName();
   //@}
 
   //@{
@@ -249,9 +244,9 @@ public:
    * arguments to be passed in prior to retrieving these values. Just call
    * AddArgument for each argument that was passed into the command line
    */
-  void AddArgument(const char* argv);
-  void AddArguments(int argc, const char** argv);
-  void AddArguments(int argc, char** argv);
+  void AddArgument(const char *argv);
+  void AddArguments(int argc,const char **argv);
+  void AddArguments(int argc, char **argv);
   //@}
 
   /**
@@ -259,7 +254,7 @@ public:
    * (assumed to be the next on the command tail). Up to caller
    * to delete the returned string.
    */
-  char* GetArgument(const char* arg);
+  char *GetArgument(const char *arg);
 
   /**
    * This method delete all arguments in vtkTesting, this way you can reuse
@@ -271,7 +266,7 @@ public:
   /**
    * Get some parameters from the command line arguments, env, or defaults
    */
-  const char* GetDataRoot();
+  const char *GetDataRoot();
   vtkSetStringMacro(DataRoot);
   //@}
 
@@ -279,7 +274,7 @@ public:
   /**
    * Get some parameters from the command line arguments, env, or defaults
    */
-  const char* GetTempDirectory();
+  const char *GetTempDirectory();
   vtkSetStringMacro(TempDirectory);
   //@}
 
@@ -296,7 +291,7 @@ public:
   /**
    * Is some arbitrary user flag ("-X", "-Z" etc) specified
    */
-  int IsFlagSpecified(const char* flag);
+  int IsFlagSpecified(const char *flag);
 
   //@{
   /**
@@ -317,28 +312,30 @@ public:
 
 protected:
   vtkTesting();
-  ~vtkTesting() override;
+  ~vtkTesting();
 
   static char* IncrementFileName(const char* fname, int count);
   static int LookForFile(const char* newFileName);
 
-  vtkTypeBool FrontBuffer;
+  int FrontBuffer;
   vtkRenderWindow* RenderWindow;
   char* ValidImageFileName;
   double ImageDifference;
-  char* TempDirectory;
+  char *TempDirectory;
   int BorderOffset;
   int Verbose;
 
   std::vector<std::string> Args;
 
-  char* DataRoot;
+  char *DataRoot;
   double StartWallTime;
   double StartCPUTime;
 
 private:
-  vtkTesting(const vtkTesting&) = delete;
-  void operator=(const vtkTesting&) = delete;
+  vtkTesting(const vtkTesting&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTesting&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+

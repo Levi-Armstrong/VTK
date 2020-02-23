@@ -18,24 +18,42 @@
 #include <iostream>
 
 #include "vtkImageData.h"
-#include "vtkProperty2D.h"
 #include "vtkTextProperty.h"
+#include "vtkProperty2D.h"
 
 #include "WidgetTestingMacros.h"
 #include "vtkTestErrorObserver.h"
 
-#include "vtkPointHandleRepresentation3D.h"
 #include "vtkTextActor.h"
+#include "vtkPointHandleRepresentation3D.h"
 
-int vtkSeedRepresentationTest1(int, char*[])
+#define CHECK_ERROR_MSG(observer, msg)   \
+  { \
+  std::string expectedMsg(msg); \
+  if (!observer->GetError()) \
+  { \
+    std::cout << "Failed to catch any error. Expected the error message to contain \"" << expectedMsg << std::endl; \
+  } \
+  else \
+  { \
+    std::string gotMsg(observer->GetErrorMessage()); \
+    if (gotMsg.find(expectedMsg) == std::string::npos) \
+    { \
+      std::cout << "Error message does not contain \"" << expectedMsg << "\" got \n\"" << gotMsg << std::endl; \
+    } \
+  } \
+  } \
+  observer->Clear()
+
+int vtkSeedRepresentationTest1(int , char * [] )
 {
-  vtkSmartPointer<vtkSeedRepresentation> node1 = vtkSmartPointer<vtkSeedRepresentation>::New();
+  vtkSmartPointer< vtkSeedRepresentation > node1 = vtkSmartPointer< vtkSeedRepresentation >::New();
 
   EXERCISE_BASIC_REPRESENTATION_METHODS(vtkSeedRepresentation, node1);
 
   std::cout << "Number of Seeds = " << node1->GetNumberOfSeeds() << std::endl;
 
-  double pos[3] = { 1.0, 2.0, -3.0 };
+  double pos[3] = {1.0, 2.0, -3.0};
   double pos2[3];
   int s = 0;
 
@@ -45,21 +63,20 @@ int vtkSeedRepresentationTest1(int, char*[])
   node1->AddObserver(vtkCommand::ErrorEvent, errorObserver);
   node1->SetSeedDisplayPosition(s, pos);
 
-  int status = errorObserver->CheckErrorMessage("Trying to access non-existent handle");
+  CHECK_ERROR_MSG(errorObserver, "Trying to access non-existent handle");
   node1->GetSeedWorldPosition(s, pos2);
-  status += errorObserver->CheckErrorMessage("Trying to access non-existent handle");
-  node1->GetSeedDisplayPosition(s, pos);
-  status += errorObserver->CheckErrorMessage("Trying to access non-existent handle");
+  CHECK_ERROR_MSG(errorObserver, "Trying to access non-existent handle");
+  node1->GetSeedDisplayPosition(s,pos);
+  CHECK_ERROR_MSG(errorObserver, "Trying to access non-existent handle");
 
   // set/get display and world position will fail without seeds having been
   // created, so add some and then do the testing of return values.
 
   // have to set rep first
-  vtkSmartPointer<vtkPointHandleRepresentation3D> handleRep =
-    vtkSmartPointer<vtkPointHandleRepresentation3D>::New();
+  vtkSmartPointer<vtkPointHandleRepresentation3D> handleRep = vtkSmartPointer<vtkPointHandleRepresentation3D>::New();
   node1->SetHandleRepresentation(handleRep);
 
-  double e[2] = { 10.0, 10.0 };
+  double e[2] ={ 10.0, 10.0};
   int numSeeds = 10;
   for (int n = 0; n < numSeeds; n++)
   {
@@ -72,26 +89,26 @@ int vtkSeedRepresentationTest1(int, char*[])
 
   node1->SetSeedDisplayPosition(s, pos);
   node1->GetSeedDisplayPosition(s, pos2);
-  if (pos2[0] != pos[0] || pos2[1] != pos[1])
+  if (pos2[0] != pos[0] ||
+      pos2[1] != pos[1])
   {
-    std::cerr << "Error in Set/Get Seed display position " << s << ", expected " << pos[0] << ", "
-              << pos[1] << ", instead got " << pos2[0] << ", " << pos2[1] << std::endl;
+    std::cerr << "Error in Set/Get Seed display position " << s << ", expected " << pos[0] << ", " << pos[1] << ", instead got " << pos2[0] << ", " << pos2[1] << std::endl;
     return EXIT_FAILURE;
   }
 
   node1->GetSeedWorldPosition(s, pos2);
-  std::cout << "Get Seed world position " << s << " = " << pos2[0] << ", " << pos2[1] << ", "
-            << pos2[2] << std::endl;
+  std::cout << "Get Seed world position " << s << " = " << pos2[0] << ", " << pos2[1] <<  ", " << pos2[2] << std::endl;
 
   vtkSmartPointer<vtkPointHandleRepresentation3D> handleRep2;
   handleRep2 = vtkPointHandleRepresentation3D::SafeDownCast(node1->GetHandleRepresentation());
-  if (handleRep2 == nullptr || handleRep2 != handleRep)
+  if (handleRep2 == NULL ||
+      handleRep2 != handleRep)
   {
     std::cerr << "Error in Set/Get handle rep at top level." << std::endl;
     return EXIT_FAILURE;
   }
-  handleRep2 = vtkPointHandleRepresentation3D::SafeDownCast(node1->GetHandleRepresentation(0));
-  if (handleRep2 == nullptr)
+  handleRep2 =  vtkPointHandleRepresentation3D::SafeDownCast(node1->GetHandleRepresentation(0));
+  if (handleRep2 == NULL)
   {
     std::cerr << "Error in Set/Get handle rep 0." << std::endl;
     return EXIT_FAILURE;
@@ -103,10 +120,12 @@ int vtkSeedRepresentationTest1(int, char*[])
   int activeHandle = node1->GetActiveHandle();
   std::cout << "Active Handle = " << activeHandle << std::endl;
 
+
   node1->RemoveLastHandle();
   node1->RemoveActiveHandle();
 
   node1->RemoveHandle(0);
+
 
   return EXIT_SUCCESS;
 }

@@ -1,5 +1,12 @@
-vtk_add_test_cxx(vtkViewsInfovisCxxTests tests
-  TestConeLayoutStrategy.cxx
+if(VTK_RENDERING_BACKEND STREQUAL "OpenGL2")
+  set(extra_opengl2_tests
+    # the following produce incorrect results in OpenGL
+    TestConeLayoutStrategy.cxx
+    )
+endif()
+
+vtk_add_test_cxx(${vtk-module}CxxTests tests
+  ${extra_opengl2_tests}
   TestCoincidentGraphLayoutView.cxx
   TestColumnTree.cxx
   TestDendrogramItem.cxx
@@ -22,5 +29,5 @@ vtk_add_test_cxx(vtkViewsInfovisCxxTests tests
   TestTreeRingView.cxx
   )
 
-vtk_test_cxx_executable(vtkViewsInfovisCxxTests tests
+vtk_test_cxx_executable(${vtk-module}CxxTests tests
   RENDERING_FACTORY)

@@ -18,31 +18,32 @@
  *
  * vtkSQLiteToTableReader reads a table from an SQLite database and
  * outputs it as a vtkTable.
- */
+*/
 
 #ifndef vtkSQLiteToTableReader_h
 #define vtkSQLiteToTableReader_h
 
-#include "vtkDatabaseToTableReader.h"
 #include "vtkIOSQLModule.h" // For export macro
+#include "vtkDatabaseToTableReader.h"
 
 class vtkSQLiteDatabase;
 
-class VTKIOSQL_EXPORT vtkSQLiteToTableReader : public vtkDatabaseToTableReader
+class VTKIOSQL_EXPORT vtkSQLiteToTableReader :
+  public vtkDatabaseToTableReader
 {
 public:
-  static vtkSQLiteToTableReader* New();
-  vtkTypeMacro(vtkSQLiteToTableReader, vtkDatabaseToTableReader);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkSQLiteToTableReader *New();
+  vtkTypeMacro(vtkSQLiteToTableReader,vtkDatabaseToTableReader);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
 protected:
-  vtkSQLiteToTableReader();
-  ~vtkSQLiteToTableReader() override;
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-
+   vtkSQLiteToTableReader();
+  ~vtkSQLiteToTableReader();
+  int RequestData(vtkInformation *, vtkInformationVector **,
+                          vtkInformationVector *);
 private:
-  vtkSQLiteToTableReader(const vtkSQLiteToTableReader&) = delete;
-  void operator=(const vtkSQLiteToTableReader&) = delete;
+  vtkSQLiteToTableReader(const vtkSQLiteToTableReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkSQLiteToTableReader&) VTK_DELETE_FUNCTION;
 };
 
 #endif

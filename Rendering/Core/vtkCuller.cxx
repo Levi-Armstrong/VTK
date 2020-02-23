@@ -14,12 +14,17 @@
 =========================================================================*/
 #include "vtkCuller.h"
 
-vtkCuller::vtkCuller() = default;
 
-vtkCuller::~vtkCuller() = default;
+vtkCuller::vtkCuller()
+{
+}
+
+vtkCuller::~vtkCuller()
+{
+}
 
 //----------------------------------------------------------------------------
 void vtkCuller::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 }

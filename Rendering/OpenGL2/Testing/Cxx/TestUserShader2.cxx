@@ -19,18 +19,19 @@
 #include "vtkNew.h"
 #include "vtkOpenGLPolyDataMapper.h"
 #include "vtkPLYReader.h"
+#include "vtkPolyDataNormals.h"
 #include "vtkProperty.h"
 #include "vtkRegressionTestImage.h"
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
 #include "vtkRenderer.h"
 #include "vtkShaderProgram.h"
-#include "vtkShaderProperty.h"
 #include "vtkTestUtilities.h"
 #include "vtkTimerLog.h"
-#include "vtkTriangleMeshPointNormals.h"
 
-#define VTK_CREATE(type, name) vtkSmartPointer<type> name = vtkSmartPointer<type>::New()
+
+#define VTK_CREATE(type, name) \
+  vtkSmartPointer<type> name = vtkSmartPointer<type>::New()
 
 // -----------------------------------------------------------------------
 // Update a uniform in the shader for each render. We do this with a
@@ -38,18 +39,19 @@
 class vtkShaderCallback : public vtkCommand
 {
 public:
-  static vtkShaderCallback* New() { return new vtkShaderCallback; }
-  vtkRenderer* Renderer;
-  void Execute(vtkObject*, unsigned long, void* calldata) override
+  static vtkShaderCallback *New()
+    { return new vtkShaderCallback; }
+  vtkRenderer *Renderer;
+  void Execute(vtkObject *, unsigned long, void*cbo) VTK_OVERRIDE
   {
-    vtkShaderProgram* program = reinterpret_cast<vtkShaderProgram*>(calldata);
+    vtkOpenGLHelper *cellBO = reinterpret_cast<vtkOpenGLHelper*>(cbo);
 
     float diffuseColor[3];
 
-#if 0 // trippy mode
+#if 0  // trippy mode
     float inputHSV[3];
     double theTime = vtkTimerLog::GetUniversalTime();
-    double twopi = 2.0*vtkMath::Pi();
+    double twopi = 2.0*3.1415926;
 
     inputHSV[0] = sin(twopi*fmod(theTime,3.0)/3.0)/4.0 + 0.25;
     inputHSV[1] = sin(twopi*fmod(theTime,4.0)/4.0)/2.0 + 0.5;
@@ -75,15 +77,15 @@ public:
     diffuseColor[0] = 0.4;
     diffuseColor[1] = 0.7;
     diffuseColor[2] = 0.6;
-    program->SetUniform3f("diffuseColorUniform", diffuseColor);
+    cellBO->Program->SetUniform3f("diffuseColorUniform", diffuseColor);
 #endif
   }
 
-  vtkShaderCallback() { this->Renderer = nullptr; }
+  vtkShaderCallback() { this->Renderer = 0; }
 };
 
 //----------------------------------------------------------------------------
-int TestUserShader2(int argc, char* argv[])
+int TestUserShader2(int argc, char *argv[])
 {
   vtkNew<vtkActor> actor;
   vtkNew<vtkRenderer> renderer;
@@ -91,25 +93,24 @@ int TestUserShader2(int argc, char* argv[])
   renderer->SetBackground(0.0, 0.0, 0.0);
   vtkNew<vtkRenderWindow> renderWindow;
   renderWindow->SetSize(400, 400);
-  renderWindow->AddRenderer(renderer);
-  renderer->AddActor(actor);
+  renderWindow->AddRenderer(renderer.Get());
+  renderer->AddActor(actor.Get());
   renderer->GradientBackgroundOn();
-  vtkNew<vtkRenderWindowInteractor> iren;
-  iren->SetRenderWindow(renderWindow);
+  vtkNew<vtkRenderWindowInteractor>  iren;
+  iren->SetRenderWindow(renderWindow.Get());
 
-  const char* fileName = vtkTestUtilities::ExpandDataFileName(argc, argv, "Data/dragon.ply");
+  const char* fileName = vtkTestUtilities::ExpandDataFileName(argc, argv,
+                                                               "Data/dragon.ply");
   vtkNew<vtkPLYReader> reader;
   reader->SetFileName(fileName);
   reader->Update();
 
-  delete[] fileName;
-
-  vtkNew<vtkTriangleMeshPointNormals> norms;
+  vtkNew<vtkPolyDataNormals> norms;
   norms->SetInputConnection(reader->GetOutputPort());
   norms->Update();
 
   mapper->SetInputConnection(norms->GetOutputPort());
-  actor->SetMapper(mapper);
+  actor->SetMapper(mapper.Get());
   actor->GetProperty()->SetAmbientColor(0.2, 0.2, 1.0);
   actor->GetProperty()->SetDiffuseColor(1.0, 0.65, 0.7);
   actor->GetProperty()->SetSpecularColor(1.0, 1.0, 1.0);
@@ -119,25 +120,15 @@ int TestUserShader2(int argc, char* argv[])
   actor->GetProperty()->SetSpecularPower(20.0);
   actor->GetProperty()->SetOpacity(1.0);
 
-  vtkShaderProperty* sp = actor->GetShaderProperty();
-
-  // Clear all custom shader tag replacements
-  // The following code is mainly for regression testing as we do not have any
-  // custom shader replacements.
-  sp->ClearAllVertexShaderReplacements();
-  sp->ClearAllFragmentShaderReplacements();
-  sp->ClearAllGeometryShaderReplacements();
-  sp->ClearAllShaderReplacements();
-
   // Use our own hardcoded shader code. Generally this is a bad idea in a
   // general purpose program as there are so many things VTK supports that
   // hardcoded shaders will not handle depth peeling, picking, etc, but if you
   // know what your data will be like it can be very useful. The mapper will set
   // a bunch of uniforms regardless of if you are using them. But feel free to
   // use them :-)
-  sp->SetVertexShaderCode(
-    "//VTK::System::Dec\n" // always start with this line
-    "in vec4 vertexMC;\n"
+  mapper->SetVertexShaderCode(
+    "//VTK::System::Dec\n"  // always start with this line
+    "attribute vec4 vertexMC;\n"
     // use the default normal decl as the mapper
     // will then provide the normalMatrix uniform
     // which we use later on
@@ -150,11 +141,12 @@ int TestUserShader2(int argc, char* argv[])
     // rotating and looking at it, very trippy
     "  vec4 tmpPos = MCDCMatrix * vertexMC;\n"
     "  gl_Position = tmpPos*vec4(0.2+0.8*abs(tmpPos.x),0.2+0.8*abs(tmpPos.y),1.0,1.0);\n"
-    "}\n");
-  sp->SetFragmentShaderCode(
-    "//VTK::System::Dec\n" // always start with this line
-    "//VTK::Output::Dec\n" // always have this line in your FS
-    "in vec3 normalVCVSOutput;\n"
+    "}\n"
+    );
+  mapper->SetFragmentShaderCode(
+    "//VTK::System::Dec\n"  // always start with this line
+    "//VTK::Output::Dec\n"  // always have this line in your FS
+    "varying vec3 normalVCVSOutput;\n"
     "uniform vec3 diffuseColorUniform;\n"
     "void main () {\n"
     "  float df = max(0.0, normalVCVSOutput.z);\n"
@@ -162,26 +154,27 @@ int TestUserShader2(int argc, char* argv[])
     "  vec3 diffuse = df * diffuseColorUniform;\n"
     "  vec3 specular = sf * vec3(0.4,0.4,0.4);\n"
     "  gl_FragData[0] = vec4(0.3*abs(normalVCVSOutput) + 0.7*diffuse + specular, 1.0);\n"
-    "}\n");
+    "}\n"
+    );
 
   // Setup a callback to change some uniforms
   VTK_CREATE(vtkShaderCallback, myCallback);
-  myCallback->Renderer = renderer;
-  mapper->AddObserver(vtkCommand::UpdateShaderEvent, myCallback);
+  myCallback->Renderer = renderer.Get();
+  mapper->AddObserver(vtkCommand::UpdateShaderEvent,myCallback);
 
   renderWindow->Render();
-  renderer->GetActiveCamera()->SetPosition(-0.2, 0.4, 1);
-  renderer->GetActiveCamera()->SetFocalPoint(0, 0, 0);
-  renderer->GetActiveCamera()->SetViewUp(0, 1, 0);
+  renderer->GetActiveCamera()->SetPosition(-0.2,0.4,1);
+  renderer->GetActiveCamera()->SetFocalPoint(0,0,0);
+  renderer->GetActiveCamera()->SetViewUp(0,1,0);
   renderer->ResetCamera();
   renderer->GetActiveCamera()->Zoom(2.0);
   renderWindow->Render();
 
-  int retVal = vtkRegressionTestImage(renderWindow);
-  if (retVal == vtkRegressionTester::DO_INTERACTOR)
+  int retVal = vtkRegressionTestImage( renderWindow.Get() );
+  if ( retVal == vtkRegressionTester::DO_INTERACTOR)
   {
     iren->Start();
   }
 
-  return !retVal;
+  return EXIT_SUCCESS;
 }

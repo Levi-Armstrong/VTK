@@ -24,7 +24,7 @@
 // VC - View Coordinates
 // DC - Display Coordinates
 
-in vec4 vertexMC;
+attribute vec4 vertexMC;
 
 // frag position in VC
 //VTK::PositionVC::Dec

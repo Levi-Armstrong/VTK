@@ -13,8 +13,8 @@
 
 =========================================================================*/
 
-#include "vtkRegressionTestImage.h"
 #include "vtkTestUtilities.h"
+#include "vtkRegressionTestImage.h"
 
 #include <vtkActor2D.h>
 #include <vtkCellData.h>
@@ -22,9 +22,9 @@
 #include <vtkNew.h>
 #include <vtkPolyData.h>
 #include <vtkPolyDataMapper2D.h>
+#include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
-#include <vtkRenderer.h>
 #include <vtkStdString.h>
 #include <vtkStringArray.h>
 
@@ -59,41 +59,41 @@ int TestColorByStringArrayDefaultLookupTable2D(int argc, char* argv[])
   }
 
   vtkCellData* cd = polydata->GetCellData();
-  cd->AddArray(sArray);
+  cd->AddArray(sArray.Get());
 
   vtkNew<vtkCoordinate> pCoord;
   pCoord->SetCoordinateSystemToWorld();
 
   vtkNew<vtkCoordinate> coord;
   coord->SetCoordinateSystemToNormalizedViewport();
-  coord->SetReferenceCoordinate(pCoord);
+  coord->SetReferenceCoordinate(pCoord.GetPointer());
 
   vtkNew<vtkPolyDataMapper2D> mapper;
-  mapper->SetInputDataObject(polydata);
+  mapper->SetInputDataObject(polydata.Get());
   mapper->ScalarVisibilityOn();
   mapper->SetColorModeToMapScalars();
   mapper->SetScalarModeToUseCellFieldData();
 
   mapper->ColorByArrayComponent(arrayName, -1);
-  mapper->SetTransformCoordinate(coord);
+  mapper->SetTransformCoordinate(coord.GetPointer());
 
   vtkNew<vtkActor2D> actor;
-  actor->SetMapper(mapper);
+  actor->SetMapper(mapper.Get());
 
   vtkNew<vtkRenderer> renderer;
-  renderer->AddActor(actor);
+  renderer->AddActor(actor.Get());
 
   vtkNew<vtkRenderWindow> renderWindow;
-  renderWindow->AddRenderer(renderer);
+  renderWindow->AddRenderer(renderer.Get());
 
   vtkNew<vtkRenderWindowInteractor> iren;
-  iren->SetRenderWindow(renderWindow);
+  iren->SetRenderWindow(renderWindow.Get());
 
   renderWindow->Render();
   renderer->ResetCamera();
   renderWindow->Render();
 
-  int retVal = vtkRegressionTestImage(renderWindow);
+  int retVal = vtkRegressionTestImage(renderWindow.Get());
   if (retVal == vtkRegressionTester::DO_INTERACTOR)
   {
     iren->Start();

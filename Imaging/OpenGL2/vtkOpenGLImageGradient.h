@@ -15,13 +15,13 @@
 /**
  * @class   vtkOpenGLImageGradient
  * @brief   Compute Gradient using the GPU
- */
+*/
 
 #ifndef vtkOpenGLImageGradient_h
 #define vtkOpenGLImageGradient_h
 
-#include "vtkImageGradient.h"
 #include "vtkImagingOpenGL2Module.h" // For export macro
+#include "vtkImageGradient.h"
 
 class vtkOpenGLImageAlgorithmHelper;
 class vtkRenderWindow;
@@ -29,28 +29,30 @@ class vtkRenderWindow;
 class VTKIMAGINGOPENGL2_EXPORT vtkOpenGLImageGradient : public vtkImageGradient
 {
 public:
-  static vtkOpenGLImageGradient* New();
-  vtkTypeMacro(vtkOpenGLImageGradient, vtkImageGradient);
+  static vtkOpenGLImageGradient *New();
+  vtkTypeMacro(vtkOpenGLImageGradient,vtkImageGradient);
 
   /**
    * Set the render window to get the OpenGL resources from
    */
-  void SetRenderWindow(vtkRenderWindow*);
+  void SetRenderWindow(vtkRenderWindow *);
 
 protected:
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
   vtkOpenGLImageGradient();
-  ~vtkOpenGLImageGradient() override;
+  ~vtkOpenGLImageGradient();
 
-  vtkOpenGLImageAlgorithmHelper* Helper;
+  vtkOpenGLImageAlgorithmHelper *Helper;
 
-  void ThreadedRequestData(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector, vtkImageData*** inData, vtkImageData** outData,
-    int extent[6], int id) override;
+  void ThreadedRequestData(vtkInformation *request,
+                           vtkInformationVector **inputVector,
+                           vtkInformationVector *outputVector,
+                           vtkImageData ***inData, vtkImageData **outData,
+                           int extent[6], int id);
 
 private:
-  vtkOpenGLImageGradient(const vtkOpenGLImageGradient&) = delete;
-  void operator=(const vtkOpenGLImageGradient&) = delete;
+  vtkOpenGLImageGradient(const vtkOpenGLImageGradient&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkOpenGLImageGradient&) VTK_DELETE_FUNCTION;
 };
 
 #endif

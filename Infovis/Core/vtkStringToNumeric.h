@@ -24,20 +24,20 @@
  *
  * vtkStringToNumeric is a filter for converting a string array
  * into a numeric arrays.
- */
+*/
 
 #ifndef vtkStringToNumeric_h
 #define vtkStringToNumeric_h
 
-#include "vtkDataObjectAlgorithm.h"
 #include "vtkInfovisCoreModule.h" // For export macro
+#include "vtkDataObjectAlgorithm.h"
 
 class VTKINFOVISCORE_EXPORT vtkStringToNumeric : public vtkDataObjectAlgorithm
 {
 public:
   static vtkStringToNumeric* New();
-  vtkTypeMacro(vtkStringToNumeric, vtkDataObjectAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkStringToNumeric,vtkDataObjectAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -115,39 +115,47 @@ public:
   /**
    * Whether to detect and convert vertex data arrays.  Default is on.
    */
-  virtual void SetConvertVertexData(bool b) { this->SetConvertPointData(b); }
-  virtual bool GetConvertVertexData() { return this->GetConvertPointData(); }
+  virtual void SetConvertVertexData(bool b)
+    { this->SetConvertPointData(b); }
+  virtual bool GetConvertVertexData()
+    { return this->GetConvertPointData(); }
   vtkBooleanMacro(ConvertVertexData, bool);
 
   /**
    * Whether to detect and convert edge data arrays.  Default is on.
    */
-  virtual void SetConvertEdgeData(bool b) { this->SetConvertCellData(b); }
-  virtual bool GetConvertEdgeData() { return this->GetConvertCellData(); }
+  virtual void SetConvertEdgeData(bool b)
+    { this->SetConvertCellData(b); }
+  virtual bool GetConvertEdgeData()
+    { return this->GetConvertCellData(); }
   vtkBooleanMacro(ConvertEdgeData, bool);
 
   /**
    * Whether to detect and convert row data arrays.  Default is on.
    */
-  virtual void SetConvertRowData(bool b) { this->SetConvertPointData(b); }
-  virtual bool GetConvertRowData() { return this->GetConvertPointData(); }
+  virtual void SetConvertRowData(bool b)
+    { this->SetConvertPointData(b); }
+  virtual bool GetConvertRowData()
+    { return this->GetConvertPointData(); }
   vtkBooleanMacro(ConvertRowData, bool);
 
   /**
    * This is required to capture REQUEST_DATA_OBJECT requests.
    */
-  vtkTypeBool ProcessRequest(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  virtual int ProcessRequest(vtkInformation* request,
+                             vtkInformationVector** inputVector,
+                             vtkInformationVector* outputVector);
 
 protected:
   vtkStringToNumeric();
-  ~vtkStringToNumeric() override;
+  ~vtkStringToNumeric();
 
   /**
    * Creates the same output type as the input type.
    */
-  int RequestDataObject(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  virtual int RequestDataObject(vtkInformation* request,
+                                vtkInformationVector** inputVector,
+                                vtkInformationVector* outputVector);
 
   /**
    * Tries to convert string arrays to integer or double arrays.
@@ -167,17 +175,21 @@ protected:
    * to be converted in the given vtkFieldData.  This lets us emit
    * ProgressEvent.
    */
-  int CountItemsToConvert(vtkFieldData* fieldData);
+  int CountItemsToConvert(vtkFieldData *fieldData);
 
   // These keep track of our progress
   int ItemsToConvert;
   int ItemsConverted;
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(
+    vtkInformation*,
+    vtkInformationVector**,
+    vtkInformationVector*);
 
 private:
-  vtkStringToNumeric(const vtkStringToNumeric&) = delete;
-  void operator=(const vtkStringToNumeric&) = delete;
+  vtkStringToNumeric(const vtkStringToNumeric&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkStringToNumeric&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

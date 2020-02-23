@@ -21,18 +21,20 @@
 #include "vtkFlyingEdges3D.h"
 #include "vtkNew.h"
 #include "vtkPolyDataMapper.h"
-#include "vtkRTAnalyticSource.h"
 #include "vtkRegressionTestImage.h"
+#include "vtkRenderer.h"
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
-#include "vtkRenderer.h"
+#include "vtkRTAnalyticSource.h"
 #include "vtkTesting.h"
 
-int TestFlyingEdges(int argc, char* argv[])
+int TestFlyingEdges(int argc, char *argv[])
 {
   // Create the sample dataset
   vtkNew<vtkRTAnalyticSource> wavelet;
-  wavelet->SetWholeExtent(-63, 64, -63, 64, -63, 64);
+  wavelet->SetWholeExtent(-63, 64,
+                          -63, 64,
+                          -63, 64);
   wavelet->SetCenter(0.0, 0.0, 0.0);
   wavelet->Update();
 
@@ -46,23 +48,23 @@ int TestFlyingEdges(int argc, char* argv[])
 
   vtkNew<vtkPolyDataMapper> mapper;
   mapper->SetInputConnection(flyingEdges->GetOutputPort());
-  mapper->SetScalarRange(128, 225);
+  mapper->SetScalarRange(128,225);
   vtkNew<vtkActor> actor;
-  actor->SetMapper(mapper);
+  actor->SetMapper(mapper.GetPointer());
   vtkNew<vtkRenderer> ren;
-  ren->AddActor(actor);
+  ren->AddActor(actor.GetPointer());
 
   vtkNew<vtkRenderWindow> renWin;
   renWin->SetSize(399, 401);
   renWin->SetMultiSamples(0);
-  renWin->AddRenderer(ren);
+  renWin->AddRenderer(ren.GetPointer());
   vtkNew<vtkRenderWindowInteractor> iren;
-  iren->SetRenderWindow(renWin);
+  iren->SetRenderWindow(renWin.GetPointer());
 
   ren->ResetCamera();
   renWin->Render();
 
-  int retVal = vtkRegressionTestImage(renWin);
+  int retVal = vtkRegressionTestImage(renWin.GetPointer());
   if (retVal == vtkRegressionTester::DO_INTERACTOR)
   {
     iren->Start();

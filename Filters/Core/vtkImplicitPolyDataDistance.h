@@ -34,7 +34,7 @@
  * by Cory Quammen, Chris Weigle C., Russ Taylor
  * http://hdl.handle.net/10380/3262
  * http://www.midasjournal.org/browse/publication/797
- */
+*/
 
 #ifndef vtkImplicitPolyDataDistance_h
 #define vtkImplicitPolyDataDistance_h
@@ -48,31 +48,29 @@ class vtkPolyData;
 class VTKFILTERSCORE_EXPORT vtkImplicitPolyDataDistance : public vtkImplicitFunction
 {
 public:
-  static vtkImplicitPolyDataDistance* New();
-  vtkTypeMacro(vtkImplicitPolyDataDistance, vtkImplicitFunction);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkImplicitPolyDataDistance *New();
+  vtkTypeMacro(vtkImplicitPolyDataDistance,vtkImplicitFunction);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Return the MTime also considering the Input dependency.
    */
-  vtkMTimeType GetMTime() override;
+  vtkMTimeType GetMTime() VTK_OVERRIDE;
 
   /**
    * Evaluate plane equation of nearest triangle to point x[3].
    */
-  using vtkImplicitFunction::EvaluateFunction;
-  double EvaluateFunction(double x[3]) override;
+  double EvaluateFunction(double x[3]) VTK_OVERRIDE;
 
   /**
    * Evaluate function gradient of nearest triangle to point x[3].
    */
-  void EvaluateGradient(double x[3], double g[3]) override;
+  void EvaluateGradient(double x[3], double g[3]) VTK_OVERRIDE;
 
   /**
-   * Evaluate plane equation of nearest triangle to point x[3] and provides closest point on an
-   * input vtkPolyData.
+   * Evaluate plane equation of nearest triangle to point x[3] and provides closest point on an input vtkPolyData.
    */
-  double EvaluateFunctionAndGetClosestPoint(double x[3], double closestPoint[3]);
+  double EvaluateFunctionAndGetClosestPoint (double x[3], double closestPoint[3]);
 
   /**
    * Set the input vtkPolyData used for the implicit function
@@ -80,7 +78,7 @@ public:
    * vtkTriangleFilter to remove vertices and lines, leaving only
    * triangular polygons for evaluation as implicit planes.
    */
-  void SetInput(vtkPolyData* input);
+  void SetInput(vtkPolyData *input);
 
   //@{
   /**
@@ -119,7 +117,7 @@ public:
 
 protected:
   vtkImplicitPolyDataDistance();
-  ~vtkImplicitPolyDataDistance() override;
+  ~vtkImplicitPolyDataDistance() VTK_OVERRIDE;
 
   /**
    * Create default locator. Used to create one when none is specified.
@@ -133,12 +131,12 @@ protected:
   double NoValue;
   double Tolerance;
 
-  vtkPolyData* Input;
-  vtkCellLocator* Locator;
+  vtkPolyData *Input;
+  vtkCellLocator *Locator;
 
 private:
-  vtkImplicitPolyDataDistance(const vtkImplicitPolyDataDistance&) = delete;
-  void operator=(const vtkImplicitPolyDataDistance&) = delete;
+  vtkImplicitPolyDataDistance(const vtkImplicitPolyDataDistance&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkImplicitPolyDataDistance&) VTK_DELETE_FUNCTION;
 };
 
 #endif

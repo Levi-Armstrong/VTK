@@ -4,7 +4,7 @@
 
 namespace _vtkBlueObeliskData {
 
-static const unsigned int numberOfElements = 118;
+const static unsigned int numberOfElements = 118;
 
 static const char *Symbols[119] = {
   "Xx",
@@ -2325,4 +2325,3 @@ static const unsigned short Groups[119][1] = {
 };
 
 } // end namespace _vtkBlueObeliskData
-// VTK-HeaderTest-Exclude: vtkBlueObeliskDataInternal.h

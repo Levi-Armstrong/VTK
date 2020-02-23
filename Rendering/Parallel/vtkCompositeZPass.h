@@ -26,40 +26,44 @@
  *
  * @sa
  * vtkRenderPass
- */
+*/
 
 #ifndef vtkCompositeZPass_h
 #define vtkCompositeZPass_h
 
-#include "vtkRenderPass.h"
 #include "vtkRenderingParallelModule.h" // For export macro
+#include "vtkRenderPass.h"
 
 class vtkMultiProcessController;
 
 class vtkPixelBufferObject;
 class vtkTextureObject;
 class vtkOpenGLRenderWindow;
+#ifdef VTK_OPENGL2
 class vtkOpenGLHelper;
+#else
+class vtkShaderProgram2;
+#endif
 
 class VTKRENDERINGPARALLEL_EXPORT vtkCompositeZPass : public vtkRenderPass
 {
 public:
-  static vtkCompositeZPass* New();
-  vtkTypeMacro(vtkCompositeZPass, vtkRenderPass);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkCompositeZPass *New();
+  vtkTypeMacro(vtkCompositeZPass,vtkRenderPass);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Perform rendering according to a render state \p s.
    * \pre s_exists: s!=0
    */
-  void Render(const vtkRenderState* s) override;
+  virtual void Render(const vtkRenderState *s);
 
   /**
    * Release graphics resources and ask components to release their own
    * resources.
    * \pre w_exists: w!=0
    */
-  void ReleaseGraphicsResources(vtkWindow* w) override;
+  void ReleaseGraphicsResources(vtkWindow *w);
 
   //@{
   /**
@@ -67,16 +71,16 @@ public:
    * If it is NULL, nothing will be rendered and a warning will be emitted.
    * Initial value is a NULL pointer.
    */
-  vtkGetObjectMacro(Controller, vtkMultiProcessController);
-  virtual void SetController(vtkMultiProcessController* controller);
+  vtkGetObjectMacro(Controller,vtkMultiProcessController);
+  virtual void SetController(vtkMultiProcessController *controller);
   //@}
 
   /**
    * Is the pass supported by the OpenGL context?
    */
-  bool IsSupported(vtkOpenGLRenderWindow* context);
+  bool IsSupported(vtkOpenGLRenderWindow *context);
 
-protected:
+ protected:
   /**
    * Default constructor. Controller is set to NULL.
    */
@@ -85,7 +89,7 @@ protected:
   /**
    * Destructor.
    */
-  ~vtkCompositeZPass() override;
+  virtual ~vtkCompositeZPass();
 
   /**
    * Create program for texture mapping.
@@ -93,19 +97,23 @@ protected:
    * \pre Program_void: this->Program==0
    * \post Program_exists: this->Program!=0
    */
-  void CreateProgram(vtkOpenGLRenderWindow* context);
+  void CreateProgram(vtkOpenGLRenderWindow *context);
 
-  vtkMultiProcessController* Controller;
+  vtkMultiProcessController *Controller;
 
-  vtkPixelBufferObject* PBO;
-  vtkTextureObject* ZTexture;
-  vtkOpenGLHelper* Program;
-  float* RawZBuffer;
+  vtkPixelBufferObject *PBO;
+  vtkTextureObject *ZTexture;
+#ifdef VTK_OPENGL2
+  vtkOpenGLHelper *Program;
+#else
+  vtkShaderProgram2 *Program;
+#endif
+  float *RawZBuffer;
   size_t RawZBufferSize;
 
-private:
-  vtkCompositeZPass(const vtkCompositeZPass&) = delete;
-  void operator=(const vtkCompositeZPass&) = delete;
+ private:
+  vtkCompositeZPass(const vtkCompositeZPass&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkCompositeZPass&) VTK_DELETE_FUNCTION;
 };
 
 #endif

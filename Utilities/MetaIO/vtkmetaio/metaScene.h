@@ -62,11 +62,11 @@ class METAIO_EXPORT MetaScene : public MetaObject
 
     MetaScene(unsigned int dim);
 
-    ~MetaScene(void) override;
+    ~MetaScene(void);
 
-    void PrintInfo(void) const override;
+    void PrintInfo(void) const;
 
-    void CopyInfo(const MetaObject * _object) override;
+    void CopyInfo(const MetaObject * _object);
 
     void AddObject(MetaObject* object);
 
@@ -78,14 +78,14 @@ class METAIO_EXPORT MetaScene : public MetaObject
 
     bool Write(const char *_headName=NULL);
 
-    bool Append(const char* =NULL) override {METAIO_STREAM::cout << "Not Implemented !" << METAIO_STREAM::endl;return true;}
+    bool Append(const char* =NULL) {METAIO_STREAM::cout << "Not Implemented !" << METAIO_STREAM::endl;return true;}
 
-    void  Clear(void) override;
+    void  Clear(void);
 
 
     //    NObjects(...)
     //       Required Field
-    //       Number of points which compose the tube
+    //       Number of points wich compose the tube
     void  NObjects(int nobjects);
     int   NObjects(void) const;
 
@@ -101,15 +101,15 @@ class METAIO_EXPORT MetaScene : public MetaObject
 
     bool  m_ElementByteOrderMSB;
 
-    void  M_Destroy(void) override;
+    void  M_Destroy(void);
 
-    void  M_SetupReadFields(void) override;
+    void  M_SetupReadFields(void);
 
-    void  M_SetupWriteFields(void) override;
+    void  M_SetupWriteFields(void);
 
-    bool  M_Read(void) override;
+    bool  M_Read(void);
 
-    bool  M_Write(void) override;
+    bool  M_Write(void);
 
     int m_NObjects;      // "NObjects = "         0
 

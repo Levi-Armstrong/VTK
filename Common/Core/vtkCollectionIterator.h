@@ -23,7 +23,7 @@
  * the collection, only the iterators currently pointing to those
  * items are invalidated.  Other iterators will still continue to
  * function normally.
- */
+*/
 
 #ifndef vtkCollectionIterator_h
 #define vtkCollectionIterator_h
@@ -37,8 +37,8 @@ class vtkCollectionElement;
 class VTKCOMMONCORE_EXPORT vtkCollectionIterator : public vtkObject
 {
 public:
-  vtkTypeMacro(vtkCollectionIterator, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkCollectionIterator,vtkObject);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
   static vtkCollectionIterator* New();
 
   //@{
@@ -78,7 +78,7 @@ public:
 
 protected:
   vtkCollectionIterator();
-  ~vtkCollectionIterator() override;
+  ~vtkCollectionIterator() VTK_OVERRIDE;
 
   // The collection over which we are iterating.
   vtkCollection* Collection;
@@ -87,10 +87,9 @@ protected:
   vtkCollectionElement* Element;
 
   vtkObject* GetObjectInternal();
-
 private:
-  vtkCollectionIterator(const vtkCollectionIterator&) = delete;
-  void operator=(const vtkCollectionIterator&) = delete;
+  vtkCollectionIterator(const vtkCollectionIterator&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkCollectionIterator&) VTK_DELETE_FUNCTION;
 };
 
 #endif

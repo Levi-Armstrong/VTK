@@ -26,8 +26,11 @@
 class vtkTextRendererStringToImage::Internals
 {
 public:
-  Internals() { this->TextRenderer = vtkTextRenderer::GetInstance(); }
-  vtkTextRenderer* TextRenderer;
+  Internals()
+  {
+    this->TextRenderer = vtkTextRenderer::GetInstance();
+  }
+  vtkTextRenderer *TextRenderer;
 };
 
 //-----------------------------------------------------------------------------
@@ -47,25 +50,28 @@ vtkTextRendererStringToImage::~vtkTextRendererStringToImage()
 
 //-----------------------------------------------------------------------------
 vtkVector2i vtkTextRendererStringToImage::GetBounds(
-  vtkTextProperty* property, const vtkUnicodeString& string, int dpi)
+    vtkTextProperty *property, const vtkUnicodeString& string, int dpi)
 {
   int tmp[4] = { 0, 0, 0, 0 };
   vtkVector2i recti(tmp);
-  if (!property || string.empty())
+  if (!property)
   {
     return recti;
   }
 
-  this->Implementation->TextRenderer->GetBoundingBox(property, string, tmp, dpi);
+  this->Implementation->TextRenderer->GetBoundingBox(property, string, tmp,
+                                                     dpi);
 
-  recti.Set(tmp[1] - tmp[0] + 1, tmp[3] - tmp[2] + 1);
+  recti.Set(tmp[1] - tmp[0],
+            tmp[3] - tmp[2]);
 
   return recti;
 }
 
 //-----------------------------------------------------------------------------
-vtkVector2i vtkTextRendererStringToImage::GetBounds(
-  vtkTextProperty* property, const vtkStdString& string, int dpi)
+vtkVector2i vtkTextRendererStringToImage::GetBounds(vtkTextProperty *property,
+                                                    const vtkStdString& string,
+                                                    int dpi)
 {
   vtkVector2i recti(0, 0);
   int tmp[4];
@@ -74,25 +80,31 @@ vtkVector2i vtkTextRendererStringToImage::GetBounds(
     return recti;
   }
 
-  this->Implementation->TextRenderer->GetBoundingBox(property, string, tmp, dpi);
+  this->Implementation->TextRenderer->GetBoundingBox(property, string, tmp,
+                                                     dpi);
 
-  recti.Set(tmp[1] - tmp[0] + 1, tmp[3] - tmp[2] + 1);
+  recti.Set(tmp[1] - tmp[0],
+            tmp[3] - tmp[2]);
 
   return recti;
 }
 
 //-----------------------------------------------------------------------------
-int vtkTextRendererStringToImage::RenderString(vtkTextProperty* property,
-  const vtkUnicodeString& string, int dpi, vtkImageData* data, int textDims[2])
+int vtkTextRendererStringToImage::RenderString(
+    vtkTextProperty *property, const vtkUnicodeString& string, int dpi,
+    vtkImageData *data, int textDims[2])
 {
-  return this->Implementation->TextRenderer->RenderString(property, string, data, textDims, dpi);
+  return this->Implementation->TextRenderer->RenderString(property, string,
+                                                          data, textDims, dpi);
 }
 
 //-----------------------------------------------------------------------------
-int vtkTextRendererStringToImage::RenderString(vtkTextProperty* property,
-  const vtkStdString& string, int dpi, vtkImageData* data, int textDims[2])
+int vtkTextRendererStringToImage::RenderString(vtkTextProperty *property,
+                                           const vtkStdString& string, int dpi,
+                                           vtkImageData *data, int textDims[2])
 {
-  return this->Implementation->TextRenderer->RenderString(property, string, data, textDims, dpi);
+  return this->Implementation->TextRenderer->RenderString(property, string,
+                                                          data, textDims, dpi);
 }
 
 //-----------------------------------------------------------------------------
@@ -103,10 +115,12 @@ void vtkTextRendererStringToImage::SetScaleToPowerOfTwo(bool scale)
 }
 
 //-----------------------------------------------------------------------------
-void vtkTextRendererStringToImage::DeepCopy(vtkTextRendererStringToImage*) {}
+void vtkTextRendererStringToImage::DeepCopy(vtkTextRendererStringToImage *)
+{
+}
 
 //-----------------------------------------------------------------------------
-void vtkTextRendererStringToImage::PrintSelf(ostream& os, vtkIndent indent)
+void vtkTextRendererStringToImage::PrintSelf(ostream &os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 }

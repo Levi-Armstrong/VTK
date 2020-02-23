@@ -21,22 +21,21 @@
  * vtkBoostExtractLargestComponent finds the largest connected region of a
  * vtkGraph. For directed graphs, this returns the largest biconnected component.
  * See vtkBoostConnectedComponents for details.
- */
+*/
 
 #ifndef vtkBoostExtractLargestComponent_h
 #define vtkBoostExtractLargestComponent_h
 
-#include "vtkGraphAlgorithm.h"
 #include "vtkInfovisBoostGraphAlgorithmsModule.h" // For export macro
+#include "vtkGraphAlgorithm.h"
 
 class vtkGraph;
 
-class VTKINFOVISBOOSTGRAPHALGORITHMS_EXPORT vtkBoostExtractLargestComponent
-  : public vtkGraphAlgorithm
+class VTKINFOVISBOOSTGRAPHALGORITHMS_EXPORT vtkBoostExtractLargestComponent : public vtkGraphAlgorithm
 {
 public:
   vtkTypeMacro(vtkBoostExtractLargestComponent, vtkGraphAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Construct an instance of vtkBoostExtractLargestComponent with
@@ -54,9 +53,9 @@ public:
 
 protected:
   vtkBoostExtractLargestComponent();
-  ~vtkBoostExtractLargestComponent() override {}
+  ~vtkBoostExtractLargestComponent(){}
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 
   /**
    * Store the choice of whether or not to invert the selection.
@@ -64,8 +63,8 @@ protected:
   bool InvertSelection;
 
 private:
-  vtkBoostExtractLargestComponent(const vtkBoostExtractLargestComponent&) = delete;
-  void operator=(const vtkBoostExtractLargestComponent&) = delete;
+  vtkBoostExtractLargestComponent(const vtkBoostExtractLargestComponent&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkBoostExtractLargestComponent&) VTK_DELETE_FUNCTION;
 };
 
 #endif

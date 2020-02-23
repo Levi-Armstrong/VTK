@@ -64,17 +64,18 @@
  *
  * @sa
  * vtkHandleWidget
- */
+*/
 
 #ifndef vtkDistanceWidget_h
 #define vtkDistanceWidget_h
 
-#include "vtkAbstractWidget.h"
 #include "vtkInteractionWidgetsModule.h" // For export macro
+#include "vtkAbstractWidget.h"
 
 class vtkDistanceRepresentation;
 class vtkHandleWidget;
 class vtkDistanceWidgetCallback;
+
 
 class VTKINTERACTIONWIDGETS_EXPORT vtkDistanceWidget : public vtkAbstractWidget
 {
@@ -82,14 +83,14 @@ public:
   /**
    * Instantiate this class.
    */
-  static vtkDistanceWidget* New();
+  static vtkDistanceWidget *New();
 
   //@{
   /**
    * Standard methods for a VTK class.
    */
-  vtkTypeMacro(vtkDistanceWidget, vtkAbstractWidget);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkDistanceWidget,vtkAbstractWidget);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   /**
@@ -97,36 +98,33 @@ public:
    * must be overridden because it is a composite widget and does more than
    * its superclasses' vtkAbstractWidget::SetEnabled() method.
    */
-  void SetEnabled(int) override;
+  virtual void SetEnabled(int);
 
   /**
    * Specify an instance of vtkWidgetRepresentation used to represent this
    * widget in the scene. Note that the representation is a subclass of vtkProp
    * so it can be added to the renderer independent of the widget.
    */
-  void SetRepresentation(vtkDistanceRepresentation* r)
-  {
-    this->Superclass::SetWidgetRepresentation(reinterpret_cast<vtkWidgetRepresentation*>(r));
-  }
+  void SetRepresentation(vtkDistanceRepresentation *r)
+    {this->Superclass::SetWidgetRepresentation(
+      reinterpret_cast<vtkWidgetRepresentation*>(r));}
 
   /**
    * Return the representation as a vtkDistanceRepresentation.
    */
-  vtkDistanceRepresentation* GetDistanceRepresentation()
-  {
-    return reinterpret_cast<vtkDistanceRepresentation*>(this->WidgetRep);
-  }
+  vtkDistanceRepresentation *GetDistanceRepresentation()
+    {return reinterpret_cast<vtkDistanceRepresentation*>(this->WidgetRep);}
 
   /**
    * Create the default widget representation if one is not set.
    */
-  void CreateDefaultRepresentation() override;
+  void CreateDefaultRepresentation();
 
   /**
    * Methods to change the whether the widget responds to interaction.
    * Overridden to pass the state to component widgets.
    */
-  void SetProcessEvents(vtkTypeBool) override;
+  virtual void SetProcessEvents(int);
 
   /**
    * Description:
@@ -135,12 +133,7 @@ public:
    * transitions to Define state. Once placed, the widget enters the Manipulate state.
    */
 
-  enum
-  {
-    Start = 0,
-    Define,
-    Manipulate
-  };
+  enum {Start=0,Define,Manipulate};
 
   //@{
   /**
@@ -160,11 +153,12 @@ public:
   /**
    * Return the current widget state.
    */
-  virtual int GetWidgetState() { return this->WidgetState; }
+  virtual int GetWidgetState()
+    {return this->WidgetState;}
 
 protected:
   vtkDistanceWidget();
-  ~vtkDistanceWidget() override;
+  ~vtkDistanceWidget();
 
   // The state of the widget
   int WidgetState;
@@ -175,15 +169,12 @@ protected:
   static void AddPointAction(vtkAbstractWidget*);
   static void MoveAction(vtkAbstractWidget*);
   static void EndSelectAction(vtkAbstractWidget*);
-  static void AddPointAction3D(vtkAbstractWidget*);
-  static void MoveAction3D(vtkAbstractWidget*);
-  static void EndSelectAction3D(vtkAbstractWidget*);
 
   // The positioning handle widgets
-  vtkHandleWidget* Point1Widget;
-  vtkHandleWidget* Point2Widget;
-  vtkDistanceWidgetCallback* DistanceWidgetCallback1;
-  vtkDistanceWidgetCallback* DistanceWidgetCallback2;
+  vtkHandleWidget *Point1Widget;
+  vtkHandleWidget *Point2Widget;
+  vtkDistanceWidgetCallback *DistanceWidgetCallback1;
+  vtkDistanceWidgetCallback *DistanceWidgetCallback2;
 
   // Methods invoked when the handles at the
   // end points of the widget are manipulated
@@ -194,8 +185,8 @@ protected:
   friend class vtkDistanceWidgetCallback;
 
 private:
-  vtkDistanceWidget(const vtkDistanceWidget&) = delete;
-  void operator=(const vtkDistanceWidget&) = delete;
+  vtkDistanceWidget(const vtkDistanceWidget&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkDistanceWidget&) VTK_DELETE_FUNCTION;
 };
 
 #endif

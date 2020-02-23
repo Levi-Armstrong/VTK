@@ -19,9 +19,13 @@
 
 vtkStandardNewMacro(vtkSMPProgressObserver);
 
-vtkSMPProgressObserver::vtkSMPProgressObserver() = default;
+vtkSMPProgressObserver::vtkSMPProgressObserver()
+{
+}
 
-vtkSMPProgressObserver::~vtkSMPProgressObserver() = default;
+vtkSMPProgressObserver::~vtkSMPProgressObserver()
+{
+}
 
 void vtkSMPProgressObserver::UpdateProgress(double progress)
 {
@@ -31,5 +35,5 @@ void vtkSMPProgressObserver::UpdateProgress(double progress)
 
 void vtkSMPProgressObserver::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 }

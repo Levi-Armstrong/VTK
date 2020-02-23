@@ -30,7 +30,7 @@
  * Andrew Maclean andrew.amaclean@gmail.com for creating and contributing the
  * class.
  *
- */
+*/
 
 #ifndef vtkParametricRandomHills_h
 #define vtkParametricRandomHills_h
@@ -45,13 +45,13 @@ class VTKCOMMONCOMPUTATIONALGEOMETRY_EXPORT vtkParametricRandomHills : public vt
 {
 
 public:
-  vtkTypeMacro(vtkParametricRandomHills, vtkParametricFunction);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkParametricRandomHills,vtkParametricFunction);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Return the parametric dimension of the class.
    */
-  int GetDimension() override { return 2; }
+  int GetDimension() VTK_OVERRIDE {return 2;}
 
   /**
    * Construct a surface of random hills with the following parameters:
@@ -59,7 +59,7 @@ public:
    * MinimumV = -10, MaximumV = 10,
    * JoinU = 0, JoinV = 0,
    * TwistU = 0, TwistV = 0;
-   * ClockwiseOrdering = 0,
+   * ClockwiseOrdering = 1,
    * DerivativesAvailable = 0,
    * Number of hills = 30,
    * Variance of the hills 2.5 in both x- and y- directions,
@@ -69,15 +69,15 @@ public:
    * RandomSeed = 1,
    * AllowRandomGeneration = 1.
    */
-  static vtkParametricRandomHills* New();
+  static vtkParametricRandomHills *New();
 
   //@{
   /**
    * Set/Get the number of hills.
    * Default is 30.
    */
-  vtkSetMacro(NumberOfHills, int);
-  vtkGetMacro(NumberOfHills, int);
+  vtkSetMacro(NumberOfHills,int);
+  vtkGetMacro(NumberOfHills,int);
   //@}
 
   //@{
@@ -85,8 +85,8 @@ public:
    * Set/Get the hill variance in the x-direction.
    * Default is 2.5.
    */
-  vtkSetMacro(HillXVariance, double);
-  vtkGetMacro(HillXVariance, double);
+  vtkSetMacro(HillXVariance,double);
+  vtkGetMacro(HillXVariance,double);
   //@}
 
   //@{
@@ -94,8 +94,8 @@ public:
    * Set/Get the hill variance in the y-direction.
    * Default is 2.5.
    */
-  vtkSetMacro(HillYVariance, double);
-  vtkGetMacro(HillYVariance, double);
+  vtkSetMacro(HillYVariance,double);
+  vtkGetMacro(HillYVariance,double);
   //@}
 
   //@{
@@ -103,8 +103,8 @@ public:
    * Set/Get the hill amplitude (height).
    * Default is 2.
    */
-  vtkSetMacro(HillAmplitude, double);
-  vtkGetMacro(HillAmplitude, double);
+  vtkSetMacro(HillAmplitude,double);
+  vtkGetMacro(HillAmplitude,double);
   //@}
 
   //@{
@@ -114,8 +114,8 @@ public:
    * a negative value will initialize it with the system time.
    * Default is 1.
    */
-  vtkSetMacro(RandomSeed, int);
-  vtkGetMacro(RandomSeed, int);
+  vtkSetMacro(RandomSeed,int);
+  vtkGetMacro(RandomSeed,int);
   //@}
 
   //@{
@@ -132,9 +132,9 @@ public:
    * surface.
    * Default is 1.
    */
-  vtkSetClampMacro(AllowRandomGeneration, vtkTypeBool, 0, 1);
-  vtkGetMacro(AllowRandomGeneration, vtkTypeBool);
-  vtkBooleanMacro(AllowRandomGeneration, vtkTypeBool);
+  vtkSetClampMacro(AllowRandomGeneration,int,0,1);
+  vtkGetMacro(AllowRandomGeneration,int);
+  vtkBooleanMacro(AllowRandomGeneration,int);
   //@}
 
   //@{
@@ -142,8 +142,8 @@ public:
    * Set/Get the scaling factor for the variance in the x-direction.
    * Default is 1/3.
    */
-  vtkSetMacro(XVarianceScaleFactor, double);
-  vtkGetMacro(XVarianceScaleFactor, double);
+  vtkSetMacro(XVarianceScaleFactor,double);
+  vtkGetMacro(XVarianceScaleFactor,double);
   //@}
 
   //@{
@@ -151,8 +151,8 @@ public:
    * Set/Get the scaling factor for the variance in the y-direction.
    * Default is 1/3.
    */
-  vtkSetMacro(YVarianceScaleFactor, double);
-  vtkGetMacro(YVarianceScaleFactor, double);
+  vtkSetMacro(YVarianceScaleFactor,double);
+  vtkGetMacro(YVarianceScaleFactor,double);
   //@}
 
   //@{
@@ -160,8 +160,8 @@ public:
    * Set/Get the scaling factor for the amplitude.
    * Default is 1/3.
    */
-  vtkSetMacro(AmplitudeScaleFactor, double);
-  vtkGetMacro(AmplitudeScaleFactor, double);
+  vtkSetMacro(AmplitudeScaleFactor,double);
+  vtkGetMacro(AmplitudeScaleFactor,double);
   //@}
 
   /**
@@ -172,12 +172,12 @@ public:
    * \f$Pt = (x, y, z), Du = (dx/du, dy/du, dz/du), Dv = (dx/dv, dy/dv, dz/dv)\f$ .
    * Then the normal is \f$N = Du X Dv\f$ .
    */
-  void Evaluate(double uvw[3], double Pt[3], double Duvw[9]) override;
+  void Evaluate(double uvw[3], double Pt[3], double Duvw[9]) VTK_OVERRIDE;
 
   /**
    * Calculate a user defined scalar using one or all of uvw, Pt, Duvw.
 
-   * uvw are the parameters with Pt being the Cartesian point,
+   * uvw are the parameters with Pt being the the Cartesian point,
    * Duvw are the derivatives of this point with respect to u, v and w.
    * Pt, Duvw are obtained from Evaluate().
 
@@ -187,11 +187,11 @@ public:
    * If the user does not need to calculate a scalar, then the
    * instantiated function should return zero.
    */
-  double EvaluateScalar(double uvw[3], double Pt[3], double Duvw[9]) override;
+  double EvaluateScalar(double uvw[3], double Pt[3], double Duvw[9]) VTK_OVERRIDE;
 
 protected:
   vtkParametricRandomHills();
-  ~vtkParametricRandomHills() override;
+  ~vtkParametricRandomHills() VTK_OVERRIDE;
 
   // Variables
   int NumberOfHills;
@@ -202,7 +202,7 @@ protected:
   double XVarianceScaleFactor;
   double YVarianceScaleFactor;
   double AmplitudeScaleFactor;
-  vtkTypeBool AllowRandomGeneration;
+  int AllowRandomGeneration;
 
   // These variables store the previous values of the above ones.
   int previousNumberOfHills;
@@ -216,23 +216,23 @@ protected:
   int previousAllowRandomGeneration;
 
 private:
-  vtkParametricRandomHills(const vtkParametricRandomHills&) = delete;
-  void operator=(const vtkParametricRandomHills&) = delete;
+  vtkParametricRandomHills(const vtkParametricRandomHills&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkParametricRandomHills&) VTK_DELETE_FUNCTION;
 
   /**
    * Initialise the random number generator.
    */
-  void InitRNG(int RandomSeed);
+  void InitRNG ( int RandomSeed );
 
   /**
    * Return a random number between 0 and 1.
    */
-  double Rand(void);
+  double Rand ( void );
 
   /**
    * A random sequence generator.
    */
-  vtkMinimalStandardRandomSequence* randomSequenceGenerator;
+  vtkMinimalStandardRandomSequence *randomSequenceGenerator;
 
   /**
    * Generate the centers of the hills, their standard deviations and
@@ -240,7 +240,7 @@ private:
    * the u, v coordinates of each hill, their variances in the u, v directions
    * and their amplitudes.
    */
-  void MakeTheHillData(void);
+  void MakeTheHillData( void );
 
   /**
    * True if any parameters have changed.
@@ -256,8 +256,8 @@ private:
   /**
    * Centers (x,y), variances (x,y) and amplitudes of the hills.
    */
-  vtkDoubleArray* hillData;
+  vtkDoubleArray *hillData;
 };
-//@}
+  //@}
 
 #endif

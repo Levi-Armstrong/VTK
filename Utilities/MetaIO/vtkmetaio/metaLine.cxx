@@ -16,8 +16,8 @@
 
 #include "metaLine.h"
 
-#include <cctype>
-#include <cstdio>
+#include <stdio.h>
+#include <ctype.h>
 #include <string>
 
 #if (METAIO_USE_NAMESPACE)
@@ -137,7 +137,7 @@ PointDim(const char* pointDim)
 }
 
 const char* MetaLine::
-PointDim() const
+PointDim(void) const
 {
   return m_PointDim;
 }
@@ -149,14 +149,14 @@ NPoints(int npnt)
 }
 
 int MetaLine::
-NPoints() const
+NPoints(void) const
 {
   return m_NPoints;
 }
 
 /** Clear line information */
 void MetaLine::
-Clear()
+Clear(void)
 {
   if(META_DEBUG) METAIO_STREAM::cout << "MetaLine: Clear" << METAIO_STREAM::endl;
   MetaObject::Clear();
@@ -166,7 +166,7 @@ Clear()
   while(it != m_PointList.end())
   {
     LinePnt* pnt = *it;
-    ++it;
+    it++;
     delete pnt;
   }
   m_PointList.clear();
@@ -177,14 +177,14 @@ Clear()
 
 /** Destroy line information */
 void MetaLine::
-M_Destroy()
+M_Destroy(void)
 {
   MetaObject::M_Destroy();
 }
 
 /** Set Read fields */
 void MetaLine::
-M_SetupReadFields()
+M_SetupReadFields(void)
 {
   if(META_DEBUG) METAIO_STREAM::cout << "MetaLine: M_SetupReadFields" << METAIO_STREAM::endl;
 
@@ -215,7 +215,7 @@ M_SetupReadFields()
 }
 
 void MetaLine::
-M_SetupWriteFields()
+M_SetupWriteFields(void)
 {
   strcpy(m_ObjectTypeName,"Line");
   MetaObject::M_SetupWriteFields();
@@ -248,7 +248,7 @@ M_SetupWriteFields()
 }
 
 MET_ValueEnumType MetaLine::
-ElementType() const
+ElementType(void) const
 {
   return m_ElementType;
 }
@@ -261,7 +261,7 @@ ElementType(MET_ValueEnumType _elementType)
 
 
 bool MetaLine::
-M_Read()
+M_Read(void)
 {
   if(META_DEBUG) METAIO_STREAM::cout << "MetaLine: M_Read: Loading Header" << METAIO_STREAM::endl;
 
@@ -294,7 +294,7 @@ M_Read()
   }
 
   int pntDim;
-  char** pntVal = nullptr;
+  char** pntVal = NULL;
   MET_StringToWordArray(m_PointDim, &pntDim, &pntVal);
 
   int ii;
@@ -438,7 +438,7 @@ M_Read()
 
 
 bool MetaLine::
-M_Write()
+M_Write(void)
 {
   if(!MetaObject::M_Write())
     {
@@ -483,7 +483,7 @@ M_Write()
         MET_DoubleToValue((double)c,m_ElementType,data,i++);
         }
 
-      ++it;
+      it++;
       }
 
     m_WriteStream->write((char *)data,(m_NDims*m_NDims+4)*m_NPoints*elementSize);
@@ -517,7 +517,7 @@ M_Write()
       }
 
       *m_WriteStream << METAIO_STREAM::endl;
-      ++it;
+      it++;
     }
   }
 

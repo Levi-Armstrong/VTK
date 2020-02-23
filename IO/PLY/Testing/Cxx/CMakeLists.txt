@@ -1,17 +1,6 @@
-vtk_add_test_cxx(vtkIOPLYCxxTests tests
+vtk_add_test_cxx(${vtk-module}CxxTests tests
   TestPLYReader.cxx
-  TestPLYReaderIntensity.cxx
-  TestPLYReaderPointCloud.cxx
-  TestPLYWriterAlpha.cxx
+  TestPLYReaderTextureUV.cxx
   TestPLYWriter.cxx,NO_VALID
-  TestPLYWriterString.cxx,NO_VALID,NO_OUTPUT
   )
-vtk_add_test_cxx(vtkIOPLYCxxTests tests
-  TestPLYReaderTextureUVPoints,TestPLYReaderTextureUV.cxx squareTextured.ply
-  vtk.png
-)
-vtk_add_test_cxx(vtkIOPLYCxxTests tests
-  TestPLYReaderTextureUVFaces,TestPLYReaderTextureUV.cxx squareTexturedFaces.ply
-  two_vtk_logos_stacked.png
-)
-vtk_test_cxx_executable(vtkIOPLYCxxTests tests)
+vtk_test_cxx_executable(${vtk-module}CxxTests tests)

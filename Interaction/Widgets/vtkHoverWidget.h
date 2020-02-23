@@ -65,13 +65,14 @@
  *
  * @sa
  * vtkAbstractWidget
- */
+*/
 
 #ifndef vtkHoverWidget_h
 #define vtkHoverWidget_h
 
-#include "vtkAbstractWidget.h"
 #include "vtkInteractionWidgetsModule.h" // For export macro
+#include "vtkAbstractWidget.h"
+
 
 class VTKINTERACTIONWIDGETS_EXPORT vtkHoverWidget : public vtkAbstractWidget
 {
@@ -79,14 +80,14 @@ public:
   /**
    * Instantiate this class.
    */
-  static vtkHoverWidget* New();
+  static vtkHoverWidget *New();
 
   //@{
   /**
    * Standard methods for a VTK class.
    */
-  vtkTypeMacro(vtkHoverWidget, vtkAbstractWidget);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkHoverWidget,vtkAbstractWidget);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   //@{
@@ -95,35 +96,31 @@ public:
    * mouse the pointer stays over a vtkProp for this duration, then a
    * vtkTimerEvent::TimerEvent is invoked.
    */
-  vtkSetClampMacro(TimerDuration, int, 1, 100000);
-  vtkGetMacro(TimerDuration, int);
+  vtkSetClampMacro(TimerDuration,int,1,100000);
+  vtkGetMacro(TimerDuration,int);
   //@}
 
   /**
    * The method for activating and deactivating this widget. This method
    * must be overridden because it performs special timer-related operations.
    */
-  void SetEnabled(int) override;
+  virtual void SetEnabled(int);
 
   /**
    * A default representation, of which there is none, is created. Note
    * that the superclasses vtkAbstractWidget::GetRepresentation()
-   * method returns nullptr.
+   * method returns NULL.
    */
-  void CreateDefaultRepresentation() override { this->WidgetRep = nullptr; }
+  void CreateDefaultRepresentation()
+    {this->WidgetRep = NULL;}
 
 protected:
   vtkHoverWidget();
-  ~vtkHoverWidget() override;
+  ~vtkHoverWidget();
 
   // The state of the widget
 
-  enum
-  {
-    Start = 0,
-    Timing,
-    TimedOut
-  };
+  enum {Start=0,Timing,TimedOut};
 
   int WidgetState;
 
@@ -134,9 +131,9 @@ protected:
 
   // Subclasses of this class invoke these methods. If a non-zero
   // value is returned, a subclass is handling the event.
-  virtual int SubclassHoverAction() { return 0; }
-  virtual int SubclassEndHoverAction() { return 0; }
-  virtual int SubclassSelectAction() { return 0; }
+  virtual int SubclassHoverAction() {return 0;}
+  virtual int SubclassEndHoverAction() {return 0;}
+  virtual int SubclassSelectAction() {return 0;}
 
   //@{
   /**
@@ -147,8 +144,8 @@ protected:
   //@}
 
 private:
-  vtkHoverWidget(const vtkHoverWidget&) = delete;
-  void operator=(const vtkHoverWidget&) = delete;
+  vtkHoverWidget(const vtkHoverWidget&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkHoverWidget&) VTK_DELETE_FUNCTION;
 };
 
 #endif

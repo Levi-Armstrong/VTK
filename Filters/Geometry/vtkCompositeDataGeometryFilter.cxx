@@ -17,23 +17,25 @@
 #include "vtkAppendPolyData.h"
 #include "vtkCompositeDataIterator.h"
 #include "vtkCompositeDataPipeline.h"
-#include "vtkCompositeDataSet.h"
 #include "vtkDataSet.h"
 #include "vtkDataSetSurfaceFilter.h"
 #include "vtkImageData.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
-#include "vtkNew.h"
+#include "vtkCompositeDataSet.h"
 #include "vtkObjectFactory.h"
-#include "vtkSmartPointer.h"
 
 vtkStandardNewMacro(vtkCompositeDataGeometryFilter);
 
 //-----------------------------------------------------------------------------
-vtkCompositeDataGeometryFilter::vtkCompositeDataGeometryFilter() = default;
+vtkCompositeDataGeometryFilter::vtkCompositeDataGeometryFilter()
+{
+}
 
 //-----------------------------------------------------------------------------
-vtkCompositeDataGeometryFilter::~vtkCompositeDataGeometryFilter() = default;
+vtkCompositeDataGeometryFilter::~vtkCompositeDataGeometryFilter()
+{
+}
 
 //-----------------------------------------------------------------------------
 int vtkCompositeDataGeometryFilter::FillInputPortInformation(
@@ -45,57 +47,69 @@ int vtkCompositeDataGeometryFilter::FillInputPortInformation(
 }
 
 //-----------------------------------------------------------------------------
-vtkTypeBool vtkCompositeDataGeometryFilter::ProcessRequest(
-  vtkInformation* request, vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+int vtkCompositeDataGeometryFilter::ProcessRequest(
+  vtkInformation* request,
+  vtkInformationVector** inputVector,
+  vtkInformationVector* outputVector)
 {
   // generate the data
-  if (request->Has(vtkCompositeDataPipeline::REQUEST_DATA()))
+  if(request->Has(vtkCompositeDataPipeline::REQUEST_DATA()))
   {
     int retVal = this->RequestCompositeData(request, inputVector, outputVector);
     return retVal;
   }
 
-  return this->Superclass::ProcessRequest(request, inputVector, outputVector);
+ return this->Superclass::ProcessRequest(request, inputVector, outputVector);
 }
 
 //-----------------------------------------------------------------------------
 int vtkCompositeDataGeometryFilter::RequestCompositeData(
-  vtkInformation*, vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+  vtkInformation*,
+  vtkInformationVector** inputVector,
+  vtkInformationVector*  outputVector)
 {
-  vtkCompositeDataSet* input = vtkCompositeDataSet::GetData(inputVector[0], 0);
+  vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
+  vtkCompositeDataSet *input = vtkCompositeDataSet::SafeDownCast(
+    inInfo->Get(vtkDataObject::DATA_OBJECT()));
   if (!input)
   {
     vtkErrorMacro("No input composite dataset provided.");
     return 0;
   }
 
-  vtkPolyData* output = vtkPolyData::GetData(outputVector, 0);
+  vtkInformation* info = outputVector->GetInformationObject(0);
+  vtkPolyData *output = vtkPolyData::SafeDownCast(
+    info->Get(vtkDataObject::DATA_OBJECT()));
   if (!output)
   {
     vtkErrorMacro("No output polydata provided.");
     return 0;
   }
 
-  vtkNew<vtkAppendPolyData> append;
-  vtkSmartPointer<vtkCompositeDataIterator> iter;
-  iter.TakeReference(input->NewIterator());
-
-  for (iter->InitTraversal(); !iter->IsDoneWithTraversal(); iter->GoToNextItem())
+  bool added=false;
+  vtkCompositeDataIterator* iter = input->NewIterator();
+  vtkAppendPolyData* append = vtkAppendPolyData::New();
+  for(iter->InitTraversal(); !iter->IsDoneWithTraversal(); iter->GoToNextItem())
   {
     vtkDataSet* ds = vtkDataSet::SafeDownCast(iter->GetCurrentDataObject());
-    if (ds && ds->GetNumberOfPoints() > 0)
+    if (ds)
     {
-      vtkNew<vtkDataSetSurfaceFilter> dssf;
+      vtkDataSetSurfaceFilter* dssf = vtkDataSetSurfaceFilter::New();
       dssf->SetInputData(ds);
       dssf->Update();
-      append->AddInputDataObject(dssf->GetOutputDataObject(0));
+      append->AddInputConnection(dssf->GetOutputPort());
+      dssf->Delete();
+      added = true;
     }
   }
-  if (append->GetNumberOfInputConnections(0) > 0)
+  iter->Delete();
+  if (added)
   {
     append->Update();
     output->ShallowCopy(append->GetOutput());
   }
+
+  append->Delete();
 
   return 1;
 }
@@ -109,5 +123,6 @@ vtkExecutive* vtkCompositeDataGeometryFilter::CreateDefaultExecutive()
 //-----------------------------------------------------------------------------
 void vtkCompositeDataGeometryFilter::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 }
+

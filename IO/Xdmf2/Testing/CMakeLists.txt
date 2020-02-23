@@ -1,1 +1,5 @@
-add_subdirectory(Cxx)
+#IF (VTK_WRAP_PYTHON)
+#  ADD_SUBDIRECTORY(Python)
+#ENDIF ()
+
+ADD_SUBDIRECTORY(Cxx)

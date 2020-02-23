@@ -24,13 +24,13 @@
  *
  * vtkMappedDataArrayNewInstanceMacro is used by subclasses to implement
  * NewInstanceInternal such that a non-mapped vtkDataArray is returned by
- * NewInstance(). This prevents the mapped array type from propagating
+ * NewInstance(). This prevents the mapped array type from propogating
  * through the pipeline.
  *
  * @attention
  * Subclasses that hold vtkIdType elements must also
- * reimplement `int GetDataType() const` (see Caveat in vtkTypedDataArray).
- */
+ * reimplement `int GetDataType()` (see Caveat in vtkTypedDataArray).
+*/
 
 #ifndef vtkMappedDataArray_h
 #define vtkMappedDataArray_h
@@ -41,7 +41,7 @@ template <class Scalar>
 class vtkMappedDataArray : public vtkTypedDataArray<Scalar>
 {
 public:
-  vtkTemplateTypeMacro(vtkMappedDataArray<Scalar>, vtkTypedDataArray<Scalar>);
+  vtkTemplateTypeMacro(vtkMappedDataArray<Scalar>, vtkTypedDataArray<Scalar>)
   typedef typename Superclass::ValueType ValueType;
 
   /**
@@ -50,39 +50,40 @@ public:
    * - source->GetArrayType() is appropriate, and
    * - source->GetDataType() matches the Scalar template argument
    * if these conditions are met, the method performs a static_cast to return
-   * source as a vtkMappedDataArray pointer. Otherwise, nullptr is returned.
+   * source as a vtkMappedDataArray pointer. Otherwise, NULL is returned.
    */
-  static vtkMappedDataArray<Scalar>* FastDownCast(vtkAbstractArray* source);
+  static vtkMappedDataArray<Scalar>* FastDownCast(vtkAbstractArray *source);
 
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream &os, vtkIndent indent);
 
   // vtkAbstractArray virtual method that must be reimplemented.
-  void DeepCopy(vtkAbstractArray* aa) override = 0;
-  vtkVariant GetVariantValue(vtkIdType idx) override = 0;
-  void SetVariantValue(vtkIdType idx, vtkVariant value) override = 0;
-  void GetTuples(vtkIdList* ptIds, vtkAbstractArray* output) override = 0;
-  void GetTuples(vtkIdType p1, vtkIdType p2, vtkAbstractArray* output) override = 0;
-  void InterpolateTuple(
-    vtkIdType i, vtkIdList* ptIndices, vtkAbstractArray* source, double* weights) override = 0;
-  void InterpolateTuple(vtkIdType i, vtkIdType id1, vtkAbstractArray* source1, vtkIdType id2,
-    vtkAbstractArray* source2, double t) override = 0;
+  void DeepCopy(vtkAbstractArray *aa) = 0;
+  vtkVariant GetVariantValue(vtkIdType idx) = 0;
+  void SetVariantValue(vtkIdType idx, vtkVariant value) = 0;
+  void GetTuples(vtkIdList *ptIds, vtkAbstractArray *output) = 0;
+  void GetTuples(vtkIdType p1, vtkIdType p2, vtkAbstractArray *output) = 0;
+  void InterpolateTuple(vtkIdType i, vtkIdList *ptIndices,
+                        vtkAbstractArray *source, double *weights) = 0;
+  void InterpolateTuple(vtkIdType i, vtkIdType id1,
+                        vtkAbstractArray* source1, vtkIdType id2,
+                        vtkAbstractArray* source2, double t) = 0;
 
   // vtkDataArray virtual method that must be reimplemented.
-  void DeepCopy(vtkDataArray* da) override = 0;
+  void DeepCopy(vtkDataArray *da) = 0;
 
   /**
    * Print an error and create an internal, long-lived temporary array. This
    * method should not be used on vtkMappedDataArray subclasses. See
    * vtkArrayDispatch for a better way.
    */
-  void* GetVoidPointer(vtkIdType id) override;
+  void * GetVoidPointer(vtkIdType id);
 
   /**
    * Copy the internal data to the void pointer. The pointer is cast to this
    * array's Scalar type and vtkTypedDataArrayIterator is used to populate
    * the input array.
    */
-  void ExportToVoidPointer(void* ptr) override;
+  void ExportToVoidPointer(void *ptr);
 
   /**
    * Read the data from the internal temporary array (created by GetVoidPointer)
@@ -91,57 +92,60 @@ public:
    * default implementation uses vtkTypedDataArrayIterator to extract the mapped
    * data.
    */
-  void DataChanged() override;
+  void DataChanged();
 
   //@{
   /**
    * These methods don't make sense for mapped data array. Prints an error and
    * returns.
    */
-  void SetVoidArray(void*, vtkIdType, int) override;
-  void SetVoidArray(void*, vtkIdType, int, int) override;
+  void SetVoidArray(void *, vtkIdType, int);
+  void SetVoidArray(void *, vtkIdType, int, int);
   //@}
 
   //@{
   /**
-   * Not implemented. Print error and return nullptr.
+   * Not implemented. Print error and return NULL.
    */
-  void* WriteVoidPointer(vtkIdType /*id*/, vtkIdType /*number*/) override
+  void * WriteVoidPointer(vtkIdType /*id*/, vtkIdType /*number*/)
   {
-    vtkErrorMacro(<< "WriteVoidPointer: Method not implemented.");
-    return nullptr;
+    vtkErrorMacro(<<"WriteVoidPointer: Method not implemented.");
+    return NULL;
   }
   //@}
 
   /**
    * Invalidate the internal temporary array and call superclass method.
    */
-  void Modified() override;
+  void Modified();
 
   // vtkAbstractArray override:
-  bool HasStandardMemoryLayout() const override { return false; }
+  bool HasStandardMemoryLayout() { return false; }
 
 protected:
   vtkMappedDataArray();
-  ~vtkMappedDataArray() override;
+  ~vtkMappedDataArray();
 
-  int GetArrayType() const override { return vtkAbstractArray::MappedDataArray; }
+  virtual int GetArrayType()
+  {
+    return vtkAbstractArray::MappedDataArray;
+  }
 
 private:
-  vtkMappedDataArray(const vtkMappedDataArray&) = delete;
-  void operator=(const vtkMappedDataArray&) = delete;
+  vtkMappedDataArray(const vtkMappedDataArray &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkMappedDataArray &) VTK_DELETE_FUNCTION;
 
   //@{
   /**
    * GetVoidPointer.
    */
-  ValueType* TemporaryScalarPointer;
+  ValueType *TemporaryScalarPointer;
   size_t TemporaryScalarPointerSize;
-  //@}
 };
+  //@}
 
 // Declare vtkArrayDownCast implementations for mapped containers:
-vtkArrayDownCast_TemplateFastCastMacro(vtkMappedDataArray);
+vtkArrayDownCast_TemplateFastCastMacro(vtkMappedDataArray)
 
 #include "vtkMappedDataArray.txx"
 
@@ -149,25 +153,25 @@ vtkArrayDownCast_TemplateFastCastMacro(vtkMappedDataArray);
 // (unmapped) VTK array, if possible. Use this in combination with
 // vtkAbstractTemplateTypeMacro when your subclass is a template class.
 // Otherwise, use vtkMappedDataArrayTypeMacro.
-#define vtkMappedDataArrayNewInstanceMacro(thisClass)                                              \
-protected:                                                                                         \
-  vtkObjectBase* NewInstanceInternal() const override                                              \
-  {                                                                                                \
-    if (vtkDataArray* da = vtkDataArray::CreateDataArray(thisClass::VTK_DATA_TYPE))                \
-    {                                                                                              \
-      return da;                                                                                   \
-    }                                                                                              \
-    return thisClass::New();                                                                       \
-  }                                                                                                \
-                                                                                                   \
-public:
+#define vtkMappedDataArrayNewInstanceMacro(thisClass) \
+  protected: \
+  vtkObjectBase *NewInstanceInternal() const \
+  { \
+    if (vtkDataArray *da = \
+        vtkDataArray::CreateDataArray(thisClass::VTK_DATA_TYPE)) \
+    { \
+      return da; \
+    } \
+    return thisClass::New(); \
+  } \
+  public:
 
 // Same as vtkTypeMacro, but adds an implementation of NewInstanceInternal()
 // that returns a standard (unmapped) VTK array, if possible.
-#define vtkMappedDataArrayTypeMacro(thisClass, superClass)                                         \
-  vtkAbstractTypeMacroWithNewInstanceType(thisClass, superClass, vtkDataArray);                    \
+#define vtkMappedDataArrayTypeMacro(thisClass, superClass) \
+  vtkAbstractTypeMacroWithNewInstanceType(thisClass, superClass, vtkDataArray) \
   vtkMappedDataArrayNewInstanceMacro(thisClass)
 
-#endif // vtkMappedDataArray_h
+#endif //vtkMappedDataArray_h
 
 // VTK-HeaderTest-Exclude: vtkMappedDataArray.h

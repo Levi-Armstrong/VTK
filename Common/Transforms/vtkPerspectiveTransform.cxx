@@ -23,19 +23,19 @@ vtkStandardNewMacro(vtkPerspectiveTransform);
 //----------------------------------------------------------------------------
 vtkPerspectiveTransform::vtkPerspectiveTransform()
 {
-  this->Input = nullptr;
+  this->Input = NULL;
 
   // most of the functionality is provided by the concatenation
   this->Concatenation = vtkTransformConcatenation::New();
 
   // the stack will be allocated the first time Push is called
-  this->Stack = nullptr;
+  this->Stack = NULL;
 }
 
 //----------------------------------------------------------------------------
 vtkPerspectiveTransform::~vtkPerspectiveTransform()
 {
-  this->SetInput(nullptr);
+  this->SetInput(NULL);
 
   if (this->Concatenation)
   {
@@ -55,21 +55,22 @@ void vtkPerspectiveTransform::PrintSelf(ostream& os, vtkIndent indent)
   this->Superclass::PrintSelf(os, indent);
   os << indent << "Input: (" << this->Input << ")\n";
   os << indent << "InverseFlag: " << this->GetInverseFlag() << "\n";
-  os << indent << "NumberOfConcatenatedTransforms: " << this->GetNumberOfConcatenatedTransforms()
-     << "\n";
+  os << indent << "NumberOfConcatenatedTransforms: " <<
+    this->GetNumberOfConcatenatedTransforms() << "\n";
   if (this->GetNumberOfConcatenatedTransforms() != 0)
   {
     int n = this->GetNumberOfConcatenatedTransforms();
     for (int i = 0; i < n; i++)
     {
-      vtkHomogeneousTransform* t = this->GetConcatenatedTransform(i);
-      os << indent << "    " << i << ": " << t->GetClassName() << " at " << t << "\n";
+      vtkHomogeneousTransform *t = this->GetConcatenatedTransform(i);
+      os << indent << "    " << i << ": " << t->GetClassName() << " at " <<
+         t << "\n";
     }
   }
 }
 
 //----------------------------------------------------------------------------
-void vtkPerspectiveTransform::Concatenate(vtkHomogeneousTransform* transform)
+void vtkPerspectiveTransform::Concatenate(vtkHomogeneousTransform *transform)
 {
   if (transform->CircuitCheck(this))
   {
@@ -81,7 +82,7 @@ void vtkPerspectiveTransform::Concatenate(vtkHomogeneousTransform* transform)
 }
 
 //----------------------------------------------------------------------------
-void vtkPerspectiveTransform::SetInput(vtkHomogeneousTransform* input)
+void vtkPerspectiveTransform::SetInput(vtkHomogeneousTransform *input)
 {
   if (this->Input == input)
   {
@@ -105,10 +106,10 @@ void vtkPerspectiveTransform::SetInput(vtkHomogeneousTransform* input)
 }
 
 //----------------------------------------------------------------------------
-int vtkPerspectiveTransform::CircuitCheck(vtkAbstractTransform* transform)
+int vtkPerspectiveTransform::CircuitCheck(vtkAbstractTransform *transform)
 {
   if (this->vtkHomogeneousTransform::CircuitCheck(transform) ||
-    (this->Input && this->Input->CircuitCheck(transform)))
+      (this->Input && this->Input->CircuitCheck(transform)))
   {
     return 1;
   }
@@ -126,7 +127,7 @@ int vtkPerspectiveTransform::CircuitCheck(vtkAbstractTransform* transform)
 }
 
 //----------------------------------------------------------------------------
-vtkAbstractTransform* vtkPerspectiveTransform::MakeTransform()
+vtkAbstractTransform *vtkPerspectiveTransform::MakeTransform()
 {
   return vtkPerspectiveTransform::New();
 }
@@ -154,9 +155,10 @@ vtkMTimeType vtkPerspectiveTransform::GetMTime()
 }
 
 //----------------------------------------------------------------------------
-void vtkPerspectiveTransform::InternalDeepCopy(vtkAbstractTransform* gtrans)
+void vtkPerspectiveTransform::InternalDeepCopy(vtkAbstractTransform *gtrans)
 {
-  vtkPerspectiveTransform* transform = static_cast<vtkPerspectiveTransform*>(gtrans);
+  vtkPerspectiveTransform *transform =
+    static_cast<vtkPerspectiveTransform *>(gtrans);
 
   // copy the input
   this->SetInput(transform->Input);
@@ -167,7 +169,7 @@ void vtkPerspectiveTransform::InternalDeepCopy(vtkAbstractTransform* gtrans)
   // copy the stack
   if (transform->Stack)
   {
-    if (this->Stack == nullptr)
+    if (this->Stack == NULL)
     {
       this->Stack = vtkTransformConcatenationStack::New();
     }
@@ -178,7 +180,7 @@ void vtkPerspectiveTransform::InternalDeepCopy(vtkAbstractTransform* gtrans)
     if (this->Stack)
     {
       this->Stack->Delete();
-      this->Stack = nullptr;
+      this->Stack = NULL;
     }
   }
 
@@ -210,19 +212,21 @@ void vtkPerspectiveTransform::InternalUpdate()
   int nPreTransforms = this->Concatenation->GetNumberOfPreTransforms();
 
   // concatenate PreTransforms
-  for (i = nPreTransforms - 1; i >= 0; i--)
+  for (i = nPreTransforms-1; i >= 0; i--)
   {
-    vtkHomogeneousTransform* transform =
-      static_cast<vtkHomogeneousTransform*>(this->Concatenation->GetTransform(i));
-    vtkMatrix4x4::Multiply4x4(this->Matrix, transform->GetMatrix(), this->Matrix);
+    vtkHomogeneousTransform *transform =
+      static_cast<vtkHomogeneousTransform *>(this->Concatenation->GetTransform(i));
+    vtkMatrix4x4::Multiply4x4(this->Matrix,transform->GetMatrix(),
+                              this->Matrix);
   }
 
   // concatenate PostTransforms
   for (i = nPreTransforms; i < nTransforms; i++)
   {
-    vtkHomogeneousTransform* transform =
-      static_cast<vtkHomogeneousTransform*>(this->Concatenation->GetTransform(i));
-    vtkMatrix4x4::Multiply4x4(transform->GetMatrix(), this->Matrix, this->Matrix);
+    vtkHomogeneousTransform *transform =
+      static_cast<vtkHomogeneousTransform *>(this->Concatenation->GetTransform(i));
+    vtkMatrix4x4::Multiply4x4(transform->GetMatrix(),this->Matrix,
+                              this->Matrix);
   }
 }
 
@@ -230,17 +234,19 @@ void vtkPerspectiveTransform::InternalUpdate()
 // Utility for adjusting the window range to a new one.  Usually the
 // previous range was ([-1,+1],[-1,+1]) as per Ortho and Frustum, and you
 // are mapping to the display coordinate range ([0,width-1],[0,height-1]).
-void vtkPerspectiveTransform::AdjustViewport(double oldXMin, double oldXMax, double oldYMin,
-  double oldYMax, double newXMin, double newXMax, double newYMin, double newYMax)
+void vtkPerspectiveTransform::AdjustViewport(double oldXMin, double oldXMax,
+                                             double oldYMin, double oldYMax,
+                                             double newXMin, double newXMax,
+                                             double newYMin, double newYMax)
 {
   double matrix[4][4];
   vtkMatrix4x4::Identity(*matrix);
 
-  matrix[0][0] = (newXMax - newXMin) / (oldXMax - oldXMin);
-  matrix[1][1] = (newYMax - newYMin) / (oldYMax - oldYMin);
+  matrix[0][0] = (newXMax - newXMin)/(oldXMax - oldXMin);
+  matrix[1][1] = (newYMax - newYMin)/(oldYMax - oldYMin);
 
-  matrix[0][3] = (newXMin * oldXMax - newXMax * oldXMin) / (oldXMax - oldXMin);
-  matrix[1][3] = (newYMin * oldYMax - newYMax * oldYMin) / (oldYMax - oldYMin);
+  matrix[0][3] = (newXMin*oldXMax - newXMax*oldXMin)/(oldXMax - oldXMin);
+  matrix[1][3] = (newYMin*oldYMax - newYMax*oldYMin)/(oldYMax - oldYMin);
 
   this->Concatenate(*matrix);
 }
@@ -249,14 +255,14 @@ void vtkPerspectiveTransform::AdjustViewport(double oldXMin, double oldXMax, dou
 // Utility for adjusting the min/max range of the Z buffer.  Usually
 // the oldZMin, oldZMax are [-1,+1] as per Ortho and Frustum, and
 // you are mapping the Z buffer to a new range.
-void vtkPerspectiveTransform::AdjustZBuffer(
-  double oldZMin, double oldZMax, double newZMin, double newZMax)
+void vtkPerspectiveTransform::AdjustZBuffer(double oldZMin, double oldZMax,
+                                            double newZMin, double newZMax)
 {
   double matrix[4][4];
   vtkMatrix4x4::Identity(*matrix);
 
-  matrix[2][2] = (newZMax - newZMin) / (oldZMax - oldZMin);
-  matrix[2][3] = (newZMin * oldZMax - newZMax * oldZMin) / (oldZMax - oldZMin);
+  matrix[2][2] = (newZMax - newZMin)/(oldZMax - oldZMin);
+  matrix[2][3] = (newZMin*oldZMax - newZMax*oldZMin)/(oldZMax - oldZMin);
 
   this->Concatenate(*matrix);
 }
@@ -265,19 +271,20 @@ void vtkPerspectiveTransform::AdjustZBuffer(
 // The orthographic perspective maps [xmin,xmax], [ymin,ymax], [-znear,-zfar]
 // to [-1,+1], [-1,+1], [-1,+1].
 // From the OpenGL Programmer's guide, 2nd Ed.
-void vtkPerspectiveTransform::Ortho(
-  double xmin, double xmax, double ymin, double ymax, double znear, double zfar)
+void vtkPerspectiveTransform::Ortho(double xmin, double xmax,
+                                    double ymin, double ymax,
+                                    double znear, double zfar)
 {
   double matrix[4][4];
   vtkMatrix4x4::Identity(*matrix);
 
-  matrix[0][0] = 2 / (xmax - xmin);
-  matrix[1][1] = 2 / (ymax - ymin);
-  matrix[2][2] = -2 / (zfar - znear);
+  matrix[0][0] = 2/(xmax - xmin);
+  matrix[1][1] = 2/(ymax - ymin);
+  matrix[2][2] = -2/(zfar - znear);
 
-  matrix[0][3] = -(xmin + xmax) / (xmax - xmin);
-  matrix[1][3] = -(ymin + ymax) / (ymax - ymin);
-  matrix[2][3] = -(znear + zfar) / (zfar - znear);
+  matrix[0][3] = -(xmin + xmax)/(xmax - xmin);
+  matrix[1][3] = -(ymin + ymax)/(ymax - ymin);
+  matrix[2][3] = -(znear + zfar)/(zfar - znear);
 
   this->Concatenate(*matrix);
 }
@@ -287,42 +294,44 @@ void vtkPerspectiveTransform::Ortho(
 // which has extent [xmin,xmax],[ymin,ymax] and a back plane at -zfar
 // to [-1,+1], [-1,+1], [-1,+1].
 // From the OpenGL Programmer's guide, 2nd Ed.
-void vtkPerspectiveTransform::Frustum(
-  double xmin, double xmax, double ymin, double ymax, double znear, double zfar)
+void vtkPerspectiveTransform::Frustum(double xmin, double xmax,
+                                      double ymin, double ymax,
+                                      double znear, double zfar)
 {
   double matrix[4][4];
 
-  matrix[0][0] = 2 * znear / (xmax - xmin);
-  matrix[1][0] = 0;
-  matrix[2][0] = 0;
-  matrix[3][0] = 0;
+  matrix[0][0] =  2*znear/(xmax - xmin);
+  matrix[1][0] =  0;
+  matrix[2][0] =  0;
+  matrix[3][0] =  0;
 
-  matrix[0][1] = 0;
-  matrix[1][1] = 2 * znear / (ymax - ymin);
-  matrix[2][1] = 0;
-  matrix[3][1] = 0;
+  matrix[0][1] =  0;
+  matrix[1][1] =  2*znear/(ymax - ymin);
+  matrix[2][1] =  0;
+  matrix[3][1] =  0;
 
-  matrix[0][2] = (xmin + xmax) / (xmax - xmin);
-  matrix[1][2] = (ymin + ymax) / (ymax - ymin);
-  matrix[2][2] = -(znear + zfar) / (zfar - znear);
+  matrix[0][2] =  (xmin + xmax)/(xmax - xmin);
+  matrix[1][2] =  (ymin + ymax)/(ymax - ymin);
+  matrix[2][2] = -(znear + zfar)/(zfar - znear);
   matrix[3][2] = -1;
 
-  matrix[0][3] = 0;
-  matrix[1][3] = 0;
-  matrix[2][3] = -2 * znear * zfar / (zfar - znear);
-  matrix[3][3] = 0;
+  matrix[0][3] =  0;
+  matrix[1][3] =  0;
+  matrix[2][3] = -2*znear*zfar/(zfar - znear);
+  matrix[3][3] =  0;
 
   this->Concatenate(*matrix);
 }
 
 //----------------------------------------------------------------------------
 // For convenience, an easy way to set up a symmetrical frustum.
-void vtkPerspectiveTransform::Perspective(double angle, double aspect, double znear, double zfar)
+void vtkPerspectiveTransform::Perspective(double angle, double aspect,
+                                          double znear, double zfar)
 {
-  double ymax = tan(vtkMath::RadiansFromDegrees(angle) / 2) * znear;
+  double ymax =  tan( vtkMath::RadiansFromDegrees( angle ) / 2 ) * znear;
   double ymin = -ymax;
 
-  double xmax = ymax * aspect;
+  double xmax =  ymax*aspect;
   double xmin = -xmax;
 
   this->Frustum(xmin, xmax, ymin, ymax, znear, zfar);
@@ -391,8 +400,8 @@ void vtkPerspectiveTransform::Shear(double dxdz, double dydz, double zplane)
   matrix[1][2] = -dydz;
 
   // shift so that view rays converge in the focal plane
-  matrix[0][3] = -zplane * dxdz;
-  matrix[1][3] = -zplane * dydz;
+  matrix[0][3] = -zplane*dxdz;
+  matrix[1][3] = -zplane*dydz;
 
   // concatenate with the current matrix
   this->Concatenate(*matrix);
@@ -403,23 +412,24 @@ void vtkPerspectiveTransform::Shear(double dxdz, double dydz, double zplane)
 // Set the angle to negative for left eye, positive for right eye.
 void vtkPerspectiveTransform::Stereo(double angle, double focaldistance)
 {
-  double dxdz = tan(vtkMath::RadiansFromDegrees(angle));
+  double dxdz = tan( vtkMath::RadiansFromDegrees( angle ) );
 
   this->Shear(dxdz, 0.0, focaldistance);
 }
 
 //----------------------------------------------------------------------------
-void vtkPerspectiveTransform::SetupCamera(
-  const double position[3], const double focalPoint[3], const double viewUp[3])
+void vtkPerspectiveTransform::SetupCamera(const double position[3],
+                                          const double focalPoint[3],
+                                          const double viewUp[3])
 {
   double matrix[4][4];
   vtkMatrix4x4::Identity(*matrix);
 
   // the view directions correspond to the rows of the rotation matrix,
   // so we'll make the connection explicit
-  double* viewSideways = matrix[0];
-  double* orthoViewUp = matrix[1];
-  double* viewPlaneNormal = matrix[2];
+  double *viewSideways =    matrix[0];
+  double *orthoViewUp =     matrix[1];
+  double *viewPlaneNormal = matrix[2];
 
   // set the view plane normal from the view vector
   viewPlaneNormal[0] = position[0] - focalPoint[0];
@@ -428,9 +438,9 @@ void vtkPerspectiveTransform::SetupCamera(
   vtkMath::Normalize(viewPlaneNormal);
 
   // orthogonalize viewUp and compute viewSideways
-  vtkMath::Cross(viewUp, viewPlaneNormal, viewSideways);
+  vtkMath::Cross(viewUp,viewPlaneNormal,viewSideways);
   vtkMath::Normalize(viewSideways);
-  vtkMath::Cross(viewPlaneNormal, viewSideways, orthoViewUp);
+  vtkMath::Cross(viewPlaneNormal,viewSideways,orthoViewUp);
 
   // translate by the vector from the position to the origin
   double delta[4];
@@ -439,7 +449,7 @@ void vtkPerspectiveTransform::SetupCamera(
   delta[2] = -position[2];
   delta[3] = 0.0; // yes, this should be zero, not one
 
-  vtkMatrix4x4::MultiplyPoint(*matrix, delta, delta);
+  vtkMatrix4x4::MultiplyPoint(*matrix,delta,delta);
 
   matrix[0][3] = delta[0];
   matrix[1][3] = delta[1];
@@ -449,8 +459,9 @@ void vtkPerspectiveTransform::SetupCamera(
   this->Concatenate(*matrix);
 }
 
-void vtkPerspectiveTransform::SetupCamera(double p0, double p1, double p2, double fp0, double fp1,
-  double fp2, double vup0, double vup1, double vup2)
+void vtkPerspectiveTransform::SetupCamera(double p0, double p1, double p2,
+                                          double fp0, double fp1, double fp2,
+                                          double vup0, double vup1, double vup2)
 {
   double p[3], fp[3], vup[3];
   p[0] = p0;
@@ -465,3 +476,4 @@ void vtkPerspectiveTransform::SetupCamera(double p0, double p1, double p2, doubl
 
   this->SetupCamera(p, fp, vup);
 }
+

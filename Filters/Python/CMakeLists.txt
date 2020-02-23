@@ -1,5 +1,5 @@
-set(classes
-  vtkPythonAlgorithm)
+set(Module_SRCS
+  vtkPythonAlgorithm.cxx
+  )
 
-vtk_module_add_module(VTK::FiltersPython
-  CLASSES ${classes})
+vtk_module_library(vtkFiltersPython ${Module_SRCS})

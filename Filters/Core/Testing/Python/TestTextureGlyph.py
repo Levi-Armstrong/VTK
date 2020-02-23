@@ -55,7 +55,8 @@ class TestTextureGlyph(Testing.vtkTest):
         a.SetMapper(m)
 
         # The texture.
-        img_file = os.path.join(VTK_DATA_ROOT, "Data", "masonry.bmp")
+        img_file = os.path.join(VTK_DATA_ROOT, "Data",
+                                "masonry.bmp")
         img_r = vtk.vtkBMPReader()
         img_r.SetFileName(img_file)
         t = vtk.vtkTexture()

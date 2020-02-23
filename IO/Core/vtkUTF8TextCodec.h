@@ -32,7 +32,7 @@ PURPOSE.  See the above copyright notice for more information.
  * @sa
  * vtkUTF8TextCodecFactory
  *
- */
+*/
 
 #ifndef vtkUTF8TextCodec_h
 #define vtkUTF8TextCodec_h
@@ -40,44 +40,48 @@ PURPOSE.  See the above copyright notice for more information.
 #include "vtkIOCoreModule.h" // For export macro
 #include "vtkTextCodec.h"
 
+
 class VTKIOCORE_EXPORT vtkUTF8TextCodec : public vtkTextCodec
 {
 public:
   vtkTypeMacro(vtkUTF8TextCodec, vtkTextCodec);
-  static vtkUTF8TextCodec* New();
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkUTF8TextCodec* New() ;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * The name this codec goes by - should match the string the factory will take to create it
    */
-  const char* Name() override { return "UTF-8"; }
-  bool CanHandle(const char* testStr) override;
+  virtual const char* Name() {return "UTF-8" ;}
+  virtual bool CanHandle(const char* testStr);
 
   /**
    * is the given sample valid for this codec?
    */
-  bool IsValid(istream& InputStream) override;
+  virtual bool IsValid(istream& InputStream) ;
 
   /**
    * Iterate through the sequence represented by the stream assigning the result
    * to the output iterator.  The stream will be advanced to its end so subsequent use
    * would need to reset it.
    */
-  void ToUnicode(istream& InputStream, vtkTextCodec::OutputIterator& output) override;
+  virtual void ToUnicode(istream& InputStream,
+                         vtkTextCodec::OutputIterator& output) ;
 
   /**
    * Return the next code point from the sequence represented by the stream
    * advancing the stream through however many places needed to assemble that code point
    */
-  vtkUnicodeString::value_type NextUnicode(istream& inputStream) override;
+  virtual vtkUnicodeString::value_type NextUnicode(istream& inputStream) ;
 
 protected:
-  vtkUTF8TextCodec();
-  ~vtkUTF8TextCodec() override;
+  vtkUTF8TextCodec() ;
+  ~vtkUTF8TextCodec() ;
 
 private:
-  vtkUTF8TextCodec(const vtkUTF8TextCodec&) = delete;
-  void operator=(const vtkUTF8TextCodec&) = delete;
+  vtkUTF8TextCodec(const vtkUTF8TextCodec &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkUTF8TextCodec &) VTK_DELETE_FUNCTION;
+
 };
+
 
 #endif

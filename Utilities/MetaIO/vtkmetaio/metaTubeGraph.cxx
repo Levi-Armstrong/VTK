@@ -15,8 +15,8 @@
 #pragma warning(disable:4702)
 #endif
 
-#include <cctype>
-#include <cstdio>
+#include <stdio.h>
+#include <ctype.h>
 #include <string>
 
 #if (METAIO_USE_NAMESPACE)
@@ -82,7 +82,7 @@ MetaTubeGraph::
   while(it != m_PointList.end())
     {
     TubeGraphPnt* pnt = *it;
-    ++it;
+    it++;
     delete pnt;
     }
   m_PointList.clear();
@@ -117,7 +117,7 @@ PointDim(const char* pointDim)
 }
 
 const char* MetaTubeGraph::
-PointDim() const
+PointDim(void) const
 {
   return m_PointDim;
 }
@@ -129,7 +129,7 @@ NPoints(int npnt)
 }
 
 int MetaTubeGraph::
-NPoints() const
+NPoints(void) const
 {
   return m_NPoints;
 }
@@ -141,7 +141,7 @@ Root(int root)
 }
 
 int MetaTubeGraph::
-Root() const
+Root(void) const
 {
   return m_Root;
 }
@@ -149,7 +149,7 @@ Root() const
 
 /** Clear tube information */
 void MetaTubeGraph::
-Clear()
+Clear(void)
 {
   if(META_DEBUG)
     {
@@ -161,7 +161,7 @@ Clear()
   while(it != m_PointList.end())
   {
     TubeGraphPnt* pnt = *it;
-    ++it;
+    it++;
     delete pnt;
   }
   m_PointList.clear();
@@ -174,14 +174,14 @@ Clear()
 
 /** Destroy tube information */
 void MetaTubeGraph::
-M_Destroy()
+M_Destroy(void)
 {
   MetaObject::M_Destroy();
 }
 
 /** Set Read fields */
 void MetaTubeGraph::
-M_SetupReadFields()
+M_SetupReadFields(void)
 {
   if(META_DEBUG)
     {
@@ -213,7 +213,7 @@ M_SetupReadFields()
 }
 
 void MetaTubeGraph::
-M_SetupWriteFields()
+M_SetupWriteFields(void)
 {
   strcpy(m_ObjectTypeName,"TubeGraph");
   MetaObject::M_SetupWriteFields();
@@ -230,7 +230,7 @@ M_SetupWriteFields()
       m_Fields.erase(it);
       break;
       }
-    ++it;
+    it++;
     }
 
   mF = MET_GetFieldRecord("Offset",&m_Fields);
@@ -242,7 +242,7 @@ M_SetupWriteFields()
       m_Fields.erase(it);
       break;
       }
-    ++it;
+    it++;
     }
 
   mF = MET_GetFieldRecord("ElementSpacing",&m_Fields);
@@ -254,7 +254,7 @@ M_SetupWriteFields()
       m_Fields.erase(it);
       break;
       }
-    ++it;
+    it++;
     }
 
   mF = MET_GetFieldRecord("CenterOfRotation",&m_Fields);
@@ -266,7 +266,7 @@ M_SetupWriteFields()
       m_Fields.erase(it);
       break;
       }
-    ++it;
+    it++;
     }
 
   if(m_Root>0)
@@ -298,7 +298,7 @@ M_SetupWriteFields()
 
 
 bool MetaTubeGraph::
-M_Read()
+M_Read(void)
 {
   if(META_DEBUG)
     {
@@ -347,7 +347,7 @@ M_Read()
   int posGraphNode = -1;
 
   int pntDim;
-  char** pntVal = nullptr;
+  char** pntVal = NULL;
   MET_StringToWordArray(m_PointDim, &pntDim, &pntVal);
 
   if(META_DEBUG)
@@ -502,7 +502,7 @@ M_Read()
 }
 
 MET_ValueEnumType MetaTubeGraph::
-ElementType() const
+ElementType(void) const
 {
   return m_ElementType;
 }
@@ -514,7 +514,7 @@ ElementType(MET_ValueEnumType _elementType)
 }
 
 bool MetaTubeGraph::
-M_Write()
+M_Write(void)
 {
 
   if(!MetaObject::M_Write())
@@ -548,7 +548,7 @@ M_Write()
         MET_DoubleToValue((double)(*it)->m_T[d],m_ElementType,data,i++);
         }
 
-      ++it;
+      it++;
       }
 
     m_WriteStream->write((char *)data,
@@ -577,7 +577,7 @@ M_Write()
 
       *m_WriteStream << METAIO_STREAM::endl;
 
-      ++it;
+      it++;
       }
     }
   return true;

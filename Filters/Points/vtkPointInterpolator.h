@@ -21,7 +21,7 @@
  * set of points P (the filter Input), interpolating the data values from Pc
  * onto P. Note however that the descriptive phrase "point cloud" is a
  * misnomer: Pc can be represented by any vtkDataSet type, with the points of
- * the dataset forming Pc. Similarly, the output P can also be represented by
+ * the dataset forming Pc. Similary, the output P can also be represented by
  * any vtkDataSet type; and the topology/geometry structure of P is passed
  * through to the output along with the newly interpolated arrays.
  *
@@ -60,21 +60,22 @@
  * vtkPointInterpolator2D vtkProbeFilter vtkGaussianSplatter
  * vtkCheckerboardSplatter vtkShepardMethod vtkVoronoiKernel vtkShepardKernel
  * vtkGaussianKernel vtkSPHKernel
- */
+*/
 
 #ifndef vtkPointInterpolator_h
 #define vtkPointInterpolator_h
 
-#include "vtkDataSetAlgorithm.h"
 #include "vtkFiltersPointsModule.h" // For export macro
-#include "vtkStdString.h"           // For vtkStdString ivars
-#include <vector>                   //For STL vector
+#include "vtkDataSetAlgorithm.h"
+#include "vtkStdString.h"        // For vtkStdString ivars
+#include <vector> //For STL vector
 
 class vtkAbstractPointLocator;
 class vtkIdList;
 class vtkDoubleArray;
 class vtkInterpolationKernel;
 class vtkCharArray;
+
 
 class VTKFILTERSPOINTS_EXPORT vtkPointInterpolator : public vtkDataSetAlgorithm
 {
@@ -84,9 +85,9 @@ public:
    * Standard methods for instantiating, obtaining type information, and
    * printing.
    */
-  static vtkPointInterpolator* New();
-  vtkTypeMacro(vtkPointInterpolator, vtkDataSetAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkPointInterpolator *New();
+  vtkTypeMacro(vtkPointInterpolator,vtkDataSetAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   //@{
@@ -97,8 +98,8 @@ public:
    * scalars, vectors, etc. for the output points based on the point
    * locations.
    */
-  void SetSourceData(vtkDataObject* source);
-  vtkDataObject* GetSource();
+  void SetSourceData(vtkDataObject *source);
+  vtkDataObject *GetSource();
   //@}
 
   /**
@@ -115,8 +116,8 @@ public:
    * used. The locator performs efficient searches to locate near a
    * specified interpolation position.
    */
-  void SetLocator(vtkAbstractPointLocator* locator);
-  vtkGetObjectMacro(Locator, vtkAbstractPointLocator);
+  void SetLocator(vtkAbstractPointLocator *locator);
+  vtkGetObjectMacro(Locator,vtkAbstractPointLocator);
   //@}
 
   //@{
@@ -125,15 +126,15 @@ public:
    * (i.e., linear combination of closest points). The interpolation kernel
    * changes the basis of the interpolation.
    */
-  void SetKernel(vtkInterpolationKernel* kernel);
-  vtkGetObjectMacro(Kernel, vtkInterpolationKernel);
+  void SetKernel(vtkInterpolationKernel *kernel);
+  vtkGetObjectMacro(Kernel,vtkInterpolationKernel);
   //@}
 
   enum Strategy
   {
-    MASK_POINTS = 0,
-    NULL_VALUE = 1,
-    CLOSEST_POINT = 2
+    MASK_POINTS=0,
+    NULL_VALUE=1,
+    CLOSEST_POINT=2
   };
 
   //@{
@@ -148,11 +149,14 @@ public:
    * point data). Finally, the strategy ClosestPoint is to simply use the
    * closest point to perform the interpolation.
    */
-  vtkSetMacro(NullPointsStrategy, int);
-  vtkGetMacro(NullPointsStrategy, int);
-  void SetNullPointsStrategyToMaskPoints() { this->SetNullPointsStrategy(MASK_POINTS); }
-  void SetNullPointsStrategyToNullValue() { this->SetNullPointsStrategy(NULL_VALUE); }
-  void SetNullPointsStrategyToClosestPoint() { this->SetNullPointsStrategy(CLOSEST_POINT); }
+  vtkSetMacro(NullPointsStrategy,int);
+  vtkGetMacro(NullPointsStrategy,int);
+  void SetNullPointsStrategyToMaskPoints()
+    { this->SetNullPointsStrategy(MASK_POINTS); }
+  void SetNullPointsStrategyToNullValue()
+    { this->SetNullPointsStrategy(NULL_VALUE); }
+  void SetNullPointsStrategyToClosestPoint()
+    { this->SetNullPointsStrategy(CLOSEST_POINT); }
   //@}
 
   //@{
@@ -172,8 +176,8 @@ public:
    * components of each null tuple are set to this value. By default the
    * null value is set to zero.
    */
-  vtkSetMacro(NullValue, double);
-  vtkGetMacro(NullValue, double);
+  vtkSetMacro(NullValue,double);
+  vtkGetMacro(NullValue,double);
   //@}
 
   //@{
@@ -181,7 +185,7 @@ public:
    * Adds an array to the list of arrays which are to be excluded from the
    * interpolation process.
    */
-  void AddExcludedArray(const vtkStdString& excludedArray)
+  void AddExcludedArray(const vtkStdString &excludedArray)
   {
     this->ExcludedArrays.push_back(excludedArray);
     this->Modified();
@@ -202,7 +206,8 @@ public:
   /**
    * Return the number of excluded arrays.
    */
-  int GetNumberOfExcludedArrays() { return static_cast<int>(this->ExcludedArrays.size()); }
+  int GetNumberOfExcludedArrays()
+    {return static_cast<int>(this->ExcludedArrays.size());}
 
   //@{
   /**
@@ -210,11 +215,11 @@ public:
    */
   const char* GetExcludedArray(int i)
   {
-    if (i < 0 || i >= static_cast<int>(this->ExcludedArrays.size()))
-    {
-      return nullptr;
-    }
-    return this->ExcludedArrays[i].c_str();
+      if ( i < 0 || i >= static_cast<int>(this->ExcludedArrays.size()) )
+      {
+        return NULL;
+      }
+      return this->ExcludedArrays[i].c_str();
   }
   //@}
 
@@ -263,19 +268,19 @@ public:
   /**
    * Get the MTime of this object also considering the locator and kernel.
    */
-  vtkMTimeType GetMTime() override;
+  vtkMTimeType GetMTime();
 
 protected:
   vtkPointInterpolator();
-  ~vtkPointInterpolator() override;
+  ~vtkPointInterpolator();
 
-  vtkAbstractPointLocator* Locator;
-  vtkInterpolationKernel* Kernel;
+  vtkAbstractPointLocator *Locator;
+  vtkInterpolationKernel *Kernel;
 
   int NullPointsStrategy;
   double NullValue;
   vtkStdString ValidPointsMaskArrayName;
-  vtkCharArray* ValidPointsMask;
+  vtkCharArray *ValidPointsMask;
 
   std::vector<vtkStdString> ExcludedArrays;
 
@@ -285,30 +290,35 @@ protected:
   bool PassPointArrays;
   bool PassFieldArrays;
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int RequestUpdateExtent(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int RequestData(vtkInformation *, vtkInformationVector **,
+    vtkInformationVector *);
+  virtual int RequestInformation(vtkInformation *, vtkInformationVector **,
+    vtkInformationVector *);
+  virtual int RequestUpdateExtent(vtkInformation *, vtkInformationVector **,
+    vtkInformationVector *);
 
   /**
    * Virtual for specialized subclass(es)
    */
-  virtual void Probe(vtkDataSet* input, vtkDataSet* source, vtkDataSet* output);
+  virtual void Probe(vtkDataSet *input, vtkDataSet *source, vtkDataSet *output);
 
   /**
    * Call at end of RequestData() to pass attribute data respecting the
    * PassCellArrays, PassPointArrays, PassFieldArrays flags.
    */
-  virtual void PassAttributeData(vtkDataSet* input, vtkDataObject* source, vtkDataSet* output);
+  virtual void PassAttributeData(
+    vtkDataSet* input, vtkDataObject* source, vtkDataSet* output);
 
   /**
    * Internal method to extract image metadata
    */
-  void ExtractImageDescription(
-    vtkImageData* input, int dims[3], double origin[3], double spacing[3]);
+  void ExtractImageDescription(vtkImageData *input, int dims[3],
+                               double origin[3], double spacing[3]);
 
 private:
-  vtkPointInterpolator(const vtkPointInterpolator&) = delete;
-  void operator=(const vtkPointInterpolator&) = delete;
+  vtkPointInterpolator(const vtkPointInterpolator&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPointInterpolator&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif

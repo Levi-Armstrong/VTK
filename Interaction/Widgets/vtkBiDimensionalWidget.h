@@ -89,17 +89,18 @@
  *
  * @sa
  * vtkHandleWidget vtkDistanceWidget
- */
+*/
 
 #ifndef vtkBiDimensionalWidget_h
 #define vtkBiDimensionalWidget_h
 
-#include "vtkAbstractWidget.h"
 #include "vtkInteractionWidgetsModule.h" // For export macro
+#include "vtkAbstractWidget.h"
 
 class vtkBiDimensionalRepresentation;
 class vtkHandleWidget;
 class vtkBiDimensionalWidgetCallback;
+
 
 class VTKINTERACTIONWIDGETS_EXPORT vtkBiDimensionalWidget : public vtkAbstractWidget
 {
@@ -107,14 +108,14 @@ public:
   /**
    * Instantiate this class.
    */
-  static vtkBiDimensionalWidget* New();
+  static vtkBiDimensionalWidget *New();
 
   //@{
   /**
    * Standard methods for a VTK class.
    */
-  vtkTypeMacro(vtkBiDimensionalWidget, vtkAbstractWidget);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkBiDimensionalWidget,vtkAbstractWidget);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   /**
@@ -122,30 +123,26 @@ public:
    * must be overridden because it is a composite widget and does more than
    * its superclasses' vtkAbstractWidget::SetEnabled() method.
    */
-  void SetEnabled(int) override;
+  virtual void SetEnabled(int);
 
   /**
    * Specify an instance of vtkWidgetRepresentation used to represent this
    * widget in the scene. Note that the representation is a subclass of vtkProp
    * so it can be added to the renderer independent of the widget.
    */
-  void SetRepresentation(vtkBiDimensionalRepresentation* r)
-  {
-    this->Superclass::SetWidgetRepresentation(reinterpret_cast<vtkWidgetRepresentation*>(r));
-  }
+  void SetRepresentation(vtkBiDimensionalRepresentation *r)
+    {this->Superclass::SetWidgetRepresentation(reinterpret_cast<vtkWidgetRepresentation*>(r));}
 
   /**
    * Return the representation as a vtkBiDimensionalRepresentation.
    */
-  vtkBiDimensionalRepresentation* GetBiDimensionalRepresentation()
-  {
-    return reinterpret_cast<vtkBiDimensionalRepresentation*>(this->WidgetRep);
-  }
+  vtkBiDimensionalRepresentation *GetBiDimensionalRepresentation()
+    {return reinterpret_cast<vtkBiDimensionalRepresentation*>(this->WidgetRep);}
 
   /**
    * Create the default widget representation if one is not set.
    */
-  void CreateDefaultRepresentation() override;
+  void CreateDefaultRepresentation();
 
   /**
    * A flag indicates whether the bi-dimensional measure is valid. The widget
@@ -158,14 +155,14 @@ public:
    */
   enum
   {
-    EndWidgetSelectEvent = 10050
+  EndWidgetSelectEvent = 10050
   };
 
   /**
    * Methods to change the whether the widget responds to interaction.
    * Overridden to pass the state to component widgets.
    */
-  void SetProcessEvents(vtkTypeBool) override;
+  virtual void SetProcessEvents(int);
 
   /**
    * Enum defining the state of the widget. By default the widget is in Start mode,
@@ -173,12 +170,7 @@ public:
    * transitions to Define state. Once placed, the widget enters the Manipulate state.
    */
 
-  enum
-  {
-    Start = 0,
-    Define,
-    Manipulate
-  };
+  enum {Start=0,Define,Manipulate};
 
   //@{
   /**
@@ -198,11 +190,12 @@ public:
   /**
    * Return the current widget state.
    */
-  virtual int GetWidgetState() { return this->WidgetState; }
+  virtual int GetWidgetState()
+    {return this->WidgetState;}
 
 protected:
   vtkBiDimensionalWidget();
-  ~vtkBiDimensionalWidget() override;
+  ~vtkBiDimensionalWidget();
 
   // The state of the widget
   int WidgetState;
@@ -222,14 +215,14 @@ protected:
   static void EndSelectAction(vtkAbstractWidget*);
 
   // The positioning handle widgets
-  vtkHandleWidget* Point1Widget;
-  vtkHandleWidget* Point2Widget;
-  vtkHandleWidget* Point3Widget;
-  vtkHandleWidget* Point4Widget;
-  vtkBiDimensionalWidgetCallback* BiDimensionalWidgetCallback1;
-  vtkBiDimensionalWidgetCallback* BiDimensionalWidgetCallback2;
-  vtkBiDimensionalWidgetCallback* BiDimensionalWidgetCallback3;
-  vtkBiDimensionalWidgetCallback* BiDimensionalWidgetCallback4;
+  vtkHandleWidget *Point1Widget;
+  vtkHandleWidget *Point2Widget;
+  vtkHandleWidget *Point3Widget;
+  vtkHandleWidget *Point4Widget;
+  vtkBiDimensionalWidgetCallback *BiDimensionalWidgetCallback1;
+  vtkBiDimensionalWidgetCallback *BiDimensionalWidgetCallback2;
+  vtkBiDimensionalWidgetCallback *BiDimensionalWidgetCallback3;
+  vtkBiDimensionalWidgetCallback *BiDimensionalWidgetCallback4;
 
   // Methods invoked when the handles at the
   // end points of the widget are manipulated
@@ -239,8 +232,8 @@ protected:
   friend class vtkBiDimensionalWidgetCallback;
 
 private:
-  vtkBiDimensionalWidget(const vtkBiDimensionalWidget&) = delete;
-  void operator=(const vtkBiDimensionalWidget&) = delete;
+  vtkBiDimensionalWidget(const vtkBiDimensionalWidget&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkBiDimensionalWidget&) VTK_DELETE_FUNCTION;
 };
 
 #endif

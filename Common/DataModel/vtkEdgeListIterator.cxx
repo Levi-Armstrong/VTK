@@ -22,21 +22,21 @@
 
 #include "vtkDirectedGraph.h"
 #include "vtkDistributedGraphHelper.h"
+#include "vtkObjectFactory.h"
+#include "vtkInformation.h"
 #include "vtkGraph.h"
 #include "vtkGraphEdge.h"
-#include "vtkInformation.h"
-#include "vtkObjectFactory.h"
 
 vtkStandardNewMacro(vtkEdgeListIterator);
 //----------------------------------------------------------------------------
 vtkEdgeListIterator::vtkEdgeListIterator()
 {
   this->Vertex = 0;
-  this->Current = nullptr;
-  this->End = nullptr;
-  this->Graph = nullptr;
+  this->Current = 0;
+  this->End = 0;
+  this->Graph = 0;
   this->Directed = false;
-  this->GraphEdge = nullptr;
+  this->GraphEdge = 0;
 }
 
 //----------------------------------------------------------------------------
@@ -53,19 +53,20 @@ vtkEdgeListIterator::~vtkEdgeListIterator()
 }
 
 //----------------------------------------------------------------------------
-void vtkEdgeListIterator::SetGraph(vtkGraph* graph)
+void vtkEdgeListIterator::SetGraph(vtkGraph *graph)
 {
   vtkSetObjectBodyMacro(Graph, vtkGraph, graph);
-  this->Current = nullptr;
-  this->End = nullptr;
+  this->Current = 0;
+  this->End = 0;
   if (this->Graph && this->Graph->GetNumberOfEdges() > 0)
   {
-    this->Directed = (vtkDirectedGraph::SafeDownCast(this->Graph) != nullptr);
+    this->Directed = (vtkDirectedGraph::SafeDownCast(this->Graph) != 0);
     this->Vertex = 0;
     vtkIdType lastVertex = this->Graph->GetNumberOfVertices();
 
     int myRank = -1;
-    vtkDistributedGraphHelper* helper = this->Graph->GetDistributedGraphHelper();
+    vtkDistributedGraphHelper *helper
+      = this->Graph->GetDistributedGraphHelper();
     if (helper)
     {
       myRank = this->Graph->GetInformation()->Get(vtkDataObject::DATA_PIECE_NUMBER());
@@ -74,7 +75,8 @@ void vtkEdgeListIterator::SetGraph(vtkGraph* graph)
     }
 
     // Find a vertex with nonzero out degree.
-    while (this->Vertex < lastVertex && this->Graph->GetOutDegree(this->Vertex) == 0)
+    while (this->Vertex < lastVertex &&
+           this->Graph->GetOutDegree(this->Vertex) == 0)
     {
       ++this->Vertex;
     }
@@ -87,12 +89,14 @@ void vtkEdgeListIterator::SetGraph(vtkGraph* graph)
       // entirely-local edges whose source is greater than the target.
       if (!this->Directed)
       {
-        while (this->Current != nullptr &&
-          ( // Skip non-local edges.
-            (helper && helper->GetEdgeOwner(this->Current->Id) != myRank)
-            // Skip entirely-local edges where Source > Target
-            || (((helper && myRank == helper->GetVertexOwner(this->Current->Target)) || !helper) &&
-                 this->Vertex > this->Current->Target)))
+        while (this->Current != 0
+               && (// Skip non-local edges.
+                   (helper && helper->GetEdgeOwner(this->Current->Id) != myRank)
+                   // Skip entirely-local edges where Source > Target
+                   || (((helper
+                         && myRank == helper->GetVertexOwner(this->Current->Target))
+                        || !helper)
+                       && this->Vertex > this->Current->Target)))
         {
           this->Increment();
         }
@@ -114,19 +118,22 @@ vtkEdgeType vtkEdgeListIterator::Next()
   if (!this->Directed)
   {
     int myRank = -1;
-    vtkDistributedGraphHelper* helper = this->Graph->GetDistributedGraphHelper();
+    vtkDistributedGraphHelper *helper
+      = this->Graph->GetDistributedGraphHelper();
 
     if (helper)
     {
       myRank = this->Graph->GetInformation()->Get(vtkDataObject::DATA_PIECE_NUMBER());
     }
 
-    while (this->Current != nullptr &&
-      ( // Skip non-local edges.
-        (helper && helper->GetEdgeOwner(this->Current->Id) != myRank)
-        // Skip entirely-local edges where Source > Target
-        || (((helper && myRank == helper->GetVertexOwner(this->Current->Target)) || !helper) &&
-             this->Vertex > this->Current->Target)))
+    while (this->Current != 0
+           && (// Skip non-local edges.
+               (helper && helper->GetEdgeOwner(this->Current->Id) != myRank)
+               // Skip entirely-local edges where Source > Target
+               || (((helper
+                     && myRank == helper->GetVertexOwner(this->Current->Target))
+                    || !helper)
+                   && this->Vertex > this->Current->Target)))
     {
       this->Increment();
     }
@@ -137,7 +144,7 @@ vtkEdgeType vtkEdgeListIterator::Next()
 }
 
 //----------------------------------------------------------------------------
-vtkGraphEdge* vtkEdgeListIterator::NextGraphEdge()
+vtkGraphEdge *vtkEdgeListIterator::NextGraphEdge()
 {
   vtkEdgeType e = this->Next();
   if (!this->GraphEdge)
@@ -160,10 +167,11 @@ void vtkEdgeListIterator::Increment()
 
   vtkIdType lastVertex = this->Graph->GetNumberOfVertices();
 
-  vtkDistributedGraphHelper* helper = this->Graph->GetDistributedGraphHelper();
+  vtkDistributedGraphHelper *helper = this->Graph->GetDistributedGraphHelper();
   if (helper)
   {
-    int myRank = this->Graph->GetInformation()->Get(vtkDataObject::DATA_PIECE_NUMBER());
+    int myRank
+      = this->Graph->GetInformation()->Get(vtkDataObject::DATA_PIECE_NUMBER());
     this->Vertex = helper->MakeDistributedId(myRank, this->Vertex);
     lastVertex = helper->MakeDistributedId(myRank, lastVertex);
   }
@@ -173,7 +181,8 @@ void vtkEdgeListIterator::Increment()
   {
     // Find a vertex with nonzero out degree.
     ++this->Vertex;
-    while (this->Vertex < lastVertex && this->Graph->GetOutDegree(this->Vertex) == 0)
+    while (this->Vertex < lastVertex &&
+           this->Graph->GetOutDegree(this->Vertex) == 0)
     {
       ++this->Vertex;
     }
@@ -188,7 +197,7 @@ void vtkEdgeListIterator::Increment()
     }
     else
     {
-      this->Current = nullptr;
+      this->Current = 0;
     }
   }
 }
@@ -196,13 +205,13 @@ void vtkEdgeListIterator::Increment()
 //----------------------------------------------------------------------------
 bool vtkEdgeListIterator::HasNext()
 {
-  return (this->Current != nullptr);
+  return (this->Current != 0);
 }
 
 //----------------------------------------------------------------------------
 void vtkEdgeListIterator::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
   os << indent << "Graph: " << (this->Graph ? "" : "(null)") << endl;
   if (this->Graph)
   {

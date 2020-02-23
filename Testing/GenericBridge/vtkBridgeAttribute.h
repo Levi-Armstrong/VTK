@@ -20,7 +20,7 @@
  * used for testing and evaluating the Generic.
  * @sa
  * vtkGenericAttribute, vtkBridgeDataSet
- */
+*/
 
 #ifndef vtkBridgeAttribute_h
 #define vtkBridgeAttribute_h
@@ -34,29 +34,29 @@ class vtkDataSetAttributes;
 
 class VTKTESTINGGENERICBRIDGE_EXPORT vtkBridgeAttribute : public vtkGenericAttribute
 {
-public:
-  static vtkBridgeAttribute* New();
-  vtkTypeMacro(vtkBridgeAttribute, vtkGenericAttribute);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+ public:
+  static vtkBridgeAttribute *New();
+  vtkTypeMacro(vtkBridgeAttribute,vtkGenericAttribute);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Name of the attribute. (e.g. "velocity")
    * \post result_may_not_exist: result!=0 || result==0
    */
-  const char* GetName() override;
+  const char *GetName();
 
   /**
    * Dimension of the attribute. (1 for scalar, 3 for velocity)
    * \post positive_result: result>=0
    */
-  int GetNumberOfComponents() override;
+  int GetNumberOfComponents();
 
   /**
    * Is the attribute centered either on points, cells or boundaries?
    * \post valid_result: (result==vtkCenteringPoints) ||
    * (result==vtkCenteringCells) || (result==vtkCenteringBoundaries)
    */
-  int GetCentering() override;
+  int GetCentering();
 
   /**
    * Type of the attribute: scalar, vector, normal, texture coordinate, tensor
@@ -66,7 +66,7 @@ public:
    * ||(result==vtkDataSetAttributes::TCOORDS)
    * ||(result==vtkDataSetAttributes::TENSORS)
    */
-  int GetType() override;
+  int GetType();
 
   /**
    * Type of the components of the attribute: int, float, double
@@ -77,18 +77,18 @@ public:
    * ||(result==VTK_UNSIGNED_LONG) ||(result==VTK_FLOAT)
    * ||(result==VTK_DOUBLE)        ||(result==VTK_ID_TYPE)
    */
-  int GetComponentType() override;
+  int GetComponentType();
 
   /**
    * Number of tuples.
    * \post valid_result: result>=0
    */
-  vtkIdType GetSize() override;
+  vtkIdType GetSize();
 
   /**
    * Size in kibibytes (1024 bytes) taken by the attribute.
    */
-  unsigned long GetActualMemorySize() override;
+  unsigned long GetActualMemorySize();
 
   /**
    * Range of the attribute component `component'. It returns double, even if
@@ -97,20 +97,21 @@ public:
    * \pre valid_component: (component>=0)&&(component<GetNumberOfComponents())
    * \post result_exists: result!=0
    */
-  double* GetRange(int component) override;
+  double *GetRange(int component);
 
   /**
    * Range of the attribute component `component'.
    * THREAD SAFE
    * \pre valid_component: (component>=0)&&(component<GetNumberOfComponents())
    */
-  void GetRange(int component, double range[2]) override;
+  void GetRange(int component,
+                double range[2]);
 
   /**
    * Return the maximum euclidean norm for the tuples.
    * \post positive_result: result>=0
    */
-  double GetMaxNorm() override;
+  double GetMaxNorm();
 
   /**
    * Attribute at all points of cell `c'.
@@ -119,7 +120,7 @@ public:
    * \post result_exists: result!=0
    * \post valid_result: sizeof(result)==GetNumberOfComponents()*c->GetCell()->GetNumberOfPoints()
    */
-  double* GetTuple(vtkGenericAdaptorCell* c) override;
+  virtual double *GetTuple(vtkGenericAdaptorCell *c);
 
   /**
    * Put attribute at all points of cell `c' in `tuple'.
@@ -128,7 +129,7 @@ public:
    * \pre tuple_exists: tuple!=0
    * \pre valid_tuple: sizeof(tuple)>=GetNumberOfComponents()*c->GetCell()->GetNumberOfPoints()
    */
-  void GetTuple(vtkGenericAdaptorCell* c, double* tuple) override;
+  virtual void GetTuple(vtkGenericAdaptorCell *c, double *tuple);
 
   /**
    * Attribute at all points of cell `c'.
@@ -137,7 +138,7 @@ public:
    * \post result_exists: result!=0
    * \post valid_result: sizeof(result)==GetNumberOfComponents()*c->GetCell()->GetNumberOfPoints()
    */
-  double* GetTuple(vtkGenericCellIterator* c) override;
+  double *GetTuple(vtkGenericCellIterator *c);
 
   /**
    * Put attribute at all points of cell `c' in `tuple'.
@@ -146,7 +147,7 @@ public:
    * \pre tuple_exists: tuple!=0
    * \pre valid_tuple: sizeof(tuple)>=GetNumberOfComponents()*c->GetCell()->GetNumberOfPoints()
    */
-  void GetTuple(vtkGenericCellIterator* c, double* tuple) override;
+  void GetTuple(vtkGenericCellIterator *c, double *tuple);
 
   /**
    * Value of the attribute at position `p'.
@@ -155,7 +156,7 @@ public:
    * \post result_exists: result!=0
    * \post valid_result_size: sizeof(result)==GetNumberOfComponents()
    */
-  double* GetTuple(vtkGenericPointIterator* p) override;
+  double *GetTuple(vtkGenericPointIterator *p);
 
   /**
    * Put the value of the attribute at position `p' into `tuple'.
@@ -164,7 +165,7 @@ public:
    * \pre tuple_exists: tuple!=0
    * \pre valid_tuple_size: sizeof(tuple)>=GetNumberOfComponents()
    */
-  void GetTuple(vtkGenericPointIterator* p, double* tuple) override;
+  void GetTuple(vtkGenericPointIterator *p, double *tuple);
 
   /**
    * Put component `i' of the attribute at all points of cell `c' in `values'.
@@ -174,7 +175,7 @@ public:
    * \pre values_exist: values!=0
    * \pre valid_values: sizeof(values)>=c->GetCell()->GetNumberOfPoints()
    */
-  void GetComponent(int i, vtkGenericCellIterator* c, double* values) override;
+  void GetComponent(int i,vtkGenericCellIterator *c, double *values);
 
   /**
    * Value of the component `i' of the attribute at position `p'.
@@ -182,21 +183,21 @@ public:
    * \pre p_exists: p!=0
    * \pre p_valid: !p->IsAtEnd()
    */
-  double GetComponent(int i, vtkGenericPointIterator* p) override;
+  double GetComponent(int i,vtkGenericPointIterator *p);
 
   /**
    * Recursive duplication of `other' in `this'.
    * \pre other_exists: other!=0
    * \pre not_self: other!=this
    */
-  void DeepCopy(vtkGenericAttribute* other) override;
+  void DeepCopy(vtkGenericAttribute *other);
 
   /**
    * Update `this' using fields of `other'.
    * \pre other_exists: other!=0
    * \pre not_self: other!=this
    */
-  void ShallowCopy(vtkGenericAttribute* other) override;
+  void ShallowCopy(vtkGenericAttribute *other);
 
   /**
    * Set the current attribute to be centered on points with attribute `i' of
@@ -204,7 +205,8 @@ public:
    * \pre d_exists: d!=0
    * \pre valid_range: (i>=0) && (i<d->GetNumberOfArrays())
    */
-  void InitWithPointData(vtkPointData* d, int i);
+  void InitWithPointData(vtkPointData *d,
+                         int i);
 
   /**
    * Set the current attribute to be centered on cells with attribute `i' of
@@ -212,7 +214,8 @@ public:
    * \pre d_exists: d!=0
    * \pre valid_range: (i>=0) && (i<d->GetNumberOfArrays())
    */
-  void InitWithCellData(vtkCellData* d, int i);
+  void InitWithCellData(vtkCellData *d,
+                        int i);
 
 protected:
   /**
@@ -222,7 +225,7 @@ protected:
   /**
    * Destructor.
    */
-  ~vtkBridgeAttribute() override;
+  virtual ~vtkBridgeAttribute();
 
   /**
    * If size>InternalTupleCapacity, allocate enough memory.
@@ -233,17 +236,17 @@ protected:
   friend class vtkBridgeCell;
 
   // only one of them is non-null at a time.
-  vtkPointData* Pd;
-  vtkCellData* Cd;
-  vtkDataSetAttributes* Data; // always not-null, equal to either on Pd or Cd
+  vtkPointData *Pd;
+  vtkCellData *Cd;
+  vtkDataSetAttributes *Data; // always not-null, equal to either on Pd or Cd
   int AttributeNumber;
 
-  double* InternalTuple; // used by vtkBridgeCell
+  double *InternalTuple; // used by vtkBridgeCell
   int InternalTupleCapacity;
 
 private:
-  vtkBridgeAttribute(const vtkBridgeAttribute&) = delete;
-  void operator=(const vtkBridgeAttribute&) = delete;
+  vtkBridgeAttribute(const vtkBridgeAttribute&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkBridgeAttribute&) VTK_DELETE_FUNCTION;
 };
 
 #endif

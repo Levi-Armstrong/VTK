@@ -16,62 +16,64 @@
  * @class   vtkObjectFactoryCollection
  * @brief   maintain a list of object factories
  *
- * vtkObjectFactoryCollection is an object that creates and manipulates
- * ordered lists of objects of type vtkObjectFactory.
+ * vtkObjectFactoryCollection is an object that creates and manipulates lists
+ * of object of type vtkObjectFactory.
  *
  * @sa
  * vtkCollection vtkObjectFactory
- */
+*/
 
 #ifndef vtkObjectFactoryCollection_h
 #define vtkObjectFactoryCollection_h
 
-#include "vtkCollection.h"
 #include "vtkCommonCoreModule.h" // For export macro
+#include "vtkCollection.h"
 
 #include "vtkObjectFactory.h" // Needed for inline methods
 
 class VTKCOMMONCORE_EXPORT vtkObjectFactoryCollection : public vtkCollection
 {
 public:
-  vtkTypeMacro(vtkObjectFactoryCollection, vtkCollection);
-  static vtkObjectFactoryCollection* New();
+  vtkTypeMacro(vtkObjectFactoryCollection,vtkCollection);
+  static vtkObjectFactoryCollection *New();
 
   /**
-   * Add an ObjectFactory the bottom of the list.
+   * Add an ObjectFactory from the list.
    */
-  void AddItem(vtkObjectFactory* t) { this->vtkCollection::AddItem(t); }
+  void AddItem(vtkObjectFactory *t)
+  {
+      this->vtkCollection::AddItem(t);
+  }
 
   /**
-   * Get the next ObjectFactory in the list. Return nullptr when the end of the
+   * Get the next ObjectFactory in the list. Return NULL when the end of the
    * list is reached.
    */
-  vtkObjectFactory* GetNextItem()
-  {
-    return static_cast<vtkObjectFactory*>(this->GetNextItemAsObject());
-  }
+  vtkObjectFactory *GetNextItem()
+    { return static_cast<vtkObjectFactory *>(this->GetNextItemAsObject());}
 
   /**
    * Reentrant safe way to get an object in a collection. Just pass the
    * same cookie back and forth.
    */
-  vtkObjectFactory* GetNextObjectFactory(vtkCollectionSimpleIterator& cookie)
-  {
-    return static_cast<vtkObjectFactory*>(this->GetNextItemAsObject(cookie));
-  }
+  vtkObjectFactory *GetNextObjectFactory(vtkCollectionSimpleIterator &cookie) {
+    return static_cast<vtkObjectFactory *>(
+      this->GetNextItemAsObject(cookie));};
 
 protected:
   vtkObjectFactoryCollection() {}
-  ~vtkObjectFactoryCollection() override {}
+  ~vtkObjectFactoryCollection() VTK_OVERRIDE {}
+
 
 private:
   // hide the standard AddItem from the user and the compiler.
-  void AddItem(vtkObject* o) { this->vtkCollection::AddItem(o); }
+  void AddItem(vtkObject *o) { this->vtkCollection::AddItem(o); };
 
 private:
-  vtkObjectFactoryCollection(const vtkObjectFactoryCollection&) = delete;
-  void operator=(const vtkObjectFactoryCollection&) = delete;
+  vtkObjectFactoryCollection(const vtkObjectFactoryCollection&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkObjectFactoryCollection&) VTK_DELETE_FUNCTION;
 };
+
 
 #endif
 // VTK-HeaderTest-Exclude: vtkObjectFactoryCollection.h

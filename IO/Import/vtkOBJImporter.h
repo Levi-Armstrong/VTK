@@ -18,15 +18,14 @@
  *                   Allen Tannenbaum (SUNY Stonybrook), Patricio Vela (Georgia Tech)
  * @sa
  *  vtkImporter
- */
+*/
 
 #ifndef vtkOBJImporter_h
 #define vtkOBJImporter_h
 
 #include "vtkIOImportModule.h" // For export macro
+#include "vtkSmartPointer.h"
 #include "vtkImporter.h"
-#include "vtkSmartPointer.h" // for ivars
-#include <string>            // for string
 
 class vtkRenderWindow;
 class vtkRenderer;
@@ -59,10 +58,10 @@ class vtkOBJPolyDataProcessor;
 class VTKIOIMPORT_EXPORT vtkOBJImporter : public vtkImporter
 {
 public:
-  static vtkOBJImporter* New();
+  static vtkOBJImporter *New();
 
-  vtkTypeMacro(vtkOBJImporter, vtkImporter);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkOBJImporter,vtkImporter);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -76,30 +75,22 @@ public:
   const char* GetTexturePath() const;
   //@}
 
-  /**
-   * Get a printable string describing all outputs
-   */
-  std::string GetOutputsDescription() override;
-
-  /**
-   * Get a string describing an output
-   */
-  std::string GetOutputDescription(int idx);
-
 protected:
   vtkOBJImporter();
-  ~vtkOBJImporter() override;
+  ~vtkOBJImporter();
 
-  int ImportBegin() override /*override*/;
-  void ImportEnd() override /*override*/;
-  void ReadData() override /* override */;
+  virtual int  ImportBegin() /*override*/;
+  virtual void ImportEnd () /*override*/;
+  virtual void ReadData() /* override */;
 
-  vtkSmartPointer<vtkOBJPolyDataProcessor> Impl;
+  vtkSmartPointer<vtkOBJPolyDataProcessor>   Impl;
 
 private:
-  vtkOBJImporter(const vtkOBJImporter&) = delete;
-  void operator=(const vtkOBJImporter&) = delete;
+  vtkOBJImporter(const vtkOBJImporter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkOBJImporter&) VTK_DELETE_FUNCTION;
 };
+
+
 
 #endif
 // VTK-HeaderTest-Exclude: vtkOBJImporter.h

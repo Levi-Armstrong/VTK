@@ -56,7 +56,7 @@
   #include <fstream>
 
   #if defined(_WIN32) && defined(vtkmetaio_BUILD_SHARED_LIBS)
-    #ifdef metaio_EXPORTS
+    #ifdef vtkmetaio_EXPORTS
       #define METAIO_EXPORT __declspec(dllexport)
       #define METAIO_EXTERN
     #else

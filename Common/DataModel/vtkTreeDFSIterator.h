@@ -33,7 +33,7 @@
  * After setting up the iterator, the normal mode of operation is to
  * set up a <code>while(iter->HasNext())</code> loop, with the statement
  * <code>vtkIdType vertex = iter->Next()</code> inside the loop.
- */
+*/
 
 #ifndef vtkTreeDFSIterator_h
 #define vtkTreeDFSIterator_h
@@ -49,7 +49,7 @@ class VTKCOMMONDATAMODEL_EXPORT vtkTreeDFSIterator : public vtkTreeIterator
 public:
   static vtkTreeDFSIterator* New();
   vtkTypeMacro(vtkTreeDFSIterator, vtkTreeIterator);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   enum ModeType
   {
@@ -72,10 +72,10 @@ public:
 
 protected:
   vtkTreeDFSIterator();
-  ~vtkTreeDFSIterator() override;
+  ~vtkTreeDFSIterator() VTK_OVERRIDE;
 
-  void Initialize() override;
-  vtkIdType NextInternal() override;
+  void Initialize() VTK_OVERRIDE;
+  vtkIdType NextInternal() VTK_OVERRIDE;
 
   int Mode;
   vtkIdType CurRoot;
@@ -90,8 +90,10 @@ protected:
   };
 
 private:
-  vtkTreeDFSIterator(const vtkTreeDFSIterator&) = delete;
-  void operator=(const vtkTreeDFSIterator&) = delete;
+  vtkTreeDFSIterator(const vtkTreeDFSIterator &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTreeDFSIterator &) VTK_DELETE_FUNCTION;
 };
 
+
 #endif
+

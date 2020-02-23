@@ -25,7 +25,7 @@
  * @par Thanks:
  * This class was developed by Takuya Oshima at Niigata University,
  * Japan (oshima@eng.niigata-u.ac.jp).
- */
+*/
 
 #ifndef vtkPOpenFOAMReader_h
 #define vtkPOpenFOAMReader_h
@@ -39,16 +39,13 @@ class vtkMultiProcessController;
 class VTKIOPARALLEL_EXPORT vtkPOpenFOAMReader : public vtkOpenFOAMReader
 {
 public:
-  enum caseType
-  {
-    DECOMPOSED_CASE = 0,
-    RECONSTRUCTED_CASE = 1
-  };
 
-  static vtkPOpenFOAMReader* New();
+  enum caseType { DECOMPOSED_CASE = 0, RECONSTRUCTED_CASE = 1 };
+
+  static vtkPOpenFOAMReader *New();
   vtkTypeMacro(vtkPOpenFOAMReader, vtkOpenFOAMReader);
 
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream &os, vtkIndent indent);
 
   //@{
   /**
@@ -61,32 +58,34 @@ public:
   /**
    * Set and get the controller.
    */
-  virtual void SetController(vtkMultiProcessController*);
+  virtual void SetController(vtkMultiProcessController *);
   vtkGetObjectMacro(Controller, vtkMultiProcessController);
   //@}
 
 protected:
   vtkPOpenFOAMReader();
-  ~vtkPOpenFOAMReader() override;
+  ~vtkPOpenFOAMReader();
 
-  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestInformation(vtkInformation *, vtkInformationVector **,
+    vtkInformationVector *);
+  int RequestData(vtkInformation *, vtkInformationVector **,
+    vtkInformationVector *);
 
 private:
-  vtkMultiProcessController* Controller;
+  vtkMultiProcessController *Controller;
   caseType CaseType;
   vtkMTimeType MTimeOld;
   int NumProcesses;
   int ProcessId;
 
-  vtkPOpenFOAMReader(const vtkPOpenFOAMReader&) = delete;
-  void operator=(const vtkPOpenFOAMReader&) = delete;
+  vtkPOpenFOAMReader(const vtkPOpenFOAMReader &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPOpenFOAMReader &) VTK_DELETE_FUNCTION;
 
   void GatherMetaData();
-  void BroadcastStatus(int&);
-  void Broadcast(vtkStringArray*);
-  void AllGather(vtkStringArray*);
-  void AllGather(vtkDataArraySelection*);
+  void BroadcastStatus(int &);
+  void Broadcast(vtkStringArray *);
+  void AllGather(vtkStringArray *);
+  void AllGather(vtkDataArraySelection *);
 };
 
 #endif

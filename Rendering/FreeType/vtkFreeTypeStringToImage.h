@@ -15,24 +15,26 @@
 
 /**
  * @class   vtkFreeTypeStringToImage
- * @brief   render the supplied text to an image.
+ * @brief   uses Qt to render the supplied text to an image.
  *
- */
+ *
+ *
+*/
 
 #ifndef vtkFreeTypeStringToImage_h
 #define vtkFreeTypeStringToImage_h
 
 #include "vtkRenderingFreeTypeModule.h" // For export macro
-#include "vtkSmartPointer.h"            // For SP ivars
 #include "vtkStringToImage.h"
+#include "vtkSmartPointer.h" // For SP ivars
 
 class VTKRENDERINGFREETYPE_EXPORT vtkFreeTypeStringToImage : public vtkStringToImage
 {
 public:
   vtkTypeMacro(vtkFreeTypeStringToImage, vtkStringToImage);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  virtual void PrintSelf(ostream &os, vtkIndent indent);
 
-  static vtkFreeTypeStringToImage* New();
+  static vtkFreeTypeStringToImage *New();
 
   //@{
   /**
@@ -48,9 +50,10 @@ public:
    * is valid (it may not if GetBoundingBox() failed or if the string
    * was empty).
    */
-  vtkVector2i GetBounds(
-    vtkTextProperty* property, const vtkUnicodeString& string, int dpi) override;
-  vtkVector2i GetBounds(vtkTextProperty* property, const vtkStdString& string, int dpi) override;
+  virtual vtkVector2i GetBounds(vtkTextProperty *property,
+                                const vtkUnicodeString& string, int dpi);
+  virtual vtkVector2i GetBounds(vtkTextProperty *property,
+                                const vtkStdString& string, int dpi);
   //@}
 
   //@{
@@ -61,33 +64,37 @@ public:
    * This is useful when ScaleToPowerOfTwo is true, and the image dimensions may
    * not match the dimensions of the rendered text.
    */
-  int RenderString(vtkTextProperty* property, const vtkUnicodeString& string, int dpi,
-    vtkImageData* data, int textDims[2] = nullptr) override;
-  int RenderString(vtkTextProperty* property, const vtkStdString& string, int dpi,
-    vtkImageData* data, int textDims[2] = nullptr) override;
+  virtual int RenderString(vtkTextProperty *property,
+                           const vtkUnicodeString& string, int dpi,
+                           vtkImageData *data,
+                           int textDims[2] = NULL);
+  virtual int RenderString(vtkTextProperty *property,
+                           const vtkStdString& string, int dpi,
+                           vtkImageData *data,
+                           int textDims[2] = NULL);
   //@}
 
   /**
    * Should we produce images at powers of 2, makes rendering on old OpenGL
    * hardware easier. Default is false.
    */
-  void SetScaleToPowerOfTwo(bool scale) override;
+  virtual void SetScaleToPowerOfTwo(bool scale);
 
   /**
    * Make a deep copy of the supplied utility class.
    */
-  void DeepCopy(vtkFreeTypeStringToImage* utility);
+  void DeepCopy(vtkFreeTypeStringToImage *utility);
 
 protected:
   vtkFreeTypeStringToImage();
-  ~vtkFreeTypeStringToImage() override;
+  ~vtkFreeTypeStringToImage();
 
   class Internals;
   Internals* Implementation;
 
 private:
-  vtkFreeTypeStringToImage(const vtkFreeTypeStringToImage&) = delete;
-  void operator=(const vtkFreeTypeStringToImage&) = delete;
+  vtkFreeTypeStringToImage(const vtkFreeTypeStringToImage &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkFreeTypeStringToImage &) VTK_DELETE_FUNCTION;
 };
 
-#endif // vtkFreeTypeStringToImage_h
+#endif //vtkFreeTypeStringToImage_h

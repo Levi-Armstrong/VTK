@@ -27,13 +27,13 @@
  * @par Thanks:
  * Thanks to David Gobbi at the Seaman Family MR Centre and Dept. of Clinical
  * Neurosciences, Foothills Medical Centre, Calgary, for providing this class.
- */
+*/
 
 #ifndef vtkImageHistogramStatistics_h
 #define vtkImageHistogramStatistics_h
 
-#include "vtkImageHistogram.h"
 #include "vtkImagingStatisticsModule.h" // For export macro
+#include "vtkImageHistogram.h"
 
 class vtkImageStencilData;
 class vtkIdTypeArray;
@@ -41,10 +41,10 @@ class vtkIdTypeArray;
 class VTKIMAGINGSTATISTICS_EXPORT vtkImageHistogramStatistics : public vtkImageHistogram
 {
 public:
-  static vtkImageHistogramStatistics* New();
-  vtkTypeMacro(vtkImageHistogramStatistics, vtkImageHistogram);
+  static vtkImageHistogramStatistics *New();
+  vtkTypeMacro(vtkImageHistogramStatistics,vtkImageHistogram);
 
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Get the minimum value present in the image.  This value is computed
@@ -115,9 +115,11 @@ public:
 
 protected:
   vtkImageHistogramStatistics();
-  ~vtkImageHistogramStatistics() override;
+  ~vtkImageHistogramStatistics();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int RequestData(vtkInformation *,
+                          vtkInformationVector **,
+                          vtkInformationVector *);
 
   double Minimum;
   double Maximum;
@@ -130,8 +132,8 @@ protected:
   double AutoRangeExpansionFactors[2];
 
 private:
-  vtkImageHistogramStatistics(const vtkImageHistogramStatistics&) = delete;
-  void operator=(const vtkImageHistogramStatistics&) = delete;
+  vtkImageHistogramStatistics(const vtkImageHistogramStatistics&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkImageHistogramStatistics&) VTK_DELETE_FUNCTION;
 };
 
 #endif

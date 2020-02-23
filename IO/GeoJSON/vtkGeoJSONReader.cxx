@@ -25,18 +25,16 @@
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
 #include "vtkIntArray.h"
+#include "vtk_jsoncpp.h"
 #include "vtkNew.h"
 #include "vtkObjectFactory.h"
 #include "vtkPolyData.h"
 #include "vtkStringArray.h"
 #include "vtkTriangleFilter.h"
-#include "vtk_jsoncpp.h"
-#include "vtksys/FStream.hxx"
 
 // C++ includes
 #include <fstream>
 #include <iostream>
-#include <sstream>
 
 vtkStandardNewMacro(vtkGeoJSONReader);
 
@@ -46,50 +44,60 @@ class vtkGeoJSONReader::GeoJSONReaderInternal
 public:
   typedef struct
   {
-    std::string Name;
-    vtkVariant Value;
+  std::string Name;
+  vtkVariant Value;
   } GeoJSONProperty;
 
   // List of property names to read. Property value is used the default
   std::vector<GeoJSONProperty> PropertySpecs;
 
   // Parse the Json Value corresponding to the root of the geoJSON data from the file
-  void ParseRoot(const Json::Value& root, vtkPolyData* output, bool outlinePolygons,
-    const char* serializedPropertiesArrayName);
+  void ParseRoot(
+    const Json::Value& root,
+    vtkPolyData *output,
+    bool outlinePolygons,
+    const char *serializedPropertiesArrayName);
 
   // Verify if file exists and can be read by the parser
   // If exists, parse into Jsoncpp data structure
-  int CanParseFile(const char* filename, Json::Value& root);
+  int CanParseFile(const char *filename, Json::Value &root);
 
   // Verify if string can be read by the parser
   // If exists, parse into Jsoncpp data structure
-  int CanParseString(char* input, Json::Value& root);
+  int CanParseString(char *input, Json::Value &root);
 
   // Extract property values from json node
-  void ParseFeatureProperties(const Json::Value& propertiesNode,
-    std::vector<GeoJSONProperty>& properties, const char* serializedPropertiesArrayName);
+  void ParseFeatureProperties(
+    const Json::Value& propertiesNode,
+    std::vector<GeoJSONProperty>& properties,
+    const char *serializedPropertiesArrayName);
 
-  void InsertFeatureProperties(
-    vtkPolyData* polyData, const std::vector<GeoJSONProperty>& featureProperties);
+  void InsertFeatureProperties(vtkPolyData *polyData,
+    const std::vector<GeoJSONProperty>& featureProperties);
+
 };
 
 //----------------------------------------------------------------------------
-void vtkGeoJSONReader::GeoJSONReaderInternal::ParseRoot(const Json::Value& root,
-  vtkPolyData* output, bool outlinePolygons, const char* serializedPropertiesArrayName)
+void vtkGeoJSONReader::
+GeoJSONReaderInternal::ParseRoot(
+  const Json::Value& root,
+  vtkPolyData *output,
+  bool outlinePolygons,
+  const char *serializedPropertiesArrayName)
 {
   // Initialize geometry containers
   vtkNew<vtkPoints> points;
   points->SetDataTypeToDouble();
-  output->SetPoints(points);
+  output->SetPoints(points.GetPointer());
   vtkNew<vtkCellArray> verts;
-  output->SetVerts(verts);
+  output->SetVerts(verts.GetPointer());
   vtkNew<vtkCellArray> lines;
-  output->SetLines(lines);
+  output->SetLines(lines.GetPointer());
   vtkNew<vtkCellArray> polys;
-  output->SetPolys(polys);
+  output->SetPolys(polys.GetPointer());
 
   // Initialize feature-id array
-  vtkStringArray* featureIdArray = vtkStringArray::New();
+  vtkStringArray *featureIdArray = vtkStringArray::New();
   featureIdArray->SetName("feature-id");
   output->GetCellData()->AddArray(featureIdArray);
   featureIdArray->Delete();
@@ -97,17 +105,18 @@ void vtkGeoJSONReader::GeoJSONReaderInternal::ParseRoot(const Json::Value& root,
   // Initialize properties arrays
   if (serializedPropertiesArrayName)
   {
-    vtkStringArray* propertiesArray = vtkStringArray::New();
+    vtkStringArray *propertiesArray = vtkStringArray::New();
     propertiesArray->SetName(serializedPropertiesArrayName);
     output->GetCellData()->AddArray(propertiesArray);
     propertiesArray->Delete();
   }
 
-  vtkAbstractArray* array;
-  std::vector<GeoJSONProperty>::iterator iter = this->PropertySpecs.begin();
-  for (; iter != this->PropertySpecs.end(); ++iter)
+  vtkAbstractArray *array;
+  std::vector<GeoJSONProperty>::iterator iter =
+    this->PropertySpecs.begin();
+  for (; iter != this->PropertySpecs.end(); iter++)
   {
-    array = nullptr;
+    array = NULL;
     switch (iter->Value.GetType())
     {
       case VTK_BIT:
@@ -146,7 +155,7 @@ void vtkGeoJSONReader::GeoJSONReaderInternal::ParseRoot(const Json::Value& root,
   Json::Value rootType = root["type"];
   if (rootType.isNull())
   {
-    vtkGenericWarningMacro(<< "ParseRoot: Missing type node");
+    vtkGenericWarningMacro(<<"ParseRoot: Missing type node");
     return;
   }
 
@@ -159,7 +168,7 @@ void vtkGeoJSONReader::GeoJSONReaderInternal::ParseRoot(const Json::Value& root,
     rootFeatures = root["features"];
     if (rootFeatures.isNull())
     {
-      vtkGenericWarningMacro(<< "ParseRoot: Missing \"features\" node");
+      vtkGenericWarningMacro(<<"ParseRoot: Missing \"features\" node")
       return;
     }
 
@@ -175,7 +184,8 @@ void vtkGeoJSONReader::GeoJSONReaderInternal::ParseRoot(const Json::Value& root,
       // Append extracted geometry to existing outputData
       Json::Value featureNode = rootFeatures[i];
       Json::Value propertiesNode = featureNode["properties"];
-      this->ParseFeatureProperties(propertiesNode, properties, serializedPropertiesArrayName);
+      this->ParseFeatureProperties(
+        propertiesNode, properties, serializedPropertiesArrayName);
       vtkNew<vtkGeoJSONFeature> feature;
       feature->SetOutlinePolygons(outlinePolygons);
       feature->ExtractGeoJSONFeature(featureNode, output);
@@ -185,7 +195,8 @@ void vtkGeoJSONReader::GeoJSONReaderInternal::ParseRoot(const Json::Value& root,
   else if ("Feature" == strRootType)
   {
     // Process single feature
-    this->ParseFeatureProperties(root, properties, serializedPropertiesArrayName);
+    this->ParseFeatureProperties(
+      root, properties, serializedPropertiesArrayName);
     vtkNew<vtkGeoJSONFeature> feature;
     feature->SetOutlinePolygons(outlinePolygons);
 
@@ -196,12 +207,14 @@ void vtkGeoJSONReader::GeoJSONReaderInternal::ParseRoot(const Json::Value& root,
   }
   else
   {
-    vtkGenericWarningMacro(<< "ParseRoot: do not support root type \"" << strRootType << "\"");
+    vtkGenericWarningMacro(<< "ParseRoot: do not support root type \""
+                           << strRootType << "\"");
   }
 }
 
 //----------------------------------------------------------------------------
-int vtkGeoJSONReader::GeoJSONReaderInternal::CanParseFile(const char* filename, Json::Value& root)
+int vtkGeoJSONReader::
+GeoJSONReaderInternal::CanParseFile(const char *filename, Json::Value &root)
 {
   if (!filename)
   {
@@ -209,27 +222,25 @@ int vtkGeoJSONReader::GeoJSONReaderInternal::CanParseFile(const char* filename, 
     return VTK_ERROR;
   }
 
-  vtksys::ifstream file;
-  file.open(filename);
+  ifstream file;
+  file.open( filename );
 
-  if (!file.is_open())
+  if ( ! file.is_open() )
   {
     vtkGenericWarningMacro(<< "Unable to Open File " << filename);
     return VTK_ERROR;
   }
 
-  Json::CharReaderBuilder builder;
-  builder["collectComments"] = false;
+  Json::Reader reader;
 
-  std::string formattedErrors;
+  //parse the entire geoJSON data into the Json::Value root
+  bool parsedSuccess = reader.parse(file, root, false);
 
-  // parse the entire geoJSON data into the Json::Value root
-  bool parsedSuccess = parseFromStream(builder, file, &root, &formattedErrors);
-
-  if (!parsedSuccess)
+  if ( ! parsedSuccess )
   {
     // Report failures and their locations in the document
-    vtkGenericWarningMacro(<< "Failed to parse JSON" << endl << formattedErrors);
+    vtkGenericWarningMacro(<<"Failed to parse JSON" << endl
+                           << reader.getFormattedErrorMessages());
     return VTK_ERROR;
   }
 
@@ -237,7 +248,8 @@ int vtkGeoJSONReader::GeoJSONReaderInternal::CanParseFile(const char* filename, 
 }
 
 //----------------------------------------------------------------------------
-int vtkGeoJSONReader::GeoJSONReaderInternal::CanParseString(char* input, Json::Value& root)
+int vtkGeoJSONReader::
+GeoJSONReaderInternal::CanParseString(char *input, Json::Value &root)
 {
   if (!input)
   {
@@ -245,20 +257,16 @@ int vtkGeoJSONReader::GeoJSONReaderInternal::CanParseString(char* input, Json::V
     return VTK_ERROR;
   }
 
-  Json::CharReaderBuilder builder;
-  builder["collectComments"] = false;
+  Json::Reader reader;
 
-  std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
+  //parse the entire geoJSON data into the Json::Value root
+  bool parsedSuccess = reader.parse(input, root, false);
 
-  std::string formattedErrors;
-
-  // parse the entire geoJSON data into the Json::Value root
-  bool parsedSuccess = reader->parse(input, input + strlen(input), &root, &formattedErrors);
-
-  if (!parsedSuccess)
+  if ( ! parsedSuccess )
   {
     // Report failures and their locations in the document
-    vtkGenericWarningMacro(<< "Failed to parse JSON" << endl << formattedErrors);
+    vtkGenericWarningMacro(<<"Failed to parse JSON" << endl
+                           << reader.getFormattedErrorMessages());
     return VTK_ERROR;
   }
 
@@ -267,15 +275,17 @@ int vtkGeoJSONReader::GeoJSONReaderInternal::CanParseString(char* input, Json::V
 
 //----------------------------------------------------------------------------
 void vtkGeoJSONReader::GeoJSONReaderInternal::ParseFeatureProperties(
-  const Json::Value& propertiesNode, std::vector<GeoJSONProperty>& featureProperties,
-  const char* serializedPropertiesArrayName)
+  const Json::Value& propertiesNode,
+  std::vector<GeoJSONProperty>& featureProperties,
+  const char *serializedPropertiesArrayName)
 {
   featureProperties.clear();
 
   GeoJSONProperty spec;
   GeoJSONProperty property;
-  std::vector<GeoJSONProperty>::iterator iter = this->PropertySpecs.begin();
-  for (; iter != this->PropertySpecs.end(); ++iter)
+  std::vector<GeoJSONProperty>::iterator iter =
+    this->PropertySpecs.begin();
+  for (; iter != this->PropertySpecs.end(); iter++)
   {
     spec = *iter;
     property.Name = spec.Name;
@@ -315,16 +325,8 @@ void vtkGeoJSONReader::GeoJSONReaderInternal::ParseFeatureProperties(
   if (serializedPropertiesArrayName)
   {
     property.Name = serializedPropertiesArrayName;
-
-    Json::StreamWriterBuilder builder;
-    builder["commentStyle"] = "None";
-    builder["indentation"] = "";
-    std::unique_ptr<Json::StreamWriter> writer(builder.newStreamWriter());
-
-    std::stringstream stream;
-    writer->write(propertiesNode, &stream);
-    std::string propString = stream.str();
-
+    Json::FastWriter writer;
+    std::string propString = writer.write(propertiesNode);
     if (!propString.empty() && *propString.rbegin() == '\n')
     {
       propString.resize(propString.size() - 1);
@@ -335,16 +337,19 @@ void vtkGeoJSONReader::GeoJSONReaderInternal::ParseFeatureProperties(
 }
 
 //----------------------------------------------------------------------------
-void vtkGeoJSONReader::GeoJSONReaderInternal::InsertFeatureProperties(
-  vtkPolyData* polyData, const std::vector<GeoJSONProperty>& featureProperties)
+void vtkGeoJSONReader::
+GeoJSONReaderInternal::InsertFeatureProperties(vtkPolyData *polyData,
+    const std::vector<GeoJSONProperty>& featureProperties)
 {
-  std::vector<GeoJSONProperty>::const_iterator iter = featureProperties.begin();
-  for (; iter != featureProperties.end(); ++iter)
+  std::vector<GeoJSONProperty>::const_iterator iter =
+    featureProperties.begin();
+  for(; iter != featureProperties.end(); iter++)
   {
     std::string name = iter->Name;
     vtkVariant value = iter->Value;
 
-    vtkAbstractArray* array = polyData->GetCellData()->GetAbstractArray(name.c_str());
+    vtkAbstractArray *array =
+      polyData->GetCellData()->GetAbstractArray(name.c_str());
     switch (array->GetDataType())
     {
       case VTK_BIT:
@@ -369,12 +374,12 @@ void vtkGeoJSONReader::GeoJSONReaderInternal::InsertFeatureProperties(
 //----------------------------------------------------------------------------
 vtkGeoJSONReader::vtkGeoJSONReader()
 {
-  this->FileName = nullptr;
-  this->StringInput = nullptr;
+  this->FileName = NULL;
+  this->StringInput = NULL;
   this->StringInputMode = false;
   this->TriangulatePolygons = false;
   this->OutlinePolygons = false;
-  this->SerializedPropertiesArrayName = nullptr;
+  this->SerializedPropertiesArrayName = NULL;
   this->SetNumberOfInputPorts(0);
   this->SetNumberOfOutputPorts(1);
   this->Internal = new GeoJSONReaderInternal;
@@ -389,14 +394,15 @@ vtkGeoJSONReader::~vtkGeoJSONReader()
 }
 
 //----------------------------------------------------------------------------
-void vtkGeoJSONReader::AddFeatureProperty(const char* name, vtkVariant& typeAndDefaultValue)
+void vtkGeoJSONReader::
+AddFeatureProperty(const char *name, vtkVariant& typeAndDefaultValue)
 {
   GeoJSONReaderInternal::GeoJSONProperty property;
 
   // Traverse internal list checking if name already used
   std::vector<GeoJSONReaderInternal::GeoJSONProperty>::iterator iter =
     this->Internal->PropertySpecs.begin();
-  for (; iter != this->Internal->PropertySpecs.end(); ++iter)
+  for (; iter != this->Internal->PropertySpecs.end(); iter++)
   {
     if (iter->Name == name)
     {
@@ -420,15 +426,16 @@ void vtkGeoJSONReader::AddFeatureProperty(const char* name, vtkVariant& typeAndD
 
 //----------------------------------------------------------------------------
 int vtkGeoJSONReader::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(request), vtkInformationVector* outputVector)
+                                   vtkInformationVector** vtkNotUsed(request),
+                                   vtkInformationVector* outputVector)
 {
   // Get the info object
   vtkInformation* outInfo = outputVector->GetInformationObject(0);
 
-  // Get the output
+  // Get the ouptut
   vtkPolyData* output = vtkPolyData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
 
-  // Parse either string input of file, depending on mode
+  // Parse either string input of file, depeding on mode
   Json::Value root;
   int parseResult = 0;
   if (this->StringInputMode)
@@ -466,7 +473,7 @@ int vtkGeoJSONReader::RequestData(vtkInformation* vtkNotUsed(request),
 }
 
 //----------------------------------------------------------------------------
-void vtkGeoJSONReader::PrintSelf(ostream& os, vtkIndent indent)
+void vtkGeoJSONReader::PrintSelf(ostream &os, vtkIndent indent)
 {
   Superclass::PrintSelf(os, indent);
   os << "vtkGeoJSONReader" << std::endl;

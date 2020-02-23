@@ -21,7 +21,7 @@
  * vtkReebGraph (port 1).
  * The filter samples each arc of the Reeb graph and embeds the samples on the
  * barycenter of the corresponding field contour.
- * The number of (evenly distributed) arc samples can be defined with
+ * The number of (evenly distributed) arc samples  can be defined with
  * SetNumberOfSamples() (default value: 10).
  * The skeleton can be optionally smoothed with SetNumberOfSmoothingIterations()
  * (default value: 10).
@@ -38,23 +38,24 @@
  * primitives (for instance, spheres at critical nodes and cylinders between
  * intermediary samples, see Graphics/Testing/Cxx/TestReebGraph.cxx).
  *
- */
+*/
 
 #ifndef vtkReebGraphSurfaceSkeletonFilter_h
 #define vtkReebGraphSurfaceSkeletonFilter_h
 
-#include "vtkDataObjectAlgorithm.h"
 #include "vtkFiltersReebGraphModule.h" // For export macro
+#include  "vtkDataObjectAlgorithm.h"
 
 class vtkReebGraph;
 class vtkTable;
 
-class VTKFILTERSREEBGRAPH_EXPORT vtkReebGraphSurfaceSkeletonFilter : public vtkDataObjectAlgorithm
+class VTKFILTERSREEBGRAPH_EXPORT vtkReebGraphSurfaceSkeletonFilter :
+  public vtkDataObjectAlgorithm
 {
 public:
   static vtkReebGraphSurfaceSkeletonFilter* New();
   vtkTypeMacro(vtkReebGraphSurfaceSkeletonFilter, vtkDataObjectAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -87,20 +88,20 @@ public:
 
 protected:
   vtkReebGraphSurfaceSkeletonFilter();
-  ~vtkReebGraphSurfaceSkeletonFilter() override;
+  ~vtkReebGraphSurfaceSkeletonFilter();
 
   vtkIdType FieldId;
   int NumberOfSamples, NumberOfSmoothingIterations;
 
-  int FillInputPortInformation(int portNumber, vtkInformation*) override;
-  int FillOutputPortInformation(int portNumber, vtkInformation* info) override;
+  int FillInputPortInformation(int portNumber, vtkInformation *);
+  int FillOutputPortInformation(int portNumber, vtkInformation *info);
 
-  int RequestData(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  int RequestData(vtkInformation *request,
+    vtkInformationVector **inputVector, vtkInformationVector *outputVector);
 
 private:
-  vtkReebGraphSurfaceSkeletonFilter(const vtkReebGraphSurfaceSkeletonFilter&) = delete;
-  void operator=(const vtkReebGraphSurfaceSkeletonFilter&) = delete;
+  vtkReebGraphSurfaceSkeletonFilter(const vtkReebGraphSurfaceSkeletonFilter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkReebGraphSurfaceSkeletonFilter&) VTK_DELETE_FUNCTION;
 };
 
 #endif

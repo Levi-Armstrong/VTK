@@ -34,7 +34,7 @@ PURPOSE.  See the above copyright notice for more information.
  *   the correspondand quantile index.
  * * Assess: not implemented.
  * * Test: not implemented.
- */
+*/
 
 #ifndef vtkHighestDensityRegionsStatistics_h
 #define vtkHighestDensityRegionsStatistics_h
@@ -45,17 +45,19 @@ PURPOSE.  See the above copyright notice for more information.
 class vtkMultiBlockDataSet;
 class vtkVariant;
 
-class VTKFILTERSSTATISTICS_EXPORT vtkHighestDensityRegionsStatistics : public vtkStatisticsAlgorithm
+class VTKFILTERSSTATISTICS_EXPORT vtkHighestDensityRegionsStatistics :
+  public vtkStatisticsAlgorithm
 {
 public:
   vtkTypeMacro(vtkHighestDensityRegionsStatistics, vtkStatisticsAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf( ostream& os, vtkIndent indent ) VTK_OVERRIDE;
   static vtkHighestDensityRegionsStatistics* New();
 
   /**
    * Given a collection of models, calculate aggregate model
    */
-  void Aggregate(vtkDataObjectCollection*, vtkMultiBlockDataSet*) override { return; }
+  void Aggregate(vtkDataObjectCollection*,
+                 vtkMultiBlockDataSet*) VTK_OVERRIDE { return; }
 
   /**
    * Set the width of the gaussian kernel.
@@ -74,7 +76,7 @@ public:
    * f(X) = (1 / n) * Sum(KH(X -Xi)) for (i = 1 to n).
    * Look ComputeSmoothGaussianKernel for KH kernel definition.
    */
-  double ComputeHDR(vtkDataArray* inObservations, vtkDataArray* outDensity);
+  double ComputeHDR(vtkDataArray *inObservations, vtkDataArray *outDensity);
 
   /**
    * Fill outDensity with density vector defined by inPOI and computed from
@@ -83,39 +85,46 @@ public:
    * f(X) = (1 / n) * Sum(KH(X -Xi)) for (i = 1 to n).
    * Look ComputeSmoothGaussianKernel for KH kernel definition.
    */
-  double ComputeHDR(vtkDataArray* inObs, vtkDataArray* inPOI, vtkDataArray* outDensity);
+  double ComputeHDR(vtkDataArray *inObs, vtkDataArray* inPOI,
+                    vtkDataArray *outDensity);
 
 protected:
   vtkHighestDensityRegionsStatistics();
-  ~vtkHighestDensityRegionsStatistics() override;
+  ~vtkHighestDensityRegionsStatistics() VTK_OVERRIDE;
 
   /**
    * Execute the calculations required by the Learn option.
    */
-  void Learn(vtkTable*, vtkTable*, vtkMultiBlockDataSet*) override;
+  void Learn(vtkTable*,
+             vtkTable*,
+             vtkMultiBlockDataSet*) VTK_OVERRIDE;
 
   /**
    * Execute the calculations required by the Derive option.
    */
-  void Derive(vtkMultiBlockDataSet*) override;
+  void Derive(vtkMultiBlockDataSet*) VTK_OVERRIDE;
 
   /**
    * Execute the calculations required by the Assess option.
    */
-  void Assess(vtkTable*, vtkMultiBlockDataSet*, vtkTable*) override { return; }
+  void Assess(vtkTable*,
+              vtkMultiBlockDataSet*,
+              vtkTable*) VTK_OVERRIDE { return; }
 
   /**
    * Execute the calculations required by the Test option.
    */
-  void Test(vtkTable*, vtkMultiBlockDataSet*, vtkTable*) override { return; }
+  void Test(vtkTable*,
+            vtkMultiBlockDataSet*,
+            vtkTable*) VTK_OVERRIDE { return; }
 
   /**
    * Provide the appropriate assessment functor.
    */
-  void SelectAssessFunctor(vtkTable*, vtkDataObject*, vtkStringArray*, AssessFunctor*&) override
-  {
-    return;
-  }
+  void SelectAssessFunctor(vtkTable*,
+                           vtkDataObject*,
+                           vtkStringArray*,
+                           AssessFunctor*&) VTK_OVERRIDE { return; }
 
   //@{
   /**
@@ -134,7 +143,7 @@ protected:
    */
   vtkIdType NumberOfRequestedColumnsPair;
 
-private:
+private :
   /**
    * Helper that returns a smooth gaussian kernel of a vector of dimension two,
    * using its coordinates. For X = [khx, khy] and H a positive matrix of dim 2,
@@ -144,8 +153,8 @@ private:
   double ComputeSmoothGaussianKernel(int dimension, double khx, double khy);
 
 private:
-  vtkHighestDensityRegionsStatistics(const vtkHighestDensityRegionsStatistics&) = delete;
-  void operator=(const vtkHighestDensityRegionsStatistics&) = delete;
+  vtkHighestDensityRegionsStatistics(const vtkHighestDensityRegionsStatistics&) VTK_DELETE_FUNCTION;
+  void operator = (const vtkHighestDensityRegionsStatistics&) VTK_DELETE_FUNCTION;
 };
 
 #endif

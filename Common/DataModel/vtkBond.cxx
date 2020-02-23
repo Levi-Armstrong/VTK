@@ -21,24 +21,25 @@ PURPOSE.  See the above copyright notice for more information.
 #include <cassert>
 
 //----------------------------------------------------------------------------
-vtkBond::vtkBond(vtkMolecule* parent, vtkIdType id, vtkIdType beginAtomId, vtkIdType endAtomId)
-  : Molecule(parent)
-  , Id(id)
-  , BeginAtomId(beginAtomId)
-  , EndAtomId(endAtomId)
+vtkBond::vtkBond(vtkMolecule *parent, vtkIdType id,
+                 vtkIdType beginAtomId, vtkIdType endAtomId)
+  : Molecule(parent), Id(id), BeginAtomId(beginAtomId), EndAtomId(endAtomId)
 {
-  assert(parent != nullptr);
+  assert(parent != 0);
   assert(id < parent->GetNumberOfBonds());
   assert(beginAtomId < parent->GetNumberOfAtoms());
   assert(endAtomId < parent->GetNumberOfAtoms());
 }
 
 //----------------------------------------------------------------------------
-void vtkBond::PrintSelf(ostream& os, vtkIndent indent)
+void vtkBond::PrintSelf(ostream &os, vtkIndent indent)
 {
-  os << indent << "Molecule: " << this->Molecule << " Id: " << this->Id
-     << " Order: " << this->GetOrder() << " Length: " << this->GetLength()
-     << " BeginAtomId: " << this->BeginAtomId << " EndAtomId: " << this->EndAtomId << endl;
+  os << indent << "Molecule: " << this->Molecule
+     << " Id: " << this->Id
+     << " Order: " << this->GetOrder()
+     << " Length: " << this->GetLength()
+     << " BeginAtomId: " << this->BeginAtomId
+     << " EndAtomId: " << this->EndAtomId << endl;
 }
 
 //----------------------------------------------------------------------------
@@ -77,13 +78,13 @@ vtkAtom vtkBond::GetEndAtom()
 }
 
 //----------------------------------------------------------------------------
-vtkAtom vtkBond::GetBeginAtom() const
+const vtkAtom vtkBond::GetBeginAtom() const
 {
   return this->Molecule->GetAtom(this->BeginAtomId);
 }
 
 //----------------------------------------------------------------------------
-vtkAtom vtkBond::GetEndAtom() const
+const vtkAtom vtkBond::GetEndAtom() const
 {
   return this->Molecule->GetAtom(this->EndAtomId);
 }

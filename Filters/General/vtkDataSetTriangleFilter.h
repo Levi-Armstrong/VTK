@@ -29,7 +29,7 @@
  *
  * @sa
  * vtkOrderedTriangulator vtkTriangleFilter
- */
+*/
 
 #ifndef vtkDataSetTriangleFilter_h
 #define vtkDataSetTriangleFilter_h
@@ -42,41 +42,43 @@ class vtkOrderedTriangulator;
 class VTKFILTERSGENERAL_EXPORT vtkDataSetTriangleFilter : public vtkUnstructuredGridAlgorithm
 {
 public:
-  static vtkDataSetTriangleFilter* New();
-  vtkTypeMacro(vtkDataSetTriangleFilter, vtkUnstructuredGridAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkDataSetTriangleFilter *New();
+  vtkTypeMacro(vtkDataSetTriangleFilter,vtkUnstructuredGridAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   //@{
   /**
    * When On this filter will cull all 1D and 2D cells from the output.
    * The default is Off.
    */
-  vtkSetMacro(TetrahedraOnly, vtkTypeBool);
-  vtkGetMacro(TetrahedraOnly, vtkTypeBool);
-  vtkBooleanMacro(TetrahedraOnly, vtkTypeBool);
+  vtkSetMacro(TetrahedraOnly, int);
+  vtkGetMacro(TetrahedraOnly, int);
+  vtkBooleanMacro(TetrahedraOnly, int);
   //@}
 
 protected:
   vtkDataSetTriangleFilter();
-  ~vtkDataSetTriangleFilter() override;
+  ~vtkDataSetTriangleFilter() VTK_OVERRIDE;
 
   // Usual data generation method
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *) VTK_OVERRIDE;
 
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  int FillInputPortInformation(int port, vtkInformation *info) VTK_OVERRIDE;
 
   // Used to triangulate 3D cells
-  vtkOrderedTriangulator* Triangulator;
+  vtkOrderedTriangulator *Triangulator;
 
   // Different execute methods depending on whether input is structured or not
-  void StructuredExecute(vtkDataSet*, vtkUnstructuredGrid*);
-  void UnstructuredExecute(vtkDataSet*, vtkUnstructuredGrid*);
+  void StructuredExecute(vtkDataSet *, vtkUnstructuredGrid *);
+  void UnstructuredExecute(vtkDataSet *, vtkUnstructuredGrid *);
 
-  vtkTypeBool TetrahedraOnly;
+  int TetrahedraOnly;
 
 private:
-  vtkDataSetTriangleFilter(const vtkDataSetTriangleFilter&) = delete;
-  void operator=(const vtkDataSetTriangleFilter&) = delete;
+  vtkDataSetTriangleFilter(const vtkDataSetTriangleFilter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkDataSetTriangleFilter&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+

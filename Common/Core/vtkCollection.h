@@ -14,10 +14,10 @@
 =========================================================================*/
 /**
  * @class   vtkCollection
- * @brief   create and manipulate ordered lists of objects
+ * @brief   create and manipulate unsorted lists of objects
  *
  * vtkCollection is a general object for creating and manipulating lists
- * of objects. The lists are ordered and allow duplicate entries.
+ * of objects. The lists are unsorted and allow duplicate entries.
  * vtkCollection also serves as a base class for lists of specific types
  * of objects.
  *
@@ -26,7 +26,7 @@
  * vtkImplicitFunctionCollection vtkLightCollection vtkPolyDataCollection
  * vtkRenderWindowCollection vtkRendererCollection
  * vtkStructuredPointsCollection vtkTransformCollection vtkVolumeCollection
- */
+*/
 
 #ifndef vtkCollection_h
 #define vtkCollection_h
@@ -36,45 +36,41 @@
 
 class vtkCollectionElement //;prevents pick-up by man page generator
 {
-public:
-  vtkCollectionElement()
-    : Item(nullptr)
-    , Next(nullptr)
-  {
-  }
-  vtkObject* Item;
-  vtkCollectionElement* Next;
+ public:
+  vtkCollectionElement():Item(NULL),Next(NULL) {}
+  vtkObject *Item;
+  vtkCollectionElement *Next;
 };
-typedef void* vtkCollectionSimpleIterator;
+typedef void * vtkCollectionSimpleIterator;
 
 class vtkCollectionIterator;
 
 class VTKCOMMONCORE_EXPORT vtkCollection : public vtkObject
 {
 public:
-  vtkTypeMacro(vtkCollection, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkCollection,vtkObject);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Construct with empty list.
    */
-  static vtkCollection* New();
+  static vtkCollection *New();
 
   /**
-   * Add an object to the bottom of the list. Does not prevent duplicate entries.
+   * Add an object to the list. Does not prevent duplicate entries.
    */
-  void AddItem(vtkObject*);
+  void AddItem(vtkObject *);
 
   /**
    * Insert item into the list after the i'th item. Does not prevent duplicate entries.
    * If i < 0 the item is placed at the top of the list.
    */
-  void InsertItem(int i, vtkObject*);
+  void InsertItem(int i, vtkObject *);
 
   /**
-   * Replace the i'th item in the collection with another item.
+   * Replace the i'th item in the collection with a
    */
-  void ReplaceItem(int i, vtkObject*);
+  void ReplaceItem(int i, vtkObject *);
 
   /**
    * Remove the i'th item in the list.
@@ -90,7 +86,7 @@ public:
    * all occurrences. If no object found, list is unaffected.  See warning
    * in description of RemoveItem(int).
    */
-  void RemoveItem(vtkObject*);
+  void RemoveItem(vtkObject *);
 
   /**
    * Remove all objects from the list.
@@ -102,45 +98,43 @@ public:
    * 0, the object was not found. If the object was found, the location is
    * the return value-1.
    */
-  int IsItemPresent(vtkObject* a);
+  int IsItemPresent(vtkObject *a);
 
   /**
    * Return the number of objects in the list.
    */
-  int GetNumberOfItems() { return this->NumberOfItems; }
+  int  GetNumberOfItems() { return this->NumberOfItems; }
 
   /**
    * Initialize the traversal of the collection. This means the data pointer
    * is set at the beginning of the list.
    */
-  void InitTraversal() { this->Current = this->Top; }
+  void InitTraversal() { this->Current = this->Top;};
 
   /**
    * A reentrant safe way to iterate through a collection.
    * Just pass the same cookie value around each time
    */
-  void InitTraversal(vtkCollectionSimpleIterator& cookie)
-  {
-    cookie = static_cast<vtkCollectionSimpleIterator>(this->Top);
-  }
+  void InitTraversal(vtkCollectionSimpleIterator &cookie) {
+    cookie = static_cast<vtkCollectionSimpleIterator>(this->Top);};
 
   /**
-   * Get the next item in the collection. nullptr is returned if the collection
+   * Get the next item in the collection. NULL is returned if the collection
    * is exhausted.
    */
-  vtkObject* GetNextItemAsObject();
+  vtkObject *GetNextItemAsObject();
 
   /**
-   * Get the i'th item in the collection. nullptr is returned if i is out
+   * Get the i'th item in the collection. NULL is returned if i is out
    * of range
    */
-  vtkObject* GetItemAsObject(int i);
+  vtkObject *GetItemAsObject(int i);
 
   /**
    * A reentrant safe way to get the next object as a collection. Just pass the
    * same cookie back and forth.
    */
-  vtkObject* GetNextItemAsObject(vtkCollectionSimpleIterator& cookie);
+  vtkObject *GetNextItemAsObject(vtkCollectionSimpleIterator &cookie);
 
   /**
    * Get an iterator to traverse the objects in this collection.
@@ -151,59 +145,65 @@ public:
   /**
    * Participate in garbage collection.
    */
-  void Register(vtkObjectBase* o) override;
-  void UnRegister(vtkObjectBase* o) override;
+  void Register(vtkObjectBase* o) VTK_OVERRIDE;
+  void UnRegister(vtkObjectBase* o) VTK_OVERRIDE;
   //@}
 
 protected:
   vtkCollection();
-  ~vtkCollection() override;
+  ~vtkCollection() VTK_OVERRIDE;
 
-  virtual void RemoveElement(vtkCollectionElement* element, vtkCollectionElement* previous);
-  virtual void DeleteElement(vtkCollectionElement*);
+  virtual void RemoveElement(vtkCollectionElement *element,
+                             vtkCollectionElement *previous);
+  virtual void DeleteElement(vtkCollectionElement *);
   int NumberOfItems;
-  vtkCollectionElement* Top;
-  vtkCollectionElement* Bottom;
-  vtkCollectionElement* Current;
+  vtkCollectionElement *Top;
+  vtkCollectionElement *Bottom;
+  vtkCollectionElement *Current;
 
   friend class vtkCollectionIterator;
 
   // See vtkGarbageCollector.h:
-  void ReportReferences(vtkGarbageCollector* collector) override;
-
+  void ReportReferences(vtkGarbageCollector* collector) VTK_OVERRIDE;
 private:
-  vtkCollection(const vtkCollection&) = delete;
-  void operator=(const vtkCollection&) = delete;
+  vtkCollection(const vtkCollection&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkCollection&) VTK_DELETE_FUNCTION;
 };
 
-inline vtkObject* vtkCollection::GetNextItemAsObject()
-{
-  vtkCollectionElement* elem = this->Current;
 
-  if (elem != nullptr)
+inline vtkObject *vtkCollection::GetNextItemAsObject()
+{
+  vtkCollectionElement *elem=this->Current;
+
+  if ( elem != NULL )
   {
     this->Current = elem->Next;
     return elem->Item;
   }
   else
   {
-    return nullptr;
+    return NULL;
   }
 }
 
-inline vtkObject* vtkCollection::GetNextItemAsObject(void*& cookie)
+inline vtkObject *vtkCollection::GetNextItemAsObject(void *&cookie)
 {
-  vtkCollectionElement* elem = static_cast<vtkCollectionElement*>(cookie);
+  vtkCollectionElement *elem=static_cast<vtkCollectionElement *>(cookie);
 
-  if (elem != nullptr)
+  if ( elem != NULL )
   {
-    cookie = static_cast<void*>(elem->Next);
+    cookie = static_cast<void *>(elem->Next);
     return elem->Item;
   }
   else
   {
-    return nullptr;
+    return NULL;
   }
 }
 
 #endif
+
+
+
+
+

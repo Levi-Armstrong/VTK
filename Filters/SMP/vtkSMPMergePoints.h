@@ -23,22 +23,18 @@
  * Merge is thread safe as long as no two threads are merging the same
  * bin. The common way of using vtkSMPMergePoints is:
  *  - Initialize with outLocator->InitializeMerge()
- *  - Allocate points with outLocator->GetPoints()->Resize(numPts) (numPts should be >= total number
- * of points)
- *  - Do bunch of merging with outLocator->Merge(inLocator[i], ...) (this can be done in parallel as
- * long as no two bins are done at the same time)
+ *  - Allocate points with outLocator->GetPoints()->Resize(numPts) (numPts should be >= total number of points)
+ *  - Do bunch of merging with outLocator->Merge(inLocator[i], ...) (this can be done in parallel as long as no two bins are done at the same time)
  *  - Fix the size of points with outLocator->FixSizeOfPointArray()
- */
+*/
 
 #ifndef vtkSMPMergePoints_h
 #define vtkSMPMergePoints_h
 
 #include "vtkFiltersSMPModule.h" // For export macro
-#include "vtkIdList.h"           // For inline functions
 #include "vtkMergePoints.h"
-#include "vtkType.h" // For vtkIdType
-
-#include <atomic> // for std::atomic
+#include "vtkIdList.h" // For inline functions
+#include "vtkAtomicTypes.h" // For the atomic integer used in Merge()
 
 class vtkPointData;
 
@@ -47,7 +43,7 @@ class VTKFILTERSSMP_EXPORT vtkSMPMergePoints : public vtkMergePoints
 public:
   vtkTypeMacro(vtkSMPMergePoints, vtkMergePoints);
   static vtkSMPMergePoints* New();
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream &os, vtkIndent indent);
 
   /**
    * This should be called from 1 thread before any call to Merge.
@@ -63,8 +59,11 @@ public:
    * to the new ids. This is stored in the idList argument. The map
    * is idList[oldId] = newId.
    */
-  void Merge(vtkSMPMergePoints* locator, vtkIdType idx, vtkPointData* outPd, vtkPointData* inPd,
-    vtkIdList* idList);
+  void Merge(vtkSMPMergePoints* locator,
+             vtkIdType idx,
+             vtkPointData *outPd,
+             vtkPointData *inPd,
+             vtkIdList* idList);
 
   /**
    * At the of the merge, this can be called to set the MaxId of the
@@ -79,15 +78,18 @@ public:
   /**
    * Returns the biggest id in the locator.
    */
-  vtkIdType GetMaxId() { return this->AtomicInsertionId - 1; }
+  vtkIdType GetMaxId()
+  {
+    return this->AtomicInsertionId - 1;
+  }
 
   //@{
   /**
-   * Returns the number of points in a bin.
+   * Retuns the number of points in a bin.
    */
   vtkIdType GetNumberOfIdsInBucket(vtkIdType idx)
   {
-    if (!this->HashTable)
+    if ( !this->HashTable )
     {
       return 0;
     }
@@ -97,19 +99,22 @@ public:
   //@}
 
   /**
-   * Returns the number of bins.
+   * Retuns the number of bins.
    */
-  vtkIdType GetNumberOfBuckets() override { return this->NumberOfBuckets; }
+  vtkIdType GetNumberOfBuckets()
+  {
+    return this->NumberOfBuckets;
+  }
 
 protected:
   vtkSMPMergePoints();
-  ~vtkSMPMergePoints() override;
+  ~vtkSMPMergePoints();
 
-  std::atomic<vtkIdType> AtomicInsertionId;
+  vtkAtomicIdType AtomicInsertionId;
 
 private:
-  vtkSMPMergePoints(const vtkSMPMergePoints&) = delete;
-  void operator=(const vtkSMPMergePoints&) = delete;
+  vtkSMPMergePoints(const vtkSMPMergePoints&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkSMPMergePoints&) VTK_DELETE_FUNCTION;
 };
 
 #endif // vtkSMPMergePoints_h

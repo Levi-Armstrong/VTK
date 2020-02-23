@@ -21,13 +21,13 @@
  *
  * @sa
  * vtkLight vtkConeSource vtkFrustumSource vtkCameraActor
- */
+*/
 
 #ifndef vtkCameraActor_h
 #define vtkCameraActor_h
 
-#include "vtkProp3D.h"
 #include "vtkRenderingCoreModule.h" // For export macro
+#include "vtkProp3D.h"
 
 class vtkCamera;
 class vtkFrustumSource;
@@ -38,15 +38,15 @@ class vtkProperty;
 class VTKRENDERINGCORE_EXPORT vtkCameraActor : public vtkProp3D
 {
 public:
-  static vtkCameraActor* New();
+  static vtkCameraActor *New();
   vtkTypeMacro(vtkCameraActor, vtkProp3D);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
    * The camera to represent. Initial value is NULL.
    */
-  void SetCamera(vtkCamera* camera);
+  void SetCamera(vtkCamera *camera);
   vtkGetObjectMacro(Camera, vtkCamera);
   //@}
 
@@ -62,56 +62,56 @@ public:
   /**
    * Support the standard render methods.
    */
-  int RenderOpaqueGeometry(vtkViewport* viewport) override;
+  virtual int RenderOpaqueGeometry(vtkViewport *viewport);
 
   /**
    * Does this prop have some translucent polygonal geometry? No.
    */
-  vtkTypeBool HasTranslucentPolygonalGeometry() override;
+  virtual int HasTranslucentPolygonalGeometry();
 
   /**
    * Release any graphics resources that are being consumed by this actor.
    * The parameter window could be used to determine which graphic
    * resources to release.
    */
-  void ReleaseGraphicsResources(vtkWindow*) override;
+  void ReleaseGraphicsResources(vtkWindow *);
 
   /**
    * Get the bounds for this Actor as (Xmin,Xmax,Ymin,Ymax,Zmin,Zmax).
    */
-  double* GetBounds() override;
+  double *GetBounds();
 
   /**
    * Get the actors mtime plus consider its properties and texture if set.
    */
-  vtkMTimeType GetMTime() override;
+  vtkMTimeType GetMTime();
 
   /**
    * Get property of the internal actor.
    */
-  vtkProperty* GetProperty();
+  vtkProperty *GetProperty();
 
   /**
    * Set property of the internal actor.
    */
-  void SetProperty(vtkProperty* p);
+  void SetProperty(vtkProperty *p);
 
 protected:
   vtkCameraActor();
-  ~vtkCameraActor() override;
+  ~vtkCameraActor();
 
   void UpdateViewProps();
 
-  vtkCamera* Camera;
+  vtkCamera *Camera;
   double WidthByHeightRatio;
 
-  vtkFrustumSource* FrustumSource;
-  vtkPolyDataMapper* FrustumMapper;
-  vtkActor* FrustumActor;
+  vtkFrustumSource *FrustumSource;
+  vtkPolyDataMapper *FrustumMapper;
+  vtkActor *FrustumActor;
 
 private:
-  vtkCameraActor(const vtkCameraActor&) = delete;
-  void operator=(const vtkCameraActor&) = delete;
+  vtkCameraActor(const vtkCameraActor&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkCameraActor&) VTK_DELETE_FUNCTION;
 };
 
 #endif

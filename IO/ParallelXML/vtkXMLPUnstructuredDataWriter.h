@@ -19,7 +19,7 @@
  * vtkXMLPUnstructuredDataWriter provides PVTK XML writing
  * functionality that is common among all the parallel unstructured
  * data formats.
- */
+*/
 
 #ifndef vtkXMLPUnstructuredDataWriter_h
 #define vtkXMLPUnstructuredDataWriter_h
@@ -33,21 +33,20 @@ class vtkXMLUnstructuredDataWriter;
 class VTKIOPARALLELXML_EXPORT vtkXMLPUnstructuredDataWriter : public vtkXMLPDataWriter
 {
 public:
-  vtkTypeMacro(vtkXMLPUnstructuredDataWriter, vtkXMLPDataWriter);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkXMLPUnstructuredDataWriter,vtkXMLPDataWriter);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
 protected:
   vtkXMLPUnstructuredDataWriter();
-  ~vtkXMLPUnstructuredDataWriter() override;
+  ~vtkXMLPUnstructuredDataWriter();
 
   vtkPointSet* GetInputAsPointSet();
-  virtual vtkXMLUnstructuredDataWriter* CreateUnstructuredPieceWriter() = 0;
-  vtkXMLWriter* CreatePieceWriter(int index) override;
-  void WritePData(vtkIndent indent) override;
-
+  virtual vtkXMLUnstructuredDataWriter* CreateUnstructuredPieceWriter()=0;
+  vtkXMLWriter* CreatePieceWriter(int index);
+  void WritePData(vtkIndent indent);
 private:
-  vtkXMLPUnstructuredDataWriter(const vtkXMLPUnstructuredDataWriter&) = delete;
-  void operator=(const vtkXMLPUnstructuredDataWriter&) = delete;
+  vtkXMLPUnstructuredDataWriter(const vtkXMLPUnstructuredDataWriter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkXMLPUnstructuredDataWriter&) VTK_DELETE_FUNCTION;
 };
 
 #endif

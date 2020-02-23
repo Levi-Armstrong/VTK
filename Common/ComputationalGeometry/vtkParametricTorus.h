@@ -26,7 +26,7 @@
  * Andrew Maclean andrew.amaclean@gmail.com for creating and contributing the
  * class.
  *
- */
+*/
 
 #ifndef vtkParametricTorus_h
 #define vtkParametricTorus_h
@@ -38,8 +38,8 @@ class VTKCOMMONCOMPUTATIONALGEOMETRY_EXPORT vtkParametricTorus : public vtkParam
 {
 
 public:
-  vtkTypeMacro(vtkParametricTorus, vtkParametricFunction);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkParametricTorus,vtkParametricFunction);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Construct a torus with the following parameters:
@@ -48,32 +48,32 @@ public:
    * JoinU = 1, JoinV = 1,
    * TwistU = 0, TwistV = 0,
    * ClockwiseOrdering = 1,
-   * DerivativesAvailable = 0,
+   * DerivativesAvailable = 1,
    * RingRadius = 1, CrossSectionRadius = 0.5.
    */
-  static vtkParametricTorus* New();
+  static vtkParametricTorus *New();
 
   //@{
   /**
    * Set/Get the radius from the center to the middle of the ring of the
    * torus. Default is 1.0.
    */
-  vtkSetMacro(RingRadius, double);
-  vtkGetMacro(RingRadius, double);
+  vtkSetMacro(RingRadius,double);
+  vtkGetMacro(RingRadius,double);
   //@}
 
   //@{
   /**
    * Set/Get the radius of the cross section of ring of the torus. Default is 0.5.
    */
-  vtkSetMacro(CrossSectionRadius, double);
-  vtkGetMacro(CrossSectionRadius, double);
+  vtkSetMacro(CrossSectionRadius,double);
+  vtkGetMacro(CrossSectionRadius,double);
   //@}
 
   /**
    * Return the parametric dimension of the class.
    */
-  int GetDimension() override { return 2; }
+  int GetDimension() VTK_OVERRIDE {return 2;}
 
   /**
    * A torus.
@@ -83,12 +83,12 @@ public:
    * \f$Pt = (x, y, z), Du = (dx/du, dy/du, dz/du), Dv = (dx/dv, dy/dv, dz/dv)\f$.
    * Then the normal is \f$N = Du X Dv\f$.
    */
-  void Evaluate(double uvw[3], double Pt[3], double Duvw[9]) override;
+  void Evaluate(double uvw[3], double Pt[3], double Duvw[9]) VTK_OVERRIDE;
 
   /**
    * Calculate a user defined scalar using one or all of uvw, Pt, Duvw.
 
-   * uvw are the parameters with Pt being the Cartesian point,
+   * uvw are the parameters with Pt being the the Cartesian point,
    * Duvw are the derivatives of this point with respect to u, v and w.
    * Pt, Duvw are obtained from Evaluate().
 
@@ -98,19 +98,19 @@ public:
    * If the user does not need to calculate a scalar, then the
    * instantiated function should return zero.
    */
-  double EvaluateScalar(double uvw[3], double Pt[3], double Duvw[9]) override;
+  double EvaluateScalar(double uvw[3], double Pt[3], double Duvw[9]) VTK_OVERRIDE;
 
 protected:
   vtkParametricTorus();
-  ~vtkParametricTorus() override;
+  ~vtkParametricTorus() VTK_OVERRIDE;
 
   // Variables
   double RingRadius;
   double CrossSectionRadius;
 
 private:
-  vtkParametricTorus(const vtkParametricTorus&) = delete;
-  void operator=(const vtkParametricTorus&) = delete;
+  vtkParametricTorus(const vtkParametricTorus&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkParametricTorus&) VTK_DELETE_FUNCTION;
 };
 
 #endif

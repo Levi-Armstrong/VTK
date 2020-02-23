@@ -58,7 +58,7 @@ inline int TestAxisActorInternal(int use2dMode, int use3dProp)
   axisXActor->SetTickLocationToBoth();
   axisXActor->SetAxisTypeToX();
   axisXActor->SetRange(0, 10);
-  axisXActor->SetLabels(labels);
+  axisXActor->SetLabels(labels.Get());
   axisXActor->SetDeltaRangeMajor(2);
   axisXActor->SetDeltaRangeMinor(0.5);
   axisXActor->SetExponent("+00");
@@ -68,11 +68,11 @@ inline int TestAxisActorInternal(int use2dMode, int use3dProp)
   axisXActor->SetTitleOffset(3);
   axisXActor->SetExponentOffset(3);
   axisXActor->SetLabelOffset(5);
-  axisXActor->SetTitleTextProperty(textProp1);
-  axisXActor->SetLabelTextProperty(textProp2);
-  axisXActor->SetAxisMainLineProperty(prop1);
-  axisXActor->SetAxisMajorTicksProperty(prop2);
-  axisXActor->SetAxisMinorTicksProperty(prop3);
+  axisXActor->SetTitleTextProperty(textProp1.Get());
+  axisXActor->SetLabelTextProperty(textProp2.Get());
+  axisXActor->SetAxisMainLineProperty(prop1.Get());
+  axisXActor->SetAxisMajorTicksProperty(prop2.Get());
+  axisXActor->SetAxisMinorTicksProperty(prop3.Get());
 
   //-------------  Y Axis -------------
   vtkNew<vtkAxisActor> axisYActor;
@@ -99,9 +99,9 @@ inline int TestAxisActorInternal(int use2dMode, int use3dProp)
   axisYActor->SetTitleOffset(3);
   axisYActor->SetExponentOffset(5);
   axisYActor->SetLabelOffset(5);
-  axisYActor->SetTitleTextProperty(textProp2);
+  axisYActor->SetTitleTextProperty(textProp2.Get());
   axisYActor->SetLog(true);
-  axisYActor->SetAxisLinesProperty(prop1);
+  axisYActor->SetAxisLinesProperty(prop1.Get());
 
   //-------------  Z Axis -------------
   vtkNew<vtkAxisActor> axisZActor;
@@ -125,7 +125,7 @@ inline int TestAxisActorInternal(int use2dMode, int use3dProp)
   axisZActor->SetTitleOffset(3);
   axisZActor->SetExponentOffset(3);
   axisZActor->SetLabelOffset(5);
-  axisZActor->SetTitleTextProperty(textProp3);
+  axisZActor->SetTitleTextProperty(textProp3.Get());
   axisZActor->SetMajorTickSize(3);
   axisZActor->SetMinorTickSize(1);
   axisZActor->SetDeltaRangeMajor(2);
@@ -133,12 +133,12 @@ inline int TestAxisActorInternal(int use2dMode, int use3dProp)
 
   vtkNew<vtkRenderer> renderer;
   vtkNew<vtkRenderWindow> renderWindow;
-  renderWindow->AddRenderer(renderer);
+  renderWindow->AddRenderer(renderer.Get());
   vtkNew<vtkRenderWindowInteractor> renderWindowInteractor;
-  renderWindowInteractor->SetRenderWindow(renderWindow);
-  renderer->AddActor(axisXActor);
-  renderer->AddActor(axisYActor);
-  renderer->AddActor(axisZActor);
+  renderWindowInteractor->SetRenderWindow(renderWindow.Get());
+  renderer->AddActor(axisXActor.Get());
+  renderer->AddActor(axisYActor.Get());
+  renderer->AddActor(axisZActor.Get());
   renderer->SetBackground(.5, .5, .5);
 
   vtkCamera* camera = renderer->GetActiveCamera();

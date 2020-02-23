@@ -33,7 +33,7 @@
  * This reader supports pieces, but in actuality only loads anything in
  * piece 0.  All other pieces are empty.
  *
- */
+*/
 
 #ifndef vtkSLACParticleReader_h
 #define vtkSLACParticleReader_h
@@ -50,8 +50,8 @@ class VTKIONETCDF_EXPORT vtkSLACParticleReader : public vtkPolyDataAlgorithm
 {
 public:
   vtkTypeMacro(vtkSLACParticleReader, vtkPolyDataAlgorithm);
-  static vtkSLACParticleReader* New();
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkSLACParticleReader *New();
+  virtual void PrintSelf(ostream &os, vtkIndent indent);
 
   vtkGetStringMacro(FileName);
   vtkSetStringMacro(FileName);
@@ -59,19 +59,21 @@ public:
   /**
    * Returns true if the given file can be read by this reader.
    */
-  static int CanReadFile(const char* filename);
+  static int CanReadFile(const char *filename);
 
 protected:
   vtkSLACParticleReader();
-  ~vtkSLACParticleReader() override;
+  ~vtkSLACParticleReader();
 
-  char* FileName;
+  char *FileName;
 
-  int RequestInformation(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  virtual int RequestInformation(vtkInformation *request,
+                                 vtkInformationVector **inputVector,
+                                 vtkInformationVector *outputVector);
 
-  int RequestData(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  virtual int RequestData(vtkInformation *request,
+                          vtkInformationVector **inputVector,
+                          vtkInformationVector *outputVector);
 
   /**
    * Convenience function that checks the dimensions of a 2D netCDF array that
@@ -80,11 +82,12 @@ protected:
    * agree with what is expected.  It then returns the number of tuples.  An
    * error is emitted and 0 is returned if the checks fail.
    */
-  virtual vtkIdType GetNumTuplesInVariable(int ncFD, int varId, int expectedNumComponents);
+  virtual vtkIdType GetNumTuplesInVariable(int ncFD, int varId,
+                                           int expectedNumComponents);
 
 private:
-  vtkSLACParticleReader(const vtkSLACParticleReader&) = delete;
-  void operator=(const vtkSLACParticleReader&) = delete;
+  vtkSLACParticleReader(const vtkSLACParticleReader &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkSLACParticleReader &) VTK_DELETE_FUNCTION;
 };
 
-#endif // vtkSLACParticleReader_h
+#endif //vtkSLACParticleReader_h

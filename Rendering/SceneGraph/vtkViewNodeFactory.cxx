@@ -23,11 +23,16 @@
 class vtkViewNodeFactory::vtkInternals
 {
 public:
-  std::map<std::string, vtkViewNode* (*)()> Overrides;
+  std::map<std::string, vtkViewNode *(*)()> Overrides;
 
-  vtkInternals() {}
+  vtkInternals()
+  {
+  }
 
-  ~vtkInternals() { this->Overrides.clear(); }
+  ~vtkInternals()
+  {
+      this->Overrides.clear();
+  }
 };
 
 //============================================================================
@@ -52,76 +57,38 @@ void vtkViewNodeFactory::PrintSelf(ostream& os, vtkIndent indent)
 }
 
 //----------------------------------------------------------------------------
-vtkViewNode* vtkViewNodeFactory::CreateNode(vtkObject* who)
+vtkViewNode *vtkViewNodeFactory::CreateNode(vtkObject *who)
 {
   if (!who)
   {
-    return nullptr;
+    return NULL;
   }
-
-  vtkViewNode* (*func)() = nullptr;
-
-  // First, check if there is an exact match for override functions for this
-  // object type.
-  {
-    auto fnOverrideIt = this->Internals->Overrides.find(who->GetClassName());
-    if (fnOverrideIt != this->Internals->Overrides.end())
-    {
-      func = fnOverrideIt->second;
-    }
-  }
-
-  // Next, check if there is an indirect match (one of the parents of this
-  // object type has an override). If there is more than one override for
-  // types in this object's hierarchy, choose the most derived one.
-  if (func == nullptr)
-  {
-    vtkIdType closest = VTK_ID_MAX;
-    for (auto it = this->Internals->Overrides.begin(); it != this->Internals->Overrides.end(); ++it)
-    {
-      vtkIdType numberOfGenerations = who->GetNumberOfGenerationsFromBase(it->first.c_str());
-      if (numberOfGenerations >= 0 && numberOfGenerations < closest)
-      {
-        closest = numberOfGenerations;
-        func = it->second;
-      }
-    }
-  }
-
-  // If neither are available, do not create a node for this object.
-  if (func == nullptr)
-  {
-    return nullptr;
-  }
-
-  // Otherwise, create a node and initialize it.
-  vtkViewNode* vn = func();
-  vn->SetMyFactory(this);
+  const char *forwhom = who->GetClassName();
+  vtkViewNode *vn = this->CreateNode(forwhom);
   if (vn)
   {
     vn->SetRenderable(who);
   }
-
   return vn;
 }
 
 //----------------------------------------------------------------------------
-#if !defined(VTK_LEGACY_REMOVE)
-vtkViewNode* vtkViewNodeFactory::CreateNode(const char* forwhom)
+vtkViewNode *vtkViewNodeFactory::CreateNode(const char *forwhom)
 {
-  if (this->Internals->Overrides.find(forwhom) == this->Internals->Overrides.end())
+  if (this->Internals->Overrides.find(forwhom) ==
+      this->Internals->Overrides.end())
   {
-    return nullptr;
+    return NULL;
   }
-  vtkViewNode* (*func)() = this->Internals->Overrides.find(forwhom)->second;
-  vtkViewNode* vn = func();
+  vtkViewNode *(*func)() = this->Internals->Overrides.find(forwhom)->second;
+  vtkViewNode *vn = func();
   vn->SetMyFactory(this);
   return vn;
 }
-#endif
 
 //----------------------------------------------------------------------------
-void vtkViewNodeFactory::RegisterOverride(const char* name, vtkViewNode* (*func)())
+void vtkViewNodeFactory::RegisterOverride
+  (const char *name, vtkViewNode *(*func)())
 {
   this->Internals->Overrides[name] = func;
 }

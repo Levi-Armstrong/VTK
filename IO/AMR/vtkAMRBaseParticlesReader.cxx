@@ -13,113 +13,122 @@
 
  =========================================================================*/
 #include "vtkAMRBaseParticlesReader.h"
-#include "vtkCallbackCommand.h"
-#include "vtkDataArraySelection.h"
+#include "vtkPolyData.h"
+#include "vtkMultiProcessController.h"
+#include "vtkMultiBlockDataSet.h"
 #include "vtkIndent.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
-#include "vtkMultiBlockDataSet.h"
-#include "vtkMultiProcessController.h"
-#include "vtkPolyData.h"
+#include "vtkCallbackCommand.h"
+#include "vtkDataArraySelection.h"
 
 #include <cassert>
 
-vtkAMRBaseParticlesReader::vtkAMRBaseParticlesReader() = default;
+vtkAMRBaseParticlesReader::vtkAMRBaseParticlesReader()
+{
+
+}
 
 //------------------------------------------------------------------------------
 vtkAMRBaseParticlesReader::~vtkAMRBaseParticlesReader()
 {
-  this->ParticleDataArraySelection->RemoveObserver(this->SelectionObserver);
+  this->ParticleDataArraySelection->RemoveObserver( this->SelectionObserver );
   this->SelectionObserver->Delete();
   this->ParticleDataArraySelection->Delete();
 }
 
 //------------------------------------------------------------------------------
-void vtkAMRBaseParticlesReader::PrintSelf(std::ostream& os, vtkIndent indent)
+void vtkAMRBaseParticlesReader::PrintSelf( std::ostream &os, vtkIndent indent )
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf( os, indent );
 }
 
 //------------------------------------------------------------------------------
-int vtkAMRBaseParticlesReader::FillOutputPortInformation(int vtkNotUsed(port), vtkInformation* info)
+int vtkAMRBaseParticlesReader::FillOutputPortInformation(
+    int vtkNotUsed(port), vtkInformation *info )
 {
-  info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkMultiBlockDataSet");
+  info->Set( vtkDataObject::DATA_TYPE_NAME(), "vtkMultiBlockDataSet" );
   return 1;
 }
 
 //------------------------------------------------------------------------------
 int vtkAMRBaseParticlesReader::GetNumberOfParticleArrays()
 {
-  assert(
-    "pre: ParticleDataArraySelection is nullptr!" && (this->ParticleDataArraySelection != nullptr));
+  assert( "pre: ParticleDataArraySelection is NULL!" &&
+          (this->ParticleDataArraySelection != NULL) );
   return this->ParticleDataArraySelection->GetNumberOfArrays();
 }
 
 //------------------------------------------------------------------------------
-const char* vtkAMRBaseParticlesReader::GetParticleArrayName(int index)
+const char* vtkAMRBaseParticlesReader::GetParticleArrayName( int index )
 {
-  assert("pre: array inded out-of-bounds!" && (index >= 0) &&
-    (index < this->ParticleDataArraySelection->GetNumberOfArrays()));
+  assert( "pre: array inded out-of-bounds!" &&
+          ( index >= 0 ) &&
+          (index < this->ParticleDataArraySelection->GetNumberOfArrays()) );
 
-  return this->ParticleDataArraySelection->GetArrayName(index);
+  return this->ParticleDataArraySelection->GetArrayName( index );
 }
 
 //------------------------------------------------------------------------------
-int vtkAMRBaseParticlesReader::GetParticleArrayStatus(const char* name)
+int vtkAMRBaseParticlesReader::GetParticleArrayStatus( const char* name )
 {
-  assert("pre: array name is nullptr" && (name != nullptr));
-  return this->ParticleDataArraySelection->ArrayIsEnabled(name);
+  assert( "pre: array name is NULL" && (name != NULL)  );
+  return this->ParticleDataArraySelection->ArrayIsEnabled( name );
 }
 
 //------------------------------------------------------------------------------
-void vtkAMRBaseParticlesReader::SetParticleArrayStatus(const char* name, int status)
+void vtkAMRBaseParticlesReader::SetParticleArrayStatus(
+    const char* name, int status )
 {
 
-  if (status)
+  if( status )
   {
-    this->ParticleDataArraySelection->EnableArray(name);
+    this->ParticleDataArraySelection->EnableArray( name );
   }
   else
   {
-    this->ParticleDataArraySelection->DisableArray(name);
+    this->ParticleDataArraySelection->DisableArray( name );
   }
+
 }
 
 //------------------------------------------------------------------------------
 void vtkAMRBaseParticlesReader::SelectionModifiedCallback(
-  vtkObject*, unsigned long, void* clientdata, void*)
+    vtkObject*, unsigned long, void* clientdata, void*)
 {
   static_cast<vtkAMRBaseParticlesReader*>(clientdata)->Modified();
 }
 
 //------------------------------------------------------------------------------
-void vtkAMRBaseParticlesReader::Initialize()
+void vtkAMRBaseParticlesReader::Initialize( )
 {
-  this->SetNumberOfInputPorts(0);
-  this->Frequency = 1;
+  this->SetNumberOfInputPorts( 0 );
+  this->Frequency      = 1;
   this->FilterLocation = 0;
   this->NumberOfBlocks = 0;
-  this->Initialized = false;
+  this->Initialized    = false;
   this->InitialRequest = true;
-  this->FileName = nullptr;
-  this->Controller = vtkMultiProcessController::GetGlobalController();
+  this->FileName       = NULL;
+  this->Controller     = vtkMultiProcessController::GetGlobalController();
 
-  for (int i = 0; i < 3; ++i)
+  for( int i=0; i < 3; ++i )
   {
-    this->MinLocation[i] = this->MaxLocation[i] = 0.0;
+    this->MinLocation[ i ] = this->MaxLocation[ i ] = 0.0;
   }
 
   this->ParticleDataArraySelection = vtkDataArraySelection::New();
-  this->SelectionObserver = vtkCallbackCommand::New();
-  this->SelectionObserver->SetCallback(&vtkAMRBaseParticlesReader::SelectionModifiedCallback);
-  this->SelectionObserver->SetClientData(this);
-  this->ParticleDataArraySelection->AddObserver(vtkCommand::ModifiedEvent, this->SelectionObserver);
+  this->SelectionObserver          = vtkCallbackCommand::New();
+  this->SelectionObserver->SetCallback(
+      &vtkAMRBaseParticlesReader::SelectionModifiedCallback );
+  this->SelectionObserver->SetClientData( this );
+  this->ParticleDataArraySelection->AddObserver(
+      vtkCommand::ModifiedEvent,this->SelectionObserver );
 }
 
 //------------------------------------------------------------------------------
 void vtkAMRBaseParticlesReader::InitializeParticleDataSelections()
 {
-  if (!this->InitialRequest)
+  if( !this->InitialRequest )
   {
     return;
   }
@@ -129,16 +138,16 @@ void vtkAMRBaseParticlesReader::InitializeParticleDataSelections()
 }
 
 //------------------------------------------------------------------------------
-void vtkAMRBaseParticlesReader::SetFileName(const char* fileName)
+void vtkAMRBaseParticlesReader::SetFileName( const char *fileName )
 {
 
-  if (this->FileName != nullptr)
+  if( this->FileName != NULL )
   {
-    if (strcmp(this->FileName, fileName) != 0)
+    if( strcmp(this->FileName,fileName) != 0 )
     {
       this->Initialized = false;
-      delete[] this->FileName;
-      this->FileName = nullptr;
+      delete [] this->FileName;
+      this->FileName = NULL;
     }
     else
     {
@@ -146,8 +155,8 @@ void vtkAMRBaseParticlesReader::SetFileName(const char* fileName)
     }
   }
 
-  this->FileName = new char[strlen(fileName) + 1];
-  strcpy(this->FileName, fileName);
+  this->FileName = new char[ strlen(fileName)+1 ];
+  strcpy(this->FileName,fileName);
 
   this->Modified();
 }
@@ -155,7 +164,7 @@ void vtkAMRBaseParticlesReader::SetFileName(const char* fileName)
 //------------------------------------------------------------------------------
 bool vtkAMRBaseParticlesReader::IsParallel()
 {
-  if (this->Controller != nullptr && this->Controller->GetNumberOfProcesses() > 1)
+  if( this->Controller != NULL && this->Controller->GetNumberOfProcesses() > 1 )
   {
     return true;
   }
@@ -163,15 +172,15 @@ bool vtkAMRBaseParticlesReader::IsParallel()
 }
 
 //------------------------------------------------------------------------------
-bool vtkAMRBaseParticlesReader::IsBlockMine(const int blkIdx)
+bool vtkAMRBaseParticlesReader::IsBlockMine( const int blkIdx )
 {
-  if (!this->IsParallel())
+  if( !this->IsParallel() )
   {
     return true;
   }
 
   int myRank = this->Controller->GetLocalProcessId();
-  if (myRank == this->GetBlockProcessId(blkIdx))
+  if( myRank == this->GetBlockProcessId( blkIdx ) )
   {
     return true;
   }
@@ -179,21 +188,22 @@ bool vtkAMRBaseParticlesReader::IsBlockMine(const int blkIdx)
 }
 
 //------------------------------------------------------------------------------
-int vtkAMRBaseParticlesReader::GetBlockProcessId(const int blkIdx)
+int vtkAMRBaseParticlesReader::GetBlockProcessId( const int blkIdx )
 {
-  if (!this->IsParallel())
+  if( !this->IsParallel() )
   {
     return 0;
   }
 
   int N = this->Controller->GetNumberOfProcesses();
-  return (blkIdx % N);
+  return( blkIdx%N );
 }
 
 //------------------------------------------------------------------------------
-bool vtkAMRBaseParticlesReader::CheckLocation(const double x, const double y, const double z)
+bool vtkAMRBaseParticlesReader::CheckLocation(
+    const double x, const double y, const double z )
 {
-  if (!this->FilterLocation)
+  if( !this->FilterLocation )
   {
     return true;
   }
@@ -203,9 +213,9 @@ bool vtkAMRBaseParticlesReader::CheckLocation(const double x, const double y, co
   coords[1] = y;
   coords[2] = z;
 
-  for (int i = 0; i < 3; ++i)
+  for( int i=0; i < 3; ++i )
   {
-    if (this->MinLocation[i] > coords[i] || coords[i] > this->MaxLocation[i])
+    if( this->MinLocation[i] > coords[i] || coords[i] > this->MaxLocation[i] )
     {
       return false;
     }
@@ -215,39 +225,42 @@ bool vtkAMRBaseParticlesReader::CheckLocation(const double x, const double y, co
 }
 
 //------------------------------------------------------------------------------
-int vtkAMRBaseParticlesReader::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector)
+int vtkAMRBaseParticlesReader::RequestData(
+    vtkInformation *vtkNotUsed(request),
+    vtkInformationVector **vtkNotUsed(inputVector),
+    vtkInformationVector *outputVector  )
 {
   // STEP 0: Get the output object
-  vtkInformation* outInf = outputVector->GetInformationObject(0);
-  vtkMultiBlockDataSet* mbds =
-    vtkMultiBlockDataSet::SafeDownCast(outInf->Get(vtkDataObject::DATA_OBJECT()));
-  assert("pre: output multi-block dataset object is nullptr" && (mbds != nullptr));
+  vtkInformation *outInf     = outputVector->GetInformationObject( 0 );
+  vtkMultiBlockDataSet *mbds = vtkMultiBlockDataSet::SafeDownCast(
+      outInf->Get( vtkDataObject::DATA_OBJECT() ) );
+  assert( "pre: output multi-block dataset object is NULL" && (mbds != NULL) );
 
   // STEP 1: Read Meta-Data
   this->ReadMetaData();
 
   // STEP 2: Read blocks
-  mbds->SetNumberOfBlocks(this->NumberOfBlocks);
-  unsigned int blkidx = 0;
-  for (; blkidx < static_cast<unsigned int>(this->NumberOfBlocks); ++blkidx)
+  mbds->SetNumberOfBlocks( this->NumberOfBlocks );
+  unsigned int blkidx=0;
+  for(  ;blkidx < static_cast<unsigned int>(this->NumberOfBlocks); ++blkidx )
   {
-    if (this->IsBlockMine(blkidx))
+    if( this->IsBlockMine( blkidx ) )
     {
-      vtkPolyData* particles = this->ReadParticles(blkidx);
-      assert("particles dataset should not be nullptr!" && (particles != nullptr));
+      vtkPolyData *particles = this->ReadParticles( blkidx );
+      assert( "particles dataset should not be NULL!" &&
+               (particles != NULL) );
 
-      mbds->SetBlock(blkidx, particles);
+      mbds->SetBlock( blkidx, particles );
       particles->Delete();
     }
     else
     {
-      mbds->SetBlock(blkidx, nullptr);
+      mbds->SetBlock( blkidx, NULL );
     }
   } // END for all blocks
 
   // STEP 3: Synchronize
-  if (this->IsParallel())
+  if( this->IsParallel( ) )
   {
     this->Controller->Barrier();
   }

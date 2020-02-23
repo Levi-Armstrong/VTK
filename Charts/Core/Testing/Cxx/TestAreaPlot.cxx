@@ -21,8 +21,8 @@
 #include "vtkContextView.h"
 #include "vtkFloatArray.h"
 #include "vtkNew.h"
-#include "vtkPlot.h"
 #include "vtkPlotArea.h"
+#include "vtkPlot.h"
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
 #include "vtkSmartPointer.h"
@@ -30,42 +30,42 @@
 
 #include <algorithm>
 //----------------------------------------------------------------------------
-int TestAreaPlot(int, char*[])
+int TestAreaPlot( int, char * [] )
 {
   // Set up a 2D scene, add an XY chart to it
   vtkNew<vtkContextView> view;
   view->GetRenderWindow()->SetSize(400, 300);
   vtkNew<vtkChartXY> chart;
-  view->GetScene()->AddItem(chart);
+  view->GetScene()->AddItem(chart.GetPointer());
 
   // Create a table with some points in it...
   vtkNew<vtkTable> table;
   vtkNew<vtkFloatArray> arrX;
   arrX->SetName("X Axis");
-  table->AddColumn(arrX);
+  table->AddColumn(arrX.GetPointer());
   vtkNew<vtkFloatArray> arrC;
   arrC->SetName("Cosine");
-  table->AddColumn(arrC);
+  table->AddColumn(arrC.GetPointer());
   vtkNew<vtkFloatArray> arrS;
   arrS->SetName("Sine");
-  table->AddColumn(arrS);
+  table->AddColumn(arrS.GetPointer());
   vtkNew<vtkFloatArray> arrS2;
   arrS2->SetName("Sine2");
-  table->AddColumn(arrS2);
+  table->AddColumn(arrS2.GetPointer());
   vtkNew<vtkFloatArray> arrS3;
   arrS3->SetName("Sine3");
-  table->AddColumn(arrS3);
+  table->AddColumn(arrS3.GetPointer());
   vtkNew<vtkFloatArray> arr1;
   arr1->SetName("One");
-  table->AddColumn(arr1);
+  table->AddColumn(arr1.GetPointer());
 
   vtkNew<vtkCharArray> validMask;
   validMask->SetName("ValidMask");
-  table->AddColumn(validMask);
+  table->AddColumn(validMask.GetPointer());
 
   // Test charting with a few more points...
   int numPoints = 69;
-  float inc = 7.5 / (numPoints - 1);
+  float inc = 7.5 / (numPoints-1);
   table->SetNumberOfRows(numPoints);
   for (int i = 0; i < numPoints; ++i)
   {
@@ -81,7 +81,7 @@ int TestAreaPlot(int, char*[])
 
   // Add multiple line plots, setting the colors etc
   vtkPlotArea* area = vtkPlotArea::SafeDownCast(chart->AddPlot(vtkChart::AREA));
-  area->SetInputData(table);
+  area->SetInputData(table.GetPointer());
   area->SetInputArray(0, "X Axis");
   area->SetInputArray(1, "Sine");
   area->SetInputArray(2, "Sine2");

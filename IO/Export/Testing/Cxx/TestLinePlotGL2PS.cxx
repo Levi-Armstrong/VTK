@@ -28,38 +28,38 @@
 #include "vtkTestingInteractor.h"
 
 //----------------------------------------------------------------------------
-int TestLinePlotGL2PS(int, char*[])
+int TestLinePlotGL2PS(int , char * [])
 {
   // Set up a 2D scene, add an XY chart to it
   vtkNew<vtkContextView> view;
   view->GetRenderWindow()->SetSize(400, 300);
   vtkNew<vtkChartXY> chart;
-  view->GetScene()->AddItem(chart);
+  view->GetScene()->AddItem(chart.GetPointer());
   chart->SetShowLegend(true);
 
   // Create a table with some points in it...
   vtkNew<vtkTable> table;
   vtkNew<vtkFloatArray> arrX;
   arrX->SetName("X Axis");
-  table->AddColumn(arrX);
+  table->AddColumn(arrX.GetPointer());
   vtkNew<vtkFloatArray> arrC;
   arrC->SetName("Cosine");
-  table->AddColumn(arrC);
+  table->AddColumn(arrC.GetPointer());
   vtkNew<vtkFloatArray> arrS;
   arrS->SetName("Sine");
-  table->AddColumn(arrS);
+  table->AddColumn(arrS.GetPointer());
   vtkNew<vtkFloatArray> arrS2;
   arrS2->SetName("Sine2");
-  table->AddColumn(arrS2);
+  table->AddColumn(arrS2.GetPointer());
   vtkNew<vtkFloatArray> arr1;
   arr1->SetName("One");
-  table->AddColumn(arr1);
+  table->AddColumn(arr1.GetPointer());
   vtkNew<vtkFloatArray> arr0;
   arr0->SetName("Zero");
-  table->AddColumn(arr0);
+  table->AddColumn(arr0.GetPointer());
   // Test charting with a few more points...
   int numPoints = 69;
-  float inc = 7.5 / (numPoints - 1);
+  float inc = 7.5 / (numPoints-1);
   table->SetNumberOfRows(numPoints);
   for (int i = 0; i < numPoints; ++i)
   {
@@ -72,31 +72,32 @@ int TestLinePlotGL2PS(int, char*[])
   }
 
   // Add multiple line plots, setting the colors etc
-  vtkPlotLine* line = vtkPlotLine::SafeDownCast(chart->AddPlot(vtkChart::LINE));
-  line->SetInputData(table, 0, 1);
+  vtkPlotLine *line = vtkPlotLine::SafeDownCast(chart->AddPlot(vtkChart::LINE));
+  line->SetInputData(table.GetPointer(), 0, 1);
   line->SetColor(0, 255, 0, 255);
   line->SetWidth(1.0);
   line->SetMarkerStyle(vtkPlotLine::CIRCLE);
   line = vtkPlotLine::SafeDownCast(chart->AddPlot(vtkChart::LINE));
-  line->SetInputData(table, 0, 2);
+  line->SetInputData(table.GetPointer(), 0, 2);
   line->SetColor(255, 0, 0, 255);
   line->SetWidth(5.0);
   line->SetMarkerStyle(vtkPlotLine::SQUARE);
   line = vtkPlotLine::SafeDownCast(chart->AddPlot(vtkChart::LINE));
-  line->SetInputData(table, 0, 3);
+  line->SetInputData(table.GetPointer(), 0, 3);
   line->SetColor(0, 0, 255, 255);
   line->SetWidth(4.0);
   line->SetMarkerStyle(vtkPlotLine::DIAMOND);
   line = vtkPlotLine::SafeDownCast(chart->AddPlot(vtkChart::LINE));
-  line->SetInputData(table, 0, 4);
+  line->SetInputData(table.GetPointer(), 0, 4);
   line->SetColor(0, 255, 255, 255);
   line->SetWidth(4.0);
   line->SetMarkerStyle(vtkPlotLine::CROSS);
   line = vtkPlotLine::SafeDownCast(chart->AddPlot(vtkChart::LINE));
-  line->SetInputData(table, 0, 5);
+  line->SetInputData(table.GetPointer(), 0, 5);
   line->SetColor(255, 255, 0, 255);
   line->SetWidth(4.0);
   line->SetMarkerStyle(vtkPlotLine::PLUS);
+
 
   // Render the scene and compare the image to a reference image
   view->GetRenderWindow()->SetMultiSamples(0);
@@ -109,15 +110,13 @@ int TestLinePlotGL2PS(int, char*[])
   exp->CompressOff();
   exp->DrawBackgroundOn();
 
-  std::string fileprefix = vtkTestingInteractor::TempDirectory + std::string("/TestLinePlotGL2PS");
+  std::string fileprefix = vtkTestingInteractor::TempDirectory +
+      std::string("/TestLinePlotGL2PS");
 
   exp->SetFilePrefix(fileprefix.c_str());
   exp->Write();
 
-  exp->SetFileFormatToPDF();
-  exp->Write();
-
-  // Finally render the scene and compare the image to a reference image
+  //Finally render the scene and compare the image to a reference image
   view->GetInteractor()->Initialize();
   view->GetInteractor()->Start();
 

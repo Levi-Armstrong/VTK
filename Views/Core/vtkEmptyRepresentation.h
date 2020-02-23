@@ -21,14 +21,14 @@
  * @class   vtkEmptyRepresentation
  *
  *
- */
+*/
 
 #ifndef vtkEmptyRepresentation_h
 #define vtkEmptyRepresentation_h
 
-#include "vtkDataRepresentation.h"
-#include "vtkSmartPointer.h"    // For SP ivars
 #include "vtkViewsCoreModule.h" // For export macro
+#include "vtkDataRepresentation.h"
+#include "vtkSmartPointer.h" // For SP ivars
 
 class vtkConvertSelectionDomain;
 
@@ -37,32 +37,30 @@ class VTKVIEWSCORE_EXPORT vtkEmptyRepresentation : public vtkDataRepresentation
 public:
   static vtkEmptyRepresentation* New();
   vtkTypeMacro(vtkEmptyRepresentation, vtkDataRepresentation);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Since this representation has no inputs, override superclass
    * implementation with one that ignores "port" and "conn" and still allows it
    * to have an annotation output.
    */
-  vtkAlgorithmOutput* GetInternalAnnotationOutputPort() override
-  {
-    return this->GetInternalAnnotationOutputPort(0);
-  }
-  vtkAlgorithmOutput* GetInternalAnnotationOutputPort(int port) override
-  {
-    return this->GetInternalAnnotationOutputPort(port, 0);
-  }
-  vtkAlgorithmOutput* GetInternalAnnotationOutputPort(int port, int conn) override;
+  virtual vtkAlgorithmOutput* GetInternalAnnotationOutputPort()
+    { return this->GetInternalAnnotationOutputPort(0); }
+  virtual vtkAlgorithmOutput* GetInternalAnnotationOutputPort(int port)
+    { return this->GetInternalAnnotationOutputPort(port, 0); }
+  virtual vtkAlgorithmOutput* GetInternalAnnotationOutputPort(int port, int conn);
 
 protected:
   vtkEmptyRepresentation();
-  ~vtkEmptyRepresentation() override;
+  ~vtkEmptyRepresentation();
 
 private:
-  vtkEmptyRepresentation(const vtkEmptyRepresentation&) = delete;
-  void operator=(const vtkEmptyRepresentation&) = delete;
+  vtkEmptyRepresentation(const vtkEmptyRepresentation&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkEmptyRepresentation&) VTK_DELETE_FUNCTION;
 
   vtkSmartPointer<vtkConvertSelectionDomain> ConvertDomains;
+
 };
 
 #endif
+

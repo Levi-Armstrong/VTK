@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import vtk
+from vtk.test import Testing
 from vtk.util.misc import vtkGetDataRoot
 VTK_DATA_ROOT = vtkGetDataRoot()
 
@@ -16,7 +17,7 @@ coneActor = vtk.vtkActor()
 coneActor.SetMapper(coneMapper)
 coneActor.GetProperty().SetOpacity(0.5)
 
-# Actor for opacity through LUT.
+# Actor for opacity thru LUT.
 elevation = vtk.vtkElevationFilter()
 elevation.SetInputConnection(cone.GetOutputPort())
 
@@ -39,7 +40,7 @@ coneActorLUT.SetMapper(coneMapper2)
 coneActorLUT.SetPosition(0.1, 1.0, 0)
 coneActorLUT.GetProperty().SetOpacity(0.99)
 
-# Actor for opacity through texture.
+# Actor for opacity thru texture.
 reader = vtk.vtkPNGReader()
 reader.SetFileName(VTK_DATA_ROOT + "/Data/alphachannel.png")
 reader.Update()

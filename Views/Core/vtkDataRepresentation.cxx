@@ -43,20 +43,21 @@
 // vtkDataRepresentation::Internals
 //---------------------------------------------------------------------------
 
-class vtkDataRepresentation::Internals
-{
+class vtkDataRepresentation::Internals {
 public:
+
   // This is a cache of shallow copies of inputs provided for convenience.
-  // It is a map from (port index, connection index) to (original input data port, shallow copy
-  // port). NOTE: The original input data port pointer is not reference counted, so it should not be
-  // assumed to be a valid pointer. It is only used for pointer comparison.
+  // It is a map from (port index, connection index) to (original input data port, shallow copy port).
+  // NOTE: The original input data port pointer is not reference counted, so it should
+  // not be assumed to be a valid pointer. It is only used for pointer comparison.
   std::map<std::pair<int, int>,
-    std::pair<vtkAlgorithmOutput*, vtkSmartPointer<vtkTrivialProducer> > >
+           std::pair<vtkAlgorithmOutput*, vtkSmartPointer<vtkTrivialProducer> > >
     InputInternal;
 
   // This is a cache of vtkConvertSelectionDomain filters provided for convenience.
   // It is a map from (port index, connection index) to convert selection domain filter.
-  std::map<std::pair<int, int>, vtkSmartPointer<vtkConvertSelectionDomain> > ConvertDomainInternal;
+  std::map<std::pair<int, int>, vtkSmartPointer<vtkConvertSelectionDomain> >
+    ConvertDomainInternal;
 };
 
 //---------------------------------------------------------------------------
@@ -66,18 +67,21 @@ public:
 class vtkDataRepresentation::Command : public vtkCommand
 {
 public:
-  static Command* New() { return new Command(); }
-  void Execute(vtkObject* caller, unsigned long eventId, void* callData) override
+  static Command* New() {  return new Command(); }
+  void Execute(vtkObject *caller, unsigned long eventId,
+                       void *callData) VTK_OVERRIDE
   {
     if (this->Target)
     {
       this->Target->ProcessEvents(caller, eventId, callData);
     }
   }
-  void SetTarget(vtkDataRepresentation* t) { this->Target = t; }
-
+  void SetTarget(vtkDataRepresentation* t)
+  {
+    this->Target = t;
+  }
 private:
-  Command() { this->Target = nullptr; }
+  Command() { this->Target = 0; }
   vtkDataRepresentation* Target;
 };
 
@@ -86,17 +90,20 @@ private:
 //----------------------------------------------------------------------------
 
 vtkStandardNewMacro(vtkDataRepresentation);
-vtkCxxSetObjectMacro(vtkDataRepresentation, AnnotationLinkInternal, vtkAnnotationLink);
+vtkCxxSetObjectMacro(vtkDataRepresentation,
+  AnnotationLinkInternal, vtkAnnotationLink);
 vtkCxxSetObjectMacro(vtkDataRepresentation, SelectionArrayNames, vtkStringArray);
 
 //----------------------------------------------------------------------------
 vtkTrivialProducer* vtkDataRepresentation::GetInternalInput(int port, int conn)
 {
-  return this->Implementation->InputInternal[std::pair<int, int>(port, conn)].second;
+  return this->Implementation->InputInternal[
+    std::pair<int, int>(port, conn)].second.GetPointer();
 }
 
 //----------------------------------------------------------------------------
-void vtkDataRepresentation::SetInternalInput(int port, int conn, vtkTrivialProducer* producer)
+void vtkDataRepresentation::SetInternalInput(int port, int conn,
+                                             vtkTrivialProducer* producer)
 {
   this->Implementation->InputInternal[std::pair<int, int>(port, conn)] =
     std::pair<vtkAlgorithmOutput*, vtkSmartPointer<vtkTrivialProducer> >(
@@ -124,8 +131,8 @@ vtkDataRepresentation::~vtkDataRepresentation()
 {
   delete this->Implementation;
   this->Observer->Delete();
-  this->SetSelectionArrayNames(nullptr);
-  this->SetAnnotationLinkInternal(nullptr);
+  this->SetSelectionArrayNames(0);
+  this->SetAnnotationLinkInternal(0);
 }
 
 //----------------------------------------------------------------------------
@@ -135,8 +142,7 @@ void vtkDataRepresentation::SetAnnotationLink(vtkAnnotationLink* link)
 }
 
 //----------------------------------------------------------------------------
-void vtkDataRepresentation::ProcessEvents(
-  vtkObject* caller, unsigned long eventId, void* vtkNotUsed(callData))
+void vtkDataRepresentation::ProcessEvents(vtkObject *caller, unsigned long eventId, void *vtkNotUsed(callData))
 {
   // After the algorithm executes, if the release data flag is on,
   // clear the input shallow copy cache.
@@ -149,8 +155,7 @@ void vtkDataRepresentation::ProcessEvents(
       {
         vtkInformation* inInfo = this->GetExecutive()->GetInputInformation(i, j);
         vtkDataObject* dataObject = inInfo->Get(vtkDataObject::DATA_OBJECT());
-        if (dataObject &&
-          (dataObject->GetGlobalReleaseDataFlag() ||
+        if (dataObject && (dataObject->GetGlobalReleaseDataFlag() ||
             inInfo->Get(vtkDemandDrivenPipeline::RELEASE_DATA())))
         {
           std::pair<int, int> p(i, j);
@@ -165,11 +170,12 @@ void vtkDataRepresentation::ProcessEvents(
 //----------------------------------------------------------------------------
 vtkAlgorithmOutput* vtkDataRepresentation::GetInternalOutputPort(int port, int conn)
 {
-  if (port >= this->GetNumberOfInputPorts() || conn >= this->GetNumberOfInputConnections(port))
+  if (port >= this->GetNumberOfInputPorts() ||
+    conn >= this->GetNumberOfInputConnections(port))
   {
-    vtkErrorMacro(
-      "Port " << port << ", connection " << conn << " is not defined on this representation.");
-    return nullptr;
+    vtkErrorMacro("Port " << port << ", connection "
+      << conn << " is not defined on this representation.");
+    return 0;
   }
 
   // The cached shallow copy is out of date when the input data object
@@ -178,9 +184,10 @@ vtkAlgorithmOutput* vtkDataRepresentation::GetInternalOutputPort(int port, int c
   std::pair<int, int> p(port, conn);
   vtkAlgorithmOutput* input = this->GetInputConnection(port, conn);
   vtkDataObject* inputDObj = this->GetInputDataObject(port, conn);
-  if (this->Implementation->InputInternal.find(p) == this->Implementation->InputInternal.end() ||
-    this->Implementation->InputInternal[p].first != input ||
-    this->Implementation->InputInternal[p].second->GetMTime() < inputDObj->GetMTime())
+  if (this->Implementation->InputInternal.find(p) ==
+      this->Implementation->InputInternal.end() ||
+      this->Implementation->InputInternal[p].first != input ||
+      this->Implementation->InputInternal[p].second->GetMTime() < inputDObj->GetMTime())
   {
     this->Implementation->InputInternal[p].first = input;
     vtkDataObject* copy = inputDObj->NewInstance();
@@ -196,13 +203,15 @@ vtkAlgorithmOutput* vtkDataRepresentation::GetInternalOutputPort(int port, int c
 }
 
 //----------------------------------------------------------------------------
-vtkAlgorithmOutput* vtkDataRepresentation::GetInternalAnnotationOutputPort(int port, int conn)
+vtkAlgorithmOutput* vtkDataRepresentation::GetInternalAnnotationOutputPort(
+  int port, int conn)
 {
-  if (port >= this->GetNumberOfInputPorts() || conn >= this->GetNumberOfInputConnections(port))
+  if (port >= this->GetNumberOfInputPorts() ||
+    conn >= this->GetNumberOfInputConnections(port))
   {
-    vtkErrorMacro(
-      "Port " << port << ", connection " << conn << " is not defined on this representation.");
-    return nullptr;
+    vtkErrorMacro("Port " << port << ", connection "
+      << conn << " is not defined on this representation.");
+    return 0;
   }
 
   // Create a new filter in the cache if necessary.
@@ -216,9 +225,12 @@ vtkAlgorithmOutput* vtkDataRepresentation::GetInternalAnnotationOutputPort(int p
 
   // Set up the inputs to the cached filter.
   vtkConvertSelectionDomain* domain = this->Implementation->ConvertDomainInternal[p];
-  domain->SetInputConnection(0, this->GetAnnotationLink()->GetOutputPort(0));
-  domain->SetInputConnection(1, this->GetAnnotationLink()->GetOutputPort(1));
-  domain->SetInputConnection(2, this->GetInternalOutputPort(port, conn));
+  domain->SetInputConnection(0,
+    this->GetAnnotationLink()->GetOutputPort(0));
+  domain->SetInputConnection(1,
+    this->GetAnnotationLink()->GetOutputPort(1));
+  domain->SetInputConnection(2,
+    this->GetInternalOutputPort(port, conn));
 
   // Output port 0 of the convert domain filter is the linked
   // annotation(s) (the vtkAnnotationLayers object).
@@ -226,12 +238,13 @@ vtkAlgorithmOutput* vtkDataRepresentation::GetInternalAnnotationOutputPort(int p
 }
 
 //----------------------------------------------------------------------------
-vtkAlgorithmOutput* vtkDataRepresentation::GetInternalSelectionOutputPort(int port, int conn)
+vtkAlgorithmOutput* vtkDataRepresentation::GetInternalSelectionOutputPort(
+  int port, int conn)
 {
   // First make sure the convert domain filter is up to date.
   if (!this->GetInternalAnnotationOutputPort(port, conn))
   {
-    return nullptr;
+    return 0;
   }
 
   // Output port 1 of the convert domain filter is the current selection
@@ -242,11 +255,12 @@ vtkAlgorithmOutput* vtkDataRepresentation::GetInternalSelectionOutputPort(int po
   {
     return this->Implementation->ConvertDomainInternal[p]->GetOutputPort(1);
   }
-  return nullptr;
+  return NULL;
 }
 
 //----------------------------------------------------------------------------
-void vtkDataRepresentation::Select(vtkView* view, vtkSelection* selection, bool extend)
+void vtkDataRepresentation::Select(
+  vtkView* view, vtkSelection* selection, bool extend)
 {
   if (this->Selectable)
   {
@@ -280,8 +294,10 @@ void vtkDataRepresentation::UpdateSelection(vtkSelection* selection, bool extend
   this->InvokeEvent(vtkCommand::SelectionChangedEvent, reinterpret_cast<void*>(selection));
 }
 
+
 //----------------------------------------------------------------------------
-void vtkDataRepresentation::Annotate(vtkView* view, vtkAnnotationLayers* annotations, bool extend)
+void vtkDataRepresentation::Annotate(
+  vtkView* view, vtkAnnotationLayers* annotations, bool extend)
 {
   vtkAnnotationLayers* converted = this->ConvertAnnotations(view, annotations);
   if (converted)
@@ -308,12 +324,11 @@ void vtkDataRepresentation::UpdateAnnotations(vtkAnnotationLayers* annotations, 
   {
     // Append the annotations to the existing set of annotations on the link
     vtkAnnotationLayers* currentAnnotations = this->AnnotationLinkInternal->GetAnnotationLayers();
-    for (unsigned int i = 0; i < annotations->GetNumberOfAnnotations(); ++i)
+    for(unsigned int i=0; i<annotations->GetNumberOfAnnotations(); ++i)
     {
       currentAnnotations->AddAnnotation(annotations->GetAnnotation(i));
     }
-    this->InvokeEvent(
-      vtkCommand::AnnotationChangedEvent, reinterpret_cast<void*>(currentAnnotations));
+    this->InvokeEvent(vtkCommand::AnnotationChangedEvent, reinterpret_cast<void*>(currentAnnotations));
   }
   else
   {
@@ -336,11 +351,12 @@ void vtkDataRepresentation::SetSelectionArrayName(const char* name)
 //----------------------------------------------------------------------------
 const char* vtkDataRepresentation::GetSelectionArrayName()
 {
-  if (this->SelectionArrayNames && this->SelectionArrayNames->GetNumberOfTuples() > 0)
+  if (this->SelectionArrayNames &&
+      this->SelectionArrayNames->GetNumberOfTuples() > 0)
   {
     return this->SelectionArrayNames->GetValue(0);
   }
-  return nullptr;
+  return 0;
 }
 
 //----------------------------------------------------------------------------

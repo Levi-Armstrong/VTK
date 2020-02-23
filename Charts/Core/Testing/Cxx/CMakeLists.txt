@@ -36,26 +36,21 @@ set(TestParallelCoordinatesDouble_ARGS
   -E 15
   )
 
-vtk_add_test_cxx(vtkChartsCoreCxxTests tests
-  TestAdjustLowerBoundForLogPlot.cxx
+vtk_add_test_cxx(${vtk-module}CxxTests tests
   TestContextScene.cxx,NO_DATA,NO_VALID
   TestControlPointsItem.cxx,NO_DATA,NO_VALID
   TestControlPointsItemEvents.cxx,NO_DATA,NO_VALID
   TestAreaPlot.cxx
   TestAxes.cxx
-  TestAxes2.cxx
   TestBagPlot.cxx
   TestBarGraph.cxx
   TestBarGraphHorizontal.cxx
   TestBarGraphSelection.cxx
   TestBoxPlot.cxx
-  TestBoxPlot2.cxx
   TestCategoryLegend.cxx
   TestColorTransferFunction.cxx
-  TestChartBadPoints.cxx
   TestChartDouble.cxx
   TestChartDoubleColors.cxx
-  TestChartDoubleColorsOpaque.cxx
   TestChartMatrix.cxx
   TestChartTileScaling.cxx
   TestChartUnicode.cxx
@@ -93,7 +88,6 @@ vtk_add_test_cxx(vtkChartsCoreCxxTests tests
   TestPieChart.cxx
   TestPlotMatrix.cxx
   TestPropItem.cxx
-  TestRangeHandlesItemEvents.cxx,NO_DATA,NO_VALID
   TestScalarsToColors.cxx
   TestScatterPlot.cxx
   TestScatterPlotMatrix.cxx
@@ -105,6 +99,6 @@ vtk_add_test_cxx(vtkChartsCoreCxxTests tests
   TestSurfacePlot.cxx
   TestZoomAxis.cxx
   )
-vtk_test_cxx_executable(vtkChartsCoreCxxTests tests
+vtk_test_cxx_executable(${vtk-module}CxxTests tests
   RENDERING_FACTORY
   )

@@ -9,13 +9,17 @@ wishing to create their own VTK classes locally.
 vtkStandardNewMacro(vtkLocalExample);
 
 //----------------------------------------------------------------------------
-vtkLocalExample::vtkLocalExample() = default;
+vtkLocalExample::vtkLocalExample()
+{
+}
 
 //----------------------------------------------------------------------------
-vtkLocalExample::~vtkLocalExample() = default;
+vtkLocalExample::~vtkLocalExample()
+{
+}
 
 //----------------------------------------------------------------------------
 void vtkLocalExample::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 }

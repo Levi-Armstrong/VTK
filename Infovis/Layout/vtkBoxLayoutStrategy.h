@@ -27,7 +27,7 @@
  *
  * @par Thanks:
  * Thanks to Brian Wylie from Sandia National Laboratories for creating this class.
- */
+*/
 
 #ifndef vtkBoxLayoutStrategy_h
 #define vtkBoxLayoutStrategy_h
@@ -38,27 +38,34 @@
 class VTKINFOVISLAYOUT_EXPORT vtkBoxLayoutStrategy : public vtkTreeMapLayoutStrategy
 {
 public:
-  static vtkBoxLayoutStrategy* New();
+  static vtkBoxLayoutStrategy *New();
 
-  vtkTypeMacro(vtkBoxLayoutStrategy, vtkTreeMapLayoutStrategy);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkBoxLayoutStrategy,vtkTreeMapLayoutStrategy);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Perform the layout of a tree and place the results as 4-tuples in
    * coordsArray (Xmin, Xmax, Ymin, Ymax).
    */
-  void Layout(vtkTree* inputTree, vtkDataArray* coordsArray, vtkDataArray* sizeArray) override;
+  virtual void Layout(
+      vtkTree* inputTree,
+      vtkDataArray* coordsArray,
+      vtkDataArray* sizeArray);
 
 protected:
   vtkBoxLayoutStrategy();
-  ~vtkBoxLayoutStrategy() override;
+  ~vtkBoxLayoutStrategy();
 
 private:
-  void LayoutChildren(vtkTree* inputTree, vtkDataArray* coordsArray, vtkIdType parentId,
-    float parentMinX, float parentMaxX, float parentMinY, float parentMaxY);
 
-  vtkBoxLayoutStrategy(const vtkBoxLayoutStrategy&) = delete;
-  void operator=(const vtkBoxLayoutStrategy&) = delete;
+  void LayoutChildren(vtkTree *inputTree, vtkDataArray *coordsArray,
+    vtkIdType parentId,
+    float parentMinX, float parentMaxX,
+    float parentMinY, float parentMaxY);
+
+  vtkBoxLayoutStrategy(const vtkBoxLayoutStrategy&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkBoxLayoutStrategy&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

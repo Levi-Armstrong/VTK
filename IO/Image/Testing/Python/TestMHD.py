@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import vtk
+from vtk.test import Testing
 from vtk.util.misc import vtkGetDataRoot
 VTK_DATA_ROOT = vtkGetDataRoot()
 
@@ -40,6 +41,7 @@ pvTemp110.SetComputeGradients(0)
 pvTemp110.SetComputeScalars(0)
 pvTemp114 = vtk.vtkPolyDataMapper()
 pvTemp114.SetInputConnection(pvTemp110.GetOutputPort())
+pvTemp114.SetImmediateModeRendering(1)
 pvTemp114.SetScalarRange(0,1)
 pvTemp114.UseLookupTableScalarRangeOn()
 pvTemp114.SetScalarVisibility(1)

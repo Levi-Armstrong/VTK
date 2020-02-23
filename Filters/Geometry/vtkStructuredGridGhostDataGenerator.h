@@ -43,51 +43,53 @@
  *
  * @sa
  * vtkDataSetGhostGenerator, vtkPStructuredGridGhostDataGenerator
- */
+*/
 
 #ifndef vtkStructuredGridGhostDataGenerator_h
 #define vtkStructuredGridGhostDataGenerator_h
 
-#include "vtkDataSetGhostGenerator.h"
 #include "vtkFiltersGeometryModule.h" // For export macro
+#include "vtkDataSetGhostGenerator.h"
 
 // Forward declarations
 class vtkMultiBlockDataSet;
 class vtkIndent;
 class vtkStructuredGridConnectivity;
 
-class VTKFILTERSGEOMETRY_EXPORT vtkStructuredGridGhostDataGenerator
-  : public vtkDataSetGhostGenerator
+class VTKFILTERSGEOMETRY_EXPORT vtkStructuredGridGhostDataGenerator :
+  public vtkDataSetGhostGenerator
 {
 public:
   static vtkStructuredGridGhostDataGenerator* New();
-  vtkTypeMacro(vtkStructuredGridGhostDataGenerator, vtkDataSetGhostGenerator);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkStructuredGridGhostDataGenerator,vtkDataSetGhostGenerator);
+  void PrintSelf(ostream &os, vtkIndent indent) VTK_OVERRIDE;
 
 protected:
   vtkStructuredGridGhostDataGenerator();
-  ~vtkStructuredGridGhostDataGenerator() override;
+  ~vtkStructuredGridGhostDataGenerator() VTK_OVERRIDE;
 
   /**
    * Registers the grid associated with this instance of multi-block.
    */
-  void RegisterGrids(vtkMultiBlockDataSet* in);
+  void RegisterGrids(vtkMultiBlockDataSet *in);
 
   /**
    * Creates the output.
    */
-  void CreateGhostedDataSet(vtkMultiBlockDataSet* in, vtkMultiBlockDataSet* out);
+  void CreateGhostedDataSet(
+      vtkMultiBlockDataSet *in,
+      vtkMultiBlockDataSet *out );
 
   /**
    * Generates ghost layers.
    */
-  void GenerateGhostLayers(vtkMultiBlockDataSet* in, vtkMultiBlockDataSet* out) override;
+  void GenerateGhostLayers(
+      vtkMultiBlockDataSet *in, vtkMultiBlockDataSet *out) VTK_OVERRIDE;
 
-  vtkStructuredGridConnectivity* GridConnectivity;
-
+  vtkStructuredGridConnectivity *GridConnectivity;
 private:
-  vtkStructuredGridGhostDataGenerator(const vtkStructuredGridGhostDataGenerator&) = delete;
-  void operator=(const vtkStructuredGridGhostDataGenerator&) = delete;
+  vtkStructuredGridGhostDataGenerator(const vtkStructuredGridGhostDataGenerator&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkStructuredGridGhostDataGenerator&) VTK_DELETE_FUNCTION;
 };
 
 #endif /* vtkStructuredGridGhostDataGenerator_h */

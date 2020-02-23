@@ -15,7 +15,7 @@
 /**
  * @class   vtkX3DExporterFIWriter
  *
- */
+*/
 
 #ifndef vtkX3DExporterFIWriter_h
 #define vtkX3DExporterFIWriter_h
@@ -30,59 +30,59 @@ class vtkZLibDataCompressor;
 class VTKIOEXPORT_EXPORT vtkX3DExporterFIWriter : public vtkX3DExporterWriter
 {
 public:
-  static vtkX3DExporterFIWriter* New();
+  static vtkX3DExporterFIWriter *New();
   vtkTypeMacro(vtkX3DExporterFIWriter, vtkX3DExporterWriter);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
-  void CloseFile() override;
-  int OpenFile(const char* file) override;
-  int OpenStream() override;
+  virtual void CloseFile();
+  virtual int OpenFile(const char* file);
+  virtual int OpenStream();
 
-  // void Write(const char* str);
+  //void Write(const char* str);
 
-  void Flush() override;
+  virtual void Flush();
 
-  void StartDocument() override;
-  void EndDocument() override;
+  void StartDocument();
+  void EndDocument();
 
   // Elements
-  void StartNode(int elementID) override;
-  void EndNode() override;
+  void StartNode(int elementID);
+  void EndNode();
 
   // Attributes
   // SFString / MFString
-  // void SetField(int attributeID, const std::string &value);
-  void SetField(int attributeID, const char*, bool mfstring = false) override;
+  //void SetField(int attributeID, const std::string &value);
+  void SetField(int attributeID, const char*, bool mfstring = false);
   // SFInt32
-  void SetField(int attributeID, int) override;
+  void SetField(int attributeID, int);
   // SFFloat
-  void SetField(int attributeID, float) override;
+  void SetField(int attributeID, float);
   // SFDouble
-  void SetField(int attributeID, double) override;
+  void SetField(int attributeID, double);
   // SFBool
-  void SetField(int attributeID, bool) override;
+  void SetField(int attributeID, bool);
 
   // For MFxxx attributes
-  void SetField(int attributeID, int type, const double* a) override;
-  void SetField(int attributeID, int type, vtkDataArray* a) override;
-  void SetField(int attributeID, const double* values, size_t size) override;
+  void SetField(int attributeID, int type, const double* a);
+  void SetField(int attributeID, int type, vtkDataArray* a);
+  void SetField(int attributeID, const double* values, size_t size);
 
   // MFInt32
   void SetField(int attributeID, int type, vtkCellArray* a);
-  void SetField(int attributeID, const int* values, size_t size, bool image = false) override;
+  void SetField(int attributeID, const int* values, size_t size, bool image = false);
 
   //@{
   /**
    * Use fastest instead of best compression
    */
-  vtkSetClampMacro(Fastest, vtkTypeBool, 0, 1);
-  vtkBooleanMacro(Fastest, vtkTypeBool);
-  vtkGetMacro(Fastest, vtkTypeBool);
+  vtkSetClampMacro(Fastest, int, 0, 1);
+  vtkBooleanMacro(Fastest, int);
+  vtkGetMacro(Fastest, int);
   //@}
 
 protected:
   vtkX3DExporterFIWriter();
-  ~vtkX3DExporterFIWriter() override;
+  ~vtkX3DExporterFIWriter();
 
 private:
   void StartAttribute(int attributeID, bool literal, bool addToTable = false);
@@ -91,15 +91,17 @@ private:
   void CheckNode(bool callerIsAttribute = true);
   bool IsLineFeedEncodingOn;
 
-  // int Depth;
+  //int Depth;
   vtkX3DExporterFIByteWriter* Writer;
   vtkX3DExporterFINodeInfoStack* InfoStack;
   vtkZLibDataCompressor* Compressor;
 
-  vtkTypeBool Fastest;
+  int Fastest;
 
-  vtkX3DExporterFIWriter(const vtkX3DExporterFIWriter&) = delete;
-  void operator=(const vtkX3DExporterFIWriter&) = delete;
+  vtkX3DExporterFIWriter(const vtkX3DExporterFIWriter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkX3DExporterFIWriter&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif
+

@@ -20,29 +20,30 @@
 #ifndef vtkOpenGLBillboardTextActor3D_h
 #define vtkOpenGLBillboardTextActor3D_h
 
-#include "vtkBillboardTextActor3D.h"
 #include "vtkRenderingOpenGL2Module.h" // For export macro
+#include "vtkBillboardTextActor3D.h"
 
 class vtkOpenGLGL2PSHelper;
 
-class VTKRENDERINGOPENGL2_EXPORT vtkOpenGLBillboardTextActor3D : public vtkBillboardTextActor3D
+class VTKRENDERINGOPENGL2_EXPORT vtkOpenGLBillboardTextActor3D :
+    public vtkBillboardTextActor3D
 {
 public:
   static vtkOpenGLBillboardTextActor3D* New();
-  vtkTypeMacro(vtkOpenGLBillboardTextActor3D, vtkBillboardTextActor3D);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkOpenGLBillboardTextActor3D, vtkBillboardTextActor3D)
+  void PrintSelf(ostream &os, vtkIndent indent) VTK_OVERRIDE;
 
-  int RenderTranslucentPolygonalGeometry(vtkViewport* vp) override;
+  virtual int RenderTranslucentPolygonalGeometry(vtkViewport *vp);
 
 protected:
   vtkOpenGLBillboardTextActor3D();
-  ~vtkOpenGLBillboardTextActor3D() override;
+  ~vtkOpenGLBillboardTextActor3D();
 
-  int RenderGL2PS(vtkViewport* viewport, vtkOpenGLGL2PSHelper* gl2ps);
+  int RenderGL2PS(vtkViewport *viewport, vtkOpenGLGL2PSHelper *gl2ps);
 
 private:
-  vtkOpenGLBillboardTextActor3D(const vtkOpenGLBillboardTextActor3D&) = delete;
-  void operator=(const vtkOpenGLBillboardTextActor3D&) = delete;
+  vtkOpenGLBillboardTextActor3D(const vtkOpenGLBillboardTextActor3D&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkOpenGLBillboardTextActor3D&) VTK_DELETE_FUNCTION;
 };
 
 #endif // vtkOpenGLBillboardTextActor3D_h

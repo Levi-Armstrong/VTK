@@ -22,7 +22,7 @@
  * of the file.  A vertex cell is created for each point in the
  * output.  This reader is meant as an example of how to write a
  * reader in VTK.
- */
+*/
 
 #ifndef vtkSimplePointsReader_h
 #define vtkSimplePointsReader_h
@@ -34,8 +34,8 @@ class VTKIOLEGACY_EXPORT vtkSimplePointsReader : public vtkPolyDataAlgorithm
 {
 public:
   static vtkSimplePointsReader* New();
-  vtkTypeMacro(vtkSimplePointsReader, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkSimplePointsReader,vtkPolyDataAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -47,15 +47,16 @@ public:
 
 protected:
   vtkSimplePointsReader();
-  ~vtkSimplePointsReader() override;
+  ~vtkSimplePointsReader();
 
   char* FileName;
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-
+  int RequestData(vtkInformation*,
+                  vtkInformationVector**,
+                  vtkInformationVector*);
 private:
-  vtkSimplePointsReader(const vtkSimplePointsReader&) = delete;
-  void operator=(const vtkSimplePointsReader&) = delete;
+  vtkSimplePointsReader(const vtkSimplePointsReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkSimplePointsReader&) VTK_DELETE_FUNCTION;
 };
 
 #endif

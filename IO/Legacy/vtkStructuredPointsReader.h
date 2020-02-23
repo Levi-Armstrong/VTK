@@ -26,51 +26,54 @@
  * Binary files written on one system may not be readable on other systems.
  * @sa
  * vtkStructuredPoints vtkDataReader
- */
+*/
 
 #ifndef vtkStructuredPointsReader_h
 #define vtkStructuredPointsReader_h
 
-#include "vtkDataReader.h"
 #include "vtkIOLegacyModule.h" // For export macro
+#include "vtkDataReader.h"
 
 class vtkStructuredPoints;
 
 class VTKIOLEGACY_EXPORT vtkStructuredPointsReader : public vtkDataReader
 {
 public:
-  static vtkStructuredPointsReader* New();
-  vtkTypeMacro(vtkStructuredPointsReader, vtkDataReader);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkStructuredPointsReader *New();
+  vtkTypeMacro(vtkStructuredPointsReader,vtkDataReader);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
    * Set/Get the output of this reader.
    */
-  void SetOutput(vtkStructuredPoints* output);
-  vtkStructuredPoints* GetOutput(int idx);
-  vtkStructuredPoints* GetOutput();
+  void SetOutput(vtkStructuredPoints *output);
+  vtkStructuredPoints *GetOutput(int idx);
+  vtkStructuredPoints *GetOutput();
   //@}
 
   /**
-   * Read the meta information from the file (WHOLE_EXTENT).
+   * Read the meta information from the file.  This needs to be public to it
+   * can be accessed by vtkDataSetReader.
    */
-  int ReadMetaDataSimple(const std::string& fname, vtkInformation* metadata) override;
-
-  /**
-   * Actual reading happens here
-   */
-  int ReadMeshSimple(const std::string& fname, vtkDataObject* output) override;
+  virtual int ReadMetaData(vtkInformation *outInfo);
 
 protected:
   vtkStructuredPointsReader();
-  ~vtkStructuredPointsReader() override;
+  ~vtkStructuredPointsReader();
 
-  int FillOutputPortInformation(int, vtkInformation*) override;
+  virtual int RequestData(vtkInformation *, vtkInformationVector **,
+                          vtkInformationVector *);
 
+  // Default method performs Update to get information.  Not all the old
+  // structured points sources compute information
+  virtual int RequestInformation(vtkInformation *, vtkInformationVector **,
+                                 vtkInformationVector *);
+
+  virtual int FillOutputPortInformation(int, vtkInformation *);
 private:
-  vtkStructuredPointsReader(const vtkStructuredPointsReader&) = delete;
-  void operator=(const vtkStructuredPointsReader&) = delete;
+  vtkStructuredPointsReader(const vtkStructuredPointsReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkStructuredPointsReader&) VTK_DELETE_FUNCTION;
 };
 
 #endif

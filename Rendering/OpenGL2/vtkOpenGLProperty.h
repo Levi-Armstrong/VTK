@@ -18,48 +18,49 @@
  *
  * vtkOpenGLProperty is a concrete implementation of the abstract class
  * vtkProperty. vtkOpenGLProperty interfaces to the OpenGL rendering library.
- */
+*/
 
 #ifndef vtkOpenGLProperty_h
 #define vtkOpenGLProperty_h
 
-#include "vtkProperty.h"
 #include "vtkRenderingOpenGL2Module.h" // For export macro
+#include "vtkProperty.h"
 
 class VTKRENDERINGOPENGL2_EXPORT vtkOpenGLProperty : public vtkProperty
 {
 public:
-  static vtkOpenGLProperty* New();
+  static vtkOpenGLProperty *New();
   vtkTypeMacro(vtkOpenGLProperty, vtkProperty);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Implement base class method.
    */
-  void Render(vtkActor* a, vtkRenderer* ren) override;
+  void Render(vtkActor *a, vtkRenderer *ren);
 
   /**
    * Implement base class method.
    */
-  void BackfaceRender(vtkActor* a, vtkRenderer* ren) override;
+  void BackfaceRender(vtkActor *a, vtkRenderer *ren);
 
   /**
    * This method is called after the actor has been rendered.
    * Don't call this directly. This method cleans up
    * any shaders allocated.
    */
-  void PostRender(vtkActor* a, vtkRenderer* r) override;
+  virtual void PostRender(vtkActor *a,
+                          vtkRenderer *r);
 
   /**
    * Release any graphics resources that are being consumed by this
    * property. The parameter window could be used to determine which graphic
    * resources to release.
    */
-  void ReleaseGraphicsResources(vtkWindow* win) override;
+  virtual void ReleaseGraphicsResources(vtkWindow *win);
 
 protected:
   vtkOpenGLProperty();
-  ~vtkOpenGLProperty() override;
+  ~vtkOpenGLProperty();
 
   /**
    * Method called in vtkOpenGLProperty::Render() to render textures.
@@ -68,8 +69,8 @@ protected:
   bool RenderTextures(vtkActor* actor, vtkRenderer* renderer);
 
 private:
-  vtkOpenGLProperty(const vtkOpenGLProperty&) = delete;
-  void operator=(const vtkOpenGLProperty&) = delete;
+  vtkOpenGLProperty(const vtkOpenGLProperty&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkOpenGLProperty&) VTK_DELETE_FUNCTION;
 };
 
 #endif

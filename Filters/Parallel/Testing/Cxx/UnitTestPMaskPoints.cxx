@@ -13,43 +13,64 @@
 
 =========================================================================*/
 
-#include "vtkPMaskPoints.h"
 #include "vtkSmartPointer.h"
+#include "vtkPMaskPoints.h"
 
-#include "vtkPoints.h"
 #include "vtkPolyData.h"
+#include "vtkPoints.h"
 
 #include "vtkMPIController.h"
 
 #include "vtkCommand.h"
-#include "vtkMathUtilities.h"
 #include "vtkTestErrorObserver.h"
+#include "vtkMathUtilities.h"
 
 // MPI include
-#include <vtk_mpi.h>
+#include <mpi.h>
 
-#include <algorithm>
 #include <cstdio>
 #include <sstream>
+#include <algorithm>
 
-static vtkSmartPointer<vtkPolyData> MakePolyData(unsigned int numPoints);
+#define CHECK_ERROR_MSG(errorObserver, msg, status)      \
+  { \
+  std::string expectedMsg(msg); \
+  if (!errorObserver->GetError()) \
+  { \
+    std::cout << "Failed to catch any error.. Expected the error message to contain \"" << expectedMsg << std::endl; \
+    status++; \
+  } \
+  else \
+  { \
+    std::string gotMsg(errorObserver->GetErrorMessage()); \
+    if (gotMsg.find(expectedMsg) == std::string::npos) \
+    { \
+      std::cout << "Error message does not contain \"" << expectedMsg << "\" got \n\"" << gotMsg << std::endl; \
+      status++; \
+    } \
+  } \
+  } \
+  errorObserver->Clear()
 
-int UnitTestPMaskPoints(int argc, char* argv[])
+static vtkSmartPointer<vtkPolyData> MakePolyData(
+  unsigned int numPoints);
+
+int UnitTestPMaskPoints (int argc, char* argv[])
 {
   int status = 0;
 
   // Test empty input
   // std::cout << "Testing empty input...";
   std::ostringstream print0;
-  vtkSmartPointer<vtkPMaskPoints> mask0 = vtkSmartPointer<vtkPMaskPoints>::New();
+  vtkSmartPointer<vtkPMaskPoints> mask0 =
+    vtkSmartPointer<vtkPMaskPoints>::New();
   // For coverage
-  mask0->SetController(nullptr);
-  mask0->SetController(nullptr);
+  mask0->SetController(NULL); mask0->SetController(NULL);
   mask0->Print(print0);
 
   vtkMPIController* cntrl = vtkMPIController::New();
-  cntrl->Initialize(&argc, &argv, 0);
-  vtkMultiProcessController::SetGlobalController(cntrl);
+  cntrl->Initialize( &argc, &argv, 0 );
+  vtkMultiProcessController::SetGlobalController( cntrl );
 
   mask0->SetController(vtkMultiProcessController::GetGlobalController());
 
@@ -95,14 +116,16 @@ int UnitTestPMaskPoints(int argc, char* argv[])
 
 vtkSmartPointer<vtkPolyData> MakePolyData(unsigned int numPoints)
 {
-  vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer<vtkPolyData>::New();
-  vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
+  vtkSmartPointer<vtkPolyData> polyData =
+    vtkSmartPointer<vtkPolyData>::New();
+  vtkSmartPointer<vtkPoints> points =
+    vtkSmartPointer<vtkPoints>::New();
   std::vector<double> line;
   for (unsigned int i = 0; i < numPoints; ++i)
   {
     line.push_back(static_cast<double>(i));
   }
-  std::random_shuffle(line.begin(), line.end());
+  std::random_shuffle ( line.begin(), line.end() );
   for (unsigned int i = 0; i < numPoints; ++i)
   {
     points->InsertNextPoint(line[i], 0.0, 0.0);

@@ -31,7 +31,7 @@ class TestImagePlaneWidget(Testing.vtkTest):
         img_data = v16.GetOutput()
 
         # **************************************************
-        # Look here for weirdness.
+        # Look here for wierdness.
 
         # Lets create this data using the data from the reader.
         my_img_data = vtk.vtkImageData()

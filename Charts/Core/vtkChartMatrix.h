@@ -21,16 +21,16 @@
  * This class contains a matrix of charts. These charts will be of type
  * vtkChartXY by default, but this can be overridden. The class will manage
  * their layout and object lifetime.
- */
+*/
 
 #ifndef vtkChartMatrix_h
 #define vtkChartMatrix_h
 
-#include "vtkAbstractContextItem.h"
 #include "vtkChartsCoreModule.h" // For export macro
-#include "vtkVector.h"           // For ivars
+#include "vtkAbstractContextItem.h"
+#include "vtkVector.h" // For ivars
 
-#include <map>     // For specific gutter
+#include <map> // For specific gutter
 #include <utility> // For specific gutter
 
 class vtkChart;
@@ -39,22 +39,22 @@ class VTKCHARTSCORE_EXPORT vtkChartMatrix : public vtkAbstractContextItem
 {
 public:
   vtkTypeMacro(vtkChartMatrix, vtkAbstractContextItem);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  virtual void PrintSelf(ostream &os, vtkIndent indent);
 
   /**
    * Creates a new object.
    */
-  static vtkChartMatrix* New();
+  static vtkChartMatrix *New();
 
   /**
    * Perform any updates to the item that may be necessary before rendering.
    */
-  void Update() override;
+  virtual void Update();
 
   /**
    * Paint event for the chart matrix.
    */
-  bool Paint(vtkContext2D* painter) override;
+  virtual bool Paint(vtkContext2D *painter);
 
   /**
    * Set the width and height of the chart matrix. This will cause an immediate
@@ -79,9 +79,9 @@ public:
   void SetBorderTop(int value);
   virtual void GetBorders(int borders[4])
   {
-    for (int i = 0; i < 4; i++)
+    for(int i=0;i<4;i++)
     {
-      borders[i] = this->Borders[i];
+      borders[i]=this->Borders[i];
     }
   }
   //@}
@@ -122,7 +122,7 @@ public:
   virtual bool SetChart(const vtkVector2i& position, vtkChart* chart);
 
   /**
-   * Get the specified chart element, if the element does not exist nullptr will be
+   * Get the specified chart element, if the element does not exist NULL will be
    * returned. If the chart element has not yet been allocated it will be at
    * this point.
    */
@@ -133,7 +133,8 @@ public:
    * exceed the remaining space in x or y.
    * \return false If the span is not possible.
    */
-  virtual bool SetChartSpan(const vtkVector2i& position, const vtkVector2i& span);
+  virtual bool SetChartSpan(const vtkVector2i& position,
+                            const vtkVector2i& span);
 
   /**
    * Get the span of the specified chart.
@@ -148,7 +149,10 @@ public:
 
 protected:
   vtkChartMatrix();
-  ~vtkChartMatrix() override;
+  ~vtkChartMatrix();
+
+  class PIMPL;
+  PIMPL *Private;
 
   // The number of charts in x and y.
   vtkVector2i Size;
@@ -160,11 +164,8 @@ protected:
   bool LayoutIsDirty;
 
 private:
-  vtkChartMatrix(const vtkChartMatrix&) = delete;
-  void operator=(const vtkChartMatrix&) = delete;
-
-  class PIMPL;
-  PIMPL* Private;
+  vtkChartMatrix(const vtkChartMatrix &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkChartMatrix &) VTK_DELETE_FUNCTION;
 };
 
-#endif // vtkChartMatrix_h
+#endif //vtkChartMatrix_h

@@ -36,7 +36,7 @@
  *
  * @par Thanks:
  * Developed by Timothy M. Shead (tshead@sandia.gov) at Sandia National Laboratories.
- */
+*/
 
 #ifndef vtkSparseArrayToTable_h
 #define vtkSparseArrayToTable_h
@@ -49,7 +49,7 @@ class VTKINFOVISCORE_EXPORT vtkSparseArrayToTable : public vtkTableAlgorithm
 public:
   static vtkSparseArrayToTable* New();
   vtkTypeMacro(vtkSparseArrayToTable, vtkTableAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -62,17 +62,21 @@ public:
 
 protected:
   vtkSparseArrayToTable();
-  ~vtkSparseArrayToTable() override;
+  ~vtkSparseArrayToTable();
 
-  int FillInputPortInformation(int, vtkInformation*) override;
+  int FillInputPortInformation(int, vtkInformation*);
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(
+    vtkInformation*,
+    vtkInformationVector**,
+    vtkInformationVector*);
 
   char* ValueColumn;
 
 private:
-  vtkSparseArrayToTable(const vtkSparseArrayToTable&) = delete;
-  void operator=(const vtkSparseArrayToTable&) = delete;
+  vtkSparseArrayToTable(const vtkSparseArrayToTable&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkSparseArrayToTable&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

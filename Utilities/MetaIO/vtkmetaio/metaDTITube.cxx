@@ -17,8 +17,8 @@
 
 #include "metaDTITube.h"
 
-#include <cctype>
-#include <cstdio>
+#include <stdio.h>
+#include <ctype.h>
 #include <string>
 
 #if (METAIO_USE_NAMESPACE)
@@ -134,7 +134,7 @@ MetaDTITube::
   while(it != m_PointList.end())
   {
     DTITubePnt* pnt = *it;
-    ++it;
+    it++;
     delete pnt;
   }
   m_PointList.clear();
@@ -178,7 +178,7 @@ PointDim(const char* pointDim)
 }
 
 const char* MetaDTITube::
-PointDim() const
+PointDim(void) const
 {
   return m_PointDim.c_str();
 }
@@ -190,7 +190,7 @@ NPoints(int npnt)
 }
 
 int MetaDTITube::
-NPoints() const
+NPoints(void) const
 {
   return m_NPoints;
 }
@@ -202,7 +202,7 @@ Root(bool root)
 }
 
 bool MetaDTITube::
-Root() const
+Root(void) const
 {
   return m_Root;
 }
@@ -215,14 +215,14 @@ ParentPoint(int parentpoint)
 }
 
 int MetaDTITube::
-ParentPoint() const
+ParentPoint(void) const
 {
   return m_ParentPoint;
 }
 
 /** Clear DTITube information */
 void MetaDTITube::
-Clear()
+Clear(void)
 {
   if(META_DEBUG) METAIO_STREAM::cout << "MetaDTITube: Clear" << METAIO_STREAM::endl;
   MetaObject::Clear();
@@ -231,7 +231,7 @@ Clear()
   while(it != m_PointList.end())
   {
     DTITubePnt* pnt = *it;
-    ++it;
+    it++;
     delete pnt;
   }
   m_PointList.clear();
@@ -245,14 +245,14 @@ Clear()
 
 /** Destroy DTITube information */
 void MetaDTITube::
-M_Destroy()
+M_Destroy(void)
 {
   MetaObject::M_Destroy();
 }
 
 /** Set Read fields */
 void MetaDTITube::
-M_SetupReadFields()
+M_SetupReadFields(void)
 {
   if(META_DEBUG) METAIO_STREAM::cout << "MetaDTITube: M_SetupReadFields" << METAIO_STREAM::endl;
 
@@ -286,7 +286,7 @@ M_SetupReadFields()
 }
 
 void MetaDTITube::
-M_SetupWriteFields()
+M_SetupWriteFields(void)
 {
   strcpy(m_ObjectTypeName,"Tube");
   strcpy(m_ObjectSubTypeName,"DTI");
@@ -326,7 +326,7 @@ M_SetupWriteFields()
     {
     m_PointDim += " ";
     m_PointDim += (*itFields).first;
-    ++itFields;
+    itFields++;
     }
 
   if(m_PointDim.size()>0)
@@ -366,7 +366,7 @@ int MetaDTITube::GetPosition(const char* name) const
 }
 
 bool MetaDTITube::
-M_Read()
+M_Read(void)
 {
   if(META_DEBUG)
     {
@@ -423,7 +423,7 @@ M_Read()
   int i;
 
   int pntDim;
-  char** pntVal = nullptr;
+  char** pntVal = NULL;
   char pointDim[255];
 
   for(unsigned t = 0;t<m_PointDim.size();t++)
@@ -519,15 +519,15 @@ M_Read()
                                                            m_Positions.end();
       while(itFields !=  itFieldsEnd)
         {
-        if(strcmp((*itFields).first.c_str(),"x") != 0
-          && strcmp((*itFields).first.c_str(),"y") != 0
-          && strcmp((*itFields).first.c_str(),"z") != 0
-          && strcmp((*itFields).first.c_str(),"tensor1") != 0
-          && strcmp((*itFields).first.c_str(),"tensor2") != 0
-          && strcmp((*itFields).first.c_str(),"tensor3") != 0
-          && strcmp((*itFields).first.c_str(),"tensor4") != 0
-          && strcmp((*itFields).first.c_str(),"tensor5") != 0
-          && strcmp((*itFields).first.c_str(),"tensor6") != 0
+        if(strcmp((*itFields).first.c_str(),"x")
+          && strcmp((*itFields).first.c_str(),"y")
+          && strcmp((*itFields).first.c_str(),"z")
+          && strcmp((*itFields).first.c_str(),"tensor1")
+          && strcmp((*itFields).first.c_str(),"tensor2")
+          && strcmp((*itFields).first.c_str(),"tensor3")
+          && strcmp((*itFields).first.c_str(),"tensor4")
+          && strcmp((*itFields).first.c_str(),"tensor5")
+          && strcmp((*itFields).first.c_str(),"tensor6")
           )
           {
           float td;
@@ -540,7 +540,7 @@ M_Read()
           i+=sizeof(float);
           pnt->AddField((*itFields).first.c_str(),(float)td);
           }
-        ++itFields;
+        itFields++;
         }
 
       m_PointList.push_back(pnt);
@@ -556,6 +556,8 @@ M_Read()
         m_Event->SetCurrentIteration(j+1);
         }
 
+      DTITubePnt* pnt = new DTITubePnt(m_NDims);
+
       for(int k=0; k<pntDim; k++)
         {
         *m_ReadStream >> v[k];
@@ -569,16 +571,13 @@ M_Read()
       if( positionOfX < 0 )
         {
         METAIO_STREAM::cerr << "MetaDTITube: M_Read: 'x' not found." << METAIO_STREAM::endl;
-        return false;
         }
 
       if( positionOfY < 0 )
         {
         METAIO_STREAM::cerr << "MetaDTITube: M_Read: 'y' not found." << METAIO_STREAM::endl;
-        return false;
         }
 
-      DTITubePnt* pnt = new DTITubePnt(m_NDims);
       pnt->m_X[0] = v[positionOfX];
       pnt->m_X[1] = v[positionOfY];
 
@@ -589,8 +588,6 @@ M_Read()
         if( positionOfZ < 0 )
           {
           METAIO_STREAM::cerr << "MetaDTITube: M_Read: 'z' not found." << METAIO_STREAM::endl;
-          delete pnt;
-          return false;
           }
 
         pnt->m_X[2] = v[positionOfZ];
@@ -640,21 +637,21 @@ M_Read()
                                                            m_Positions.end();
       while(itFields != itFieldsEnd)
         {
-        if(strcmp((*itFields).first.c_str(),"x") != 0
-          && strcmp((*itFields).first.c_str(),"y") != 0
-          && strcmp((*itFields).first.c_str(),"z") != 0
-          && strcmp((*itFields).first.c_str(),"tensor1") != 0
-          && strcmp((*itFields).first.c_str(),"tensor2") != 0
-          && strcmp((*itFields).first.c_str(),"tensor3") != 0
-          && strcmp((*itFields).first.c_str(),"tensor4") != 0
-          && strcmp((*itFields).first.c_str(),"tensor5") != 0
-          && strcmp((*itFields).first.c_str(),"tensor6") != 0
+        if(strcmp((*itFields).first.c_str(),"x")
+          && strcmp((*itFields).first.c_str(),"y")
+          && strcmp((*itFields).first.c_str(),"z")
+          && strcmp((*itFields).first.c_str(),"tensor1")
+          && strcmp((*itFields).first.c_str(),"tensor2")
+          && strcmp((*itFields).first.c_str(),"tensor3")
+          && strcmp((*itFields).first.c_str(),"tensor4")
+          && strcmp((*itFields).first.c_str(),"tensor5")
+          && strcmp((*itFields).first.c_str(),"tensor6")
           )
           {
           pnt->AddField((*itFields).first.c_str(),
                         v[this->GetPosition((*itFields).first.c_str())]);
           }
-        ++itFields;
+        itFields++;
         }
 
       m_PointList.push_back(pnt);
@@ -676,7 +673,7 @@ M_Read()
 }
 
 MET_ValueEnumType MetaDTITube::
-ElementType() const
+ElementType(void) const
 {
   return m_ElementType;
 }
@@ -688,7 +685,7 @@ ElementType(MET_ValueEnumType _elementType)
 }
 
 bool MetaDTITube::
-M_Write()
+M_Write(void)
 {
 
   if(!MetaObject::M_Write())
@@ -738,10 +735,10 @@ M_Write()
         float x = (*itFields).second;
         MET_SwapByteIfSystemMSB(&x,MET_FLOAT);
         MET_DoubleToValue((double)x,m_ElementType,data,i++);
-        ++itFields;
+        itFields++;
         }
 
-      ++it;
+      it++;
       }
 
     m_WriteStream->write((char *)data,i*elementSize);
@@ -773,11 +770,11 @@ M_Write()
       while(itFields !=  itFieldsEnd)
         {
         *m_WriteStream << (*itFields).second << " ";
-        ++itFields;
+        itFields++;
         }
 
       *m_WriteStream << METAIO_STREAM::endl;
-      ++it;
+      it++;
       }
     }
   return true;

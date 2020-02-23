@@ -27,13 +27,13 @@
  *
  * @sa
  * vtkProperty vtkTexture vtkMapper vtkAssembly vtkFollower vtkLODActor
- */
+*/
 
 #ifndef vtkActor_h
 #define vtkActor_h
 
-#include "vtkProp3D.h"
 #include "vtkRenderingCoreModule.h" // For export macro
+#include "vtkProp3D.h"
 
 class vtkRenderer;
 class vtkPropCollection;
@@ -46,37 +46,34 @@ class VTKRENDERINGCORE_EXPORT vtkActor : public vtkProp3D
 {
 public:
   vtkTypeMacro(vtkActor, vtkProp3D);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Creates an actor with the following defaults: origin(0,0,0)
    * position=(0,0,0) scale=(1,1,1) visibility=1 pickable=1 dragable=1
    * orientation=(0,0,0). No user defined matrix and no texture map.
    */
-  static vtkActor* New();
+  static vtkActor *New();
 
   /**
    * For some exporters and other other operations we must be
    * able to collect all the actors or volumes. These methods
    * are used in that process.
    */
-  void GetActors(vtkPropCollection*) override;
+  virtual void GetActors(vtkPropCollection *);
 
   //@{
   /**
    * Support the standard render methods.
    */
-  int RenderOpaqueGeometry(vtkViewport* viewport) override;
-  int RenderTranslucentPolygonalGeometry(vtkViewport* viewport) override;
+  virtual int RenderOpaqueGeometry(vtkViewport *viewport);
+  virtual int RenderTranslucentPolygonalGeometry(vtkViewport *viewport);
   //@}
 
-  //@{
   /**
-   * Does this prop have some opaque/translucent polygonal geometry?
+   * Does this prop have some translucent polygonal geometry?
    */
-  vtkTypeBool HasTranslucentPolygonalGeometry() override;
-  vtkTypeBool HasOpaqueGeometry() override;
-  //@}
+  virtual int HasTranslucentPolygonalGeometry();
 
   /**
    * This causes the actor to be rendered. It in turn will render the actor's
@@ -84,19 +81,19 @@ public:
    * assigned, then the actor will create one automatically. Note that a side
    * effect of this method is that the pipeline will be updated.
    */
-  virtual void Render(vtkRenderer*, vtkMapper*) {}
+  virtual void Render(vtkRenderer *, vtkMapper *) {}
 
   /**
    * Shallow copy of an actor. Overloads the virtual vtkProp method.
    */
-  void ShallowCopy(vtkProp* prop) override;
+  void ShallowCopy(vtkProp *prop);
 
   /**
    * Release any graphics resources that are being consumed by this actor.
    * The parameter window could be used to determine which graphic
    * resources to release.
    */
-  void ReleaseGraphicsResources(vtkWindow*) override;
+  void ReleaseGraphicsResources(vtkWindow *);
 
   //@{
   /**
@@ -106,8 +103,8 @@ public:
    * then one will be generated automatically. Multiple actors can share one
    * property object.
    */
-  void SetProperty(vtkProperty* lut);
-  vtkProperty* GetProperty();
+  void SetProperty(vtkProperty *lut);
+  vtkProperty *GetProperty();
   //@}
 
   /**
@@ -124,8 +121,8 @@ public:
    * isn't specified, then the front face properties will be used.  Multiple
    * actors can share one property object.
    */
-  void SetBackfaceProperty(vtkProperty* lut);
-  vtkGetObjectMacro(BackfaceProperty, vtkProperty);
+  void SetBackfaceProperty(vtkProperty *lut);
+  vtkGetObjectMacro(BackfaceProperty,vtkProperty);
   //@}
 
   //@{
@@ -144,7 +141,7 @@ public:
    * of vtkMapper. Typically vtkPolyDataMapper and vtkDataSetMapper will
    * be used.
    */
-  virtual void SetMapper(vtkMapper*);
+  virtual void SetMapper(vtkMapper *);
 
   //@{
   /**
@@ -157,8 +154,8 @@ public:
    * Get the bounds for this Actor as (Xmin,Xmax,Ymin,Ymax,Zmin,Zmax). (The
    * method GetBounds(double bounds[6]) is available from the superclass.)
    */
-  using Superclass::GetBounds;
-  double* GetBounds() VTK_SIZEHINT(6) override;
+  void GetBounds(double bounds[6]) {this->vtkProp3D::GetBounds( bounds );}
+  double *GetBounds();
 
   /**
    * Apply the current properties to all parts that compose this actor.
@@ -173,7 +170,7 @@ public:
   /**
    * Get the actors mtime plus consider its properties and texture if set.
    */
-  vtkMTimeType GetMTime() override;
+  vtkMTimeType GetMTime();
 
   /**
    * Return the mtime of anything that would cause the rendered image to
@@ -181,7 +178,7 @@ public:
    * prop plus anything else it depends on such as properties, textures,
    * etc.
    */
-  vtkMTimeType GetRedrawMTime() override;
+  virtual vtkMTimeType GetRedrawMTime();
 
   //@{
   /**
@@ -201,35 +198,21 @@ public:
    * Used by vtkHardwareSelector to determine if the prop supports hardware
    * selection.
    */
-  bool GetSupportsSelection() override;
-
-  /**
-   * allows a prop to update a selections color buffers
-   * Default just forwards to the Mapper
-   */
-  void ProcessSelectorPixelBuffers(
-    vtkHardwareSelector* sel, std::vector<unsigned int>& pixeloffsets) override;
-
-  //@{
-  // Get if we are in the translucent polygonal geometry pass
-  bool IsRenderingTranslucentPolygonalGeometry() override { return this->InTranslucentPass; }
-  void SetIsRenderingTranslucentPolygonalGeometry(bool val) { this->InTranslucentPass = val; }
-  //@}
+  virtual bool GetSupportsSelection();
 
 protected:
   vtkActor();
-  ~vtkActor() override;
+  ~vtkActor();
 
   // is this actor opaque
   int GetIsOpaque();
   bool ForceOpaque;
   bool ForceTranslucent;
-  bool InTranslucentPass;
 
-  vtkProperty* Property;
-  vtkProperty* BackfaceProperty;
-  vtkTexture* Texture;
-  vtkMapper* Mapper;
+  vtkProperty *Property;
+  vtkProperty *BackfaceProperty;
+  vtkTexture *Texture;
+  vtkMapper *Mapper;
 
   // Bounds are cached in an actor - the MapperBounds are also cache to
   // help know when the Bounds need to be recomputed.
@@ -237,8 +220,8 @@ protected:
   vtkTimeStamp BoundsMTime;
 
 private:
-  vtkActor(const vtkActor&) = delete;
-  void operator=(const vtkActor&) = delete;
+  vtkActor(const vtkActor&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkActor&) VTK_DELETE_FUNCTION;
 };
 
 #endif

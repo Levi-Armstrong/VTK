@@ -17,7 +17,7 @@
  * @brief   Read a CML file and output a
  * vtkMolecule object
  *
- */
+*/
 
 #ifndef vtkCMLMoleculeReader_h
 #define vtkCMLMoleculeReader_h
@@ -30,16 +30,16 @@ class vtkMolecule;
 class VTKDOMAINSCHEMISTRY_EXPORT vtkCMLMoleculeReader : public vtkMoleculeAlgorithm
 {
 public:
-  static vtkCMLMoleculeReader* New();
-  vtkTypeMacro(vtkCMLMoleculeReader, vtkMoleculeAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkCMLMoleculeReader *New();
+  vtkTypeMacro(vtkCMLMoleculeReader,vtkMoleculeAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
    * Get/Set the output (vtkMolecule) that the reader will fill
    */
-  vtkMolecule* GetOutput();
-  void SetOutput(vtkMolecule*) override;
+  vtkMolecule *GetOutput();
+  void SetOutput(vtkMolecule *);
   //@}
 
   //@{
@@ -52,16 +52,17 @@ public:
 
 protected:
   vtkCMLMoleculeReader();
-  ~vtkCMLMoleculeReader() override;
+  ~vtkCMLMoleculeReader();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int FillOutputPortInformation(int, vtkInformation*) override;
+  int RequestData(vtkInformation *, vtkInformationVector **,
+                  vtkInformationVector *);
+  int FillOutputPortInformation(int, vtkInformation*);
 
-  char* FileName;
+  char *FileName;
 
 private:
-  vtkCMLMoleculeReader(const vtkCMLMoleculeReader&) = delete;
-  void operator=(const vtkCMLMoleculeReader&) = delete;
+  vtkCMLMoleculeReader(const vtkCMLMoleculeReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkCMLMoleculeReader&) VTK_DELETE_FUNCTION;
 };
 
 #endif

@@ -29,7 +29,8 @@
 #include "vtkTable.h"
 
 #include "vtkSmartPointer.h"
-#define VTK_CREATE(type, name) vtkSmartPointer<type> name = vtkSmartPointer<type>::New()
+#define VTK_CREATE(type, name) \
+  vtkSmartPointer<type> name = vtkSmartPointer<type>::New()
 
 int TestPassArrays(int vtkNotUsed(argc), char* vtkNotUsed(argv)[])
 {
@@ -82,7 +83,7 @@ int TestPassArrays(int vtkNotUsed(argc), char* vtkNotUsed(argv)[])
         std::cerr << "UseFieldTypes flag is " << useFieldTypes << std::endl;
         pass->SetUseFieldTypes(useFieldTypes > 0 ? true : false);
         pass->ClearFieldTypes();
-        int processType = (type + 1) % 3;
+        int processType = (type+1)%3;
         std::cerr << "FieldType is " << processType << std::endl;
         pass->AddFieldType(processType);
 
@@ -140,15 +141,17 @@ int TestPassArrays(int vtkNotUsed(argc), char* vtkNotUsed(argv)[])
           if (out1 && out1->GetValue(j) != col1->GetValue(j))
           {
             errors++;
-            std::cerr << "ERROR: column1 output does not match input " << out1->GetValue(j)
-                      << "!=" << col1->GetValue(j) << " for field type " << type << std::endl;
+            std::cerr << "ERROR: column1 output does not match input "
+                 << out1->GetValue(j) << "!=" << col1->GetValue(j)
+                 << " for field type " << type << std::endl;
             break;
           }
           if (out2 && out2->GetValue(j) != col2->GetValue(j))
           {
             errors++;
-            std::cerr << "ERROR: column2 output does not match input " << out2->GetValue(j)
-                      << "!=" << col2->GetValue(j) << " for field type " << type << std::endl;
+            std::cerr << "ERROR: column2 output does not match input "
+                 << out2->GetValue(j) << "!=" << col2->GetValue(j)
+                 << " for field type " << type << std::endl;
             break;
           }
         }
@@ -160,3 +163,4 @@ int TestPassArrays(int vtkNotUsed(argc), char* vtkNotUsed(argv)[])
   std::cerr << errors << " errors" << std::endl;
   return errors;
 }
+

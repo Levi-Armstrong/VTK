@@ -22,7 +22,7 @@
  * The definition of Divergence:
  * Given V = P(x,y,z), Q(x,y,z), R(x,y,z),
  * Divergence = dP/dx + dQ/dy + dR/dz.
- */
+*/
 
 #ifndef vtkImageDivergence_h
 #define vtkImageDivergence_h
@@ -33,22 +33,29 @@
 class VTKIMAGINGMATH_EXPORT vtkImageDivergence : public vtkThreadedImageAlgorithm
 {
 public:
-  static vtkImageDivergence* New();
-  vtkTypeMacro(vtkImageDivergence, vtkThreadedImageAlgorithm);
+  static vtkImageDivergence *New();
+  vtkTypeMacro(vtkImageDivergence,vtkThreadedImageAlgorithm);
 
 protected:
   vtkImageDivergence();
-  ~vtkImageDivergence() override {}
+  ~vtkImageDivergence() {}
 
-  int RequestUpdateExtent(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  void ThreadedExecute(vtkImageData* inData, vtkImageData* outData, int ext[6], int id) override;
+  virtual int RequestUpdateExtent(vtkInformation*,
+                                  vtkInformationVector**,
+                                  vtkInformationVector*);
+  virtual int RequestInformation (vtkInformation*,
+                                  vtkInformationVector**,
+                                  vtkInformationVector*);
+  void ThreadedExecute (vtkImageData *inData, vtkImageData *outData,
+                       int ext[6], int id);
 
 private:
-  vtkImageDivergence(const vtkImageDivergence&) = delete;
-  void operator=(const vtkImageDivergence&) = delete;
+  vtkImageDivergence(const vtkImageDivergence&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkImageDivergence&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+
 
 // VTK-HeaderTest-Exclude: vtkImageDivergence.h

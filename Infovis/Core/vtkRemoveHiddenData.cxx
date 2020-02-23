@@ -23,7 +23,6 @@
 #include "vtkAnnotationLayers.h"
 #include "vtkCellData.h"
 #include "vtkConvertSelection.h"
-#include "vtkDataSet.h"
 #include "vtkDoubleArray.h"
 #include "vtkExtractSelectedGraph.h"
 #include "vtkExtractSelectedRows.h"
@@ -33,12 +32,14 @@
 #include "vtkInformationVector.h"
 #include "vtkObjectFactory.h"
 #include "vtkPointData.h"
+#include "vtkDataSet.h"
 #include "vtkScalarsToColors.h"
-#include "vtkSelection.h"
-#include "vtkSelectionNode.h"
 #include "vtkSmartPointer.h"
 #include "vtkTable.h"
 #include "vtkUnsignedCharArray.h"
+#include "vtkSelection.h"
+#include "vtkSelectionNode.h"
+
 
 vtkStandardNewMacro(vtkRemoveHiddenData);
 
@@ -52,7 +53,9 @@ vtkRemoveHiddenData::vtkRemoveHiddenData()
   this->SetNumberOfInputPorts(2);
 }
 
-vtkRemoveHiddenData::~vtkRemoveHiddenData() = default;
+vtkRemoveHiddenData::~vtkRemoveHiddenData()
+{
+}
 
 int vtkRemoveHiddenData::FillInputPortInformation(int port, vtkInformation* info)
 {
@@ -70,8 +73,10 @@ int vtkRemoveHiddenData::FillInputPortInformation(int port, vtkInformation* info
   return 1;
 }
 
-int vtkRemoveHiddenData::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+int vtkRemoveHiddenData::RequestData(
+  vtkInformation *vtkNotUsed(request),
+  vtkInformationVector **inputVector,
+  vtkInformationVector *outputVector)
 {
   // get the info objects
   vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
@@ -82,11 +87,11 @@ int vtkRemoveHiddenData::RequestData(vtkInformation* vtkNotUsed(request),
   vtkDataObject* input = inInfo->Get(vtkDataObject::DATA_OBJECT());
   vtkDataObject* output = outInfo->Get(vtkDataObject::DATA_OBJECT());
 
-  vtkAnnotationLayers* annotations = nullptr;
+  vtkAnnotationLayers* annotations = 0;
   if (annotationsInfo)
   {
-    annotations =
-      vtkAnnotationLayers::SafeDownCast(annotationsInfo->Get(vtkDataObject::DATA_OBJECT()));
+    annotations = vtkAnnotationLayers::SafeDownCast(
+      annotationsInfo->Get(vtkDataObject::DATA_OBJECT()));
   }
 
   // Nothing to do if no input annotations
@@ -109,9 +114,9 @@ int vtkRemoveHiddenData::RequestData(vtkInformation* vtkNotUsed(request),
     // Only if the annotation is both enabled AND hidden will
     // its selection get added
     if (ann->GetInformation()->Has(vtkAnnotation::ENABLE()) &&
-      ann->GetInformation()->Get(vtkAnnotation::ENABLE()) == 1 &&
-      ann->GetInformation()->Has(vtkAnnotation::HIDE()) &&
-      ann->GetInformation()->Get(vtkAnnotation::HIDE()) == 1)
+        ann->GetInformation()->Get(vtkAnnotation::ENABLE())==1 &&
+        ann->GetInformation()->Has(vtkAnnotation::HIDE()) &&
+        ann->GetInformation()->Get(vtkAnnotation::HIDE())==1 )
     {
       selection->Union(ann->GetSelection());
       numHiddenAnnotations++;
@@ -119,7 +124,7 @@ int vtkRemoveHiddenData::RequestData(vtkInformation* vtkNotUsed(request),
   }
 
   // Nothing to do if no hidden annotations
-  if (numHiddenAnnotations == 0)
+  if(numHiddenAnnotations == 0)
   {
     output->ShallowCopy(input);
     return 1;
@@ -130,7 +135,7 @@ int vtkRemoveHiddenData::RequestData(vtkInformation* vtkNotUsed(request),
   for (unsigned int i = 0; i < selection->GetNumberOfNodes(); ++i)
   {
     vtkSelectionNode* node = selection->GetNode(i);
-    node->GetProperties()->Set(vtkSelectionNode::INVERSE(), 1);
+    node->GetProperties()->Set(vtkSelectionNode::INVERSE(),1);
   }
 
   if (graph)
@@ -156,7 +161,9 @@ int vtkRemoveHiddenData::RequestData(vtkInformation* vtkNotUsed(request),
   return 1;
 }
 
+
+
 void vtkRemoveHiddenData::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 }

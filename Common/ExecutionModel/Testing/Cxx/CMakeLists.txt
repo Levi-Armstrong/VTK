@@ -1,4 +1,4 @@
-vtk_add_test_cxx(vtkCommonExecutionModelCxxTests tests
+vtk_add_test_cxx(${vtk-module}CxxTests tests
   NO_DATA NO_VALID
   TestCopyAttributeData.cxx
   TestImageDataToStructuredGrid.cxx
@@ -9,10 +9,4 @@ vtk_add_test_cxx(vtkCommonExecutionModelCxxTests tests
   TestTrivialConsumer.cxx
   UnitTestSimpleScalarTree.cxx
   )
-
-vtk_add_test_cxx(vtkCommonExecutionModelCxxTests tests
-  NO_VALID
-  TestMultiOutputSimpleFilter.cxx
-  )
-
-vtk_test_cxx_executable(vtkCommonExecutionModelCxxTests tests)
+vtk_test_cxx_executable(${vtk-module}CxxTests tests)

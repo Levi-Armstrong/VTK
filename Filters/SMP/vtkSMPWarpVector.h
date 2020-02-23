@@ -17,7 +17,7 @@
  * @brief   multithreaded vtkWarpVector
  *
  * Just like parent, but uses the SMP framework to do the work on many threads.
- */
+*/
 
 #ifndef vtkSMPWarpVector_h
 #define vtkSMPWarpVector_h
@@ -28,27 +28,29 @@
 class vtkInformation;
 class vtkInformationVector;
 
-#if !defined(VTK_LEGACY_REMOVE)
 class VTKFILTERSSMP_EXPORT vtkSMPWarpVector : public vtkWarpVector
 {
-public:
-  vtkTypeMacro(vtkSMPWarpVector, vtkWarpVector);
-  static vtkSMPWarpVector* New();
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+public :
+  vtkTypeMacro(vtkSMPWarpVector,vtkWarpVector);
+  static vtkSMPWarpVector *New();
+  void PrintSelf(ostream& os, vtkIndent indent);
 
-protected:
+protected :
   vtkSMPWarpVector();
-  ~vtkSMPWarpVector() override;
+  ~vtkSMPWarpVector();
+
 
   /**
    * Overridden to use threads.
    */
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *,
+                  vtkInformationVector **,
+                  vtkInformationVector *);
 
-private:
-  vtkSMPWarpVector(const vtkSMPWarpVector&) = delete;
-  void operator=(const vtkSMPWarpVector&) = delete;
+private :
+  vtkSMPWarpVector(const vtkSMPWarpVector&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkSMPWarpVector&) VTK_DELETE_FUNCTION;
+
 };
 
-#endif // VTK_LEGACY_REMOVE
-#endif // vtkSMPWarpVector_h
+#endif //vtkSMPWarpVector_h

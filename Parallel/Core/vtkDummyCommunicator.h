@@ -23,33 +23,31 @@
  * require a controller but are also compiled on systems without threads or MPI.
  * Because there is always only one process, no real communication takes place.
  *
- */
+*/
 
 #ifndef vtkDummyCommunicator_h
 #define vtkDummyCommunicator_h
 
-#include "vtkCommunicator.h"
 #include "vtkParallelCoreModule.h" // For export macro
+#include "vtkCommunicator.h"
 
 class VTKPARALLELCORE_EXPORT vtkDummyCommunicator : public vtkCommunicator
 {
 public:
   vtkTypeMacro(vtkDummyCommunicator, vtkCommunicator);
-  static vtkDummyCommunicator* New();
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkDummyCommunicator *New();
+  virtual void PrintSelf(ostream &os, vtkIndent indent);
 
   //@{
   /**
    * Since there is no one to communicate with, these methods just report an
    * error.
    */
-  int SendVoidArray(const void*, vtkIdType, int, int, int) override
-  {
+  virtual int SendVoidArray(const void *, vtkIdType, int, int, int) {
     vtkWarningMacro("There is no one to send to.");
     return 0;
   }
-  int ReceiveVoidArray(void*, vtkIdType, int, int, int) override
-  {
+  virtual int ReceiveVoidArray(void *, vtkIdType, int, int, int) {
     vtkWarningMacro("There is no one to receive from.");
     return 0;
   }
@@ -57,11 +55,11 @@ public:
 
 protected:
   vtkDummyCommunicator();
-  ~vtkDummyCommunicator() override;
+  virtual ~vtkDummyCommunicator();
 
 private:
-  vtkDummyCommunicator(const vtkDummyCommunicator&) = delete;
-  void operator=(const vtkDummyCommunicator&) = delete;
+  vtkDummyCommunicator(const vtkDummyCommunicator &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkDummyCommunicator &) VTK_DELETE_FUNCTION;
 };
 
-#endif // vtkDummyCommunicator_h
+#endif //vtkDummyCommunicator_h

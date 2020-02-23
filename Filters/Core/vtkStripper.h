@@ -52,7 +52,7 @@
  *
  * @sa
  * vtkTriangleFilter
- */
+*/
 
 #ifndef vtkStripper_h
 #define vtkStripper_h
@@ -63,21 +63,21 @@
 class VTKFILTERSCORE_EXPORT vtkStripper : public vtkPolyDataAlgorithm
 {
 public:
-  vtkTypeMacro(vtkStripper, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkStripper,vtkPolyDataAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Construct object with MaximumLength set to 1000.
    */
-  static vtkStripper* New();
+  static vtkStripper *New();
 
   //@{
   /**
    * Specify the maximum number of triangles in a triangle strip,
    * and/or the maximum number of lines in a poly-line.
    */
-  vtkSetClampMacro(MaximumLength, int, 4, 100000);
-  vtkGetMacro(MaximumLength, int);
+  vtkSetClampMacro(MaximumLength,int,4,100000);
+  vtkGetMacro(MaximumLength,int);
   //@}
 
   //@{
@@ -85,9 +85,9 @@ public:
    * Enable/Disable passing of the CellData in the input to
    * the output as FieldData. Note the field data is transformed.
    */
-  vtkBooleanMacro(PassCellDataAsFieldData, vtkTypeBool);
-  vtkSetMacro(PassCellDataAsFieldData, vtkTypeBool);
-  vtkGetMacro(PassCellDataAsFieldData, vtkTypeBool);
+  vtkBooleanMacro(PassCellDataAsFieldData, int);
+  vtkSetMacro(PassCellDataAsFieldData, int);
+  vtkGetMacro(PassCellDataAsFieldData, int);
   //@}
 
   //@{
@@ -97,9 +97,9 @@ public:
    * cell. This is useful for picking. The default is off to conserve
    * memory.
    */
-  vtkSetMacro(PassThroughCellIds, vtkTypeBool);
-  vtkGetMacro(PassThroughCellIds, vtkTypeBool);
-  vtkBooleanMacro(PassThroughCellIds, vtkTypeBool);
+  vtkSetMacro(PassThroughCellIds,int);
+  vtkGetMacro(PassThroughCellIds,int);
+  vtkBooleanMacro(PassThroughCellIds,int);
   //@}
 
   //@{
@@ -109,9 +109,9 @@ public:
    * vertex. This is useful for picking. The default is off to conserve
    * memory.
    */
-  vtkSetMacro(PassThroughPointIds, vtkTypeBool);
-  vtkGetMacro(PassThroughPointIds, vtkTypeBool);
-  vtkBooleanMacro(PassThroughPointIds, vtkTypeBool);
+  vtkSetMacro(PassThroughPointIds,int);
+  vtkGetMacro(PassThroughPointIds,int);
+  vtkBooleanMacro(PassThroughPointIds,int);
   //@}
 
   //@{
@@ -120,27 +120,27 @@ public:
    * contiguous. This is useful after slicing a surface. The default
    * is off.
    */
-  vtkSetMacro(JoinContiguousSegments, vtkTypeBool);
-  vtkGetMacro(JoinContiguousSegments, vtkTypeBool);
-  vtkBooleanMacro(JoinContiguousSegments, vtkTypeBool);
+  vtkSetMacro(JoinContiguousSegments,int);
+  vtkGetMacro(JoinContiguousSegments,int);
+  vtkBooleanMacro(JoinContiguousSegments,int);
   //@}
 
 protected:
   vtkStripper();
-  ~vtkStripper() override {}
+  ~vtkStripper() VTK_OVERRIDE {}
 
   // Usual data generation method
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *) VTK_OVERRIDE;
 
   int MaximumLength;
-  vtkTypeBool PassCellDataAsFieldData;
-  vtkTypeBool PassThroughCellIds;
-  vtkTypeBool PassThroughPointIds;
-  vtkTypeBool JoinContiguousSegments;
+  int PassCellDataAsFieldData;
+  int PassThroughCellIds;
+  int PassThroughPointIds;
+  int JoinContiguousSegments;
 
 private:
-  vtkStripper(const vtkStripper&) = delete;
-  void operator=(const vtkStripper&) = delete;
+  vtkStripper(const vtkStripper&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkStripper&) VTK_DELETE_FUNCTION;
 };
 
 #endif

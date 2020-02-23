@@ -25,36 +25,38 @@
  *
  * @sa
  * vtkFixedPointVolumeRayCastMapper
- */
+*/
 
 #ifndef vtkFixedPointVolumeRayCastCompositeGOShadeHelper_h
 #define vtkFixedPointVolumeRayCastCompositeGOShadeHelper_h
 
-#include "vtkFixedPointVolumeRayCastHelper.h"
 #include "vtkRenderingVolumeModule.h" // For export macro
+#include "vtkFixedPointVolumeRayCastHelper.h"
 
 class vtkFixedPointVolumeRayCastMapper;
 class vtkVolume;
 
-class VTKRENDERINGVOLUME_EXPORT vtkFixedPointVolumeRayCastCompositeGOShadeHelper
-  : public vtkFixedPointVolumeRayCastHelper
+class VTKRENDERINGVOLUME_EXPORT vtkFixedPointVolumeRayCastCompositeGOShadeHelper : public vtkFixedPointVolumeRayCastHelper
 {
 public:
-  static vtkFixedPointVolumeRayCastCompositeGOShadeHelper* New();
-  vtkTypeMacro(vtkFixedPointVolumeRayCastCompositeGOShadeHelper, vtkFixedPointVolumeRayCastHelper);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkFixedPointVolumeRayCastCompositeGOShadeHelper *New();
+  vtkTypeMacro(vtkFixedPointVolumeRayCastCompositeGOShadeHelper,vtkFixedPointVolumeRayCastHelper);
+  void PrintSelf( ostream& os, vtkIndent indent );
 
-  void GenerateImage(int threadID, int threadCount, vtkVolume* vol,
-    vtkFixedPointVolumeRayCastMapper* mapper) override;
+  virtual void  GenerateImage( int threadID,
+                               int threadCount,
+                               vtkVolume *vol,
+                               vtkFixedPointVolumeRayCastMapper *mapper);
 
 protected:
   vtkFixedPointVolumeRayCastCompositeGOShadeHelper();
-  ~vtkFixedPointVolumeRayCastCompositeGOShadeHelper() override;
+  ~vtkFixedPointVolumeRayCastCompositeGOShadeHelper();
 
 private:
-  vtkFixedPointVolumeRayCastCompositeGOShadeHelper(
-    const vtkFixedPointVolumeRayCastCompositeGOShadeHelper&) = delete;
-  void operator=(const vtkFixedPointVolumeRayCastCompositeGOShadeHelper&) = delete;
+  vtkFixedPointVolumeRayCastCompositeGOShadeHelper(const vtkFixedPointVolumeRayCastCompositeGOShadeHelper&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkFixedPointVolumeRayCastCompositeGOShadeHelper&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+

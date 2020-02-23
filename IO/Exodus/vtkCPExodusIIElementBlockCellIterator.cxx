@@ -22,21 +22,24 @@
 
 #include <algorithm>
 
-vtkStandardNewMacro(vtkCPExodusIIElementBlockCellIterator);
+vtkStandardNewMacro(vtkCPExodusIIElementBlockCellIterator)
 
 //------------------------------------------------------------------------------
-void vtkCPExodusIIElementBlockCellIterator::PrintSelf(ostream& os, vtkIndent indent)
+void vtkCPExodusIIElementBlockCellIterator::PrintSelf(ostream &os,
+                                                      vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
-  os << indent << "Storage: " << this->Storage << endl;
-  os << indent << "DataSetPoints: " << this->DataSetPoints << endl;
-  os << indent << "CellId: " << this->CellId << endl;
+  os << indent << "Storage: " << this->Storage.GetPointer() << endl;
+  os << indent << "DataSetPoints: "
+     << this->DataSetPoints.GetPointer() << endl;
+  os << indent << "CellId: "  << this->CellId << endl;
 }
 
 //------------------------------------------------------------------------------
 bool vtkCPExodusIIElementBlockCellIterator::IsValid()
 {
-  return this->Storage && this->CellId < this->Storage->NumberOfCells;
+  return this->Storage.GetPointer()
+      && this->CellId < this->Storage->NumberOfCells;
 }
 
 //------------------------------------------------------------------------------
@@ -47,14 +50,16 @@ vtkIdType vtkCPExodusIIElementBlockCellIterator::GetCellId()
 
 //------------------------------------------------------------------------------
 vtkCPExodusIIElementBlockCellIterator::vtkCPExodusIIElementBlockCellIterator()
-  : Storage(nullptr)
-  , DataSetPoints(nullptr)
-  , CellId(0)
+    : Storage(NULL),
+      DataSetPoints(NULL),
+      CellId(0)
 {
 }
 
 //------------------------------------------------------------------------------
-vtkCPExodusIIElementBlockCellIterator::~vtkCPExodusIIElementBlockCellIterator() {}
+vtkCPExodusIIElementBlockCellIterator::~vtkCPExodusIIElementBlockCellIterator()
+{
+}
 
 //------------------------------------------------------------------------------
 void vtkCPExodusIIElementBlockCellIterator::ResetToFirstCell()
@@ -80,8 +85,8 @@ void vtkCPExodusIIElementBlockCellIterator::FetchPointIds()
   this->PointIds->SetNumberOfIds(this->Storage->CellSize);
 
   std::transform(this->Storage->GetElementStart(this->CellId),
-    this->Storage->GetElementEnd(this->CellId), this->PointIds->GetPointer(0),
-    StorageType::NodeToPoint);
+                 this->Storage->GetElementEnd(this->CellId),
+                 this->PointIds->GetPointer(0), StorageType::NodeToPoint);
 }
 
 //------------------------------------------------------------------------------
@@ -91,21 +96,22 @@ void vtkCPExodusIIElementBlockCellIterator::FetchPoints()
 }
 
 //------------------------------------------------------------------------------
-void vtkCPExodusIIElementBlockCellIterator::SetStorage(vtkCPExodusIIElementBlock* eb)
+void vtkCPExodusIIElementBlockCellIterator::SetStorage(
+    vtkCPExodusIIElementBlock *eb)
 {
-  if (eb != nullptr)
+  if (eb != NULL)
   {
     this->Storage = eb->GetInternals();
-    this->DataSetPoints = eb->GetPoints();
-    if (this->DataSetPoints)
+    this->DataSetPoints= eb->GetPoints();
+    if(this->DataSetPoints)
     {
       this->Points->SetDataType(this->DataSetPoints->GetDataType());
     }
   }
   else
   {
-    this->Storage = nullptr;
-    this->DataSetPoints = nullptr;
+    this->Storage = NULL;
+    this->DataSetPoints = NULL;
   }
   this->CellId = 0;
 }

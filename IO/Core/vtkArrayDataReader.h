@@ -31,20 +31,21 @@
  *
  * @sa
  * vtkArrayDataWriter
- */
+*/
 
 #ifndef vtkArrayDataReader_h
 #define vtkArrayDataReader_h
 
-#include "vtkArrayDataAlgorithm.h"
 #include "vtkIOCoreModule.h" // For export macro
+#include "vtkArrayDataAlgorithm.h"
 
-class VTKIOCORE_EXPORT vtkArrayDataReader : public vtkArrayDataAlgorithm
+class VTKIOCORE_EXPORT vtkArrayDataReader :
+  public vtkArrayDataAlgorithm
 {
 public:
   static vtkArrayDataReader* New();
   vtkTypeMacro(vtkArrayDataReader, vtkArrayDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -82,21 +83,24 @@ public:
   /**
    * Read an arbitrary array from a string.
    */
-  static vtkArrayData* Read(const vtkStdString& str);
+  static vtkArrayData* Read(vtkStdString str);
 
 protected:
   vtkArrayDataReader();
-  ~vtkArrayDataReader() override;
+  ~vtkArrayDataReader();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(
+    vtkInformation*,
+    vtkInformationVector**,
+    vtkInformationVector*);
 
   char* FileName;
   vtkStdString InputString;
   bool ReadFromInputString;
 
 private:
-  vtkArrayDataReader(const vtkArrayDataReader&) = delete;
-  void operator=(const vtkArrayDataReader&) = delete;
+  vtkArrayDataReader(const vtkArrayDataReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkArrayDataReader&) VTK_DELETE_FUNCTION;
 };
 
 #endif

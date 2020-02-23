@@ -22,16 +22,16 @@ vtkCxxSetObjectMacro(vtkBitArrayIterator, Array, vtkBitArray);
 //-----------------------------------------------------------------------------
 vtkBitArrayIterator::vtkBitArrayIterator()
 {
-  this->Array = nullptr;
-  this->Tuple = nullptr;
+  this->Array = 0;
+  this->Tuple = 0;
   this->TupleSize = 0;
 }
 
 //-----------------------------------------------------------------------------
 vtkBitArrayIterator::~vtkBitArrayIterator()
 {
-  this->SetArray(nullptr);
-  delete[] this->Tuple;
+  this->SetArray(0);
+  delete [] this->Tuple;
 }
 
 //-----------------------------------------------------------------------------
@@ -57,15 +57,15 @@ int* vtkBitArrayIterator::GetTuple(vtkIdType id)
 {
   if (!this->Array)
   {
-    return nullptr;
+    return 0;
   }
 
   vtkIdType numComps = this->Array->GetNumberOfComponents();
   if (this->TupleSize < numComps)
   {
     this->TupleSize = static_cast<int>(numComps);
-    delete[] this->Tuple;
-    this->Tuple = new int[this->TupleSize];
+    delete [] this->Tuple;
+    this->Tuple = new int [this->TupleSize];
   }
   vtkIdType loc = id * numComps;
   for (int j = 0; j < numComps; j++)
@@ -124,7 +124,7 @@ int vtkBitArrayIterator::GetNumberOfComponents()
 }
 
 //-----------------------------------------------------------------------------
-int vtkBitArrayIterator::GetDataType() const
+int vtkBitArrayIterator::GetDataType()
 {
   if (this->Array)
   {
@@ -133,7 +133,7 @@ int vtkBitArrayIterator::GetDataType() const
   return 0;
 }
 //-----------------------------------------------------------------------------
-int vtkBitArrayIterator::GetDataTypeSize() const
+int vtkBitArrayIterator::GetDataTypeSize()
 {
   if (this->Array)
   {

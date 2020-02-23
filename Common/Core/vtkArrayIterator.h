@@ -38,7 +38,7 @@
  *   }
  * iter->Delete();
  * \endcode
- */
+*/
 
 #ifndef vtkArrayIterator_h
 #define vtkArrayIterator_h
@@ -50,14 +50,14 @@ class VTKCOMMONCORE_EXPORT vtkArrayIterator : public vtkObject
 {
 public:
   vtkTypeMacro(vtkArrayIterator, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Set the array this iterator will iterate over.
    * After Initialize() has been called, the iterator is valid
    * so long as the Array has not been modified
    * (except using the iterator itself).
-   * If the array is modified, the iterator must be re-initialized.
+   * If the array is modified, the iterator must be re-intialized.
    */
   virtual void Initialize(vtkAbstractArray* array) = 0;
 
@@ -65,15 +65,17 @@ public:
    * Get the data type from the underlying array. Returns 0 if
    * no underlying array is present.
    */
-  virtual int GetDataType() const = 0;
+  virtual int GetDataType()=0;
 
 protected:
   vtkArrayIterator();
-  ~vtkArrayIterator() override;
+  ~vtkArrayIterator() VTK_OVERRIDE;
 
 private:
-  vtkArrayIterator(const vtkArrayIterator&) = delete;
-  void operator=(const vtkArrayIterator&) = delete;
+  vtkArrayIterator(const vtkArrayIterator&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkArrayIterator&) VTK_DELETE_FUNCTION;
 };
 
+
 #endif
+

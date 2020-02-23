@@ -25,7 +25,7 @@
  *
  * @sa
  * vtkXMLPPolyDataWriter
- */
+*/
 
 #ifndef vtkXMLPolyDataWriter_h
 #define vtkXMLPolyDataWriter_h
@@ -38,8 +38,8 @@ class vtkPolyData;
 class VTKIOXML_EXPORT vtkXMLPolyDataWriter : public vtkXMLUnstructuredDataWriter
 {
 public:
-  vtkTypeMacro(vtkXMLPolyDataWriter, vtkXMLUnstructuredDataWriter);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkXMLPolyDataWriter,vtkXMLUnstructuredDataWriter);
+  void PrintSelf(ostream& os, vtkIndent indent);
   static vtkXMLPolyDataWriter* New();
 
   /**
@@ -50,28 +50,28 @@ public:
   /**
    * Get the default file extension for files written by this writer.
    */
-  const char* GetDefaultFileExtension() override;
+  const char* GetDefaultFileExtension();
 
 protected:
   vtkXMLPolyDataWriter();
-  ~vtkXMLPolyDataWriter() override;
+  ~vtkXMLPolyDataWriter();
 
   // see algorithm for more info
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  virtual int FillInputPortInformation(int port, vtkInformation* info);
 
-  const char* GetDataSetName() override;
+  const char* GetDataSetName();
 
-  void AllocatePositionArrays() override;
-  void DeletePositionArrays() override;
+  virtual void AllocatePositionArrays();
+  virtual void DeletePositionArrays();
 
-  void WriteInlinePieceAttributes() override;
-  void WriteInlinePiece(vtkIndent indent) override;
+  void WriteInlinePieceAttributes();
+  void WriteInlinePiece(vtkIndent indent);
 
-  void WriteAppendedPieceAttributes(int index) override;
-  void WriteAppendedPiece(int index, vtkIndent indent) override;
-  void WriteAppendedPieceData(int index) override;
+  void WriteAppendedPieceAttributes(int index);
+  void WriteAppendedPiece(int index, vtkIndent indent);
+  void WriteAppendedPieceData(int index);
 
-  vtkIdType GetNumberOfInputCells() override;
+  virtual vtkIdType GetNumberOfInputCells();
   void CalculateSuperclassFraction(float* fractions);
 
   // Positions of attributes for each piece.
@@ -80,14 +80,14 @@ protected:
   unsigned long* NumberOfStripsPositions;
   unsigned long* NumberOfPolysPositions;
 
-  OffsetsManagerArray* VertsOM;
-  OffsetsManagerArray* LinesOM;
-  OffsetsManagerArray* StripsOM;
-  OffsetsManagerArray* PolysOM;
+  OffsetsManagerArray *VertsOM;
+  OffsetsManagerArray *LinesOM;
+  OffsetsManagerArray *StripsOM;
+  OffsetsManagerArray *PolysOM;
 
 private:
-  vtkXMLPolyDataWriter(const vtkXMLPolyDataWriter&) = delete;
-  void operator=(const vtkXMLPolyDataWriter&) = delete;
+  vtkXMLPolyDataWriter(const vtkXMLPolyDataWriter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkXMLPolyDataWriter&) VTK_DELETE_FUNCTION;
 };
 
 #endif

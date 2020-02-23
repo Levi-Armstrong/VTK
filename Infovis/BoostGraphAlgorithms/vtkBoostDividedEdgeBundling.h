@@ -37,32 +37,31 @@
  * This algorithm was developed in the paper:
  *   David Selassie, Brandon Heller, Jeffrey Heer. Divided Edge Bundling for Directional
  *   Network Data. Proceedings of IEEE InfoVis 2011.
- */
+*/
 
 #ifndef vtkBoostDividedEdgeBundling_h
 #define vtkBoostDividedEdgeBundling_h
 
-#include "vtkDirectedGraphAlgorithm.h"
 #include "vtkInfovisBoostGraphAlgorithmsModule.h" // For export macro
+#include "vtkDirectedGraphAlgorithm.h"
 
-class VTKINFOVISBOOSTGRAPHALGORITHMS_EXPORT vtkBoostDividedEdgeBundling
-  : public vtkDirectedGraphAlgorithm
+class VTKINFOVISBOOSTGRAPHALGORITHMS_EXPORT vtkBoostDividedEdgeBundling : public vtkDirectedGraphAlgorithm
 {
 public:
-  static vtkBoostDividedEdgeBundling* New();
+  static vtkBoostDividedEdgeBundling *New();
 
-  vtkTypeMacro(vtkBoostDividedEdgeBundling, vtkDirectedGraphAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkBoostDividedEdgeBundling,vtkDirectedGraphAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
 protected:
   vtkBoostDividedEdgeBundling();
-  ~vtkBoostDividedEdgeBundling() override {}
+  ~vtkBoostDividedEdgeBundling() {}
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 
 private:
-  vtkBoostDividedEdgeBundling(const vtkBoostDividedEdgeBundling&) = delete;
-  void operator=(const vtkBoostDividedEdgeBundling&) = delete;
+  vtkBoostDividedEdgeBundling(const vtkBoostDividedEdgeBundling&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkBoostDividedEdgeBundling&) VTK_DELETE_FUNCTION;
 };
 
 #endif

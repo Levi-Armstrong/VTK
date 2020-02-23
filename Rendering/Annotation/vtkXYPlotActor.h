@@ -63,7 +63,7 @@
  * There are several advanced features as well. You can assign per curve
  * properties (such as color and a plot symbol). (Note that each input
  * dataset and/or data object creates a single curve.) Another option is to
- * add a plot legend that graphically indicates the correspondence between
+ * add a plot legend that graphically indicates the correspondance between
  * the curve, curve symbols, and the data source. You can also exchange the
  * x and y axes if you prefer you plot orientation that way.
  *
@@ -83,26 +83,26 @@
  * vtkActor2D vtkTextMapper vtkScalarBarActor vtkAxisActor2D vtkCubeAxesActor2D
  * vtkAttributeDataToFieldDataFilter vtkFieldDataToAttributeDataFilter
  * vtkTextProperty
- */
+*/
 
 #ifndef vtkXYPlotActor_h
 #define vtkXYPlotActor_h
 
-#define VTK_XYPLOT_INDEX 0
-#define VTK_XYPLOT_ARC_LENGTH 1
+#define VTK_XYPLOT_INDEX                 0
+#define VTK_XYPLOT_ARC_LENGTH            1
 #define VTK_XYPLOT_NORMALIZED_ARC_LENGTH 2
-#define VTK_XYPLOT_VALUE 3
+#define VTK_XYPLOT_VALUE                 3
 
 #define VTK_XYPLOT_ROW 0
 #define VTK_XYPLOT_COLUMN 1
 
-#define VTK_XYPLOT_Y_AXIS_TOP 0
+#define VTK_XYPLOT_Y_AXIS_TOP     0
 #define VTK_XYPLOT_Y_AXIS_HCENTER 1
 #define VTK_XYPLOT_Y_AXIS_VCENTER 2 // rotate by 90 degrees (y-axis aligned)
 
-#include "vtkActor2D.h"
 #include "vtkRenderingAnnotationModule.h" // For export macro
-#include "vtkSmartPointer.h"              // For SP
+#include "vtkActor2D.h"
+#include "vtkSmartPointer.h" // For SP
 
 class vtkXYPlotActorConnections;
 class vtkAlgorithmOutput;
@@ -127,8 +127,8 @@ class vtkTextProperty;
 class VTKRENDERINGANNOTATION_EXPORT vtkXYPlotActor : public vtkActor2D
 {
 public:
-  vtkTypeMacro(vtkXYPlotActor, vtkActor2D);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkXYPlotActor,vtkActor2D);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Instantiate object with autorange computation; bold, italic, and shadows
@@ -136,7 +136,7 @@ public:
    * axes; a label format of "%-#6.3g"; and x coordinates computed from point
    * ids.
    */
-  static vtkXYPlotActor* New();
+  static vtkXYPlotActor *New();
 
   //---Data Set Input----------------------------------------------------------
   // The following methods are used to plot input datasets. Datasets
@@ -152,25 +152,22 @@ public:
    * first component is ploted. Note that AddInputDataSet() does not setup
    * a pipeline connection whereas AddInputConnection() does.
    */
-  void AddDataSetInput(vtkDataSet* ds, const char* arrayName, int component);
-  void AddDataSetInput(vtkDataSet* ds) { this->AddDataSetInput(ds, nullptr, 0); }
-  void AddDataSetInputConnection(vtkAlgorithmOutput* in, const char* arrayName, int component);
-  void AddDataSetInputConnection(vtkAlgorithmOutput* in)
-  {
-    this->AddDataSetInputConnection(in, nullptr, 0);
-  }
+  void AddDataSetInput(vtkDataSet *ds, const char* arrayName, int component);
+  void AddDataSetInput(vtkDataSet *ds) {this->AddDataSetInput(ds, NULL, 0);}
+  void AddDataSetInputConnection(vtkAlgorithmOutput *in, const char* arrayName, int component);
+  void AddDataSetInputConnection(vtkAlgorithmOutput *in) {this->AddDataSetInputConnection(in, NULL, 0);}
   //@}
 
   //@{
   /**
    * Remove a dataset from the list of data to append.
    */
-  void RemoveDataSetInput(vtkDataSet* ds, const char* arrayName, int component);
-  void RemoveDataSetInput(vtkDataSet* ds) { this->RemoveDataSetInput(ds, nullptr, 0); }
-  void RemoveDataSetInputConnection(vtkAlgorithmOutput* in, const char* arrayName, int component);
-  void RemoveDataSetInputConnection(vtkAlgorithmOutput* in)
+  void RemoveDataSetInput(vtkDataSet *ds, const char* arrayName, int component);
+  void RemoveDataSetInput(vtkDataSet *ds) {this->RemoveDataSetInput(ds, NULL, 0);}
+  void RemoveDataSetInputConnection(vtkAlgorithmOutput *in, const char* arrayName, int component);
+  void RemoveDataSetInputConnection(vtkAlgorithmOutput *in)
   {
-    this->RemoveDataSetInputConnection(in, nullptr, 0);
+    this->RemoveDataSetInputConnection(in, NULL, 0);
   }
   //@}
 
@@ -201,13 +198,14 @@ public:
    * plotted by value or index, if plotting length 1-dimensional length
    * measures are used.)
    */
-  vtkSetClampMacro(XValues, int, VTK_XYPLOT_INDEX, VTK_XYPLOT_VALUE);
-  vtkGetMacro(XValues, int);
-  void SetXValuesToIndex() { this->SetXValues(VTK_XYPLOT_INDEX); }
-  void SetXValuesToArcLength() { this->SetXValues(VTK_XYPLOT_ARC_LENGTH); }
-  void SetXValuesToNormalizedArcLength() { this->SetXValues(VTK_XYPLOT_NORMALIZED_ARC_LENGTH); }
-  void SetXValuesToValue() { this->SetXValues(VTK_XYPLOT_VALUE); }
-  const char* GetXValuesAsString();
+  vtkSetClampMacro(XValues,int,VTK_XYPLOT_INDEX,VTK_XYPLOT_VALUE);
+  vtkGetMacro(XValues,int);
+  void SetXValuesToIndex(){this->SetXValues(VTK_XYPLOT_INDEX);};
+  void SetXValuesToArcLength() {this->SetXValues(VTK_XYPLOT_ARC_LENGTH);};
+  void SetXValuesToNormalizedArcLength()
+    {this->SetXValues(VTK_XYPLOT_NORMALIZED_ARC_LENGTH);};
+  void SetXValuesToValue() {this->SetXValues(VTK_XYPLOT_VALUE);};
+  const char *GetXValuesAsString();
   //@}
 
   //---Data Object Input------------------------------------------------------
@@ -219,16 +217,16 @@ public:
   /**
    * Add a data object to the list of data to display.
    */
-  void AddDataObjectInput(vtkDataObject* in);
-  void AddDataObjectInputConnection(vtkAlgorithmOutput* alg);
+  void AddDataObjectInput(vtkDataObject *in);
+  void AddDataObjectInputConnection(vtkAlgorithmOutput *alg);
   //@}
 
   //@{
   /**
    * Remove a dataset from the list of data to display.
    */
-  void RemoveDataObjectInputConnection(vtkAlgorithmOutput* aout);
-  void RemoveDataObjectInput(vtkDataObject* in);
+  void RemoveDataObjectInputConnection(vtkAlgorithmOutput *aout);
+  void RemoveDataObjectInput(vtkDataObject *in);
   //@}
 
   //@{
@@ -237,11 +235,13 @@ public:
    * the dependent variables is taken from a specified row,
    * versus rows (y).
    */
-  vtkSetClampMacro(DataObjectPlotMode, int, VTK_XYPLOT_ROW, VTK_XYPLOT_COLUMN);
-  vtkGetMacro(DataObjectPlotMode, int);
-  void SetDataObjectPlotModeToRows() { this->SetDataObjectPlotMode(VTK_XYPLOT_ROW); }
-  void SetDataObjectPlotModeToColumns() { this->SetDataObjectPlotMode(VTK_XYPLOT_COLUMN); }
-  const char* GetDataObjectPlotModeAsString();
+  vtkSetClampMacro(DataObjectPlotMode,int,VTK_XYPLOT_ROW,VTK_XYPLOT_COLUMN);
+  vtkGetMacro(DataObjectPlotMode,int);
+  void SetDataObjectPlotModeToRows()
+    {this->SetDataObjectPlotMode(VTK_XYPLOT_ROW);}
+  void SetDataObjectPlotModeToColumns()
+    {this->SetDataObjectPlotMode(VTK_XYPLOT_COLUMN);}
+  const char *GetDataObjectPlotModeAsString();
   //@}
 
   //@{
@@ -277,26 +277,24 @@ public:
   // methods that follow have an index i that corresponds to the input dataset
   // or data object.
   void SetPlotColor(int i, double r, double g, double b);
-  void SetPlotColor(int i, const double color[3])
-  {
-    this->SetPlotColor(i, color[0], color[1], color[2]);
-  }
-  double* GetPlotColor(int i) VTK_SIZEHINT(3);
-  void SetPlotSymbol(int i, vtkPolyData* input);
-  vtkPolyData* GetPlotSymbol(int i);
-  void SetPlotLabel(int i, const char* label);
-  const char* GetPlotLabel(int i);
+  void SetPlotColor(int i, const double color[3]) {
+    this->SetPlotColor(i, color[0], color[1], color[2]); };
+  double *GetPlotColor(int i);
+  void SetPlotSymbol(int i,vtkPolyData *input);
+  vtkPolyData *GetPlotSymbol(int i);
+  void SetPlotLabel(int i, const char *label);
+  const char *GetPlotLabel(int i);
 
   // Allow per-curve specification of line and point rendering.  These override
   // global settings PlotPoints and PlotLines.  If not on, the default behavior
   // is governed by PlotPoints and PlotLines ivars.
-  vtkGetMacro(PlotCurvePoints, vtkTypeBool);
-  vtkSetMacro(PlotCurvePoints, vtkTypeBool);
-  vtkBooleanMacro(PlotCurvePoints, vtkTypeBool);
+  vtkGetMacro(PlotCurvePoints, int);
+  vtkSetMacro(PlotCurvePoints, int);
+  vtkBooleanMacro(PlotCurvePoints, int);
 
-  vtkGetMacro(PlotCurveLines, vtkTypeBool);
-  vtkSetMacro(PlotCurveLines, vtkTypeBool);
-  vtkBooleanMacro(PlotCurveLines, vtkTypeBool);
+  vtkGetMacro(PlotCurveLines, int);
+  vtkSetMacro(PlotCurveLines, int);
+  vtkBooleanMacro(PlotCurveLines, int);
 
   void SetPlotLines(int i, int);
   int GetPlotLines(int i);
@@ -310,9 +308,9 @@ public:
    * Enable/Disable exchange of the x-y axes (i.e., what was x becomes y, and
    * vice-versa). Exchanging axes affects the labeling as well.
    */
-  vtkSetMacro(ExchangeAxes, vtkTypeBool);
-  vtkGetMacro(ExchangeAxes, vtkTypeBool);
-  vtkBooleanMacro(ExchangeAxes, vtkTypeBool);
+  vtkSetMacro(ExchangeAxes, int);
+  vtkGetMacro(ExchangeAxes, int);
+  vtkBooleanMacro(ExchangeAxes, int);
   //@}
 
   //@{
@@ -321,9 +319,9 @@ public:
    * variable causes the x-axis to be plotted from maximum to minimum. Note that
    * boolean always applies to the x-axis even if ExchangeAxes is set.
    */
-  vtkSetMacro(ReverseXAxis, vtkTypeBool);
-  vtkGetMacro(ReverseXAxis, vtkTypeBool);
-  vtkBooleanMacro(ReverseXAxis, vtkTypeBool);
+  vtkSetMacro(ReverseXAxis, int);
+  vtkGetMacro(ReverseXAxis, int);
+  vtkBooleanMacro(ReverseXAxis, int);
   //@}
 
   //@{
@@ -332,9 +330,9 @@ public:
    * variable causes the y-axis to be plotted from maximum to minimum. Note that
    * boolean always applies to the y-axis even if ExchangeAxes is set.
    */
-  vtkSetMacro(ReverseYAxis, vtkTypeBool);
-  vtkGetMacro(ReverseYAxis, vtkTypeBool);
-  vtkBooleanMacro(ReverseYAxis, vtkTypeBool);
+  vtkSetMacro(ReverseYAxis, int);
+  vtkGetMacro(ReverseYAxis, int);
+  vtkBooleanMacro(ReverseYAxis, int);
   //@}
 
   //@{
@@ -344,8 +342,8 @@ public:
    * or glyph source. For example, the default glyph can be changed from
    * a line to a vertex plus line, etc.)
    */
-  vtkGetObjectMacro(LegendActor, vtkLegendBoxActor);
-  vtkGetObjectMacro(GlyphSource, vtkGlyphSource2D);
+  vtkGetObjectMacro(LegendActor,vtkLegendBoxActor);
+  vtkGetObjectMacro(GlyphSource,vtkGlyphSource2D);
   //@}
 
   //@{
@@ -368,7 +366,7 @@ public:
   /**
    * Set/Get the title of the y axis
    */
-  virtual void SetYTitle(const char*);
+  virtual void SetYTitle( const char* );
   char* GetYTitle();
   //@}
 
@@ -377,8 +375,14 @@ public:
    * Retrieve handles to the X and Y axis (so that you can set their text
    * properties for example)
    */
-  vtkAxisActor2D* GetXAxisActor2D() { return this->XAxis; }
-  vtkAxisActor2D* GetYAxisActor2D() { return this->YAxis; }
+  vtkAxisActor2D *GetXAxisActor2D()
+  {
+    return this->XAxis;
+  }
+  vtkAxisActor2D *GetYAxisActor2D()
+  {
+    return this->YAxis;
+  }
   //@}
 
   //@{
@@ -390,15 +394,12 @@ public:
    * the x-range values should be consistent with the way the independent
    * variable is created (via INDEX, DISTANCE, or ARC_LENGTH).
    */
-  vtkSetVector2Macro(XRange, double);
-  vtkGetVectorMacro(XRange, double, 2);
-  vtkSetVector2Macro(YRange, double);
-  vtkGetVectorMacro(YRange, double, 2);
+  vtkSetVector2Macro(XRange,double);
+  vtkGetVectorMacro(XRange,double,2);
+  vtkSetVector2Macro(YRange,double);
+  vtkGetVectorMacro(YRange,double,2);
   void SetPlotRange(double xmin, double ymin, double xmax, double ymax)
-  {
-    this->SetXRange(xmin, xmax);
-    this->SetYRange(ymin, ymax);
-  }
+    {this->SetXRange(xmin,xmax); this->SetYRange(ymin,ymax);}
   //@}
 
   //@{
@@ -413,10 +414,7 @@ public:
   vtkSetClampMacro(NumberOfYLabels, int, 0, 50);
   vtkGetMacro(NumberOfYLabels, int);
   void SetNumberOfLabels(int num)
-  {
-    this->SetNumberOfXLabels(num);
-    this->SetNumberOfYLabels(num);
-  }
+    {this->SetNumberOfXLabels(num); this->SetNumberOfYLabels(num);}
   //@}
 
   //@{
@@ -428,9 +426,9 @@ public:
    * range and number of labels.
    */
   void SetAdjustXLabels(int adjust);
-  vtkGetMacro(AdjustXLabels, int);
+  vtkGetMacro( AdjustXLabels, int );
   void SetAdjustYLabels(int adjust);
-  vtkGetMacro(AdjustYLabels, int);
+  vtkGetMacro( AdjustYLabels, int );
   //@}
 
   //@{
@@ -449,9 +447,9 @@ public:
    * be created automatically unless the per plot legend symbol has been
    * set.
    */
-  vtkSetMacro(Legend, vtkTypeBool);
-  vtkGetMacro(Legend, vtkTypeBool);
-  vtkBooleanMacro(Legend, vtkTypeBool);
+  vtkSetMacro(Legend, int);
+  vtkGetMacro(Legend, int);
+  vtkBooleanMacro(Legend, int);
   //@}
 
   //@{
@@ -459,8 +457,8 @@ public:
    * Set/Get the position of the title. This has no effect if
    * AdjustTitlePosition is true.
    */
-  vtkSetVector2Macro(TitlePosition, double);
-  vtkGetVector2Macro(TitlePosition, double);
+  vtkSetVector2Macro(TitlePosition,double);
+  vtkGetVector2Macro(TitlePosition,double);
   //@}
 
   //@{
@@ -468,26 +466,25 @@ public:
    * If true, the xyplot actor will adjust the position of the title
    * automatically to be upper-middle. Default is true.
    */
-  vtkSetMacro(AdjustTitlePosition, vtkTypeBool);
-  vtkGetMacro(AdjustTitlePosition, vtkTypeBool);
-  vtkBooleanMacro(AdjustTitlePosition, vtkTypeBool);
+  vtkSetMacro(AdjustTitlePosition, int);
+  vtkGetMacro(AdjustTitlePosition, int);
+  vtkBooleanMacro(AdjustTitlePosition, int);
   //@}
 
-  enum Alignment
-  {
-    AlignLeft = 0x1,
-    AlignRight = 0x2,
-    AlignHCenter = 0x4,
-    AlignTop = 0x10,
-    AlignBottom = 0x20,
-    AlignVCenter = 0x40,
-    AlignAxisLeft = 0x100,
-    AlignAxisRight = 0x200,
-    AlignAxisHCenter = 0x400,
-    AlignAxisTop = 0x1000,
-    AlignAxisBottom = 0x2000,
-    AlignAxisVCenter = 0x4000
-  };
+enum Alignment {
+  AlignLeft = 0x1,
+  AlignRight = 0x2,
+  AlignHCenter = 0x4,
+  AlignTop = 0x10,
+  AlignBottom = 0x20,
+  AlignVCenter = 0x40,
+  AlignAxisLeft = 0x100,
+  AlignAxisRight = 0x200,
+  AlignAxisHCenter = 0x400,
+  AlignAxisTop = 0x1000,
+  AlignAxisBottom = 0x2000,
+  AlignAxisVCenter = 0x4000
+};
 
   //@{
   /**
@@ -510,18 +507,18 @@ public:
    * Position2Coordinate. Note that LegendPosition2 is relative to
    * LegendPosition.
    */
-  vtkSetVector2Macro(LegendPosition, double);
-  vtkGetVector2Macro(LegendPosition, double);
-  vtkSetVector2Macro(LegendPosition2, double);
-  vtkGetVector2Macro(LegendPosition2, double);
+  vtkSetVector2Macro(LegendPosition,double);
+  vtkGetVector2Macro(LegendPosition,double);
+  vtkSetVector2Macro(LegendPosition2,double);
+  vtkGetVector2Macro(LegendPosition2,double);
   //@}
 
   //@{
   /**
    * Set/Get the title text property.
    */
-  virtual void SetTitleTextProperty(vtkTextProperty* p);
-  vtkGetObjectMacro(TitleTextProperty, vtkTextProperty);
+  virtual void SetTitleTextProperty(vtkTextProperty *p);
+  vtkGetObjectMacro(TitleTextProperty,vtkTextProperty);
   //@}
 
   //@{
@@ -529,8 +526,8 @@ public:
    * Set/Get the title text property of all axes. Note that each axis can
    * be controlled individually through the GetX/YAxisActor2D() methods.
    */
-  virtual void SetAxisTitleTextProperty(vtkTextProperty* p);
-  vtkGetObjectMacro(AxisTitleTextProperty, vtkTextProperty);
+  virtual void SetAxisTitleTextProperty(vtkTextProperty *p);
+  vtkGetObjectMacro(AxisTitleTextProperty,vtkTextProperty);
   //@}
 
   //@{
@@ -538,17 +535,17 @@ public:
    * Set/Get the labels text property of all axes. Note that each axis can
    * be controlled individually through the GetX/YAxisActor2D() methods.
    */
-  virtual void SetAxisLabelTextProperty(vtkTextProperty* p);
-  vtkGetObjectMacro(AxisLabelTextProperty, vtkTextProperty);
+  virtual void SetAxisLabelTextProperty(vtkTextProperty *p);
+  vtkGetObjectMacro(AxisLabelTextProperty,vtkTextProperty);
   //@}
 
   //@{
   /**
    * Enable/Disable plotting of Log of x-values.
    */
-  vtkSetMacro(Logx, vtkTypeBool);
-  vtkGetMacro(Logx, vtkTypeBool);
-  vtkBooleanMacro(Logx, vtkTypeBool);
+  vtkSetMacro(Logx, int);
+  vtkGetMacro(Logx, int);
+  vtkBooleanMacro(Logx, int);
   //@}
 
   //@{
@@ -556,15 +553,18 @@ public:
    * Set/Get the format with which to print the labels . This sets both X
    * and Y label formats. GetLabelFormat() returns X label format.
    */
-  virtual void SetLabelFormat(const char*);
-  const char* GetLabelFormat() { return this->GetXLabelFormat(); }
+  virtual void SetLabelFormat ( const char* );
+  const char* GetLabelFormat()
+  {
+    return this->GetXLabelFormat();
+  }
   //@}
 
   //@{
   /**
    * Set/Get the format with which to print the X label.
    */
-  virtual void SetXLabelFormat(const char*);
+  virtual void SetXLabelFormat ( const char* );
   vtkGetStringMacro(XLabelFormat);
   //@}
 
@@ -572,7 +572,7 @@ public:
   /**
    * Set/Get the format with which to print the Y label.
    */
-  virtual void SetYLabelFormat(const char*);
+  virtual void SetYLabelFormat ( const char* );
   vtkGetStringMacro(YLabelFormat);
   //@}
 
@@ -591,9 +591,9 @@ public:
    * the property object. This is a global flag which affects the plot only
    * if per curve symbols are not defined.
    */
-  vtkGetMacro(PlotPoints, vtkTypeBool);
-  vtkSetMacro(PlotPoints, vtkTypeBool);
-  vtkBooleanMacro(PlotPoints, vtkTypeBool);
+  vtkGetMacro(PlotPoints, int);
+  vtkSetMacro(PlotPoints, int);
+  vtkBooleanMacro(PlotPoints, int);
   //@}
 
   //@{
@@ -601,9 +601,9 @@ public:
    * Set/Get whether the lines are rendered.  The line width can be set in
    * the property object.
    */
-  vtkGetMacro(PlotLines, vtkTypeBool);
-  vtkSetMacro(PlotLines, vtkTypeBool);
-  vtkBooleanMacro(PlotLines, vtkTypeBool);
+  vtkGetMacro(PlotLines, int);
+  vtkSetMacro(PlotLines, int);
+  vtkBooleanMacro(PlotLines, int);
   //@}
 
   //@{
@@ -620,7 +620,7 @@ public:
    * Given a position within the viewport used by the plot, return the
    * the plot coordinates (XAxis value, YAxis value)
    */
-  void ViewportToPlotCoordinate(vtkViewport* viewport, double& u, double& v);
+  void ViewportToPlotCoordinate(vtkViewport *viewport, double &u, double &v);
 
   //@{
   /**
@@ -628,15 +628,15 @@ public:
    * inputs the viewport coordinate pair (defined by the ivar
    * ViewportCoordinate)and then stores them in the ivar PlotCoordinate.
    */
-  void ViewportToPlotCoordinate(vtkViewport* viewport);
-  vtkSetVector2Macro(PlotCoordinate, double);
-  vtkGetVector2Macro(PlotCoordinate, double);
+  void ViewportToPlotCoordinate(vtkViewport *viewport);
+  vtkSetVector2Macro(PlotCoordinate,double);
+  vtkGetVector2Macro(PlotCoordinate,double);
   //@}
 
   /**
    * Given a plot coordinate, return the viewpoint position
    */
-  void PlotToViewportCoordinate(vtkViewport* viewport, double& u, double& v);
+  void PlotToViewportCoordinate(vtkViewport *viewport, double &u, double &v);
 
   //@{
   /**
@@ -645,25 +645,25 @@ public:
    * and then stores them in the ivar ViewportCoordinate. (This method
    * can be wrapped.)
    */
-  void PlotToViewportCoordinate(vtkViewport* viewport);
-  vtkSetVector2Macro(ViewportCoordinate, double);
-  vtkGetVector2Macro(ViewportCoordinate, double);
+  void PlotToViewportCoordinate(vtkViewport *viewport);
+  vtkSetVector2Macro(ViewportCoordinate,double);
+  vtkGetVector2Macro(ViewportCoordinate,double);
   //@}
 
   /**
    * Is the specified viewport position within the plot area (as opposed to the
    * region used by the plot plus the labels)?
    */
-  int IsInPlot(vtkViewport* viewport, double u, double v);
+  int IsInPlot(vtkViewport *viewport, double u, double v);
 
   //@{
   /**
    * Set/Get the flag that controls whether a box will be drawn/filled
    * corresponding to the chart box.
    */
-  vtkSetMacro(ChartBox, vtkTypeBool);
-  vtkGetMacro(ChartBox, vtkTypeBool);
-  vtkBooleanMacro(ChartBox, vtkTypeBool);
+  vtkSetMacro(ChartBox, int);
+  vtkGetMacro(ChartBox, int);
+  vtkBooleanMacro(ChartBox, int);
   //@}
 
   //@{
@@ -671,23 +671,23 @@ public:
    * Set/Get the flag that controls whether a box will be drawn/filled
    * corresponding to the legend box.
    */
-  vtkSetMacro(ChartBorder, vtkTypeBool);
-  vtkGetMacro(ChartBorder, vtkTypeBool);
-  vtkBooleanMacro(ChartBorder, vtkTypeBool);
+  vtkSetMacro(ChartBorder, int);
+  vtkGetMacro(ChartBorder, int);
+  vtkBooleanMacro(ChartBorder, int);
   //@}
 
   /**
    * Get the box vtkProperty2D.
    */
-  vtkProperty2D* GetChartBoxProperty() { return this->ChartBoxActor->GetProperty(); }
+  vtkProperty2D* GetChartBoxProperty() { return this->ChartBoxActor->GetProperty(); };
 
   //@{
   /**
    * Set/Get if the X reference line is visible. hidden by default
    */
-  vtkSetMacro(ShowReferenceXLine, vtkTypeBool);
-  vtkGetMacro(ShowReferenceXLine, vtkTypeBool);
-  vtkBooleanMacro(ShowReferenceXLine, vtkTypeBool);
+  vtkSetMacro(ShowReferenceXLine, int);
+  vtkGetMacro(ShowReferenceXLine, int);
+  vtkBooleanMacro(ShowReferenceXLine, int);
   //@}
 
   //@{
@@ -702,9 +702,9 @@ public:
   /**
    * Set/Get if the Y reference line is visible. hidden by default
    */
-  vtkSetMacro(ShowReferenceYLine, vtkTypeBool);
-  vtkGetMacro(ShowReferenceYLine, vtkTypeBool);
-  vtkBooleanMacro(ShowReferenceYLine, vtkTypeBool);
+  vtkSetMacro(ShowReferenceYLine, int);
+  vtkGetMacro(ShowReferenceYLine, int);
+  vtkBooleanMacro(ShowReferenceYLine, int);
   //@}
 
   //@{
@@ -718,12 +718,12 @@ public:
   /**
    * Take into account the modified time of internal helper classes.
    */
-  vtkMTimeType GetMTime() override;
+  vtkMTimeType GetMTime();
 
   /**
    * Write the XY Ploat Actor as a CSV (comma separated value) representation.
    */
-  void PrintAsCSV(ostream& os);
+  void PrintAsCSV(ostream &os);
 
   //@{
   /**
@@ -731,22 +731,22 @@ public:
    * DO NOT USE THIS METHOD OUTSIDE OF THE RENDERING PROCESS.
    * Draw the x-y plot.
    */
-  int RenderOpaqueGeometry(vtkViewport*) override;
-  int RenderOverlay(vtkViewport*) override;
-  int RenderTranslucentPolygonalGeometry(vtkViewport*) override { return 0; }
+  int RenderOpaqueGeometry(vtkViewport*);
+  int RenderOverlay(vtkViewport*);
+  virtual int RenderTranslucentPolygonalGeometry(vtkViewport *) {return 0;}
   //@}
 
   /**
    * Does this prop have some translucent polygonal geometry?
    */
-  vtkTypeBool HasTranslucentPolygonalGeometry() override;
+  virtual int HasTranslucentPolygonalGeometry();
 
   /**
    * Release any graphics resources that are being consumed by this actor.
    * The parameter window could be used to determine which graphic
    * resources to release.
    */
-  void ReleaseGraphicsResources(vtkWindow*) override;
+  void ReleaseGraphicsResources(vtkWindow *);
 
   //@{
   /**
@@ -760,20 +760,29 @@ public:
   /**
    * Set/Get the position of the title of Y axis.
    */
-  vtkSetMacro(YTitlePosition, int);
-  vtkGetMacro(YTitlePosition, int);
-  void SetYTitlePositionToTop() { this->SetYTitlePosition(VTK_XYPLOT_Y_AXIS_TOP); }
-  void SetYTitlePositionToHCenter() { this->SetYTitlePosition(VTK_XYPLOT_Y_AXIS_HCENTER); }
-  void SetYTitlePositionToVCenter() { this->SetYTitlePosition(VTK_XYPLOT_Y_AXIS_VCENTER); }
+  vtkSetMacro(YTitlePosition,int);
+  vtkGetMacro(YTitlePosition,int);
+  void SetYTitlePositionToTop()
+  {
+    this->SetYTitlePosition( VTK_XYPLOT_Y_AXIS_TOP );
+  }
+  void SetYTitlePositionToHCenter()
+  {
+    this->SetYTitlePosition( VTK_XYPLOT_Y_AXIS_HCENTER );
+  }
+  void SetYTitlePositionToVCenter()
+  {
+    this->SetYTitlePosition( VTK_XYPLOT_Y_AXIS_VCENTER );
+  }
   //@}
 
   //@{
   /**
    * Set plot properties
    */
-  virtual void SetPlotGlyphType(int, int);
-  virtual void SetLineWidth(double);
-  virtual void AddUserCurvesPoint(double, double, double);
+  virtual void SetPlotGlyphType( int, int );
+  virtual void SetLineWidth( double );
+  virtual void AddUserCurvesPoint( double, double, double );
   virtual void RemoveAllActiveCurves();
   //@}
 
@@ -781,103 +790,103 @@ public:
   /**
    * Set legend properties
    */
-  virtual void SetLegendBorder(int);
-  virtual void SetLegendBox(int);
-  virtual void SetLegendUseBackground(int);
-  virtual void SetLegendBackgroundColor(double, double, double);
+  virtual void SetLegendBorder( int );
+  virtual void SetLegendBox( int );
+  virtual void SetLegendUseBackground( int );
+  virtual void SetLegendBackgroundColor( double, double, double );
   //@}
 
   //@{
   /**
    * Set title properties
    */
-  virtual void SetTitleColor(double, double, double);
-  virtual void SetTitleFontFamily(int);
-  virtual void SetTitleBold(int);
-  virtual void SetTitleItalic(int);
-  virtual void SetTitleShadow(int);
-  virtual void SetTitleFontSize(int);
-  virtual void SetTitleJustification(int);
-  virtual void SetTitleVerticalJustification(int);
+  virtual void SetTitleColor( double, double, double );
+  virtual void SetTitleFontFamily( int );
+  virtual void SetTitleBold( int );
+  virtual void SetTitleItalic( int );
+  virtual void SetTitleShadow( int );
+  virtual void SetTitleFontSize( int );
+  virtual void SetTitleJustification( int );
+  virtual void SetTitleVerticalJustification( int );
   //@}
 
   //@{
   /**
    * Set axes properties
    */
-  virtual void SetXAxisColor(double, double, double);
-  virtual void SetYAxisColor(double, double, double);
+  virtual void SetXAxisColor( double, double, double );
+  virtual void SetYAxisColor( double, double, double );
   //@}
 
   //@{
   /**
    * Set axis title properties
    */
-  virtual void SetAxisTitleColor(double, double, double);
-  virtual void SetAxisTitleFontFamily(int);
-  virtual void SetAxisTitleBold(int);
-  virtual void SetAxisTitleItalic(int);
-  virtual void SetAxisTitleShadow(int);
-  virtual void SetAxisTitleFontSize(int);
-  virtual void SetAxisTitleJustification(int);
-  virtual void SetAxisTitleVerticalJustification(int);
+  virtual void SetAxisTitleColor( double, double, double );
+  virtual void SetAxisTitleFontFamily( int );
+  virtual void SetAxisTitleBold( int );
+  virtual void SetAxisTitleItalic( int );
+  virtual void SetAxisTitleShadow( int );
+  virtual void SetAxisTitleFontSize( int );
+  virtual void SetAxisTitleJustification( int );
+  virtual void SetAxisTitleVerticalJustification( int );
   //@}
 
   //@{
   /**
    * Set axis label properties
    */
-  virtual void SetAxisLabelColor(double, double, double);
-  virtual void SetAxisLabelFontFamily(int);
-  virtual void SetAxisLabelBold(int);
-  virtual void SetAxisLabelItalic(int);
-  virtual void SetAxisLabelShadow(int);
-  virtual void SetAxisLabelFontSize(int);
-  virtual void SetAxisLabelJustification(int);
-  virtual void SetAxisLabelVerticalJustification(int);
+  virtual void SetAxisLabelColor( double, double, double );
+  virtual void SetAxisLabelFontFamily( int );
+  virtual void SetAxisLabelBold( int );
+  virtual void SetAxisLabelItalic( int );
+  virtual void SetAxisLabelShadow( int );
+  virtual void SetAxisLabelFontSize( int );
+  virtual void SetAxisLabelJustification( int );
+  virtual void SetAxisLabelVerticalJustification( int );
   //@}
 
 protected:
   vtkXYPlotActor();
-  ~vtkXYPlotActor() override;
+  ~vtkXYPlotActor();
 
   vtkXYPlotActorConnections* InputConnectionHolder;
-  char** SelectedInputScalars;                                // list of data set arrays to plot
-  vtkIntArray* SelectedInputScalarsComponent;                 // list of components
-  vtkXYPlotActorConnections* DataObjectInputConnectionHolder; // list of data objects to plot
-  char* Title;
-  char* XTitle;
+  char** SelectedInputScalars; // list of data set arrays to plot
+  vtkIntArray* SelectedInputScalarsComponent; // list of components
+  vtkXYPlotActorConnections *DataObjectInputConnectionHolder; //list of data objects to plot
+  char*  Title;
+  char*  XTitle;
   vtkTextActor* YTitleActor;
-  int XValues;
-  int NumberOfXLabels;
-  int NumberOfYLabels;
-  vtkTypeBool Logx;
+  int   XValues;
+  int   NumberOfXLabels;
+  int   NumberOfYLabels;
+  int   Logx;
   char* XLabelFormat;
   char* YLabelFormat;
   double XRange[2];
   double YRange[2];
-  double XComputedRange[2]; // range actually used by plot
-  double YComputedRange[2]; // range actually used by plot
+  double XComputedRange[2];  //range actually used by plot
+  double YComputedRange[2];  //range actually used by plot
   int Border;
-  vtkTypeBool PlotLines;
-  vtkTypeBool PlotPoints;
-  vtkTypeBool PlotCurveLines;
-  vtkTypeBool PlotCurvePoints;
-  vtkTypeBool ExchangeAxes;
-  vtkTypeBool ReverseXAxis;
-  vtkTypeBool ReverseYAxis;
+  int PlotLines;
+  int PlotPoints;
+  int PlotCurveLines;
+  int PlotCurvePoints;
+  int ExchangeAxes;
+  int ReverseXAxis;
+  int ReverseYAxis;
   int AdjustXLabels;
   int AdjustYLabels;
-  vtkTypeBool AdjustTitlePosition;
+  int AdjustTitlePosition;
   double TitlePosition[2];
   int AdjustTitlePositionMode;
 
-  vtkTextMapper* TitleMapper;
-  vtkActor2D* TitleActor;
+  vtkTextMapper*   TitleMapper;
+  vtkActor2D*      TitleActor;
   vtkTextProperty* TitleTextProperty;
 
-  vtkAxisActor2D* XAxis;
-  vtkAxisActor2D* YAxis;
+  vtkAxisActor2D*  XAxis;
+  vtkAxisActor2D*  YAxis;
 
   vtkTextProperty* AxisTitleTextProperty;
   vtkTextProperty* AxisLabelTextProperty;
@@ -885,69 +894,70 @@ protected:
   double ViewportCoordinate[2];
   double PlotCoordinate[2];
 
-  // Handle data objects and datasets
+  //Handle data objects and datasets
   int DataObjectPlotMode;
   vtkIntArray* XComponent;
   vtkIntArray* YComponent;
   vtkIntArray* LinesOn;
   vtkIntArray* PointsOn;
 
-  // The data drawn within the axes. Each curve is one polydata.
-  // color is controlled by scalar data. The curves are appended
-  // together, possibly glyphed with point symbols.
+  //The data drawn within the axes. Each curve is one polydata.
+  //color is controlled by scalar data. The curves are appended
+  //together, possibly glyphed with point symbols.
   int NumberOfInputs;
-  vtkPolyData** PlotData;
-  vtkGlyph2D** PlotGlyph;
-  vtkAppendPolyData** PlotAppend;
-  vtkPolyDataMapper2D** PlotMapper;
-  vtkActor2D** PlotActor;
-  void InitializeEntries();
+  vtkPolyData             **PlotData;
+  vtkGlyph2D              **PlotGlyph;
+  vtkAppendPolyData       **PlotAppend;
+  vtkPolyDataMapper2D     **PlotMapper;
+  vtkActor2D              **PlotActor;
+  void                    InitializeEntries();
 
   // Legends and plot symbols. The legend also keeps track of
   // the symbols and such.
-  vtkTypeBool Legend;
+  int Legend;
   double LegendPosition[2];
   double LegendPosition2[2];
-  vtkLegendBoxActor* LegendActor;
-  vtkGlyphSource2D* GlyphSource;
-  vtkPlanes* ClipPlanes;
+  vtkLegendBoxActor *LegendActor;
+  vtkGlyphSource2D *GlyphSource;
+  vtkPlanes *ClipPlanes;
   double GlyphSize;
 
   // Background box
-  vtkTypeBool ChartBox;
-  vtkPolyData* ChartBoxPolyData;
-  vtkPolyDataMapper2D* ChartBoxMapper;
-  vtkActor2D* ChartBoxActor;
-  vtkTypeBool ChartBorder;
-  vtkPolyData* ChartBorderPolyData;
-  vtkPolyDataMapper2D* ChartBorderMapper;
-  vtkActor2D* ChartBorderActor;
+  int ChartBox;
+  vtkPolyData                *ChartBoxPolyData;
+  vtkPolyDataMapper2D        *ChartBoxMapper;
+  vtkActor2D                 *ChartBoxActor;
+  int ChartBorder;
+  vtkPolyData                *ChartBorderPolyData;
+  vtkPolyDataMapper2D        *ChartBorderMapper;
+  vtkActor2D                 *ChartBorderActor;
 
   // Reference lines
-  vtkTypeBool ShowReferenceXLine;
-  vtkTypeBool ShowReferenceYLine;
+  int ShowReferenceXLine;
+  int ShowReferenceYLine;
   double ReferenceXValue;
   double ReferenceYValue;
 
-  vtkPolyData* ReferenceLinesPolyData;
-  vtkPolyDataMapper2D* ReferenceLinesMapper;
-  vtkActor2D* ReferenceLinesActor;
+  vtkPolyData                *ReferenceLinesPolyData;
+  vtkPolyDataMapper2D        *ReferenceLinesMapper;
+  vtkActor2D                 *ReferenceLinesActor;
 
   // Keep track of changes.
   int CachedSize[2];
-  vtkTimeStamp BuildTime;
+  vtkTimeStamp  BuildTime;
 
-  void ComputeXRange(double range[2], double* lengths);
+  void ComputeXRange(double range[2], double *lengths);
   void ComputeYRange(double range[2]);
-  void ComputeDORange(double xrange[2], double yrange[2], double* lengths);
+  void ComputeDORange(double xrange[2], double yrange[2], double *lengths);
 
-  virtual void CreatePlotData(
-    int* pos, int* pos2, double xRange[2], double yRange[2], double* norms, int numDS, int numDO);
-  void PlaceAxes(vtkViewport* viewport, int* size, int pos[2], int pos2[2]);
-  void GenerateClipPlanes(int* pos, int* pos2);
-  double ComputeGlyphScale(int i, int* pos, int* pos2);
-  void ClipPlotData(int* pos, int* pos2, vtkPolyData* pd);
-  double* TransformPoint(int pos[2], int pos2[2], double x[3], double xNew[3]);
+  virtual void CreatePlotData(int *pos, int *pos2, double xRange[2],
+                              double yRange[2], double *norms,
+                              int numDS, int numDO);
+  void PlaceAxes(vtkViewport *viewport, int *size, int pos[2], int pos2[2]);
+  void GenerateClipPlanes(int *pos, int *pos2);
+  double ComputeGlyphScale(int i, int *pos, int *pos2);
+  void ClipPlotData(int *pos, int *pos2, vtkPolyData *pd);
+  double *TransformPoint(int pos[2], int pos2[2], double x[3], double xNew[3]);
 
   vtkSmartPointer<vtkDoubleArray> ActiveCurve;
 
@@ -956,12 +966,14 @@ protected:
   int PlotColorIndex;
 
 private:
-  vtkXYPlotActor(const vtkXYPlotActor&) = delete;
-  void operator=(const vtkXYPlotActor&) = delete;
+  vtkXYPlotActor(const vtkXYPlotActor&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkXYPlotActor&) VTK_DELETE_FUNCTION;
 
   bool DoesConnectionMatch(int i, vtkAlgorithmOutput* in);
 
-  int IsInputPresent(vtkAlgorithmOutput* in, const char* arrayName, int component);
+  int IsInputPresent(vtkAlgorithmOutput* in,
+                     const char* arrayName,
+                     int component);
 
   /**
    * Estimated sizes of Y axis title
@@ -978,7 +990,8 @@ private:
    * Estimated size of Y axis spacing
    */
   int YTitleDelta;
-  //@}
 };
+  //@}
+
 
 #endif

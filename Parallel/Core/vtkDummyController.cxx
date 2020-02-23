@@ -12,8 +12,8 @@
      PURPOSE.  See the above copyright notice for more information.
 
 =========================================================================*/
-#include "vtkDummyController.h"
 #include "vtkDummyCommunicator.h"
+#include "vtkDummyController.h"
 #include "vtkObjectFactory.h"
 
 vtkStandardNewMacro(vtkDummyController);
@@ -30,13 +30,13 @@ vtkDummyController::vtkDummyController()
 
 vtkDummyController::~vtkDummyController()
 {
-  this->SetCommunicator(nullptr);
-  this->SetRMICommunicator(nullptr);
+  this->SetCommunicator(NULL);
+  this->SetRMICommunicator(NULL);
 }
 
 void vtkDummyController::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 
   os << indent << "Communicator: " << this->Communicator << endl;
   os << indent << "RMICommunicator: " << this->RMICommunicator << endl;
@@ -65,7 +65,7 @@ void vtkDummyController::MultipleMethodExecute()
   int i = this->GetLocalProcessId();
 
   vtkProcessFunctionType multipleMethod;
-  void* multipleData;
+  void *multipleData;
   this->GetMultipleMethod(i, multipleMethod, multipleData);
   if (multipleMethod)
   {

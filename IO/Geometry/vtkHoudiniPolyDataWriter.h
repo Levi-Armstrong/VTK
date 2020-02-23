@@ -20,7 +20,7 @@
  * vtkHoudiniPolyDataWriter is a source object that writes VTK polygonal data
  * files in ASCII Houdini format (see
  * http://www.sidefx.com/docs/houdini15.0/io/formats/geo).
- */
+*/
 
 #ifndef vtkHoudiniPolyDataWriter_h
 #define vtkHoudiniPolyDataWriter_h
@@ -35,7 +35,7 @@ class VTKIOGEOMETRY_EXPORT vtkHoudiniPolyDataWriter : public vtkWriter
 public:
   static vtkHoudiniPolyDataWriter* New();
   vtkTypeMacro(vtkHoudiniPolyDataWriter, vtkWriter);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -47,17 +47,18 @@ public:
 
 protected:
   vtkHoudiniPolyDataWriter();
-  ~vtkHoudiniPolyDataWriter() override;
+  ~vtkHoudiniPolyDataWriter();
 
-  void WriteData() override;
+  void WriteData();
 
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  virtual int FillInputPortInformation(int port, vtkInformation *info);
 
   char* FileName;
 
 private:
-  vtkHoudiniPolyDataWriter(const vtkHoudiniPolyDataWriter&) = delete;
-  void operator=(const vtkHoudiniPolyDataWriter&) = delete;
+  vtkHoudiniPolyDataWriter(const vtkHoudiniPolyDataWriter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkHoudiniPolyDataWriter&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif

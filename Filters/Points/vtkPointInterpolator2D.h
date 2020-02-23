@@ -22,13 +22,13 @@
  * set of points P (the filter Input), interpolating the data values from Pc
  * onto P. Note however that the descriptive phrase "point cloud" is a
  * misnomer: Pc can be represented by any vtkDataSet type, with the points of
- * the dataset forming Pc. Similarly, the output P can also be represented by
+ * the dataset forming Pc. Similary, the output P can also be represented by
  * any vtkDataSet type; and the topology/geometry structure of P is passed
  * through to the output along with the newly interpolated arrays. However,
  * this filter presumes that P lies on a plane z=0.0, thus z-coordinates
  * are set accordingly during the interpolation process.
  *
- * The optional boolean flag InterpolateZ is provided for convenience. In
+ * The optional boolen flag InterpolateZ is provided for convenience. In
  * effect it turns the source z coordinates into an additional array that is
  * interpolated onto the output data. For example, if the source is a x-y-z
  * LIDAR point cloud, then z can be interpolated onto the output dataset as a
@@ -55,14 +55,15 @@
  *
  * @sa
  * vtkPointInterpolator
- */
+*/
 
 #ifndef vtkPointInterpolator2D_h
 #define vtkPointInterpolator2D_h
 
 #include "vtkFiltersPointsModule.h" // For export macro
 #include "vtkPointInterpolator.h"
-#include "vtkStdString.h" // For vtkStdString ivars
+#include "vtkStdString.h"        // For vtkStdString ivars
+
 
 class VTKFILTERSPOINTS_EXPORT vtkPointInterpolator2D : public vtkPointInterpolator
 {
@@ -72,9 +73,9 @@ public:
    * Standard methods for instantiating, obtaining type information, and
    * printing.
    */
-  static vtkPointInterpolator2D* New();
-  vtkTypeMacro(vtkPointInterpolator2D, vtkPointInterpolator);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkPointInterpolator2D *New();
+  vtkTypeMacro(vtkPointInterpolator2D,vtkPointInterpolator);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   //@{
@@ -83,9 +84,9 @@ public:
    * attributes to be interpolated. This is in addition to any other point
    * attribute data associated with the source. By default this is enabled.
    */
-  vtkSetMacro(InterpolateZ, bool);
-  vtkGetMacro(InterpolateZ, bool);
-  vtkBooleanMacro(InterpolateZ, bool);
+  vtkSetMacro(InterpolateZ,bool);
+  vtkGetMacro(InterpolateZ,bool);
+  vtkBooleanMacro(InterpolateZ,bool);
   //@}
 
   //@{
@@ -100,7 +101,7 @@ public:
 
 protected:
   vtkPointInterpolator2D();
-  ~vtkPointInterpolator2D() override;
+  ~vtkPointInterpolator2D();
 
   // Interpolate z values?
   bool InterpolateZ;
@@ -109,11 +110,12 @@ protected:
   vtkStdString ZArrayName;
 
   // The driver of the algorithm
-  void Probe(vtkDataSet* input, vtkDataSet* source, vtkDataSet* output) override;
+  virtual void Probe(vtkDataSet *input, vtkDataSet *source, vtkDataSet *output);
 
 private:
-  vtkPointInterpolator2D(const vtkPointInterpolator2D&) = delete;
-  void operator=(const vtkPointInterpolator2D&) = delete;
+  vtkPointInterpolator2D(const vtkPointInterpolator2D&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPointInterpolator2D&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif

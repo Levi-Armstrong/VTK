@@ -20,10 +20,14 @@
 vtkStandardNewMacro(vtkCameraNode);
 
 //----------------------------------------------------------------------------
-vtkCameraNode::vtkCameraNode() {}
+vtkCameraNode::vtkCameraNode()
+{
+}
 
 //----------------------------------------------------------------------------
-vtkCameraNode::~vtkCameraNode() {}
+vtkCameraNode::~vtkCameraNode()
+{
+}
 
 //----------------------------------------------------------------------------
 void vtkCameraNode::PrintSelf(ostream& os, vtkIndent indent)

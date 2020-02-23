@@ -24,13 +24,13 @@
  * multisample buffer) defining where the output of GL rendering is directed.
  * Application programmers should normally use vtkRenderWindow instead of the
  * OpenGL specific version.
- */
+*/
 
 #ifndef vtkOSOpenGLRenderWindow_h
 #define vtkOSOpenGLRenderWindow_h
 
-#include "vtkOpenGLRenderWindow.h"
 #include "vtkRenderingOpenGL2Module.h" // For export macro
+#include "vtkOpenGLRenderWindow.h"
 
 class vtkIdList;
 class vtkOSOpenGLRenderWindowInternal;
@@ -38,9 +38,14 @@ class vtkOSOpenGLRenderWindowInternal;
 class VTKRENDERINGOPENGL2_EXPORT vtkOSOpenGLRenderWindow : public vtkOpenGLRenderWindow
 {
 public:
-  static vtkOSOpenGLRenderWindow* New();
-  vtkTypeMacro(vtkOSOpenGLRenderWindow, vtkOpenGLRenderWindow);
+  static vtkOSOpenGLRenderWindow *New();
+  vtkTypeMacro(vtkOSOpenGLRenderWindow,vtkOpenGLRenderWindow);
   void PrintSelf(ostream& os, vtkIndent indent);
+
+  /**
+   * Begin the rendering process.
+   */
+  virtual void Start(void);
 
   /**
    * End the rendering process and display the image.
@@ -58,7 +63,7 @@ public:
    * should be possible to call them multiple times, even changing WindowId
    * in-between.  This is what WindowRemap does.
    */
-  void Initialize(void) override;
+  virtual void Initialize(void);
 
   /**
    * "Deinitialize" the rendering window.  This will shutdown all system-specific
@@ -70,32 +75,32 @@ public:
   /**
    * Change the window to fill the entire screen.
    */
-  virtual void SetFullScreen(vtkTypeBool);
+  virtual void SetFullScreen(int);
 
   //@{
   /**
    * Specify the size of the rendering window in pixels.
    */
-  virtual void SetSize(int x, int y);
-  virtual void SetSize(int a[2]) { this->SetSize(a[0], a[1]); }
+  virtual void SetSize(int x,int y);
+  virtual void SetSize(int a[2]) {this->SetSize(a[0], a[1]);};
   //@}
 
   /**
    * Get the current size of the screen in pixels.
    */
-  virtual int* GetScreenSize() VTK_SIZEHINT(2);
+  virtual int     *GetScreenSize();
 
   /**
    * Get the position in screen coordinates (pixels) of the window.
    */
-  virtual int* GetPosition() VTK_SIZEHINT(2);
+  virtual int     *GetPosition();
 
   //@{
   /**
    * Move the window to a new position on the display.
    */
-  void SetPosition(int x, int y);
-  void SetPosition(int a[2]) { this->SetPosition(a[0], a[1]); }
+  void     SetPosition(int x, int y);
+  void     SetPosition(int a[2]) {this->SetPosition(a[0], a[1]);};
   //@}
 
   /**
@@ -104,7 +109,7 @@ public:
    * overrides the superclass method since this class can actually check
    * whether the window has been realized yet.
    */
-  virtual void SetStereoCapableWindow(vtkTypeBool capable);
+  virtual void SetStereoCapableWindow(int capable);
 
   /**
    * Make this window the current OpenGL context.
@@ -126,7 +131,7 @@ public:
   /**
    * Get report of capabilities for the render window
    */
-  const char* ReportCapabilities();
+  const char *ReportCapabilities();
 
   /**
    * Does this render window support OpenGL? 0-false, 1-true
@@ -147,37 +152,37 @@ public:
   /**
    * Xwindow get set functions
    */
-  virtual void* GetGenericDisplayId() { return 0; }
-  virtual void* GetGenericWindowId();
-  virtual void* GetGenericParentId() { return 0; }
-  virtual void* GetGenericContext();
-  virtual void* GetGenericDrawable() { return 0; }
+  virtual void *GetGenericDisplayId() {return 0;}
+  virtual void *GetGenericWindowId();
+  virtual void *GetGenericParentId()  {return 0;}
+  virtual void *GetGenericContext();
+  virtual void *GetGenericDrawable()  {return 0;}
   //@}
 
   /**
    * Set the X display id for this RenderWindow to use to a pre-existing
    * X display id.
    */
-  void SetDisplayId(void*) {}
+  void     SetDisplayId(void *) {}
 
   /**
    * Sets the parent of the window that WILL BE created.
    */
-  void SetParentId(void*);
+  void     SetParentId(void *);
 
   /**
    * Set this RenderWindow's X window id to a pre-existing window.
    */
-  void SetWindowId(void*);
+  void     SetWindowId(void *);
 
   /**
    * Set the window id of the new window once a WindowRemap is done.
    * This is the generic prototype as required by the vtkRenderWindow
    * parent.
    */
-  void SetNextWindowId(void*);
+  void     SetNextWindowId(void *);
 
-  void SetWindowName(const char*);
+  void     SetWindowName(const char *);
 
   /**
    * Hide or Show the mouse cursor, it is nice to be able to hide the
@@ -187,48 +192,62 @@ public:
   void ShowCursor() {}
 
   /**
+   * Change the shape of the cursor
+   */
+  virtual void SetCurrentCursor(int);
+
+  /**
    * Check to see if a mouse button has been pressed.
    * All other events are ignored by this method.
    * This is a useful check to abort a long render.
    */
-  virtual int GetEventPending();
+  virtual  int GetEventPending();
 
   /**
    * Set this RenderWindow's X window id to a pre-existing window.
    */
-  void SetWindowInfo(const char* info);
+  void     SetWindowInfo(char *info);
 
   /**
    * Set the window info that will be used after WindowRemap()
    */
-  void SetNextWindowInfo(const char* info);
+  void     SetNextWindowInfo(char *info);
 
   /**
    * Sets the X window id of the window that WILL BE created.
    */
-  void SetParentInfo(const char* info);
+  void     SetParentInfo(char *info);
+
+  /**
+   * Render without displaying the window.
+   */
+  void SetOffScreenRendering(int i);
 
 protected:
   vtkOSOpenGLRenderWindow();
-  ~vtkOSOpenGLRenderWindow() override;
+  ~vtkOSOpenGLRenderWindow();
 
-  vtkOSOpenGLRenderWindowInternal* Internal;
+  vtkOSOpenGLRenderWindowInternal *Internal;
 
-  int OwnWindow;
-  int OwnDisplay;
-  int ScreenSize[2];
-  int CursorHidden;
-  int ForceMakeCurrent;
+  int      OwnWindow;
+  int      OwnDisplay;
+  int      ScreenSize[2];
+  int      CursorHidden;
+  int      ForceMakeCurrent;
+  char    *Capabilities;
 
-  void CreateAWindow() override;
-  void DestroyWindow() override;
+  void CreateAWindow();
+  void DestroyWindow();
   void CreateOffScreenWindow(int width, int height);
   void DestroyOffScreenWindow();
   void ResizeOffScreenWindow(int width, int height);
 
+
 private:
-  vtkOSOpenGLRenderWindow(const vtkOSOpenGLRenderWindow&) = delete;
-  void operator=(const vtkOSOpenGLRenderWindow&) = delete;
+  vtkOSOpenGLRenderWindow(const vtkOSOpenGLRenderWindow&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkOSOpenGLRenderWindow&) VTK_DELETE_FUNCTION;
 };
+
+
 
 #endif

@@ -7,8 +7,7 @@ try:
     import numpy as np
 except ImportError:
     print("WARNING: This test requires Numeric Python: http://numpy.sf.net")
-    from vtk.test import Testing
-    Testing.skip()
+    sys.exit(0)
 
 def GenerateCell(cellType, points):
     cell = vtk.vtkUnstructuredGrid()
@@ -71,7 +70,7 @@ class CellTestBase:
 
             calcFilter = vtk.vtkArrayCalculator()
             calcFilter.SetInputConnection(normalsFilter.GetOutputPort())
-            calcFilter.SetAttributeTypeToPointData()
+            calcFilter.SetAttributeModeToUsePointData()
             calcFilter.AddVectorArrayName('grad')
             calcFilter.AddVectorArrayName('Normals')
             calcFilter.SetResultArrayName('dir')

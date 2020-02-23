@@ -1,6 +1,13 @@
-vtk_add_test_cxx(vtkIOTecplotTableCxxTests tests
+
+vtk_add_test_cxx(${vtk-module}CxxTests tests
   NO_VALID
   TestTecplotTableReader.cxx
   )
 
-vtk_test_cxx_executable(vtkIOTecplotTableCxxTests tests)
+ExternalData_add_test(VTKData
+  NAME TestTecplotTableReader
+  COMMAND ${vtk-module}CxxTests TestTecplotTableReader
+  -D DATA{../Data/residuals.dat}
+  )
+
+vtk_test_cxx_executable(${vtk-module}CxxTests tests)

@@ -13,13 +13,14 @@
 
 =========================================================================*/
 
-#include "vtkObject.h"
 #include "vtkVariant.h"
+#include "vtkObject.h"
 
-#include <cstdio>
 #include <map>
+#include <cstdio>
 
-int TestVariantComparison(int, char*[])
+int
+TestVariantComparison(int, char *[])
 {
   signed char positiveChar = 100;
   signed char negativeChar = -100;
@@ -42,8 +43,8 @@ int TestVariantComparison(int, char*[])
   // integers.
   unsigned char unsignedChar = 192;
   unsigned short unsignedShort = 49152;
-  unsigned int unsignedInt = (static_cast<unsigned int>(1) << shiftAmountInt) * 3;
-  unsigned long unsignedLong = (static_cast<unsigned long>(1) << shiftAmountLong) * 3;
+  unsigned int unsignedInt = (static_cast<unsigned int>(1)<<shiftAmountInt) * 3;
+  unsigned long unsignedLong = (static_cast<unsigned long>(1)<<shiftAmountLong) * 3;
   vtkTypeUInt64 unsigned64 = 3 * (static_cast<vtkTypeUInt64>(1) << shiftAmount64);
 
   vtkStdString numberString("100000");
@@ -54,7 +55,7 @@ int TestVariantComparison(int, char*[])
   double positiveDouble = 123456789.012345;
   double negativeDouble = -123456789.012345;
 
-  vtkObject* fooObject = vtkObject::New();
+  vtkObject *fooObject = vtkObject::New();
 
   vtkVariant invalidVariant;
 
@@ -92,23 +93,9 @@ int TestVariantComparison(int, char*[])
   int errorCount = 0;
   int overallErrorCount = 0;
 
-#define CHECK_EXPRESSION_FALSE(expr)                                                               \
-  {                                                                                                \
-    if ((expr))                                                                                    \
-    {                                                                                              \
-      ++errorCount;                                                                                \
-      cerr << "TEST FAILED: " << #expr << " should have been false\n\n";                           \
-    }                                                                                              \
-  }
+#define CHECK_EXPRESSION_FALSE(expr) { if ((expr)) { ++errorCount; cerr << "TEST FAILED: " << #expr << " should have been false\n\n"; } }
 
-#define CHECK_EXPRESSION_TRUE(expr)                                                                \
-  {                                                                                                \
-    if (!(expr))                                                                                   \
-    {                                                                                              \
-      ++errorCount;                                                                                \
-      cerr << "TEST FAILED: " << #expr << " should have been true\n\n";                            \
-    }                                                                                              \
-  }
+#define CHECK_EXPRESSION_TRUE(expr) { if (!(expr)) { ++errorCount; cerr << "TEST FAILED: " << #expr << " should have been true\n\n"; } }
 
   cerr << "Testing same-type comparisons... ";
   CHECK_EXPRESSION_FALSE(positiveCharVariant < negativeCharVariant);
@@ -131,8 +118,8 @@ int TestVariantComparison(int, char*[])
   CHECK_EXPRESSION_FALSE(unsigned64Variant < positive64Variant);
   CHECK_EXPRESSION_FALSE(unsigned64Variant < negative64Variant);
 
-  CHECK_EXPRESSION_FALSE(positiveFloatVariant < negativeFloatVariant);
-  CHECK_EXPRESSION_FALSE(positiveDoubleVariant < negativeDoubleVariant);
+  CHECK_EXPRESSION_FALSE(positiveFloat < negativeFloat);
+  CHECK_EXPRESSION_FALSE(positiveDouble < negativeDouble);
 
   CHECK_EXPRESSION_FALSE(alphaString < numberString);
 
@@ -337,7 +324,8 @@ int TestVariantComparison(int, char*[])
   }
   else
   {
-    cerr << "Some tests failed!  Overall error count: " << overallErrorCount << "\n";
+    cerr << "Some tests failed!  Overall error count: " << overallErrorCount
+         << "\n";
     cerr << "Debug information:\n";
     cerr << "CHAR(" << sizeof(char) << "): "
          << "positive " << positiveChar << ", "

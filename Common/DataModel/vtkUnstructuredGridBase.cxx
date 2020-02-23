@@ -20,25 +20,32 @@
 #include "vtkSmartPointer.h"
 
 //----------------------------------------------------------------------------
-vtkUnstructuredGridBase::vtkUnstructuredGridBase() = default;
+vtkUnstructuredGridBase::vtkUnstructuredGridBase()
+{
+}
 
 //----------------------------------------------------------------------------
-vtkUnstructuredGridBase::~vtkUnstructuredGridBase() = default;
+vtkUnstructuredGridBase::~vtkUnstructuredGridBase()
+{
+}
 
 //----------------------------------------------------------------------------
-void vtkUnstructuredGridBase::DeepCopy(vtkDataObject* src)
+void vtkUnstructuredGridBase::DeepCopy(vtkDataObject *src)
 {
   this->Superclass::DeepCopy(src);
 
-  if (vtkDataSet* ds = vtkDataSet::SafeDownCast(src))
+  if (vtkDataSet *ds = vtkDataSet::SafeDownCast(src))
   {
     vtkSmartPointer<vtkCellIterator> cellIter =
-      vtkSmartPointer<vtkCellIterator>::Take(ds->NewCellIterator());
-    for (cellIter->InitTraversal(); !cellIter->IsDoneWithTraversal(); cellIter->GoToNextCell())
+        vtkSmartPointer<vtkCellIterator>::Take(ds->NewCellIterator());
+    for (cellIter->InitTraversal(); !cellIter->IsDoneWithTraversal();
+         cellIter->GoToNextCell())
     {
-      this->InsertNextCell(cellIter->GetCellType(), cellIter->GetNumberOfPoints(),
-        cellIter->GetPointIds()->GetPointer(0), cellIter->GetNumberOfFaces(),
-        cellIter->GetFaces()->GetPointer(1));
+      this->InsertNextCell(cellIter->GetCellType(),
+                           cellIter->GetNumberOfPoints(),
+                           cellIter->GetPointIds()->GetPointer(0),
+                           cellIter->GetNumberOfFaces(),
+                           cellIter->GetFaces()->GetPointer(0));
     }
   }
 }
@@ -46,36 +53,13 @@ void vtkUnstructuredGridBase::DeepCopy(vtkDataObject* src)
 //----------------------------------------------------------------------------
 vtkUnstructuredGridBase* vtkUnstructuredGridBase::GetData(vtkInformation* info)
 {
-  return vtkUnstructuredGridBase::SafeDownCast(info ? info->Get(DATA_OBJECT()) : nullptr);
+  return vtkUnstructuredGridBase::SafeDownCast(info ? info->Get(DATA_OBJECT())
+                                                    : NULL);
 }
 
 //----------------------------------------------------------------------------
-vtkUnstructuredGridBase* vtkUnstructuredGridBase::GetData(vtkInformationVector* v, int i)
+vtkUnstructuredGridBase*
+vtkUnstructuredGridBase::GetData(vtkInformationVector* v, int i)
 {
   return vtkUnstructuredGridBase::GetData(v->GetInformationObject(i));
-}
-
-//----------------------------------------------------------------------------
-vtkIdType vtkUnstructuredGridBase::InsertNextCell(int type, vtkIdType npts, const vtkIdType pts[])
-{
-  return this->InternalInsertNextCell(type, npts, pts);
-}
-
-//----------------------------------------------------------------------------
-vtkIdType vtkUnstructuredGridBase::InsertNextCell(int type, vtkIdList* ptIds)
-{
-  return this->InternalInsertNextCell(type, ptIds);
-}
-
-//----------------------------------------------------------------------------
-vtkIdType vtkUnstructuredGridBase::InsertNextCell(
-  int type, vtkIdType npts, const vtkIdType pts[], vtkIdType nfaces, const vtkIdType faces[])
-{
-  return this->InternalInsertNextCell(type, npts, pts, nfaces, faces);
-}
-
-//----------------------------------------------------------------------------
-void vtkUnstructuredGridBase::ReplaceCell(vtkIdType cellId, int npts, const vtkIdType pts[])
-{
-  this->InternalReplaceCell(cellId, npts, pts);
 }

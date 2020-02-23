@@ -19,13 +19,14 @@
  * vtkImageContinuousErode3D replaces a pixel with the minimum over
  * an ellipsoidal neighborhood.  If KernelSize of an axis is 1, no processing
  * is done on that axis.
- */
+*/
 
 #ifndef vtkImageContinuousErode3D_h
 #define vtkImageContinuousErode3D_h
 
-#include "vtkImageSpatialAlgorithm.h"
+
 #include "vtkImagingMorphologicalModule.h" // For export macro
+#include "vtkImageSpatialAlgorithm.h"
 
 class vtkImageEllipsoidSource;
 
@@ -37,9 +38,9 @@ public:
    * Construct an instance of vtkImageContinuousErode3D filter.
    * By default zero values are eroded.
    */
-  static vtkImageContinuousErode3D* New();
-  vtkTypeMacro(vtkImageContinuousErode3D, vtkImageSpatialAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkImageContinuousErode3D *New();
+  vtkTypeMacro(vtkImageContinuousErode3D,vtkImageSpatialAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   /**
@@ -50,19 +51,22 @@ public:
 
 protected:
   vtkImageContinuousErode3D();
-  ~vtkImageContinuousErode3D() override;
+  ~vtkImageContinuousErode3D();
 
-  vtkImageEllipsoidSource* Ellipse;
+  vtkImageEllipsoidSource *Ellipse;
 
-  void ThreadedRequestData(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector, vtkImageData*** inData, vtkImageData** outData,
-    int extent[6], int id) override;
-  int RequestData(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  void ThreadedRequestData(vtkInformation *request,
+                           vtkInformationVector **inputVector,
+                           vtkInformationVector *outputVector,
+                           vtkImageData ***inData, vtkImageData **outData,
+                           int extent[6], int id);
+  virtual int RequestData(vtkInformation *request,
+                          vtkInformationVector **inputVector,
+                          vtkInformationVector *outputVector);
 
 private:
-  vtkImageContinuousErode3D(const vtkImageContinuousErode3D&) = delete;
-  void operator=(const vtkImageContinuousErode3D&) = delete;
+  vtkImageContinuousErode3D(const vtkImageContinuousErode3D&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkImageContinuousErode3D&) VTK_DELETE_FUNCTION;
 };
 
 #endif

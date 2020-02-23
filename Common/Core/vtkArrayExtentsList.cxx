@@ -21,33 +21,33 @@
 
 #include "vtkArrayExtentsList.h"
 
-vtkArrayExtentsList::vtkArrayExtentsList() = default;
+vtkArrayExtentsList::vtkArrayExtentsList()
+{
+}
 
-vtkArrayExtentsList::vtkArrayExtentsList(const vtkArrayExtents& i)
-  : Storage(1)
+vtkArrayExtentsList::vtkArrayExtentsList(const vtkArrayExtents& i) :
+  Storage(1)
 {
   this->Storage[0] = i;
 }
 
-vtkArrayExtentsList::vtkArrayExtentsList(const vtkArrayExtents& i, const vtkArrayExtents& j)
-  : Storage(2)
+vtkArrayExtentsList::vtkArrayExtentsList(const vtkArrayExtents& i, const vtkArrayExtents& j) :
+  Storage(2)
 {
   this->Storage[0] = i;
   this->Storage[1] = j;
 }
 
-vtkArrayExtentsList::vtkArrayExtentsList(
-  const vtkArrayExtents& i, const vtkArrayExtents& j, const vtkArrayExtents& k)
-  : Storage(3)
+vtkArrayExtentsList::vtkArrayExtentsList(const vtkArrayExtents& i, const vtkArrayExtents& j, const vtkArrayExtents& k) :
+  Storage(3)
 {
   this->Storage[0] = i;
   this->Storage[1] = j;
   this->Storage[2] = k;
 }
 
-vtkArrayExtentsList::vtkArrayExtentsList(const vtkArrayExtents& i, const vtkArrayExtents& j,
-  const vtkArrayExtents& k, const vtkArrayExtents& l)
-  : Storage(4)
+vtkArrayExtentsList::vtkArrayExtentsList(const vtkArrayExtents& i, const vtkArrayExtents& j, const vtkArrayExtents& k, const vtkArrayExtents& l) :
+  Storage(4)
 {
   this->Storage[0] = i;
   this->Storage[1] = j;
@@ -57,7 +57,7 @@ vtkArrayExtentsList::vtkArrayExtentsList(const vtkArrayExtents& i, const vtkArra
 
 vtkIdType vtkArrayExtentsList::GetCount() const
 {
-  return static_cast<vtkIdType>(this->Storage.size());
+  return this->Storage.size();
 }
 
 void vtkArrayExtentsList::SetCount(vtkIdType count)
@@ -74,3 +74,4 @@ const vtkArrayExtents& vtkArrayExtentsList::operator[](vtkIdType i) const
 {
   return this->Storage[i];
 }
+

@@ -25,31 +25,31 @@
  * Compositing makes sense only for renderers in layer 0.
  * @sa
  * vtkCompositeRGBAPass
- */
+*/
 
 #ifndef vtkImageRenderManager_h
 #define vtkImageRenderManager_h
 
-#include "vtkParallelRenderManager.h"
 #include "vtkRenderingParallelModule.h" // For export macro
+#include "vtkParallelRenderManager.h"
 
 class VTKRENDERINGPARALLEL_EXPORT vtkImageRenderManager : public vtkParallelRenderManager
 {
 public:
   vtkTypeMacro(vtkImageRenderManager, vtkParallelRenderManager);
-  static vtkImageRenderManager* New();
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkImageRenderManager *New();
+  virtual void PrintSelf(ostream &os, vtkIndent indent);
 
 protected:
   vtkImageRenderManager();
-  ~vtkImageRenderManager() override;
+  ~vtkImageRenderManager();
 
-  void PreRenderProcessing() override;
-  void PostRenderProcessing() override;
+  virtual void PreRenderProcessing();
+  virtual void PostRenderProcessing();
 
 private:
-  vtkImageRenderManager(const vtkImageRenderManager&) = delete;
-  void operator=(const vtkImageRenderManager&) = delete;
+  vtkImageRenderManager(const vtkImageRenderManager &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkImageRenderManager &) VTK_DELETE_FUNCTION;
 };
 
-#endif // vtkImageRenderManager_h
+#endif //vtkImageRenderManager_h

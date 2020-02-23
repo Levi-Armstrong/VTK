@@ -28,7 +28,7 @@
  * Andrew Maclean andrew.amaclean@gmail.com for creating and contributing the
  * class.
  *
- */
+*/
 
 #ifndef vtkParametricEnneper_h
 #define vtkParametricEnneper_h
@@ -39,8 +39,9 @@
 class VTKCOMMONCOMPUTATIONALGEOMETRY_EXPORT vtkParametricEnneper : public vtkParametricFunction
 {
 public:
-  vtkTypeMacro(vtkParametricEnneper, vtkParametricFunction);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+
+  vtkTypeMacro(vtkParametricEnneper,vtkParametricFunction);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Construct Enneper's surface with the following parameters:
@@ -48,15 +49,15 @@ public:
    * MinimumV = -2, MaximumV = 2,
    * JoinU = 0, JoinV = 0,
    * TwistU = 0, TwistV = 0,
-   * ClockwiseOrdering = 0,
+   * ClockwiseOrdering = 1,
    * DerivativesAvailable = 1
    */
-  static vtkParametricEnneper* New();
+  static vtkParametricEnneper *New();
 
   /**
    * Return the parametric dimension of the class.
    */
-  int GetDimension() override { return 2; }
+  int GetDimension() VTK_OVERRIDE {return 2;}
 
   /**
    * Enneper's surface.
@@ -66,12 +67,12 @@ public:
    * \f$Pt = (x, y, z), Du = (dx/du, dy/du, dz/du), Dv = (dx/dv, dy/dv, dz/dv)\f$ .
    * Then the normal is \f$N = Du X Dv\f$ .
    */
-  void Evaluate(double uvw[3], double Pt[3], double Duvw[9]) override;
+  void Evaluate(double uvw[3], double Pt[3], double Duvw[9]) VTK_OVERRIDE;
 
   /**
    * Calculate a user defined scalar using one or all of uvw, Pt, Duvw.
 
-   * uv are the parameters with Pt being the cartesian point,
+   * uv are the parameters with Pt being the the cartesian point,
    * Duvw are the derivatives of this point with respect to u, v and w.
    * Pt, Duvw are obtained from Evaluate().
 
@@ -81,15 +82,15 @@ public:
    * If the user does not need to calculate a scalar, then the
    * instantiated function should return zero.
    */
-  double EvaluateScalar(double uvw[3], double Pt[3], double Duvw[9]) override;
+  double EvaluateScalar(double uvw[3], double Pt[3], double Duvw[9]) VTK_OVERRIDE;
 
 protected:
   vtkParametricEnneper();
-  ~vtkParametricEnneper() override;
+  ~vtkParametricEnneper() VTK_OVERRIDE;
 
 private:
-  vtkParametricEnneper(const vtkParametricEnneper&) = delete;
-  void operator=(const vtkParametricEnneper&) = delete;
+  vtkParametricEnneper(const vtkParametricEnneper&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkParametricEnneper&) VTK_DELETE_FUNCTION;
 };
 
 #endif

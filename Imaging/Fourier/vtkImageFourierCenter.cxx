@@ -25,8 +25,11 @@
 vtkStandardNewMacro(vtkImageFourierCenter);
 
 //----------------------------------------------------------------------------
-// Construct an instance of vtkImageFourierCenter filter.
-vtkImageFourierCenter::vtkImageFourierCenter() = default;
+// Construct an instance of vtkImageFourierCenter fitler.
+vtkImageFourierCenter::vtkImageFourierCenter()
+{
+}
+
 
 //----------------------------------------------------------------------------
 // This method tells the superclass which input extent is needed.
@@ -34,13 +37,13 @@ vtkImageFourierCenter::vtkImageFourierCenter() = default;
 int vtkImageFourierCenter::IterativeRequestUpdateExtent(
   vtkInformation* input, vtkInformation* output)
 {
-  int* outExt = output->Get(vtkStreamingDemandDrivenPipeline::UPDATE_EXTENT());
-  int* wExt = input->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT());
+  int *outExt = output->Get(vtkStreamingDemandDrivenPipeline::UPDATE_EXTENT());
+  int *wExt = input->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT());
   int inExt[6];
   memcpy(inExt, outExt, 6 * sizeof(int));
-  inExt[this->Iteration * 2] = wExt[this->Iteration * 2];
-  inExt[this->Iteration * 2 + 1] = wExt[this->Iteration * 2 + 1];
-  input->Set(vtkStreamingDemandDrivenPipeline::UPDATE_EXTENT(), inExt, 6);
+  inExt[this->Iteration*2] = wExt[this->Iteration*2];
+  inExt[this->Iteration*2 + 1] = wExt[this->Iteration*2 + 1];
+  input->Set(vtkStreamingDemandDrivenPipeline::UPDATE_EXTENT(),inExt,6);
 
   return 1;
 }
@@ -48,9 +51,14 @@ int vtkImageFourierCenter::IterativeRequestUpdateExtent(
 //----------------------------------------------------------------------------
 // This method is passed input and output regions, and executes the fft
 // algorithm to fill the output from the input.
-void vtkImageFourierCenter::ThreadedRequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector,
-  vtkImageData*** inDataVec, vtkImageData** outDataVec, int outExt[6], int threadId)
+void vtkImageFourierCenter::ThreadedRequestData(
+  vtkInformation* vtkNotUsed( request ),
+  vtkInformationVector** vtkNotUsed( inputVector ),
+  vtkInformationVector* outputVector,
+  vtkImageData ***inDataVec,
+  vtkImageData **outDataVec,
+  int outExt[6],
+  int threadId)
 {
   vtkImageData* inData = inDataVec[0][0];
   vtkImageData* outData = outDataVec[0];
@@ -67,22 +75,24 @@ void vtkImageFourierCenter::ThreadedRequestData(vtkInformation* vtkNotUsed(reque
   unsigned long target;
   double startProgress;
 
-  startProgress = this->GetIteration() / static_cast<double>(this->GetNumberOfIterations());
+  startProgress = this->GetIteration()/
+    static_cast<double>(this->GetNumberOfIterations());
 
   // this filter expects that the input be doubles.
   if (inData->GetScalarType() != VTK_DOUBLE)
   {
-    vtkErrorMacro(<< "Execute: Input must be type double.");
+    vtkErrorMacro(<< "Execute: Input must be be type double.");
     return;
   }
   // this filter expects that the output be doubles.
   if (outData->GetScalarType() != VTK_DOUBLE)
   {
-    vtkErrorMacro(<< "Execute: Output must be type double.");
+    vtkErrorMacro(<< "Execute: Output must be be type double.");
     return;
   }
   // this filter expects input to have 1 or two components
-  if (outData->GetNumberOfScalarComponents() != 1 && outData->GetNumberOfScalarComponents() != 2)
+  if (outData->GetNumberOfScalarComponents() != 1 &&
+      outData->GetNumberOfScalarComponents() != 2)
   {
     vtkErrorMacro(<< "Execute: Cannot handle more than 2 components");
     return;
@@ -90,9 +100,9 @@ void vtkImageFourierCenter::ThreadedRequestData(vtkInformation* vtkNotUsed(reque
 
   // Get stuff needed to loop through the pixel
   numberOfComponents = outData->GetNumberOfScalarComponents();
-  outPtr0 = static_cast<double*>(outData->GetScalarPointerForExtent(outExt));
-  wholeExtent =
-    outputVector->GetInformationObject(0)->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT());
+  outPtr0 = static_cast<double *>(outData->GetScalarPointerForExtent(outExt));
+  wholeExtent = outputVector->GetInformationObject(0)->Get(
+    vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT());
   // permute to make the filtered axis come first
   this->PermuteExtent(outExt, min0, max0, min1, max1, min2, max2);
   this->PermuteIncrements(inData->GetIncrements(), inInc0, inInc1, inInc2);
@@ -108,8 +118,8 @@ void vtkImageFourierCenter::ThreadedRequestData(vtkInformation* vtkNotUsed(reque
   inCoords[1] = outExt[2];
   inCoords[2] = outExt[4];
 
-  target = static_cast<unsigned long>(
-    (max2 - min2 + 1) * (max0 - min0 + 1) * this->GetNumberOfIterations() / 50.0);
+  target = static_cast<unsigned long>((max2-min2+1)*(max0-min0+1)
+                                      * this->GetNumberOfIterations() / 50.0);
   target++;
 
   // loop over the filtered axis first
@@ -122,7 +132,7 @@ void vtkImageFourierCenter::ThreadedRequestData(vtkInformation* vtkNotUsed(reque
       inIdx0 -= (wholeMax0 - wholeMin0 + 1);
     }
     inCoords[this->Iteration] = inIdx0;
-    inPtr0 = static_cast<double*>(inData->GetScalarPointer(inCoords));
+    inPtr0 = static_cast<double *>(inData->GetScalarPointer(inCoords));
 
     // loop over other axes
     inPtr2 = inPtr0;
@@ -131,9 +141,9 @@ void vtkImageFourierCenter::ThreadedRequestData(vtkInformation* vtkNotUsed(reque
     {
       if (!threadId)
       {
-        if (!(count % target))
+        if (!(count%target))
         {
-          this->UpdateProgress(count / (50.0 * target) + startProgress);
+          this->UpdateProgress(count/(50.0*target) + startProgress);
         }
         count++;
       }
@@ -157,3 +167,21 @@ void vtkImageFourierCenter::ThreadedRequestData(vtkInformation* vtkNotUsed(reque
     outPtr0 += outInc0;
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

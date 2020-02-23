@@ -38,14 +38,14 @@
  * space is uniformally subdivided into bins of (M x N x O) dimensions; in
  * turn each subsequent level in the tree is further divided into (M x N x O)
  * bins (note that level 0 is a single, root bin). Thus the number of bins at
- * level L of the hierarchical tree is: Nbins=(M^L x N^L x O^L). Once the
+ * level L of the hierachical tree is: Nbins=(M^L x N^L x O^L). Once the
  * binning is created to a specified depth, then points are placed in the
  * bins using a pseudo-random sampling proportional to the number of bins in each
  * level. All input points are sorted in the order described above, with no
  * points repeated.
  *
  * The output of this filter are sorted points and associated point
- * attributes represented by a vtkPolyData. In addition, an offset integral
+ * attributes represented by a vtkPolyData. In addition, an offest integral
  * array is associated with the field data of the output, providing offsets
  * into the points list via a breadth-first traversal order. Metadata
  * describing the output is provided in the field data. Convenience functions
@@ -65,7 +65,7 @@
  *
  * @sa
  * vtkPointCloudFilter vtkQuadricClustering vtkStaticPointLocator
- */
+*/
 
 #ifndef vtkHierarchicalBinningFilter_h
 #define vtkHierarchicalBinningFilter_h
@@ -85,18 +85,18 @@ public:
    * Standard methods for instantiating, obtaining type information, and
    * printing information.
    */
-  static vtkHierarchicalBinningFilter* New();
-  vtkTypeMacro(vtkHierarchicalBinningFilter, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkHierarchicalBinningFilter *New();
+  vtkTypeMacro(vtkHierarchicalBinningFilter,vtkPolyDataAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   //@{
   /**
-   * Specify the number of levels in the spatial hierarchy. By default, the
+   * Specify the number of levels in the spatial hierachy. By default, the
    * number of levels is three.
    */
-  vtkSetClampMacro(NumberOfLevels, int, 1, VTK_MAX_LEVEL);
-  vtkGetMacro(NumberOfLevels, int);
+  vtkSetClampMacro(NumberOfLevels,int,1,VTK_MAX_LEVEL);
+  vtkGetMacro(NumberOfLevels,int);
   //@}
 
   //@{
@@ -106,20 +106,20 @@ public:
    * the bounding box and bin divisions. (Computing the bounding box can be slow for
    * large point clouds, manual specification can save time.)
    */
-  vtkSetMacro(Automatic, bool);
-  vtkGetMacro(Automatic, bool);
-  vtkBooleanMacro(Automatic, bool);
+  vtkSetMacro(Automatic,bool);
+  vtkGetMacro(Automatic,bool);
+  vtkBooleanMacro(Automatic,bool);
   //@}
 
   //@{
   /**
    * Set the number of branching divisions in each binning direction. Each
    * level of the tree is subdivided by this factor. The Divisions[i] must be
-   * >= 1. Note: if Automatic subdivision is specified, the Divisions are
+   * >= 1. Note: if Automatic subdivision is specified, the the Divisions are
    * set by the filter.
    */
-  vtkSetVector3Macro(Divisions, int);
-  vtkGetVectorMacro(Divisions, int, 3);
+  vtkSetVector3Macro(Divisions,int);
+  vtkGetVectorMacro(Divisions,int,3);
   //@}
 
   //@{
@@ -130,8 +130,8 @@ public:
    * (xmin,xmax, ymin,ymax, zmin,zmax). If the bounds specified is does not
    * enclose the points, then points are clamped to lie in the bounding box.
    */
-  vtkSetVector6Macro(Bounds, double);
-  vtkGetVectorMacro(Bounds, double, 6);
+  vtkSetVector6Macro(Bounds,double);
+  vtkGetVectorMacro(Bounds,double,6);
   //@}
 
   /**
@@ -189,7 +189,7 @@ public:
 
 protected:
   vtkHierarchicalBinningFilter();
-  ~vtkHierarchicalBinningFilter() override;
+  ~vtkHierarchicalBinningFilter();
 
   // IVars
   int NumberOfLevels;
@@ -199,14 +199,16 @@ protected:
 
   // Handle to the underlying implementation. The representation is maintained so
   // that the convenience functions can be invoked on the bin tree.
-  vtkBinTree* Tree;
+  vtkBinTree *Tree;
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  virtual int RequestData(vtkInformation *, vtkInformationVector **,
+    vtkInformationVector *);
+  virtual int FillInputPortInformation(int port, vtkInformation *info);
 
 private:
-  vtkHierarchicalBinningFilter(const vtkHierarchicalBinningFilter&) = delete;
-  void operator=(const vtkHierarchicalBinningFilter&) = delete;
+  vtkHierarchicalBinningFilter(const vtkHierarchicalBinningFilter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkHierarchicalBinningFilter&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif

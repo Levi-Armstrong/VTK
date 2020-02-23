@@ -35,7 +35,7 @@
  *
  * @sa
  * vtkDijkstraGraphGeodesicPath, vtkPolyDataNormals
- */
+*/
 
 #ifndef vtkPolygonalSurfaceContourLineInterpolator_h
 #define vtkPolygonalSurfaceContourLineInterpolator_h
@@ -46,8 +46,7 @@
 class vtkDijkstraGraphGeodesicPath;
 class vtkIdList;
 
-class VTKINTERACTIONWIDGETS_EXPORT vtkPolygonalSurfaceContourLineInterpolator
-  : public vtkPolyDataContourLineInterpolator
+class VTKINTERACTIONWIDGETS_EXPORT vtkPolygonalSurfaceContourLineInterpolator : public vtkPolyDataContourLineInterpolator
 {
 public:
   //@{
@@ -55,17 +54,19 @@ public:
    * Standard methods for instances of this class.
    */
   vtkTypeMacro(vtkPolygonalSurfaceContourLineInterpolator, vtkPolyDataContourLineInterpolator);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
-  static vtkPolygonalSurfaceContourLineInterpolator* New();
+  static vtkPolygonalSurfaceContourLineInterpolator *New();
 
   /**
    * Subclasses that wish to interpolate a line segment must implement this.
    * For instance vtkBezierContourLineInterpolator adds nodes between idx1
    * and idx2, that allow the contour to adhere to a bezier curve.
    */
-  int InterpolateLine(vtkRenderer* ren, vtkContourRepresentation* rep, int idx1, int idx2) override;
+  virtual int InterpolateLine( vtkRenderer *ren,
+                               vtkContourRepresentation *rep,
+                               int idx1, int idx2 );
 
   /**
    * The interpolator is given a chance to update the node.
@@ -74,8 +75,9 @@ public:
    * constructs the contour.
    * Returns 0 if the node (world position) is unchanged.
    */
-  int UpdateNode(vtkRenderer*, vtkContourRepresentation*, double* vtkNotUsed(node),
-    int vtkNotUsed(idx)) override;
+  virtual int UpdateNode( vtkRenderer *,
+                          vtkContourRepresentation *,
+                          double * vtkNotUsed(node), int vtkNotUsed(idx) );
 
   //@{
   /**
@@ -84,34 +86,33 @@ public:
    * normals on your input polygonal data. (easily done with
    * vtkPolyDataNormals).
    */
-  vtkSetMacro(DistanceOffset, double);
-  vtkGetMacro(DistanceOffset, double);
+  vtkSetMacro( DistanceOffset, double );
+  vtkGetMacro( DistanceOffset, double );
   //@}
 
   /**
    * Get the contour point ids. These point ids correspond to those on the
    * polygonal surface
    */
-  void GetContourPointIds(vtkContourRepresentation* rep, vtkIdList* idList);
+  void GetContourPointIds( vtkContourRepresentation *rep, vtkIdList *idList );
 
 protected:
   vtkPolygonalSurfaceContourLineInterpolator();
-  ~vtkPolygonalSurfaceContourLineInterpolator() override;
+  ~vtkPolygonalSurfaceContourLineInterpolator();
 
   /**
    * Draw the polyline at a certain height (in the direction of the vertex
    * normal) above the polydata.
    */
-  double DistanceOffset;
+  double         DistanceOffset;
 
 private:
-  vtkPolygonalSurfaceContourLineInterpolator(
-    const vtkPolygonalSurfaceContourLineInterpolator&) = delete;
-  void operator=(const vtkPolygonalSurfaceContourLineInterpolator&) = delete;
+  vtkPolygonalSurfaceContourLineInterpolator(const vtkPolygonalSurfaceContourLineInterpolator&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPolygonalSurfaceContourLineInterpolator&) VTK_DELETE_FUNCTION;
 
   // Cache the last used vertex id's (start and end).
   // If they are the same, don't recompute.
-  vtkIdType LastInterpolatedVertexIds[2];
+  vtkIdType      LastInterpolatedVertexIds[2];
 
   vtkDijkstraGraphGeodesicPath* DijkstraGraphGeodesicPath;
 };

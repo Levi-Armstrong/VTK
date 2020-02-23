@@ -17,55 +17,60 @@
 #include "vtkAbstractTransform.h"
 #include "vtkCellData.h"
 #include "vtkFloatArray.h"
+#include "vtkLinearTransform.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
-#include "vtkLinearTransform.h"
 #include "vtkObjectFactory.h"
 #include "vtkPointData.h"
 #include "vtkPolyData.h"
 
 vtkStandardNewMacro(vtkTransformPolyDataFilter);
-vtkCxxSetObjectMacro(vtkTransformPolyDataFilter, Transform, vtkAbstractTransform);
+vtkCxxSetObjectMacro(vtkTransformPolyDataFilter,
+                     Transform,vtkAbstractTransform);
 
 vtkTransformPolyDataFilter::vtkTransformPolyDataFilter()
 {
-  this->Transform = nullptr;
+  this->Transform = NULL;
   this->OutputPointsPrecision = vtkAlgorithm::DEFAULT_PRECISION;
 }
 
 vtkTransformPolyDataFilter::~vtkTransformPolyDataFilter()
 {
-  this->SetTransform(nullptr);
+  this->SetTransform(NULL);
 }
 
-int vtkTransformPolyDataFilter::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+int vtkTransformPolyDataFilter::RequestData(
+  vtkInformation *vtkNotUsed(request),
+  vtkInformationVector **inputVector,
+  vtkInformationVector *outputVector)
 {
   // get the info objects
-  vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
-  vtkInformation* outInfo = outputVector->GetInformationObject(0);
+  vtkInformation *inInfo = inputVector[0]->GetInformationObject(0);
+  vtkInformation *outInfo = outputVector->GetInformationObject(0);
 
   // get the input and output
-  vtkPolyData* input = vtkPolyData::SafeDownCast(inInfo->Get(vtkDataObject::DATA_OBJECT()));
-  vtkPolyData* output = vtkPolyData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
+  vtkPolyData *input = vtkPolyData::SafeDownCast(
+    inInfo->Get(vtkDataObject::DATA_OBJECT()));
+  vtkPolyData *output = vtkPolyData::SafeDownCast(
+    outInfo->Get(vtkDataObject::DATA_OBJECT()));
 
-  vtkPoints* inPts;
-  vtkPoints* newPts;
+  vtkPoints *inPts;
+  vtkPoints *newPts;
   vtkDataArray *inVectors, *inCellVectors;
-  vtkFloatArray *newVectors = nullptr, *newCellVectors = nullptr;
+  vtkFloatArray *newVectors=NULL, *newCellVectors=NULL;
   vtkDataArray *inNormals, *inCellNormals;
-  vtkFloatArray *newNormals = nullptr, *newCellNormals = nullptr;
+  vtkFloatArray *newNormals=NULL, *newCellNormals=NULL;
   vtkIdType numPts, numCells;
-  vtkPointData *pd = input->GetPointData(), *outPD = output->GetPointData();
-  vtkCellData *cd = input->GetCellData(), *outCD = output->GetCellData();
+  vtkPointData *pd=input->GetPointData(), *outPD=output->GetPointData();
+  vtkCellData *cd=input->GetCellData(), *outCD=output->GetCellData();
 
-  vtkDebugMacro(<< "Executing polygonal transformation");
+  vtkDebugMacro(<<"Executing polygonal transformation");
 
   // Check input
   //
-  if (this->Transform == nullptr)
+  if ( this->Transform == NULL )
   {
-    vtkErrorMacro(<< "No transform defined!");
+    vtkErrorMacro(<<"No transform defined!");
     return 1;
   }
 
@@ -75,9 +80,9 @@ int vtkTransformPolyDataFilter::RequestData(vtkInformation* vtkNotUsed(request),
   inCellVectors = cd->GetVectors();
   inCellNormals = cd->GetNormals();
 
-  if (!inPts)
+  if ( !inPts )
   {
-    vtkErrorMacro(<< "No input data");
+    vtkErrorMacro(<<"No input data");
     return 1;
   }
 
@@ -87,75 +92,76 @@ int vtkTransformPolyDataFilter::RequestData(vtkInformation* vtkNotUsed(request),
   newPts = vtkPoints::New();
 
   // Set the desired precision for the points in the output.
-  if (this->OutputPointsPrecision == vtkAlgorithm::DEFAULT_PRECISION)
+  if(this->OutputPointsPrecision == vtkAlgorithm::DEFAULT_PRECISION)
   {
     newPts->SetDataType(inPts->GetDataType());
   }
-  else if (this->OutputPointsPrecision == vtkAlgorithm::SINGLE_PRECISION)
+  else if(this->OutputPointsPrecision == vtkAlgorithm::SINGLE_PRECISION)
   {
     newPts->SetDataType(VTK_FLOAT);
   }
-  else if (this->OutputPointsPrecision == vtkAlgorithm::DOUBLE_PRECISION)
+  else if(this->OutputPointsPrecision == vtkAlgorithm::DOUBLE_PRECISION)
   {
     newPts->SetDataType(VTK_DOUBLE);
   }
 
   newPts->Allocate(numPts);
-  if (inVectors)
+  if ( inVectors )
   {
     newVectors = vtkFloatArray::New();
     newVectors->SetNumberOfComponents(3);
-    newVectors->Allocate(3 * numPts);
+    newVectors->Allocate(3*numPts);
     newVectors->SetName(inVectors->GetName());
   }
-  if (inNormals)
+  if ( inNormals )
   {
     newNormals = vtkFloatArray::New();
     newNormals->SetNumberOfComponents(3);
-    newNormals->Allocate(3 * numPts);
+    newNormals->Allocate(3*numPts);
     newNormals->SetName(inNormals->GetName());
   }
 
-  this->UpdateProgress(.2);
+  this->UpdateProgress (.2);
   // Loop over all points, updating position
   //
 
-  if (inVectors || inNormals)
+  if ( inVectors || inNormals )
   {
-    this->Transform->TransformPointsNormalsVectors(
-      inPts, newPts, inNormals, newNormals, inVectors, newVectors);
+    this->Transform->TransformPointsNormalsVectors(inPts,newPts,
+                                                   inNormals,newNormals,
+                                                   inVectors,newVectors);
   }
   else
   {
-    this->Transform->TransformPoints(inPts, newPts);
+    this->Transform->TransformPoints(inPts,newPts);
   }
 
-  this->UpdateProgress(.6);
+  this->UpdateProgress (.6);
 
   // Can only transform cell normals/vectors if the transform
   // is linear.
   vtkLinearTransform* lt = vtkLinearTransform::SafeDownCast(this->Transform);
   if (lt)
   {
-    if (inCellVectors)
+    if ( inCellVectors )
     {
       newCellVectors = vtkFloatArray::New();
       newCellVectors->SetNumberOfComponents(3);
-      newCellVectors->Allocate(3 * numCells);
-      newCellVectors->SetName(inCellVectors->GetName());
-      lt->TransformVectors(inCellVectors, newCellVectors);
+      newCellVectors->Allocate(3*numCells);
+      newCellVectors->SetName( inCellVectors->GetName() );
+      lt->TransformVectors(inCellVectors,newCellVectors);
     }
-    if (inCellNormals)
+    if ( inCellNormals )
     {
       newCellNormals = vtkFloatArray::New();
       newCellNormals->SetNumberOfComponents(3);
-      newCellNormals->Allocate(3 * numCells);
-      newCellNormals->SetName(inCellNormals->GetName());
-      lt->TransformNormals(inCellNormals, newCellNormals);
+      newCellNormals->Allocate(3*numCells);
+      newCellNormals->SetName( inCellNormals->GetName() );
+      lt->TransformNormals(inCellNormals,newCellNormals);
     }
   }
 
-  this->UpdateProgress(.8);
+  this->UpdateProgress (.8);
 
   // Update ourselves and release memory
   //
@@ -203,13 +209,13 @@ int vtkTransformPolyDataFilter::RequestData(vtkInformation* vtkNotUsed(request),
 
 vtkMTimeType vtkTransformPolyDataFilter::GetMTime()
 {
-  vtkMTimeType mTime = this->MTime.GetMTime();
+  vtkMTimeType mTime=this->MTime.GetMTime();
   vtkMTimeType transMTime;
 
-  if (this->Transform)
+  if ( this->Transform )
   {
     transMTime = this->Transform->GetMTime();
-    mTime = (transMTime > mTime ? transMTime : mTime);
+    mTime = ( transMTime > mTime ? transMTime : mTime );
   }
 
   return mTime;
@@ -217,8 +223,9 @@ vtkMTimeType vtkTransformPolyDataFilter::GetMTime()
 
 void vtkTransformPolyDataFilter::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 
   os << indent << "Transform: " << this->Transform << "\n";
-  os << indent << "Output Points Precision: " << this->OutputPointsPrecision << "\n";
+  os << indent << "Output Points Precision: " << this->OutputPointsPrecision
+     << "\n";
 }

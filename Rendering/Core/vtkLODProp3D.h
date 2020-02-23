@@ -25,13 +25,13 @@
  *
  * @sa
  * vtkProp3D vtkActor vtkVolume vtkLODActor
- */
+*/
 
 #ifndef vtkLODProp3D_h
 #define vtkLODProp3D_h
 
-#include "vtkProp3D.h"
 #include "vtkRenderingCoreModule.h" // For export macro
+#include "vtkProp3D.h"
 
 class vtkRenderer;
 class vtkMapper;
@@ -46,12 +46,12 @@ class vtkLODProp3DCallback;
 
 typedef struct
 {
-  vtkProp3D* Prop3D;
-  int Prop3DType;
-  int ID;
-  double EstimatedTime;
-  int State;
-  double Level;
+  vtkProp3D   *Prop3D;
+  int         Prop3DType;
+  int         ID;
+  double       EstimatedTime;
+  int         State;
+  double       Level;
 } vtkLODProp3DEntry;
 
 class VTKRENDERINGCORE_EXPORT vtkLODProp3D : public vtkProp3D
@@ -60,16 +60,17 @@ public:
   /**
    * Create an instance of this class.
    */
-  static vtkLODProp3D* New();
+  static vtkLODProp3D *New();
 
   vtkTypeMacro(vtkLODProp3D, vtkProp3D);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Standard vtkProp method to get 3D bounds of a 3D prop
    */
-  double* GetBounds() VTK_SIZEHINT(6) override;
-  void GetBounds(double bounds[6]) { this->vtkProp3D::GetBounds(bounds); }
+  double *GetBounds();
+  void GetBounds(double bounds[6])
+    { this->vtkProp3D::GetBounds( bounds ); }
 
   //@{
   /**
@@ -81,16 +82,17 @@ public:
    * The returned integer value is an ID that can be used later to delete
    * this LOD, or set it as the selected LOD.
    */
-  int AddLOD(vtkMapper* m, vtkProperty* p, vtkProperty* back, vtkTexture* t, double time);
-  int AddLOD(vtkMapper* m, vtkProperty* p, vtkTexture* t, double time);
-  int AddLOD(vtkMapper* m, vtkProperty* p, vtkProperty* back, double time);
-  int AddLOD(vtkMapper* m, vtkProperty* p, double time);
-  int AddLOD(vtkMapper* m, vtkTexture* t, double time);
-  int AddLOD(vtkMapper* m, double time);
-  int AddLOD(vtkAbstractVolumeMapper* m, vtkVolumeProperty* p, double time);
-  int AddLOD(vtkAbstractVolumeMapper* m, double time);
-  int AddLOD(vtkImageMapper3D* m, vtkImageProperty* p, double time);
-  int AddLOD(vtkImageMapper3D* m, double time);
+  int AddLOD( vtkMapper *m, vtkProperty *p, vtkProperty *back,
+              vtkTexture *t, double time );
+  int AddLOD( vtkMapper *m, vtkProperty *p, vtkTexture *t, double time );
+  int AddLOD( vtkMapper *m, vtkProperty *p, vtkProperty *back, double time );
+  int AddLOD( vtkMapper *m, vtkProperty *p, double time );
+  int AddLOD( vtkMapper *m, vtkTexture *t, double time );
+  int AddLOD( vtkMapper *m, double time );
+  int AddLOD( vtkAbstractVolumeMapper *m, vtkVolumeProperty *p, double time );
+  int AddLOD( vtkAbstractVolumeMapper *m, double time );
+  int AddLOD( vtkImageMapper3D *m, vtkImageProperty *p, double time );
+  int AddLOD( vtkImageMapper3D *m, double time );
   //@}
 
   //@{
@@ -122,12 +124,12 @@ public:
    * to get it. The returned property will be NULL if the id is not valid,
    * or the property is of the wrong type for the corresponding Prop3D.
    */
-  void SetLODProperty(int id, vtkProperty* p);
-  void GetLODProperty(int id, vtkProperty** p);
-  void SetLODProperty(int id, vtkVolumeProperty* p);
-  void GetLODProperty(int id, vtkVolumeProperty** p);
-  void SetLODProperty(int id, vtkImageProperty* p);
-  void GetLODProperty(int id, vtkImageProperty** p);
+  void SetLODProperty(int id, vtkProperty *p);
+  void GetLODProperty(int id, vtkProperty **p);
+  void SetLODProperty(int id, vtkVolumeProperty *p);
+  void GetLODProperty(int id, vtkVolumeProperty **p);
+  void SetLODProperty(int id, vtkImageProperty *p);
+  void GetLODProperty(int id, vtkImageProperty **p);
   //@}
 
   //@{
@@ -137,12 +139,12 @@ public:
    * to get it. The returned mapper will be NULL if the id is not valid,
    * or the mapper is of the wrong type for the corresponding Prop3D.
    */
-  void SetLODMapper(int id, vtkMapper* m);
-  void GetLODMapper(int id, vtkMapper** m);
-  void SetLODMapper(int id, vtkAbstractVolumeMapper* m);
-  void GetLODMapper(int id, vtkAbstractVolumeMapper** m);
-  void SetLODMapper(int id, vtkImageMapper3D* m);
-  void GetLODMapper(int id, vtkImageMapper3D** m);
+  void SetLODMapper(int id, vtkMapper *m);
+  void GetLODMapper(int id, vtkMapper **m);
+  void SetLODMapper(int id, vtkAbstractVolumeMapper *m);
+  void GetLODMapper(int id, vtkAbstractVolumeMapper **m);
+  void SetLODMapper(int id, vtkImageMapper3D *m);
+  void GetLODMapper(int id, vtkImageMapper3D **m);
   //@}
 
   /**
@@ -150,15 +152,15 @@ public:
    * respondibility to safe down cast this to a vtkMapper or vtkVolumeMapper
    * as appropriate.
    */
-  vtkAbstractMapper3D* GetLODMapper(int id);
+  vtkAbstractMapper3D *GetLODMapper(int id);
 
   //@{
   /**
    * Methods to set / get the backface property of an LOD. This method is only
    * valid for LOD ids that are Actors (not Volumes)
    */
-  void SetLODBackfaceProperty(int id, vtkProperty* t);
-  void GetLODBackfaceProperty(int id, vtkProperty** t);
+  void SetLODBackfaceProperty(int id, vtkProperty *t);
+  void GetLODBackfaceProperty(int id, vtkProperty **t);
   //@}
 
   //@{
@@ -166,8 +168,8 @@ public:
    * Methods to set / get the texture of an LOD. This method is only
    * valid for LOD ids that are Actors (not Volumes)
    */
-  void SetLODTexture(int id, vtkTexture* t);
-  void GetLODTexture(int id, vtkTexture** t);
+  void SetLODTexture(int id, vtkTexture *t);
+  void GetLODTexture(int id, vtkTexture **t);
   //@}
 
   //@{
@@ -191,7 +193,7 @@ public:
    * between 2 and 3.
    */
   void SetLODLevel(int id, double level);
-  double GetLODLevel(int id);
+  double GetLODLevel(int id );
   double GetLODIndexLevel(int index);
   //@}
 
@@ -211,9 +213,9 @@ public:
    * This is on by default. If it is off, then the SelectedLODID is
    * rendered regardless of rendering time or desired update rate.
    */
-  vtkSetClampMacro(AutomaticLODSelection, vtkTypeBool, 0, 1);
-  vtkGetMacro(AutomaticLODSelection, vtkTypeBool);
-  vtkBooleanMacro(AutomaticLODSelection, vtkTypeBool);
+  vtkSetClampMacro(AutomaticLODSelection, int, 0, 1);
+  vtkGetMacro(AutomaticLODSelection, int);
+  vtkBooleanMacro(AutomaticLODSelection, int);
   //@}
 
   //@{
@@ -241,13 +243,13 @@ public:
    * able to collect all the actors or volumes. These methods
    * are used in that process.
    */
-  void GetActors(vtkPropCollection*) override;
-  void GetVolumes(vtkPropCollection*) override;
+  virtual void GetActors(vtkPropCollection *);
+  virtual void GetVolumes(vtkPropCollection *);
   //@}
 
   //@{
   /**
-   * Set the id of the LOD that is to be used for picking when automatic
+   * Set the id of the LOD that is to be used for picking when  automatic
    * LOD pick selection is turned off.
    */
   void SetSelectedPickLODID(int id);
@@ -260,43 +262,43 @@ public:
    * This is on by default. If it is off, then the SelectedLODID is
    * rendered regardless of rendering time or desired update rate.
    */
-  vtkSetClampMacro(AutomaticPickLODSelection, vtkTypeBool, 0, 1);
-  vtkGetMacro(AutomaticPickLODSelection, vtkTypeBool);
-  vtkBooleanMacro(AutomaticPickLODSelection, vtkTypeBool);
+  vtkSetClampMacro(AutomaticPickLODSelection, int, 0, 1);
+  vtkGetMacro(AutomaticPickLODSelection, int);
+  vtkBooleanMacro(AutomaticPickLODSelection, int);
   //@}
 
   /**
    * Shallow copy of this vtkLODProp3D.
    */
-  void ShallowCopy(vtkProp* prop) override;
+  void ShallowCopy(vtkProp *prop);
 
   //@{
   /**
    * Support the standard render methods.
    */
-  int RenderOpaqueGeometry(vtkViewport* viewport) override;
-  int RenderTranslucentPolygonalGeometry(vtkViewport* ren) override;
-  int RenderVolumetricGeometry(vtkViewport* ren) override;
+  int RenderOpaqueGeometry(vtkViewport *viewport);
+  virtual int RenderTranslucentPolygonalGeometry( vtkViewport *ren);
+  virtual int RenderVolumetricGeometry( vtkViewport *ren);
   //@}
 
   /**
    * Does this prop have some translucent polygonal geometry?
    */
-  vtkTypeBool HasTranslucentPolygonalGeometry() override;
+  virtual int HasTranslucentPolygonalGeometry();
 
   /**
    * Release any graphics resources that are being consumed by this actor.
    * The parameter window could be used to determine which graphic
    * resources to release.
    */
-  void ReleaseGraphicsResources(vtkWindow*) override;
+  void ReleaseGraphicsResources(vtkWindow *);
 
   /**
    * Used by the culler / renderer to set the allocated render time for this
    * prop. This is based on the desired update rate, and possibly some other
    * properties such as potential screen coverage of this prop.
    */
-  void SetAllocatedRenderTime(double t, vtkViewport* vp) override;
+  void SetAllocatedRenderTime( double t, vtkViewport *vp );
 
   /**
    * Used when the render process is aborted to restore the previous
@@ -304,41 +306,38 @@ public:
    * particular LOD to be restored - otherwise the time for the last rendered
    * LOD will be copied into the currently selected LOD.
    */
-  void RestoreEstimatedRenderTime() override;
+  void RestoreEstimatedRenderTime( );
 
   /**
    * Override method from vtkProp in order to push this call down to the
    * selected LOD as well.
    */
-  void AddEstimatedRenderTime(double t, vtkViewport* vp) override;
+  virtual void AddEstimatedRenderTime( double t, vtkViewport *vp );
 
 protected:
   vtkLODProp3D();
-  ~vtkLODProp3D() override;
+  ~vtkLODProp3D();
 
   int GetAutomaticPickPropIndex(void);
 
-  // Assumes that SelectedLODIndex has already been validated:
-  void UpdateKeysForSelectedProp();
-
-  vtkLODProp3DEntry* LODs;
+  vtkLODProp3DEntry *LODs;
   int NumberOfEntries;
   int NumberOfLODs;
   int CurrentIndex;
 
   int GetNextEntryIndex();
-  int ConvertIDToIndex(int id);
+  int ConvertIDToIndex( int id );
   int SelectedLODIndex;
 
-  vtkTypeBool AutomaticLODSelection;
+  int AutomaticLODSelection;
   int SelectedLODID;
   int SelectedPickLODID;
-  vtkTypeBool AutomaticPickLODSelection;
-  vtkLODProp3DCallback* PickCallback;
+  int AutomaticPickLODSelection;
+  vtkLODProp3DCallback *PickCallback;
 
 private:
-  vtkLODProp3D(const vtkLODProp3D&) = delete;
-  void operator=(const vtkLODProp3D&) = delete;
+  vtkLODProp3D(const vtkLODProp3D&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkLODProp3D&) VTK_DELETE_FUNCTION;
 };
 
 #endif

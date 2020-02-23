@@ -14,14 +14,14 @@
 =========================================================================*/
 #include "vtkExtractBlock.h"
 
-#include "vtkDataObjectTreeIterator.h"
-#include "vtkDataSet.h"
 #include "vtkInformation.h"
-#include "vtkInformationIntegerKey.h"
 #include "vtkInformationVector.h"
 #include "vtkMultiBlockDataSet.h"
-#include "vtkMultiPieceDataSet.h"
 #include "vtkObjectFactory.h"
+#include "vtkDataSet.h"
+#include "vtkDataObjectTreeIterator.h"
+#include "vtkInformationIntegerKey.h"
+#include "vtkMultiPieceDataSet.h"
 
 #include <set>
 
@@ -54,6 +54,7 @@ void vtkExtractBlock::AddIndex(unsigned int index)
   this->Modified();
 }
 
+
 //----------------------------------------------------------------------------
 void vtkExtractBlock::RemoveIndex(unsigned int index)
 {
@@ -69,8 +70,8 @@ void vtkExtractBlock::RemoveAllIndices()
 }
 
 //----------------------------------------------------------------------------
-void vtkExtractBlock::CopySubTree(
-  vtkDataObjectTreeIterator* loc, vtkMultiBlockDataSet* output, vtkMultiBlockDataSet* input)
+void vtkExtractBlock::CopySubTree(vtkDataObjectTreeIterator* loc,
+  vtkMultiBlockDataSet* output, vtkMultiBlockDataSet* input)
 {
   vtkDataObject* inputNode = input->GetDataSet(loc);
   if (!inputNode->IsA("vtkCompositeDataSet"))
@@ -83,10 +84,11 @@ void vtkExtractBlock::CopySubTree(
   else
   {
     vtkCompositeDataSet* cinput = vtkCompositeDataSet::SafeDownCast(inputNode);
-    vtkCompositeDataSet* coutput = vtkCompositeDataSet::SafeDownCast(output->GetDataSet(loc));
+    vtkCompositeDataSet* coutput = vtkCompositeDataSet::SafeDownCast(
+      output->GetDataSet(loc));
     vtkCompositeDataIterator* iter = cinput->NewIterator();
     vtkDataObjectTreeIterator* treeIter = vtkDataObjectTreeIterator::SafeDownCast(iter);
-    if (treeIter)
+    if(treeIter)
     {
       treeIter->VisitOnlyLeavesOff();
     }
@@ -98,20 +100,21 @@ void vtkExtractBlock::CopySubTree(
       coutput->SetDataSet(iter, clone);
       clone->Delete();
 
-      this->ActiveIndices->erase(loc->GetCurrentFlatIndex() + iter->GetCurrentFlatIndex());
+      this->ActiveIndices->erase(loc->GetCurrentFlatIndex() +
+        iter->GetCurrentFlatIndex());
     }
     iter->Delete();
   }
 }
 
 //----------------------------------------------------------------------------
-int vtkExtractBlock::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+int vtkExtractBlock::RequestData(
+  vtkInformation *vtkNotUsed(request),
+  vtkInformationVector **inputVector,
+  vtkInformationVector *outputVector)
 {
-  vtkMultiBlockDataSet* input = vtkMultiBlockDataSet::GetData(inputVector[0], 0);
-  vtkMultiBlockDataSet* output = vtkMultiBlockDataSet::GetData(outputVector, 0);
-
-  vtkDebugMacro(<< "Extracting blocks");
+  vtkMultiBlockDataSet *input = vtkMultiBlockDataSet::GetData(inputVector[0], 0);
+  vtkMultiBlockDataSet *output = vtkMultiBlockDataSet::GetData(outputVector, 0);
 
   if (this->Indices->find(0) != this->Indices->end())
   {
@@ -128,10 +131,12 @@ int vtkExtractBlock::RequestData(vtkInformation* vtkNotUsed(request),
   vtkDataObjectTreeIterator* iter = input->NewTreeIterator();
   iter->VisitOnlyLeavesOff();
 
-  for (iter->InitTraversal(); !iter->IsDoneWithTraversal() && !this->ActiveIndices->empty();
-       iter->GoToNextItem())
+  for (iter->InitTraversal();
+    !iter->IsDoneWithTraversal() && this->ActiveIndices->size()>0;
+    iter->GoToNextItem())
   {
-    if (this->ActiveIndices->find(iter->GetCurrentFlatIndex()) != this->ActiveIndices->end())
+    if (this->ActiveIndices->find(iter->GetCurrentFlatIndex()) !=
+      this->ActiveIndices->end())
     {
       this->ActiveIndices->erase(iter->GetCurrentFlatIndex());
 
@@ -150,9 +155,9 @@ int vtkExtractBlock::RequestData(vtkInformation* vtkNotUsed(request),
   // Now prune the output tree.
 
   // Since in case multiple processes are involved, this process may have some
-  // data-set pointers nullptr. Hence, pruning cannot simply trim nullptr ptrs, since
+  // data-set pointers NULL. Hence, pruning cannot simply trim NULL ptrs, since
   // in that case we may end up with different structures on different
-  // processes, which is a big NO-NO. Hence, we first flag nodes based on
+  // processess, which is a big NO-NO. Hence, we first flag nodes based on
   // whether they are being pruned or not.
 
   iter = output->NewTreeIterator();
@@ -172,7 +177,7 @@ int vtkExtractBlock::RequestData(vtkInformation* vtkNotUsed(request),
   iter->Delete();
 
   // Do the actual pruning. Only those branches are pruned which don't have
-  // DONT_PRUNE flag set.
+  // DON_PRUNE flag set.
   this->Prune(output);
   return 1;
 }
@@ -197,9 +202,9 @@ bool vtkExtractBlock::Prune(vtkMultiPieceDataSet* mpiece)
 {
   // * Remove any children on mpiece that don't have DONT_PRUNE set.
   vtkMultiPieceDataSet* clone = vtkMultiPieceDataSet::New();
-  unsigned int index = 0;
+  unsigned int index=0;
   unsigned int numChildren = mpiece->GetNumberOfPieces();
-  for (unsigned int cc = 0; cc < numChildren; cc++)
+  for (unsigned int cc=0; cc<numChildren; cc++)
   {
     if (mpiece->HasMetaData(cc) && mpiece->GetMetaData(cc)->Has(DONT_PRUNE()))
     {
@@ -219,9 +224,9 @@ bool vtkExtractBlock::Prune(vtkMultiPieceDataSet* mpiece)
 bool vtkExtractBlock::Prune(vtkMultiBlockDataSet* mblock)
 {
   vtkMultiBlockDataSet* clone = vtkMultiBlockDataSet::New();
-  unsigned int index = 0;
+  unsigned int index=0;
   unsigned int numChildren = mblock->GetNumberOfBlocks();
-  for (unsigned int cc = 0; cc < numChildren; cc++)
+  for (unsigned int cc=0; cc < numChildren; cc++)
   {
     vtkDataObject* block = mblock->GetBlock(cc);
     if (mblock->HasMetaData(cc) && mblock->GetMetaData(cc)->Has(DONT_PRUNE()))
@@ -236,13 +241,15 @@ bool vtkExtractBlock::Prune(vtkMultiBlockDataSet* mblock)
       if (!prune)
       {
         vtkMultiBlockDataSet* prunedBlock = vtkMultiBlockDataSet::SafeDownCast(block);
-        if (this->MaintainStructure == 0 && prunedBlock && prunedBlock->GetNumberOfBlocks() == 1)
+        if (this->MaintainStructure == 0 &&
+          prunedBlock && prunedBlock->GetNumberOfBlocks()==1)
         {
           // shrink redundant branches.
           clone->SetBlock(index, prunedBlock->GetBlock(0));
           if (prunedBlock->HasMetaData(static_cast<unsigned int>(0)))
           {
-            clone->GetMetaData(index)->Copy(prunedBlock->GetMetaData(static_cast<unsigned int>(0)));
+            clone->GetMetaData(index)->Copy(prunedBlock->GetMetaData(
+                static_cast<unsigned int>(0)));
           }
         }
         else
@@ -269,3 +276,4 @@ void vtkExtractBlock::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "PruneOutput: " << this->PruneOutput << endl;
   os << indent << "MaintainStructure: " << this->MaintainStructure << endl;
 }
+

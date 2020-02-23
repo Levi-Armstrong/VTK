@@ -2,9 +2,8 @@
 
 #import "vtkCocoaGLView.h"
 
-#import "vtkRenderer.h"
+#include "vtkRenderer.h"
 
-// This is a subclass of VTK's vtkCocoaGLView.
 @interface BasicVTKView : vtkCocoaGLView
 
 // Create the vtkRenderer, vtkRenderWindow, and vtkRenderWindowInteractor.
@@ -16,6 +15,7 @@
 - (void)cleanUpVTKSupport;
 
 // Accessors for the vtkRenderer.
-@property (readwrite, nonatomic, nullable, getter=getRenderer) vtkRenderer* renderer;
+- (/*nullable*/ vtkRenderer*)getRenderer;
+- (void)setRenderer:(/*nullable*/ vtkRenderer*)theRenderer;
 
 @end

@@ -32,7 +32,7 @@
  * In: W. de Leeuw, R. van Liere (eds.), Data Visualization 2000,
  * Proceedings of the joint Eurographics and IEEE TCVG Symposium on Visualization,
  * 2000, Springer, Vienna, p. 33-42.
- */
+*/
 
 #ifndef vtkSquarifyLayoutStrategy_h
 #define vtkSquarifyLayoutStrategy_h
@@ -45,27 +45,38 @@ class vtkIdList;
 class VTKINFOVISLAYOUT_EXPORT vtkSquarifyLayoutStrategy : public vtkTreeMapLayoutStrategy
 {
 public:
-  static vtkSquarifyLayoutStrategy* New();
-  vtkTypeMacro(vtkSquarifyLayoutStrategy, vtkTreeMapLayoutStrategy);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkSquarifyLayoutStrategy *New();
+  vtkTypeMacro(vtkSquarifyLayoutStrategy,vtkTreeMapLayoutStrategy);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Perform the layout of a tree and place the results as 4-tuples in
    * coordsArray (Xmin, Xmax, Ymin, Ymax).
    */
-  void Layout(vtkTree* inputTree, vtkDataArray* coordsArray, vtkDataArray* sizeArray) override;
+  void Layout(
+      vtkTree* inputTree,
+      vtkDataArray* coordsArray,
+      vtkDataArray* sizeArray);
 
 protected:
   vtkSquarifyLayoutStrategy();
-  ~vtkSquarifyLayoutStrategy() override;
+  ~vtkSquarifyLayoutStrategy();
 
 private:
-  void LayoutChildren(vtkTree* tree, vtkDataArray* coordsArray, vtkDataArray* sizeArray,
-    vtkIdType nchildren, vtkIdType parent, vtkIdType begin, float minX, float maxX, float minY,
-    float maxY);
 
-  vtkSquarifyLayoutStrategy(const vtkSquarifyLayoutStrategy&) = delete;
-  void operator=(const vtkSquarifyLayoutStrategy&) = delete;
+  void LayoutChildren(
+    vtkTree *tree,
+    vtkDataArray *coordsArray,
+    vtkDataArray *sizeArray,
+    vtkIdType nchildren,
+    vtkIdType parent,
+    vtkIdType begin,
+    float minX, float maxX,
+    float minY, float maxY);
+
+  vtkSquarifyLayoutStrategy(const vtkSquarifyLayoutStrategy&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkSquarifyLayoutStrategy&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

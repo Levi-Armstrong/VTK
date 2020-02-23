@@ -25,7 +25,7 @@
  * vtkThresholdTable uses minimum and/or maximum values to threshold
  * table rows based on the values in a particular column.
  * The column to threshold is specified using SetInputArrayToProcess(0, ...).
- */
+*/
 
 #ifndef vtkThresholdTable_h
 #define vtkThresholdTable_h
@@ -39,10 +39,9 @@ class VTKINFOVISCORE_EXPORT vtkThresholdTable : public vtkTableAlgorithm
 public:
   static vtkThresholdTable* New();
   vtkTypeMacro(vtkThresholdTable, vtkTableAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
-  enum
-  {
+  enum {
     ACCEPT_LESS_THAN = 0,
     ACCEPT_GREATER_THAN = 1,
     ACCEPT_BETWEEN = 2,
@@ -71,7 +70,10 @@ public:
     this->MinValue = v;
     this->Modified();
   }
-  virtual vtkVariant GetMinValue() { return this->MinValue; }
+  virtual vtkVariant GetMinValue()
+  {
+    return this->MinValue;
+  }
   //@}
 
   //@{
@@ -84,7 +86,10 @@ public:
     this->MaxValue = v;
     this->Modified();
   }
-  virtual vtkVariant GetMaxValue() { return this->MaxValue; }
+  virtual vtkVariant GetMaxValue()
+  {
+    return this->MaxValue;
+  }
   //@}
 
   /**
@@ -96,12 +101,18 @@ public:
   /**
    * The minimum value for the threshold as a double.
    */
-  void SetMinValue(double v) { this->SetMinValue(vtkVariant(v)); }
+  void SetMinValue(double v)
+  {
+    this->SetMinValue(vtkVariant(v));
+  }
 
   /**
    * The maximum value for the threshold as a double.
    */
-  void SetMaxValue(double v) { this->SetMaxValue(vtkVariant(v)); }
+  void SetMaxValue(double v)
+  {
+    this->SetMaxValue(vtkVariant(v));
+  }
 
   /**
    * Criterion is rows whose scalars are between lower and upper thresholds
@@ -109,22 +120,26 @@ public:
    */
   void ThresholdBetween(double lower, double upper)
   {
-    this->ThresholdBetween(vtkVariant(lower), vtkVariant(upper));
+    this->ThresholdBetween(vtkVariant(lower),vtkVariant(upper));
   }
 
 protected:
   vtkThresholdTable();
-  ~vtkThresholdTable() override;
+  ~vtkThresholdTable();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(
+    vtkInformation*,
+    vtkInformationVector**,
+    vtkInformationVector*);
 
   vtkVariant MinValue;
   vtkVariant MaxValue;
   int Mode;
 
 private:
-  vtkThresholdTable(const vtkThresholdTable&) = delete;
-  void operator=(const vtkThresholdTable&) = delete;
+  vtkThresholdTable(const vtkThresholdTable&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkThresholdTable&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

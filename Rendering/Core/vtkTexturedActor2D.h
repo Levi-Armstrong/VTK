@@ -22,13 +22,13 @@
  *
  * @sa
  * vtkActor2D vtkProp vtkMapper2D vtkProperty2D
- */
+*/
 
 #ifndef vtkTexturedActor2D_h
 #define vtkTexturedActor2D_h
 
-#include "vtkActor2D.h"
 #include "vtkRenderingCoreModule.h" // For export macro
+#include "vtkActor2D.h"
 
 class vtkProp;
 class vtkTexture;
@@ -39,7 +39,7 @@ class VTKRENDERINGCORE_EXPORT vtkTexturedActor2D : public vtkActor2D
 {
 public:
   static vtkTexturedActor2D* New();
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
   vtkTypeMacro(vtkTexturedActor2D, vtkActor2D);
 
   //@{
@@ -57,36 +57,36 @@ public:
    * The parameter window could be used to determine which graphic
    * resources to release.
    */
-  void ReleaseGraphicsResources(vtkWindow* win) override;
+  virtual void ReleaseGraphicsResources(vtkWindow* win) VTK_OVERRIDE;
 
   //@{
   /**
    * Support the standard render methods.
    */
-  int RenderOverlay(vtkViewport* viewport) override;
-  int RenderOpaqueGeometry(vtkViewport* viewport) override;
-  int RenderTranslucentPolygonalGeometry(vtkViewport* viewport) override;
+  virtual int RenderOverlay(vtkViewport* viewport) VTK_OVERRIDE;
+  virtual int RenderOpaqueGeometry(vtkViewport* viewport) VTK_OVERRIDE;
+  virtual int RenderTranslucentPolygonalGeometry(vtkViewport* viewport) VTK_OVERRIDE;
   //@}
 
   /**
    * Return this object's modified time.
    */
-  vtkMTimeType GetMTime() override;
+  virtual vtkMTimeType GetMTime() VTK_OVERRIDE;
 
   /**
    * Shallow copy of this vtkTexturedActor2D. Overrides vtkActor2D method.
    */
-  void ShallowCopy(vtkProp* prop) override;
+  virtual void ShallowCopy(vtkProp* prop) VTK_OVERRIDE;
 
 protected:
   vtkTexturedActor2D();
-  ~vtkTexturedActor2D() override;
+  ~vtkTexturedActor2D();
 
   vtkTexture* Texture;
 
 private:
-  vtkTexturedActor2D(const vtkTexturedActor2D&) = delete;
-  void operator=(const vtkTexturedActor2D&) = delete;
+  vtkTexturedActor2D(const vtkTexturedActor2D&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTexturedActor2D&) VTK_DELETE_FUNCTION;
 };
 
 #endif

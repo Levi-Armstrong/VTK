@@ -19,7 +19,7 @@ PURPOSE.  See the above copyright notice for more information.
   -------------------------------------------------------------------------*/
 /**
  * @class   vtkBoostKruskalMinimumSpanningTree
- * @brief   Constructs a minimum spanning
+ * @brief   Contructs a minimum spanning
  *    tree from a graph and the weighting array
  *
  *
@@ -30,24 +30,23 @@ PURPOSE.  See the above copyright notice for more information.
  *
  * @sa
  * vtkGraph vtkBoostGraphAdapter
- */
+*/
 
 #ifndef vtkBoostKruskalMinimumSpanningTree_h
 #define vtkBoostKruskalMinimumSpanningTree_h
 
 #include "vtkInfovisBoostGraphAlgorithmsModule.h" // For export macro
-#include "vtkStdString.h"                         // For string type
-#include "vtkVariant.h"                           // For variant type
+#include "vtkStdString.h" // For string type
+#include "vtkVariant.h" // For variant type
 
 #include "vtkSelectionAlgorithm.h"
 
-class VTKINFOVISBOOSTGRAPHALGORITHMS_EXPORT vtkBoostKruskalMinimumSpanningTree
-  : public vtkSelectionAlgorithm
+class VTKINFOVISBOOSTGRAPHALGORITHMS_EXPORT vtkBoostKruskalMinimumSpanningTree : public vtkSelectionAlgorithm
 {
 public:
-  static vtkBoostKruskalMinimumSpanningTree* New();
+  static vtkBoostKruskalMinimumSpanningTree *New();
   vtkTypeMacro(vtkBoostKruskalMinimumSpanningTree, vtkSelectionAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -84,13 +83,18 @@ public:
 
 protected:
   vtkBoostKruskalMinimumSpanningTree();
-  ~vtkBoostKruskalMinimumSpanningTree() override;
+  ~vtkBoostKruskalMinimumSpanningTree();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(
+    vtkInformation *,
+    vtkInformationVector **,
+    vtkInformationVector *);
 
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  int FillInputPortInformation(
+    int port, vtkInformation* info);
 
-  int FillOutputPortInformation(int port, vtkInformation* info) override;
+  int FillOutputPortInformation(
+    int port, vtkInformation* info);
 
 private:
   char* EdgeWeightArrayName;
@@ -98,8 +102,8 @@ private:
   bool NegateEdgeWeights;
   float EdgeWeightMultiplier;
 
-  vtkBoostKruskalMinimumSpanningTree(const vtkBoostKruskalMinimumSpanningTree&) = delete;
-  void operator=(const vtkBoostKruskalMinimumSpanningTree&) = delete;
+  vtkBoostKruskalMinimumSpanningTree(const vtkBoostKruskalMinimumSpanningTree&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkBoostKruskalMinimumSpanningTree&) VTK_DELETE_FUNCTION;
 };
 
 #endif

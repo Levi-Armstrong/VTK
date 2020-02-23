@@ -29,9 +29,9 @@ vtkStandardNewMacro(vtkMutableGraphHelper);
 //----------------------------------------------------------------------------
 vtkMutableGraphHelper::vtkMutableGraphHelper()
 {
-  this->InternalGraph = nullptr;
-  this->DirectedGraph = nullptr;
-  this->UndirectedGraph = nullptr;
+  this->InternalGraph = 0;
+  this->DirectedGraph = 0;
+  this->UndirectedGraph = 0;
   this->GraphEdge = vtkGraphEdge::New();
   this->GraphEdge->SetId(-1);
   this->GraphEdge->SetSource(-1);
@@ -188,7 +188,7 @@ void vtkMutableGraphHelper::RemoveEdges(vtkIdTypeArray* edges)
 //----------------------------------------------------------------------------
 void vtkMutableGraphHelper::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
   os << indent << "InternalGraph: " << (this->InternalGraph ? "" : "(null)") << endl;
   if (this->InternalGraph)
   {

@@ -21,14 +21,14 @@
  * of material interfaces, for parallel data sets
  *
  * @par Thanks:
- * This file is part of the generalized Youngs material interface reconstruction algorithm
- * contributed by <br> CEA/DIF - Commissariat a l'Energie Atomique, Centre DAM Ile-De-France <br>
+ * This file is part of the generalized Youngs material interface reconstruction algorithm contributed by <br>
+ * CEA/DIF - Commissariat a l'Energie Atomique, Centre DAM Ile-De-France <br>
  * BP12, F-91297 Arpajon, France. <br>
  * Implementation by Thierry Carrard and Philippe Pebay
  *
  * @sa
  * vtkYoungsMaterialInterface
- */
+*/
 
 #ifndef vtkPYoungsMaterialInterface_h
 #define vtkPYoungsMaterialInterface_h
@@ -42,13 +42,13 @@ class VTKFILTERSPARALLEL_EXPORT vtkPYoungsMaterialInterface : public vtkYoungsMa
 {
 public:
   static vtkPYoungsMaterialInterface* New();
-  vtkTypeMacro(vtkPYoungsMaterialInterface, vtkYoungsMaterialInterface);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkPYoungsMaterialInterface,vtkYoungsMaterialInterface);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Parallel implementation of the material aggregation.
    */
-  void Aggregate(int, int*) override;
+  virtual void Aggregate ( int, int* );
 
   //@{
   /**
@@ -60,14 +60,14 @@ public:
   //@}
 
 protected:
-  vtkPYoungsMaterialInterface();
-  ~vtkPYoungsMaterialInterface() override;
+  vtkPYoungsMaterialInterface ();
+  virtual ~vtkPYoungsMaterialInterface ();
 
   vtkMultiProcessController* Controller;
 
 private:
-  vtkPYoungsMaterialInterface(const vtkPYoungsMaterialInterface&) = delete;
-  void operator=(const vtkPYoungsMaterialInterface&) = delete;
+  vtkPYoungsMaterialInterface(const vtkPYoungsMaterialInterface&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPYoungsMaterialInterface&) VTK_DELETE_FUNCTION;
 };
 
 #endif /* VTK_PYOUNGS_MATERIAL_INTERFACE_H */

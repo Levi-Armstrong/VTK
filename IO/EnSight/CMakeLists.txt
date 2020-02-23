@@ -1,11 +1,16 @@
-set(classes
-  vtkEnSight6BinaryReader
-  vtkEnSight6Reader
-  vtkEnSightGoldBinaryReader
-  vtkEnSightGoldReader
-  vtkEnSightMasterServerReader
-  vtkEnSightReader
-  vtkGenericEnSightReader)
+set(Module_SRCS
+  vtkEnSight6BinaryReader.cxx
+  vtkEnSight6Reader.cxx
+  vtkEnSightGoldBinaryReader.cxx
+  vtkEnSightGoldReader.cxx
+  vtkEnSightMasterServerReader.cxx
+  vtkEnSightReader.cxx
+  vtkGenericEnSightReader.cxx
+)
 
-vtk_module_add_module(VTK::IOEnSight
-  CLASSES ${classes})
+set_source_files_properties(
+  vtkEnSightReader
+  ABSTRACT
+  )
+
+vtk_module_library(vtkIOEnSight ${Module_SRCS})

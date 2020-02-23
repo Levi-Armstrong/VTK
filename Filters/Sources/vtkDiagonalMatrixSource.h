@@ -26,20 +26,20 @@
  *
  * @par Thanks:
  * Developed by Timothy M. Shead (tshead@sandia.gov) at Sandia National Laboratories.
- */
+*/
 
 #ifndef vtkDiagonalMatrixSource_h
 #define vtkDiagonalMatrixSource_h
 
-#include "vtkArrayDataAlgorithm.h"
 #include "vtkFiltersSourcesModule.h" // For export macro
+#include "vtkArrayDataAlgorithm.h"
 
 class VTKFILTERSSOURCES_EXPORT vtkDiagonalMatrixSource : public vtkArrayDataAlgorithm
 {
 public:
   static vtkDiagonalMatrixSource* New();
   vtkTypeMacro(vtkDiagonalMatrixSource, vtkArrayDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   // Determines whether the output matrix will be dense or sparse
   enum StorageType
@@ -103,13 +103,16 @@ public:
 
 protected:
   vtkDiagonalMatrixSource();
-  ~vtkDiagonalMatrixSource() override;
+  ~vtkDiagonalMatrixSource() VTK_OVERRIDE;
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(
+    vtkInformation*,
+    vtkInformationVector**,
+    vtkInformationVector*) VTK_OVERRIDE;
 
 private:
-  vtkDiagonalMatrixSource(const vtkDiagonalMatrixSource&) = delete;
-  void operator=(const vtkDiagonalMatrixSource&) = delete;
+  vtkDiagonalMatrixSource(const vtkDiagonalMatrixSource&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkDiagonalMatrixSource&) VTK_DELETE_FUNCTION;
 
   vtkArray* GenerateDenseArray();
   vtkArray* GenerateSparseArray();
@@ -124,3 +127,4 @@ private:
 };
 
 #endif
+

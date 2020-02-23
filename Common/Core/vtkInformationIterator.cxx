@@ -31,7 +31,7 @@ public:
 vtkInformationIterator::vtkInformationIterator()
 {
   this->Internal = new vtkInformationIteratorInternals;
-  this->Information = nullptr;
+  this->Information = 0;
   this->ReferenceIsWeak = false;
 }
 
@@ -40,7 +40,7 @@ vtkInformationIterator::~vtkInformationIterator()
 {
   if (this->ReferenceIsWeak)
   {
-    this->Information = nullptr;
+    this->Information = 0;
   }
   if (this->Information)
   {
@@ -54,7 +54,7 @@ void vtkInformationIterator::SetInformation(vtkInformation* inf)
 {
   if (this->ReferenceIsWeak)
   {
-    this->Information = nullptr;
+    this->Information = 0;
   }
   this->ReferenceIsWeak = false;
   vtkSetObjectBodyMacro(Information, vtkInformation, inf);
@@ -65,7 +65,7 @@ void vtkInformationIterator::SetInformationWeak(vtkInformation* inf)
 {
   if (!this->ReferenceIsWeak)
   {
-    this->SetInformation(nullptr);
+    this->SetInformation(0);
   }
 
   this->ReferenceIsWeak = true;
@@ -75,6 +75,7 @@ void vtkInformationIterator::SetInformationWeak(vtkInformation* inf)
     this->Information = inf;
     this->Modified();
   }
+
 }
 
 //----------------------------------------------------------------------------
@@ -109,7 +110,7 @@ int vtkInformationIterator::IsDoneWithTraversal()
     return 1;
   }
 
-  if (this->Internal->Iterator == this->Information->Internal->Map.end())
+  if(this->Internal->Iterator == this->Information->Internal->Map.end())
   {
     return 1;
   }
@@ -121,7 +122,7 @@ vtkInformationKey* vtkInformationIterator::GetCurrentKey()
 {
   if (this->IsDoneWithTraversal())
   {
-    return nullptr;
+    return 0;
   }
 
   return this->Internal->Iterator->first;
@@ -130,7 +131,7 @@ vtkInformationKey* vtkInformationIterator::GetCurrentKey()
 //----------------------------------------------------------------------------
 void vtkInformationIterator::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 
   os << indent << "Information: ";
   if (this->Information)
@@ -143,3 +144,4 @@ void vtkInformationIterator::PrintSelf(ostream& os, vtkIndent indent)
     os << "(none)" << endl;
   }
 }
+

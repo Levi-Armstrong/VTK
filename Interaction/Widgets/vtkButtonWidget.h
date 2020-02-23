@@ -50,15 +50,16 @@
  *   vtkCommand::StateChangedEvent (on vtkWidgetEvent::EndSelect)
  * </pre>
  *
- */
+*/
 
 #ifndef vtkButtonWidget_h
 #define vtkButtonWidget_h
 
-#include "vtkAbstractWidget.h"
 #include "vtkInteractionWidgetsModule.h" // For export macro
+#include "vtkAbstractWidget.h"
 
 class vtkButtonRepresentation;
+
 
 class VTKINTERACTIONWIDGETS_EXPORT vtkButtonWidget : public vtkAbstractWidget
 {
@@ -66,14 +67,14 @@ public:
   /**
    * Instantiate the class.
    */
-  static vtkButtonWidget* New();
+  static vtkButtonWidget *New();
 
   //@{
   /**
    * Standard macros.
    */
-  vtkTypeMacro(vtkButtonWidget, vtkAbstractWidget);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkButtonWidget,vtkAbstractWidget);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   /**
@@ -81,36 +82,23 @@ public:
    * widget in the scene. Note that the representation is a subclass of vtkProp
    * so it can be added to the renderer independent of the widget.
    */
-  void SetRepresentation(vtkButtonRepresentation* r)
-  {
-    this->Superclass::SetWidgetRepresentation(reinterpret_cast<vtkWidgetRepresentation*>(r));
-  }
+  void SetRepresentation(vtkButtonRepresentation *r)
+    {this->Superclass::SetWidgetRepresentation(reinterpret_cast<vtkWidgetRepresentation*>(r));}
 
   /**
    * Return the representation as a vtkButtonRepresentation.
    */
-  vtkButtonRepresentation* GetSliderRepresentation()
-  {
-    return reinterpret_cast<vtkButtonRepresentation*>(this->WidgetRep);
-  }
+  vtkButtonRepresentation *GetSliderRepresentation()
+    {return reinterpret_cast<vtkButtonRepresentation*>(this->WidgetRep);}
 
   /**
    * Create the default widget representation if one is not set.
    */
-  void CreateDefaultRepresentation() override;
-
-  /**
-   * The method for activating and deactivating this widget. This method
-   * must be overridden because it is a composite widget and does more than
-   * its superclasses' vtkAbstractWidget::SetEnabled() method. The
-   * method finds and sets the active viewport on the internal balloon
-   * representation.
-   */
-  void SetEnabled(int) override;
+  void CreateDefaultRepresentation();
 
 protected:
   vtkButtonWidget();
-  ~vtkButtonWidget() override {}
+  ~vtkButtonWidget() {}
 
   // These are the events that are handled
   static void SelectAction(vtkAbstractWidget*);
@@ -121,14 +109,14 @@ protected:
   int WidgetState;
   enum _WidgetState
   {
-    Start = 0,
+    Start=0,
     Hovering,
     Selecting
   };
 
 private:
-  vtkButtonWidget(const vtkButtonWidget&) = delete;
-  void operator=(const vtkButtonWidget&) = delete;
+  vtkButtonWidget(const vtkButtonWidget&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkButtonWidget&) VTK_DELETE_FUNCTION;
 };
 
 #endif

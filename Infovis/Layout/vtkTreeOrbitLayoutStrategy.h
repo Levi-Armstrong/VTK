@@ -18,29 +18,30 @@
  *
  * @par Thanks:
  * Thanks to the galaxy for inspiring this layout strategy.
- */
+*/
 
 #ifndef vtkTreeOrbitLayoutStrategy_h
 #define vtkTreeOrbitLayoutStrategy_h
 
-#include "vtkGraphLayoutStrategy.h"
 #include "vtkInfovisLayoutModule.h" // For export macro
+#include "vtkGraphLayoutStrategy.h"
 
 class vtkPoints;
 class vtkTree;
 
+
 class VTKINFOVISLAYOUT_EXPORT vtkTreeOrbitLayoutStrategy : public vtkGraphLayoutStrategy
 {
 public:
-  static vtkTreeOrbitLayoutStrategy* New();
+  static vtkTreeOrbitLayoutStrategy *New();
 
   vtkTypeMacro(vtkTreeOrbitLayoutStrategy, vtkGraphLayoutStrategy);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Perform the orbital layout.
    */
-  void Layout() override;
+  void Layout();
 
   //@{
   /**
@@ -75,17 +76,19 @@ public:
 
 protected:
   vtkTreeOrbitLayoutStrategy();
-  ~vtkTreeOrbitLayoutStrategy() override;
+  ~vtkTreeOrbitLayoutStrategy();
 
-  void OrbitChildren(vtkTree* t, vtkPoints* p, vtkIdType parent, double radius);
+  void OrbitChildren(vtkTree *t, vtkPoints *p, vtkIdType parent, double radius);
 
   double LogSpacingValue;
   double LeafSpacing;
   double ChildRadiusFactor;
 
 private:
-  vtkTreeOrbitLayoutStrategy(const vtkTreeOrbitLayoutStrategy&) = delete;
-  void operator=(const vtkTreeOrbitLayoutStrategy&) = delete;
+
+  vtkTreeOrbitLayoutStrategy(const vtkTreeOrbitLayoutStrategy&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTreeOrbitLayoutStrategy&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

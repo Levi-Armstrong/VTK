@@ -21,28 +21,28 @@
  * or mpi.
  * @sa
  * vtkMultiProcessController
- */
+*/
 
 #ifndef vtkDummyController_h
 #define vtkDummyController_h
 
-#include "vtkMultiProcessController.h"
 #include "vtkParallelCoreModule.h" // For export macro
+#include "vtkMultiProcessController.h"
 
 class VTKPARALLELCORE_EXPORT vtkDummyController : public vtkMultiProcessController
 {
 public:
-  static vtkDummyController* New();
-  vtkTypeMacro(vtkDummyController, vtkMultiProcessController);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkDummyController *New();
+  vtkTypeMacro(vtkDummyController,vtkMultiProcessController);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * This method is for setting up the processes.
    */
-  void Initialize(int*, char***, int) override {}
-  void Initialize(int*, char***) override {}
-  void Finalize() override {}
-  void Finalize(int) override {}
+  virtual void Initialize(int*, char***, int) {}
+  virtual void Initialize(int*, char***) {}
+  virtual void Finalize() {}
+  virtual void Finalize(int) {}
 
   /**
    * This method always returns 0.
@@ -52,35 +52,38 @@ public:
   /**
    * Directly calls the single method.
    */
-  void SingleMethodExecute() override;
+  virtual void SingleMethodExecute();
 
   /**
    * Directly calls multiple method 0.
    */
-  void MultipleMethodExecute() override;
+  virtual void MultipleMethodExecute();
 
   /**
    * Does nothing.
    */
-  void CreateOutputWindow() override {}
+  virtual void CreateOutputWindow() {}
 
   //@{
   /**
    * If you don't need any special functionality from the controller, you
    * can swap out the dummy communicator for another one.
    */
+  vtkGetObjectMacro(Communicator, vtkCommunicator);
   vtkGetObjectMacro(RMICommunicator, vtkCommunicator);
-  virtual void SetCommunicator(vtkCommunicator*);
-  virtual void SetRMICommunicator(vtkCommunicator*);
+  virtual void SetCommunicator(vtkCommunicator *);
+  virtual void SetRMICommunicator(vtkCommunicator *);
   //@}
 
 protected:
   vtkDummyController();
-  ~vtkDummyController() override;
+  ~vtkDummyController();
 
 private:
-  vtkDummyController(const vtkDummyController&) = delete;
-  void operator=(const vtkDummyController&) = delete;
+  vtkDummyController(const vtkDummyController&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkDummyController&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+

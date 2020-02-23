@@ -23,24 +23,24 @@
  * @class   vtkExtractArray
  * @brief   Given a vtkArrayData object containing one-or-more
  * vtkArray instances, produces a vtkArrayData containing just one vtkArray,
- * identified by index.
+ * indentified by index.
  *
  * @par Thanks:
  * Developed by Timothy M. Shead (tshead@sandia.gov) at Sandia National Laboratories.
- */
+*/
 
 #ifndef vtkExtractArray_h
 #define vtkExtractArray_h
 
-#include "vtkArrayDataAlgorithm.h"
 #include "vtkFiltersGeneralModule.h" // For export macro
+#include "vtkArrayDataAlgorithm.h"
 
 class VTKFILTERSGENERAL_EXPORT vtkExtractArray : public vtkArrayDataAlgorithm
 {
 public:
   static vtkExtractArray* New();
   vtkTypeMacro(vtkExtractArray, vtkArrayDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   //@{
   /**
@@ -52,17 +52,21 @@ public:
 
 protected:
   vtkExtractArray();
-  ~vtkExtractArray() override;
+  ~vtkExtractArray() VTK_OVERRIDE;
 
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  int FillInputPortInformation(int port, vtkInformation* info) VTK_OVERRIDE;
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(
+    vtkInformation*,
+    vtkInformationVector**,
+    vtkInformationVector*) VTK_OVERRIDE;
 
 private:
-  vtkExtractArray(const vtkExtractArray&) = delete;
-  void operator=(const vtkExtractArray&) = delete;
+  vtkExtractArray(const vtkExtractArray&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkExtractArray&) VTK_DELETE_FUNCTION;
 
   vtkIdType Index;
 };
 
 #endif
+

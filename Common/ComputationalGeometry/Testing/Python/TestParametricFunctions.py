@@ -551,7 +551,10 @@ class TestParametricFunctions(vtk.test.Testing.vtkTest):
         renWin.Render()
 
         img_file = "TestParametricFunctions.png"
-        vtk.test.Testing.compareImage(iren.GetRenderWindow(), vtk.test.Testing.getAbsImagePath(img_file), threshold=11)
+        # NOTE: this test has a companion .tcl test. The threshold set
+        #  here should be the same as the threshold in the .tcl
+        #  test. Both tests should produce exactly the same results.
+        vtk.test.Testing.compareImage(iren.GetRenderWindow(), vtk.test.Testing.getAbsImagePath(img_file), threshold=10)
         vtk.test.Testing.interact()
 
 if __name__ == "__main__":

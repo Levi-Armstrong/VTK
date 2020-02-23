@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 import vtk
+from vtk.test import Testing
 from vtk.util.misc import vtkGetDataRoot
 VTK_DATA_ROOT = vtkGetDataRoot()
 
-# Doubles the number of images (x dimension).
+# Doubles the The number of images (x dimension).
 # Image pipeline
 reader = vtk.vtkImageReader()
 reader.ReleaseDataFlagOff()

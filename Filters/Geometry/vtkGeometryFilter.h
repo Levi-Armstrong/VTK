@@ -48,7 +48,7 @@
  * @sa
  * vtkImageDataGeometryFilter vtkStructuredGridGeometryFilter
  * vtkExtractGeometry vtkExtractVOI
- */
+*/
 
 #ifndef vtkGeometryFilter_h
 #define vtkGeometryFilter_h
@@ -61,80 +61,81 @@ class vtkIncrementalPointLocator;
 class VTKFILTERSGEOMETRY_EXPORT vtkGeometryFilter : public vtkPolyDataAlgorithm
 {
 public:
-  static vtkGeometryFilter* New();
-  vtkTypeMacro(vtkGeometryFilter, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkGeometryFilter *New();
+  vtkTypeMacro(vtkGeometryFilter,vtkPolyDataAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   //@{
   /**
    * Turn on/off selection of geometry by point id.
    */
-  vtkSetMacro(PointClipping, vtkTypeBool);
-  vtkGetMacro(PointClipping, vtkTypeBool);
-  vtkBooleanMacro(PointClipping, vtkTypeBool);
+  vtkSetMacro(PointClipping,int);
+  vtkGetMacro(PointClipping,int);
+  vtkBooleanMacro(PointClipping,int);
   //@}
 
   //@{
   /**
    * Turn on/off selection of geometry by cell id.
    */
-  vtkSetMacro(CellClipping, vtkTypeBool);
-  vtkGetMacro(CellClipping, vtkTypeBool);
-  vtkBooleanMacro(CellClipping, vtkTypeBool);
+  vtkSetMacro(CellClipping,int);
+  vtkGetMacro(CellClipping,int);
+  vtkBooleanMacro(CellClipping,int);
   //@}
 
   //@{
   /**
    * Turn on/off selection of geometry via bounding box.
    */
-  vtkSetMacro(ExtentClipping, vtkTypeBool);
-  vtkGetMacro(ExtentClipping, vtkTypeBool);
-  vtkBooleanMacro(ExtentClipping, vtkTypeBool);
+  vtkSetMacro(ExtentClipping,int);
+  vtkGetMacro(ExtentClipping,int);
+  vtkBooleanMacro(ExtentClipping,int);
   //@}
 
   //@{
   /**
    * Specify the minimum point id for point id selection.
    */
-  vtkSetClampMacro(PointMinimum, vtkIdType, 0, VTK_ID_MAX);
-  vtkGetMacro(PointMinimum, vtkIdType);
+  vtkSetClampMacro(PointMinimum,vtkIdType,0,VTK_ID_MAX);
+  vtkGetMacro(PointMinimum,vtkIdType);
   //@}
 
   //@{
   /**
    * Specify the maximum point id for point id selection.
    */
-  vtkSetClampMacro(PointMaximum, vtkIdType, 0, VTK_ID_MAX);
-  vtkGetMacro(PointMaximum, vtkIdType);
+  vtkSetClampMacro(PointMaximum,vtkIdType,0,VTK_ID_MAX);
+  vtkGetMacro(PointMaximum,vtkIdType);
   //@}
 
   //@{
   /**
    * Specify the minimum cell id for point id selection.
    */
-  vtkSetClampMacro(CellMinimum, vtkIdType, 0, VTK_ID_MAX);
-  vtkGetMacro(CellMinimum, vtkIdType);
+  vtkSetClampMacro(CellMinimum,vtkIdType,0,VTK_ID_MAX);
+  vtkGetMacro(CellMinimum,vtkIdType);
   //@}
 
   //@{
   /**
    * Specify the maximum cell id for point id selection.
    */
-  vtkSetClampMacro(CellMaximum, vtkIdType, 0, VTK_ID_MAX);
-  vtkGetMacro(CellMaximum, vtkIdType);
+  vtkSetClampMacro(CellMaximum,vtkIdType,0,VTK_ID_MAX);
+  vtkGetMacro(CellMaximum,vtkIdType);
   //@}
 
   /**
    * Specify a (xmin,xmax, ymin,ymax, zmin,zmax) bounding box to clip data.
    */
-  void SetExtent(double xMin, double xMax, double yMin, double yMax, double zMin, double zMax);
+  void SetExtent(double xMin, double xMax, double yMin, double yMax,
+                 double zMin, double zMax);
 
   //@{
   /**
    * Set / get a (xmin,xmax, ymin,ymax, zmin,zmax) bounding box to clip data.
    */
   void SetExtent(double extent[6]);
-  double* GetExtent() VTK_SIZEHINT(6) { return this->Extent; }
+  double *GetExtent() { return this->Extent;};
   //@}
 
   //@{
@@ -143,9 +144,9 @@ public:
    * on, points with different point attributes (e.g., normals) are merged,
    * which may cause rendering artifacts.
    */
-  vtkSetMacro(Merging, vtkTypeBool);
-  vtkGetMacro(Merging, vtkTypeBool);
-  vtkBooleanMacro(Merging, vtkTypeBool);
+  vtkSetMacro(Merging,int);
+  vtkGetMacro(Merging,int);
+  vtkBooleanMacro(Merging,int);
   //@}
 
   //@{
@@ -153,8 +154,8 @@ public:
    * Set / get a spatial locator for merging points. By
    * default an instance of vtkMergePoints is used.
    */
-  void SetLocator(vtkIncrementalPointLocator* locator);
-  vtkGetObjectMacro(Locator, vtkIncrementalPointLocator);
+  void SetLocator(vtkIncrementalPointLocator *locator);
+  vtkGetObjectMacro(Locator,vtkIncrementalPointLocator);
   //@}
 
   /**
@@ -165,48 +166,37 @@ public:
   /**
    * Return the MTime also considering the locator.
    */
-  vtkMTimeType GetMTime() override;
-
-  //@{
-  /**
-   * Set/get the desired precision for the output types. See the documentation
-   * for the vtkAlgorithm::DesiredOutputPrecision enum for an explanation of
-   * the available precision settings. This only applies for data types where
-   * we create points as opposed to pass them, such as rectilinear grid.
-   */
-  void SetOutputPointsPrecision(int precision);
-  int GetOutputPointsPrecision() const;
-  //@}
+  vtkMTimeType GetMTime() VTK_OVERRIDE;
 
 protected:
   vtkGeometryFilter();
-  ~vtkGeometryFilter() override;
+  ~vtkGeometryFilter() VTK_OVERRIDE;
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *) VTK_OVERRIDE;
+  int FillInputPortInformation(int port, vtkInformation *info) VTK_OVERRIDE;
 
-  // special cases for performance
-  void PolyDataExecute(vtkDataSet*, vtkPolyData*);
-  void UnstructuredGridExecute(vtkDataSet*, vtkPolyData*);
-  void StructuredGridExecute(vtkDataSet*, vtkPolyData*, vtkInformation*);
-  int RequestUpdateExtent(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  //special cases for performance
+  void PolyDataExecute(vtkDataSet *, vtkPolyData *);
+  void UnstructuredGridExecute(vtkDataSet *, vtkPolyData *);
+  void StructuredGridExecute(vtkDataSet *, vtkPolyData *, vtkInformation *);
+  int RequestUpdateExtent(vtkInformation *, vtkInformationVector **, vtkInformationVector *) VTK_OVERRIDE;
 
   vtkIdType PointMaximum;
   vtkIdType PointMinimum;
   vtkIdType CellMinimum;
   vtkIdType CellMaximum;
   double Extent[6];
-  vtkTypeBool PointClipping;
-  vtkTypeBool CellClipping;
-  vtkTypeBool ExtentClipping;
-  int OutputPointsPrecision;
+  int PointClipping;
+  int CellClipping;
+  int ExtentClipping;
 
-  vtkTypeBool Merging;
-  vtkIncrementalPointLocator* Locator;
-
+  int Merging;
+  vtkIncrementalPointLocator *Locator;
 private:
-  vtkGeometryFilter(const vtkGeometryFilter&) = delete;
-  void operator=(const vtkGeometryFilter&) = delete;
+  vtkGeometryFilter(const vtkGeometryFilter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkGeometryFilter&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+

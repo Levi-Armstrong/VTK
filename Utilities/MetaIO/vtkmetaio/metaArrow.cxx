@@ -15,8 +15,8 @@
 #pragma warning(disable:4702)
 #endif
 
-#include <cctype>
-#include <cstdio>
+#include <stdio.h>
+#include <ctype.h>
 #include <string>
 
 #if (METAIO_USE_NAMESPACE)
@@ -94,7 +94,7 @@ CopyInfo(const MetaObject * _object)
     const MetaArrow * arrow;
     try
       {
-      arrow = static_cast<const MetaArrow *>(_object);
+      arrow = (const MetaArrow *)(_object);
       }
     catch( ... )
       {
@@ -120,7 +120,7 @@ Length(float length)
  }
 
 float  MetaArrow::
-Length() const
+Length(void) const
  {
   return M_Length;
  }
@@ -135,14 +135,14 @@ Direction(const double *direction)
  }
 
 const double * MetaArrow::
-Direction() const
+Direction(void) const
  {
   return M_Direction;
  }
 
 /** Clear Arrow information */
 void MetaArrow::
-Clear()
+Clear(void)
 {
   if(META_DEBUG) METAIO_STREAM::cout << "MetaArrow: Clear" << METAIO_STREAM::endl;
   MetaObject::Clear();
@@ -155,14 +155,14 @@ Clear()
 
 /** Destroy Arrow information */
 void MetaArrow::
-M_Destroy()
+M_Destroy(void)
 {
   MetaObject::M_Destroy();
 }
 
 /** Set Read fields */
 void MetaArrow::
-M_SetupReadFields()
+M_SetupReadFields(void)
 {
   if(META_DEBUG) METAIO_STREAM::cout << "MetaArrow: M_SetupReadFields" << METAIO_STREAM::endl;
 
@@ -184,7 +184,7 @@ M_SetupReadFields()
 }
 
 void MetaArrow::
-M_SetupWriteFields()
+M_SetupWriteFields(void)
 {
   strcpy(m_ObjectTypeName,"Arrow");
   MetaObject::M_SetupWriteFields();
@@ -202,7 +202,7 @@ M_SetupWriteFields()
 
 
 bool MetaArrow::
-M_Read()
+M_Read(void)
 {
   if(META_DEBUG) METAIO_STREAM::cout << "MetaArrow: M_Read: Loading Header" << METAIO_STREAM::endl;
 

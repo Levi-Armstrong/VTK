@@ -16,91 +16,81 @@
 #include "vtkConeSource.h"
 #include "vtkDebugLeaks.h"
 #include "vtkGlyph3D.h"
-#include "vtkInformation.h"
-#include "vtkMultiBlockDataSet.h"
-#include "vtkNew.h"
 #include "vtkPolyData.h"
 #include "vtkPolyDataMapper.h"
 #include "vtkRegressionTestImage.h"
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
 #include "vtkRenderer.h"
+#include "vtkRenderer.h"
 #include "vtkSphereSource.h"
+
 #include "vtkX3DExporter.h"
 
-int X3DTest(int argc, char* argv[])
+int X3DTest( int argc, char *argv[] )
 {
-  vtkNew<vtkRenderer> renderer;
-  vtkNew<vtkRenderWindow> renWin;
-  renWin->AddRenderer(renderer);
-  vtkNew<vtkRenderWindowInteractor> iren;
-  iren->SetRenderWindow(renWin);
+  vtkRenderer *renderer = vtkRenderer::New();
+  vtkRenderWindow *renWin = vtkRenderWindow::New();
+    renWin->AddRenderer(renderer);
+  vtkRenderWindowInteractor *iren = vtkRenderWindowInteractor::New();
+    iren->SetRenderWindow(renWin);
 
-  vtkNew<vtkSphereSource> sphere;
-  sphere->SetThetaResolution(8);
-  sphere->SetPhiResolution(8);
+  vtkSphereSource *sphere = vtkSphereSource::New();
+    sphere->SetThetaResolution(8); sphere->SetPhiResolution(8);
+  vtkPolyDataMapper *sphereMapper = vtkPolyDataMapper::New();
+    sphereMapper->SetInputConnection(sphere->GetOutputPort());
+  vtkActor *sphereActor = vtkActor::New();
+    sphereActor->SetMapper(sphereMapper);
 
-  vtkNew<vtkPolyDataMapper> sphereMapper;
-  sphereMapper->SetInputConnection(sphere->GetOutputPort());
-  vtkNew<vtkActor> sphereActor;
-  sphereActor->SetMapper(sphereMapper);
+  vtkConeSource *cone = vtkConeSource::New();
+    cone->SetResolution(6);
 
-  vtkNew<vtkConeSource> cone;
-  cone->SetResolution(6);
+  vtkGlyph3D *glyph = vtkGlyph3D::New();
+    glyph->SetInputConnection(sphere->GetOutputPort());
+    glyph->SetSourceConnection(cone->GetOutputPort());
+    glyph->SetVectorModeToUseNormal();
+    glyph->SetScaleModeToScaleByVector();
+    glyph->SetScaleFactor(0.25);
 
-  vtkNew<vtkGlyph3D> glyph;
-  glyph->SetInputConnection(sphere->GetOutputPort());
-  glyph->SetSourceConnection(cone->GetOutputPort());
-  glyph->SetVectorModeToUseNormal();
-  glyph->SetScaleModeToScaleByVector();
-  glyph->SetScaleFactor(0.25);
+  vtkPolyDataMapper *spikeMapper = vtkPolyDataMapper::New();
+    spikeMapper->SetInputConnection(glyph->GetOutputPort());
 
-  vtkNew<vtkPolyDataMapper> spikeMapper;
-  spikeMapper->SetInputConnection(glyph->GetOutputPort());
-
-  vtkNew<vtkActor> spikeActor;
-  spikeActor->SetMapper(spikeMapper);
+  vtkActor *spikeActor = vtkActor::New();
+    spikeActor->SetMapper(spikeMapper);
 
   renderer->AddActor(sphereActor);
   renderer->AddActor(spikeActor);
-  renderer->SetBackground(1, 1, 1);
-  renWin->SetSize(300, 300);
+  renderer->SetBackground(1,1,1);
+  renWin->SetSize(300,300);
 
+  // interact with data
   renWin->Render();
 
-  vtkNew<vtkX3DExporter> exporter;
+  vtkX3DExporter *exporter = vtkX3DExporter::New();
   exporter->SetInput(renWin);
   exporter->SetFileName("testX3DExporter.x3d");
   exporter->Update();
   exporter->Write();
   exporter->Print(std::cout);
 
-  renderer->RemoveActor(sphereActor);
-  renderer->RemoveActor(spikeActor);
+  int retVal = vtkRegressionTestImage( renWin );
 
-  // now try the same with a composite dataset.
-  vtkNew<vtkMultiBlockDataSet> mb;
-  mb->SetBlock(0, glyph->GetOutputDataObject(0));
-  mb->GetMetaData(0u)->Set(vtkMultiBlockDataSet::NAME(), "Spikes");
-  mb->SetBlock(1, sphere->GetOutputDataObject(0));
-  mb->GetMetaData(1u)->Set(vtkMultiBlockDataSet::NAME(), "Sphere");
-
-  vtkNew<vtkPolyDataMapper> mbMapper;
-  mbMapper->SetInputDataObject(mb);
-
-  vtkNew<vtkActor> mbActor;
-  mbActor->SetMapper(mbMapper);
-  renderer->AddActor(mbActor);
-
-  renWin->Render();
-  exporter->SetFileName("testX3DExporter-composite.x3d");
-  exporter->Update();
-  exporter->Write();
-
-  int retVal = vtkRegressionTestImage(renWin);
-  if (retVal == vtkRegressionTester::DO_INTERACTOR)
+  if ( retVal == vtkRegressionTester::DO_INTERACTOR)
   {
     iren->Start();
   }
+  // Clean up
+  exporter->Delete();
+  renderer->Delete();
+  renWin->Delete();
+  iren->Delete();
+  sphere->Delete();
+  sphereMapper->Delete();
+  sphereActor->Delete();
+  cone->Delete();
+  glyph->Delete();
+  spikeMapper->Delete();
+  spikeActor->Delete();
+
   return !retVal;
 }

@@ -19,28 +19,29 @@
  *
  * vtkXMLPHierarchicalBoxDataWriter is an empty subclass of
  * vtkXMLPUniformGridAMRWriter for backwards compatibility.
- */
+*/
 
 #ifndef vtkXMLPHierarchicalBoxDataWriter_h
 #define vtkXMLPHierarchicalBoxDataWriter_h
 
-#include "vtkIOParallelXMLModule.h" // For export macro
 #include "vtkXMLPUniformGridAMRWriter.h"
+#include "vtkIOParallelXMLModule.h" // For export macro
 
-class VTKIOPARALLELXML_EXPORT vtkXMLPHierarchicalBoxDataWriter : public vtkXMLPUniformGridAMRWriter
+class VTKIOPARALLELXML_EXPORT vtkXMLPHierarchicalBoxDataWriter :
+  public vtkXMLPUniformGridAMRWriter
 {
 public:
   static vtkXMLPHierarchicalBoxDataWriter* New();
   vtkTypeMacro(vtkXMLPHierarchicalBoxDataWriter, vtkXMLPUniformGridAMRWriter);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
 protected:
   vtkXMLPHierarchicalBoxDataWriter();
-  ~vtkXMLPHierarchicalBoxDataWriter() override;
+  ~vtkXMLPHierarchicalBoxDataWriter();
 
 private:
-  vtkXMLPHierarchicalBoxDataWriter(const vtkXMLPHierarchicalBoxDataWriter&) = delete;
-  void operator=(const vtkXMLPHierarchicalBoxDataWriter&) = delete;
+  vtkXMLPHierarchicalBoxDataWriter(const vtkXMLPHierarchicalBoxDataWriter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkXMLPHierarchicalBoxDataWriter&) VTK_DELETE_FUNCTION;
 };
 
 #endif

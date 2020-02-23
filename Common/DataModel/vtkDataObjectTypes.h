@@ -22,7 +22,7 @@
  * to be updated every time a new data type is added to VTK.
  * @sa
  * vtkDataObject
- */
+*/
 
 #ifndef vtkDataObjectTypes_h
 #define vtkDataObjectTypes_h
@@ -35,10 +35,10 @@ class vtkDataObject;
 class VTKCOMMONDATAMODEL_EXPORT vtkDataObjectTypes : public vtkObject
 {
 public:
-  static vtkDataObjectTypes* New();
+  static vtkDataObjectTypes *New();
 
-  vtkTypeMacro(vtkDataObjectTypes, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkDataObjectTypes,vtkObject);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Given an int (as defined in vtkType.h) identifier for a class
@@ -64,7 +64,7 @@ public:
 
 protected:
   vtkDataObjectTypes() {}
-  ~vtkDataObjectTypes() override {}
+  ~vtkDataObjectTypes() VTK_OVERRIDE {}
 
   /**
    * Method used to validate data object types, for testing purposes
@@ -72,8 +72,9 @@ protected:
   static int Validate();
 
 private:
-  vtkDataObjectTypes(const vtkDataObjectTypes&) = delete;
-  void operator=(const vtkDataObjectTypes&) = delete;
+  vtkDataObjectTypes(const vtkDataObjectTypes&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkDataObjectTypes&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

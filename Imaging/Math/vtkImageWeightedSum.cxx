@@ -14,19 +14,19 @@
 =========================================================================*/
 #include "vtkImageWeightedSum.h"
 
-#include "vtkDataSetAttributes.h"
+#include "vtkObjectFactory.h"
 #include "vtkDoubleArray.h"
 #include "vtkImageData.h"
 #include "vtkImageIterator.h"
 #include "vtkImageProgressIterator.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
-#include "vtkObjectFactory.h"
 #include "vtkStreamingDemandDrivenPipeline.h"
+#include "vtkDataSetAttributes.h"
 
 vtkStandardNewMacro(vtkImageWeightedSum);
 
-vtkCxxSetObjectMacro(vtkImageWeightedSum, Weights, vtkDoubleArray);
+vtkCxxSetObjectMacro(vtkImageWeightedSum,Weights,vtkDoubleArray);
 //----------------------------------------------------------------------------
 // Description:
 // Constructor sets default values
@@ -39,6 +39,7 @@ vtkImageWeightedSum::vtkImageWeightedSum()
   // By default normalize
   this->NormalizeByWeight = 1;
 }
+
 
 //----------------------------------------------------------------------------
 vtkImageWeightedSum::~vtkImageWeightedSum()
@@ -58,7 +59,7 @@ double vtkImageWeightedSum::CalculateTotalWeight()
 {
   double totalWeight = 0.0;
 
-  for (int i = 0; i < this->Weights->GetNumberOfTuples(); ++i)
+  for(int i = 0; i < this->Weights->GetNumberOfTuples(); ++i)
   {
     totalWeight += this->Weights->GetValue(i);
   }
@@ -69,19 +70,21 @@ double vtkImageWeightedSum::CalculateTotalWeight()
 // Description:
 // This templated function executes the filter for any type of data.
 template <class T>
-void vtkImageWeightedSumExecute(vtkImageWeightedSum* self, vtkImageData** inDatas, int numInputs,
-  vtkImageData* outData, int outExt[6], int id, T*)
+void vtkImageWeightedSumExecute(vtkImageWeightedSum *self,
+                          vtkImageData **inDatas, int numInputs, vtkImageData *outData,
+                          int outExt[6], int id, T*)
 {
   vtkImageIterator<T> inItsFast[256];
   T* inSIFast[256];
   vtkImageProgressIterator<T> outIt(outData, outExt, self, id);
 
-  double* weights = static_cast<vtkDoubleArray*>(self->GetWeights())->GetPointer(0);
+  double *weights =
+    static_cast<vtkDoubleArray *>(self->GetWeights())->GetPointer(0);
   double totalWeight = self->CalculateTotalWeight();
   int normalize = self->GetNormalizeByWeight();
-  vtkImageIterator<T>* inIts;
-  T** inSI;
-  if (numInputs < 256)
+  vtkImageIterator<T> *inIts;
+  T* *inSI;
+  if( numInputs < 256)
   {
     inIts = inItsFast;
     inSI = inSIFast;
@@ -93,14 +96,14 @@ void vtkImageWeightedSumExecute(vtkImageWeightedSum* self, vtkImageData** inData
   }
 
   // Loop through all input ImageData to initialize iterators
-  for (int i = 0; i < numInputs; ++i)
+  for(int i=0; i < numInputs; ++i)
   {
     inIts[i].Initialize(inDatas[i], outExt);
   }
   // Loop through output pixels
   while (!outIt.IsAtEnd())
   {
-    for (int j = 0; j < numInputs; ++j)
+    for(int j=0; j < numInputs; ++j)
     {
       inSI[j] = inIts[j].BeginSpan();
     }
@@ -110,7 +113,7 @@ void vtkImageWeightedSumExecute(vtkImageWeightedSum* self, vtkImageData** inData
     while (outSI != outSIEnd)
     {
       double sum = 0.;
-      for (int k = 0; k < numInputs; ++k)
+      for(int k=0; k < numInputs; ++k)
       {
         sum += weights[k] * *inSI[k];
       }
@@ -121,19 +124,19 @@ void vtkImageWeightedSumExecute(vtkImageWeightedSum* self, vtkImageData** inData
       }
       *outSI = static_cast<T>(sum); // do the cast only at the end
       outSI++;
-      for (int l = 0; l < numInputs; ++l)
+      for(int l=0; l < numInputs; ++l)
       {
         inSI[l]++;
       }
     }
-    for (int j = 0; j < numInputs; ++j)
+    for(int j=0; j < numInputs; ++j)
     {
       inIts[j].NextSpan();
     }
     outIt.NextSpan();
   }
 
-  if (numInputs >= 256)
+  if( numInputs >= 256)
   {
     delete[] inIts;
     delete[] inSI;
@@ -141,36 +144,38 @@ void vtkImageWeightedSumExecute(vtkImageWeightedSum* self, vtkImageData** inData
 }
 
 //----------------------------------------------------------------------------
-int vtkImageWeightedSum::RequestInformation(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+int vtkImageWeightedSum::RequestInformation (
+  vtkInformation * vtkNotUsed(request),
+  vtkInformationVector** inputVector,
+  vtkInformationVector *outputVector)
 {
   // get the info objects
   vtkInformation* outInfo = outputVector->GetInformationObject(0);
 
   int numInputs = this->GetNumberOfInputConnections(0);
-  if (!numInputs)
+  if(!numInputs)
   {
     return 0;
   }
   int outputType = VTK_DOUBLE;
-  vtkInformation* info = inputVector[0]->GetInformationObject(0);
-  vtkInformation* scalarInfo = vtkDataObject::GetActiveFieldInformation(
-    info, vtkDataObject::FIELD_ASSOCIATION_POINTS, vtkDataSetAttributes::SCALARS);
+  vtkInformation *info = inputVector[0]->GetInformationObject(0);
+  vtkInformation *scalarInfo = vtkDataObject::GetActiveFieldInformation(info,
+    vtkDataObject::FIELD_ASSOCIATION_POINTS, vtkDataSetAttributes::SCALARS);
   if (scalarInfo)
   {
-    outputType = scalarInfo->Get(vtkDataObject::FIELD_ARRAY_TYPE());
+    outputType = scalarInfo->Get( vtkDataObject::FIELD_ARRAY_TYPE() );
   }
   int type;
   for (int whichInput = 1; whichInput < numInputs; whichInput++)
   {
-    vtkInformation* inInfo = inputVector[0]->GetInformationObject(whichInput);
-    vtkInformation* inScalarInfo = vtkDataObject::GetActiveFieldInformation(
-      inInfo, vtkDataObject::FIELD_ASSOCIATION_POINTS, vtkDataSetAttributes::SCALARS);
+    vtkInformation *inInfo = inputVector[0]->GetInformationObject(whichInput);
+    vtkInformation *inScalarInfo = vtkDataObject::GetActiveFieldInformation(inInfo,
+      vtkDataObject::FIELD_ASSOCIATION_POINTS, vtkDataSetAttributes::SCALARS);
     if (inScalarInfo)
     {
-      type = inScalarInfo->Get(vtkDataObject::FIELD_ARRAY_TYPE());
+      type = inScalarInfo->Get( vtkDataObject::FIELD_ARRAY_TYPE() );
       // Should we also check weight[whichInput] != 0
-      if (type != outputType)
+      if( type != outputType )
       {
         // Could be more fancy
         outputType = VTK_DOUBLE;
@@ -187,11 +192,15 @@ int vtkImageWeightedSum::RequestInformation(vtkInformation* vtkNotUsed(request),
 // algorithm to fill the output from the input.
 // It just executes a switch statement to call the correct function for
 // the datas data types.
-void vtkImageWeightedSum::ThreadedRequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* vtkNotUsed(outputVector),
-  vtkImageData*** inData, vtkImageData** outData, int outExt[6], int id)
+void vtkImageWeightedSum::ThreadedRequestData (
+  vtkInformation * vtkNotUsed( request ),
+  vtkInformationVector** vtkNotUsed( inputVector ),
+  vtkInformationVector * vtkNotUsed( outputVector ),
+  vtkImageData ***inData,
+  vtkImageData **outData,
+  int outExt[6], int id)
 {
-  if (inData[0][0] == nullptr)
+  if (inData[0][0] == NULL)
   {
     vtkErrorMacro(<< "Input " << 0 << " must be specified.");
     return;
@@ -199,13 +208,13 @@ void vtkImageWeightedSum::ThreadedRequestData(vtkInformation* vtkNotUsed(request
 
   int numInputs = this->GetNumberOfInputConnections(0);
   int numWeights = this->Weights->GetNumberOfTuples();
-  if (numWeights != numInputs)
+  if(numWeights != numInputs)
   {
     if (id == 0)
     {
-      vtkErrorMacro("ThreadedRequestData: There are "
-        << numInputs << " vtkImageData inputs provided but only " << numWeights
-        << " weights provided");
+      vtkErrorMacro("ThreadedRequestData: There are " << numInputs
+                    << " vtkImageData inputs provided but only "
+                    << numWeights << " weights provided");
     }
     return;
   }
@@ -220,9 +229,10 @@ void vtkImageWeightedSum::ThreadedRequestData(vtkInformation* vtkNotUsed(request
     {
       if (id == 0)
       {
-        vtkErrorMacro("ThreadedRequestData: Input "
-          << i << " has " << otherComp << " components of type " << otherType
-          << ", but input 0 has " << numComp << " components of type " << scalarType);
+        vtkErrorMacro("ThreadedRequestData: Input " << i
+                      << " has " << otherComp << " components of type "
+                      << otherType << ", but input 0 has " << numComp
+                      << " components of type " << scalarType);
       }
       return;
     }
@@ -230,8 +240,10 @@ void vtkImageWeightedSum::ThreadedRequestData(vtkInformation* vtkNotUsed(request
 
   switch (scalarType)
   {
-    vtkTemplateMacro(vtkImageWeightedSumExecute(
-      this, inData[0], numInputs, outData[0], outExt, id, static_cast<VTK_TT*>(nullptr)));
+    vtkTemplateMacro(
+      vtkImageWeightedSumExecute(this, inData[0], numInputs,
+        outData[0], outExt, id, static_cast<VTK_TT *>(0))
+      );
     default:
       if (id == 0)
       {
@@ -245,16 +257,18 @@ void vtkImageWeightedSum::ThreadedRequestData(vtkInformation* vtkNotUsed(request
 int vtkImageWeightedSum::FillInputPortInformation(int i, vtkInformation* info)
 {
   info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 1);
-  return this->Superclass::FillInputPortInformation(i, info);
+  return this->Superclass::FillInputPortInformation(i,info);
 }
 
 //----------------------------------------------------------------------------
 void vtkImageWeightedSum::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 
   // objects
-  os << indent << "NormalizeByWeight: " << (this->NormalizeByWeight ? "On" : "Off") << "\n";
+  os << indent << "NormalizeByWeight: " <<
+    (this->NormalizeByWeight ? "On" : "Off" ) << "\n";
   os << indent << "Weights: " << this->Weights << "\n";
-  this->Weights->PrintSelf(os, indent.GetNextIndent());
+  this->Weights->PrintSelf(os,indent.GetNextIndent());
 }
+

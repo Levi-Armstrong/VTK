@@ -1,40 +1,49 @@
-vtk_add_test_cxx(vtkRenderingParallelCxxTests tests
-  PrmMagnify.cxx
-  )
-vtk_test_cxx_executable(vtkRenderingParallelCxxTests tests)
+include(vtkMPI)
 
-if(TARGET VTK::ParallelMPI)
-  set(vtkRenderingParallelCxxTests-MPI_NUMPROCS 2)
-  vtk_add_test_mpi(vtkRenderingParallelCxxTests-MPI tests
-    TestSimplePCompositeZPass.cxx,TESTING_DATA
-    TestParallelRendering.cxx,TESTING_DATA
+if(NOT VTK_RENDERING_BACKEND STREQUAL "OpenGL2")
+  # all these tests use shadow maps for some odd reason
+  set(extra_opengl_tests
+    TestPCompositeZPass.cxx
+    TestPShadowMapPass.cxx
+    TestDistributedDataCompositeZPass.cxx
     )
 endif()
+
+vtk_add_test_cxx(${vtk-module}CxxTests tests
+  PrmMagnify.cxx
+  )
+vtk_test_cxx_executable(${vtk-module}CxxTests tests)
+
+vtk_add_test_mpi(${vtk-module}CxxTests-MPI tests
+  TestSimplePCompositeZPass.cxx,TESTING_DATA
+  TestParallelRendering.cxx,TESTING_DATA
+  ${extra_opengl_tests}
+  )
 
 set(all_tests
   ${tests}
   ${no_data_tests}
   )
-vtk_test_cxx_executable(vtkRenderingParallelCxxTests-MPI all_tests)
+vtk_test_mpi_executable(${vtk-module}CxxTests-MPI all_tests)
 
 if (PYTHON_EXECUTABLE)
   vtk_module_test_executable(
-    vtkRenderingParallel-TestClientServerRendering TestClientServerRendering.cxx)
+    ${vtk-module}-TestClientServerRendering TestClientServerRendering.cxx)
 
-  ExternalData_add_test(${_vtk_build_TEST_DATA_TARGET}
-    NAME vtkRenderingParallel-TestClientServerRendering
+  ExternalData_add_test(VTKData
+    NAME ${vtk-module}-TestClientServerRendering
     COMMAND ${PYTHON_EXECUTABLE}
-      ${VTK_SOURCE_DIR}/CMake/vtkTestDriver.py
+      ${VTK_CMAKE_DIR}/vtkTestDriver.py
       --process
-        $<TARGET_FILE:vtkRenderingParallel-TestClientServerRendering>
+        $<TARGET_FILE:${vtk-module}-TestClientServerRendering>
         --port 12367
         --server
-      -D ${_vtk_build_TEST_OUTPUT_DATA_DIRECTORY}
+      -D ${VTK_TEST_DATA_DIR}
         --process
-        $<TARGET_FILE:vtkRenderingParallel-TestClientServerRendering>
+        $<TARGET_FILE:${vtk-module}-TestClientServerRendering>
         --port 12367
-        -D ${_vtk_build_TEST_OUTPUT_DATA_DIRECTORY}
-        -T ${_vtk_build_TEST_OUTPUT_DIRECTORY}
-        -V "DATA{../Data/Baseline/TestClientServerRendering.png,:}"
+        -D ${VTK_TEST_DATA_DIR}
+        -T ${VTK_TEST_OUTPUT_DIR}
+        -V "DATA{${${vtk-module}_SOURCE_DIR}/Testing/Data/Baseline/TestClientServerRendering.png,:}"
   )
 endif()

@@ -25,7 +25,7 @@
  *
  * @sa
  * vtkOBJReader vtkPLYReader vtkSTLReader
- */
+*/
 
 #ifndef vtkAbstractPolyDataReader_h
 #define vtkAbstractPolyDataReader_h
@@ -37,7 +37,7 @@ class VTKIOCORE_EXPORT vtkAbstractPolyDataReader : public vtkPolyDataAlgorithm
 {
 public:
   vtkTypeMacro(vtkAbstractPolyDataReader, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -49,13 +49,12 @@ public:
 
 protected:
   vtkAbstractPolyDataReader();
-  ~vtkAbstractPolyDataReader() override;
+  ~vtkAbstractPolyDataReader();
 
-  char* FileName;
-
+  char *FileName;
 private:
-  vtkAbstractPolyDataReader(const vtkAbstractPolyDataReader&) = delete;
-  void operator=(const vtkAbstractPolyDataReader&) = delete;
+  vtkAbstractPolyDataReader(const vtkAbstractPolyDataReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkAbstractPolyDataReader&) VTK_DELETE_FUNCTION;
 };
 
 #endif

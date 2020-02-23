@@ -22,7 +22,7 @@
  * by reader producing composite datasets to describes the relationships among
  * the blocks.
  * Refer to http://www.paraview.org/Wiki/Block_Hierarchy_Meta_Data for details.
- */
+*/
 
 #ifndef vtkSILBuilder_h
 #define vtkSILBuilder_h
@@ -39,7 +39,7 @@ class VTKIOXDMF2_EXPORT vtkSILBuilder : public vtkObject
 public:
   static vtkSILBuilder* New();
   vtkTypeMacro(vtkSILBuilder, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -72,7 +72,7 @@ public:
 
 protected:
   vtkSILBuilder();
-  ~vtkSILBuilder() override;
+  ~vtkSILBuilder();
 
   vtkStringArray* NamesArray;
   vtkUnsignedCharArray* CrossEdgesArray;
@@ -81,8 +81,9 @@ protected:
   vtkIdType RootVertex;
 
 private:
-  vtkSILBuilder(const vtkSILBuilder&) = delete;
-  void operator=(const vtkSILBuilder&) = delete;
+  vtkSILBuilder(const vtkSILBuilder&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkSILBuilder&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif

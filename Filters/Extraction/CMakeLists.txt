@@ -1,44 +1,37 @@
-set(classes
-  vtkBlockSelector
-  vtkConvertSelection
-  vtkExpandMarkedElements
-  vtkExtractBlock
-  vtkExtractCells
-  vtkExtractCellsByType
-  vtkExtractDataArraysOverTime
-  vtkExtractDataOverTime
-  vtkExtractDataSets
-  vtkExtractEdges
-  vtkExtractExodusGlobalTemporalVariables
-  vtkExtractGeometry
-  vtkExtractGrid
-  vtkExtractLevel
-  vtkExtractPolyDataGeometry
-  vtkExtractRectilinearGrid
-  vtkExtractSelectedArraysOverTime
-  vtkExtractSelectedBlock
-  vtkExtractSelectedIds
-  vtkExtractSelectedLocations
-  vtkExtractSelectedPolyDataIds
-  vtkExtractSelectedRows
-  vtkExtractSelectedThresholds
-  vtkExtractSelection
-  vtkExtractTensorComponents
-  vtkExtractTimeSteps
-  vtkExtractUnstructuredGrid
-  vtkExtractVectorComponents
-  vtkFrustumSelector
-  vtkHierarchicalDataExtractDataSets
-  vtkHierarchicalDataExtractLevel
-  vtkLocationSelector
-  vtkProbeSelectedLocations
-  vtkSelector
-  vtkValueSelector)
+set(Module_SRCS
+  vtkConvertSelection.cxx
+  vtkExtractArraysOverTime.cxx
+  vtkExtractBlock.cxx
+  vtkExtractCells.cxx
+  vtkExtractDataOverTime.cxx
+  vtkExtractDataSets.cxx
+  vtkExtractEdges.cxx
+  vtkExtractGeometry.cxx
+  vtkExtractGrid.cxx
+  vtkExtractLevel.cxx
+  vtkExtractPolyDataGeometry.cxx
+  vtkExtractRectilinearGrid.cxx
+  vtkExtractSelectedBlock.cxx
+  vtkExtractSelectedIds.cxx
+  vtkExtractSelectedLocations.cxx
+  vtkExtractSelectedPolyDataIds.cxx
+  vtkExtractSelectedRows.cxx
+  vtkExtractSelectedThresholds.cxx
+  vtkExtractSelection.cxx
+  vtkExtractTemporalFieldData.cxx
+  vtkExtractTensorComponents.cxx
+  vtkExtractTimeSteps.cxx
+  vtkExtractUnstructuredGrid.cxx
+  vtkExtractVectorComponents.cxx
 
-if (NOT VTK_LEGACY_REMOVE)
-  list(APPEND classes
-    vtkExtractTemporalFieldData)
-endif()
+  vtkProbeSelectedLocations.cxx
+  vtkHierarchicalDataExtractDataSets.cxx
+  vtkHierarchicalDataExtractLevel.cxx
+  )
 
-vtk_module_add_module(VTK::FiltersExtraction
-  CLASSES ${classes})
+set_source_files_properties(
+  vtkExtractSelectionBase
+  ABSTRACT
+  )
+
+vtk_module_library(vtkFiltersExtraction ${Module_SRCS})

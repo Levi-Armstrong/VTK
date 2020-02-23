@@ -29,23 +29,25 @@
 #include "vtkNonOverlappingAMR.h"
 #include "vtkObjectFactory.h"
 #include "vtkOverlappingAMR.h"
-#include "vtkPartitionedDataSet.h"
-#include "vtkPartitionedDataSetCollection.h"
 #include "vtkStreamingDemandDrivenPipeline.h"
 #include "vtkUniformGrid.h"
 
-#include <sstream>
 #include <vtksys/RegularExpression.hxx>
 #include <vtksys/SystemTools.hxx>
+#include <sstream>
 
 #include <vector>
 
 vtkStandardNewMacro(vtkCompositeDataReader);
 //----------------------------------------------------------------------------
-vtkCompositeDataReader::vtkCompositeDataReader() = default;
+vtkCompositeDataReader::vtkCompositeDataReader()
+{
+}
 
 //----------------------------------------------------------------------------
-vtkCompositeDataReader::~vtkCompositeDataReader() = default;
+vtkCompositeDataReader::~vtkCompositeDataReader()
+{
+}
 
 //----------------------------------------------------------------------------
 vtkCompositeDataSet* vtkCompositeDataReader::GetOutput()
@@ -60,9 +62,35 @@ vtkCompositeDataSet* vtkCompositeDataReader::GetOutput(int idx)
 }
 
 //----------------------------------------------------------------------------
-void vtkCompositeDataReader::SetOutput(vtkCompositeDataSet* output)
+void vtkCompositeDataReader::SetOutput(vtkCompositeDataSet *output)
 {
   this->GetExecutive()->SetOutputData(0, output);
+}
+
+//----------------------------------------------------------------------------
+int vtkCompositeDataReader::RequestUpdateExtent(
+  vtkInformation *, vtkInformationVector **, vtkInformationVector *outputVector)
+{
+  vtkInformation *outInfo = outputVector->GetInformationObject(0);
+
+  int piece, numPieces, ghostLevel;
+
+  piece = outInfo->Get(vtkStreamingDemandDrivenPipeline::UPDATE_PIECE_NUMBER());
+  numPieces = outInfo->Get(vtkStreamingDemandDrivenPipeline::UPDATE_NUMBER_OF_PIECES());
+  ghostLevel = outInfo->Get(vtkStreamingDemandDrivenPipeline::UPDATE_NUMBER_OF_GHOST_LEVELS());
+
+  // make sure piece is valid
+  if (piece < 0 || piece >= numPieces)
+  {
+    return 1;
+  }
+
+  if (ghostLevel < 0)
+  {
+    return 1;
+  }
+
+  return 1;
 }
 
 //----------------------------------------------------------------------------
@@ -73,29 +101,39 @@ int vtkCompositeDataReader::FillOutputPortInformation(int, vtkInformation* info)
 }
 
 //----------------------------------------------------------------------------
-vtkDataObject* vtkCompositeDataReader::CreateOutput(vtkDataObject* currentOutput)
+int vtkCompositeDataReader::ProcessRequest(vtkInformation* request,
+  vtkInformationVector** inputVector, vtkInformationVector* outputVector)
 {
-  if (this->GetFileName() == nullptr &&
-    (this->GetReadFromInputString() == 0 ||
-      (this->GetInputArray() == nullptr && this->GetInputString() == nullptr)))
+  // generate the data
+  if(request->Has(vtkDemandDrivenPipeline::REQUEST_DATA_OBJECT()))
   {
-    vtkWarningMacro(<< "FileName must be set");
-    return nullptr;
+    return this->RequestDataObject(request, inputVector, outputVector);
   }
+  return this->Superclass::ProcessRequest(request, inputVector, outputVector);
+}
 
-  int outputType = this->ReadOutputType();
-  if (outputType < 0)
+//----------------------------------------------------------------------------
+int vtkCompositeDataReader::RequestDataObject(vtkInformation *,
+  vtkInformationVector **, vtkInformationVector *outputVector)
+{
+  int output_type = this->ReadOutputType();
+  if (output_type < 0)
   {
     vtkErrorMacro("Failed to read data-type.");
-    return nullptr;
+    return 0;
   }
 
-  if (currentOutput && (currentOutput->GetDataObjectType() == outputType))
+  vtkDataObject* output = vtkDataObject::GetData(outputVector, 0);
+  if (!output ||
+    !output->IsA(vtkDataObjectTypes::GetClassNameFromTypeId(output_type)))
   {
-    return currentOutput;
+    output = vtkDataObjectTypes::NewDataObject(output_type);
+    outputVector->GetInformationObject(0)->Set(
+      vtkDataObject::DATA_OBJECT(),
+      output);
+    output->FastDelete();
   }
-
-  return vtkDataObjectTypes::NewDataObject(outputType);
+  return 1;
 }
 
 //----------------------------------------------------------------------------
@@ -115,14 +153,14 @@ int vtkCompositeDataReader::ReadOutputType()
     return -1;
   }
 
-  if (strncmp(this->LowerCase(line), "dataset", static_cast<unsigned long>(7)) == 0)
+  if (strncmp(this->LowerCase(line),"dataset",static_cast<unsigned long>(7)) == 0)
   {
     // See iftype is recognized.
     //
     if (!this->ReadString(line))
     {
       vtkDebugMacro(<< "Premature EOF reading type");
-      this->CloseVTKFile();
+      this->CloseVTKFile ();
       return -1;
     }
     this->CloseVTKFile();
@@ -143,18 +181,10 @@ int vtkCompositeDataReader::ReadOutputType()
     {
       return VTK_NON_OVERLAPPING_AMR;
     }
-    if (strncmp(this->LowerCase(line), "hierarchical_box", strlen("hierarchical_box")) == 0)
+    if (strncmp(this->LowerCase(line), "hierarchical_box",
+        strlen("hierarchical_box")) == 0)
     {
       return VTK_HIERARCHICAL_BOX_DATA_SET;
-    }
-    if (strncmp(
-          this->LowerCase(line), "partitioned_collection", strlen("partitioned_collection")) == 0)
-    {
-      return VTK_PARTITIONED_DATA_SET_COLLECTION;
-    }
-    if (strncmp(this->LowerCase(line), "partitioned", strlen("partitioned")) == 0)
-    {
-      return VTK_PARTITIONED_DATA_SET;
     }
   }
 
@@ -162,20 +192,19 @@ int vtkCompositeDataReader::ReadOutputType()
 }
 
 //----------------------------------------------------------------------------
-int vtkCompositeDataReader::ReadMeshSimple(const std::string& fname, vtkDataObject* output)
+int vtkCompositeDataReader::RequestData(vtkInformation *, vtkInformationVector **,
+  vtkInformationVector *outputVector)
 {
-  if (!this->OpenVTKFile(fname.c_str()) || !this->ReadHeader(fname.c_str()))
+  if (!(this->OpenVTKFile()) || !this->ReadHeader())
   {
     return 0;
   }
 
-  vtkMultiBlockDataSet* mb = vtkMultiBlockDataSet::SafeDownCast(output);
-  vtkMultiPieceDataSet* mp = vtkMultiPieceDataSet::SafeDownCast(output);
-  vtkHierarchicalBoxDataSet* hb = vtkHierarchicalBoxDataSet::SafeDownCast(output);
-  vtkOverlappingAMR* oamr = vtkOverlappingAMR::SafeDownCast(output);
-  vtkNonOverlappingAMR* noamr = vtkNonOverlappingAMR::SafeDownCast(output);
-  vtkPartitionedDataSet* pd = vtkPartitionedDataSet::SafeDownCast(output);
-  vtkPartitionedDataSetCollection* pdc = vtkPartitionedDataSetCollection::SafeDownCast(output);
+  vtkMultiBlockDataSet* mb = vtkMultiBlockDataSet::GetData(outputVector, 0);
+  vtkMultiPieceDataSet* mp = vtkMultiPieceDataSet::GetData(outputVector, 0);
+  vtkHierarchicalBoxDataSet* hb = vtkHierarchicalBoxDataSet::GetData(outputVector, 0);
+  vtkOverlappingAMR* oamr = vtkOverlappingAMR::GetData(outputVector, 0);
+  vtkNonOverlappingAMR* noamr = vtkNonOverlappingAMR::GetData(outputVector, 0);
 
   // Read the data-type description line which was already read in
   // RequestDataObject() so we just skip it here without any additional
@@ -183,8 +212,8 @@ int vtkCompositeDataReader::ReadMeshSimple(const std::string& fname, vtkDataObje
   char line[256];
   if (!this->ReadString(line) || !this->ReadString(line))
   {
-    vtkErrorMacro(<< "Data file ends prematurely!");
-    this->CloseVTKFile();
+    vtkErrorMacro(<<"Data file ends prematurely!");
+    this->CloseVTKFile ();
     return 0;
   }
 
@@ -207,14 +236,6 @@ int vtkCompositeDataReader::ReadMeshSimple(const std::string& fname, vtkDataObje
   else if (noamr)
   {
     this->ReadCompositeData(noamr);
-  }
-  else if (pd)
-  {
-    this->ReadCompositeData(pd);
-  }
-  else if (pdc)
-  {
-    this->ReadCompositeData(pdc);
   }
 
   return 1;
@@ -245,7 +266,7 @@ bool vtkCompositeDataReader::ReadCompositeData(vtkMultiBlockDataSet* mb)
   }
 
   mb->SetNumberOfBlocks(num_blocks);
-  for (unsigned int cc = 0; cc < num_blocks; cc++)
+  for (unsigned int cc=0; cc < num_blocks; cc++)
   {
     if (!this->ReadString(line))
     {
@@ -287,9 +308,9 @@ bool vtkCompositeDataReader::ReadCompositeData(vtkMultiBlockDataSet* mb)
     }
   }
 
-  if (this->ReadString(line) && strncmp(this->LowerCase(line), "field", 5) == 0)
+  if (this->ReadString(line) && strncmp(this->LowerCase(line),"field",5) == 0)
   {
-    vtkSmartPointer<vtkFieldData> fd = vtkSmartPointer<vtkFieldData>::Take(this->ReadFieldData());
+    vtkSmartPointer< vtkFieldData > fd = vtkSmartPointer< vtkFieldData >::Take(this->ReadFieldData());
     mb->SetFieldData(fd);
   }
 
@@ -321,8 +342,10 @@ bool vtkCompositeDataReader::ReadCompositeData(vtkOverlappingAMR* oamr)
 
   // read ORIGIN
   double origin[3];
-  if (!this->ReadString(line) || strncmp(this->LowerCase(line), "origin", strlen("origin")) != 0 ||
-    !this->Read(&origin[0]) || !this->Read(&origin[1]) || !this->Read(&origin[2]))
+  if (!this->ReadString(line) ||
+    strncmp(this->LowerCase(line), "origin", strlen("origin")) != 0 ||
+    !this->Read(&origin[0]) || !this->Read(&origin[1]) ||
+    !this->Read(&origin[2]))
   {
     vtkErrorMacro("Failed to read ORIGIN (or its value).");
     return false;
@@ -330,7 +353,8 @@ bool vtkCompositeDataReader::ReadCompositeData(vtkOverlappingAMR* oamr)
 
   // read LEVELS.
   int num_levels;
-  if (!this->ReadString(line) || strncmp(this->LowerCase(line), "levels", strlen("levels")) != 0 ||
+  if (!this->ReadString(line) ||
+    strncmp(this->LowerCase(line), "levels", strlen("levels")) != 0 ||
     !this->Read(&num_levels))
   {
     vtkErrorMacro("Failed to read LEVELS (or its value).");
@@ -344,15 +368,15 @@ bool vtkCompositeDataReader::ReadCompositeData(vtkOverlappingAMR* oamr)
   spacing.resize(num_levels * 3);
 
   int total_blocks = 0;
-  for (int cc = 0; cc < num_levels; cc++)
+  for (int cc=0; cc < num_levels; cc++)
   {
     if (!this->Read(&blocksPerLevel[cc]))
     {
       vtkErrorMacro("Failed to read number of datasets for level " << cc);
       return false;
     }
-    if (!this->Read(&spacing[3 * cc + 0]) || !this->Read(&spacing[3 * cc + 1]) ||
-      !this->Read(&spacing[3 * cc + 2]))
+    if (!this->Read(&spacing[3*cc +0]) || !this->Read(&spacing[3*cc +1]) ||
+      !this->Read(&spacing[3*cc+2]))
     {
       vtkErrorMacro("Failed to read spacing for level " << cc);
       return false;
@@ -364,12 +388,12 @@ bool vtkCompositeDataReader::ReadCompositeData(vtkOverlappingAMR* oamr)
   oamr->Initialize(num_levels, &blocksPerLevel[0]);
   oamr->SetGridDescription(description);
   oamr->SetOrigin(origin);
-  for (int cc = 0; cc < num_levels; cc++)
+  for (int cc=0; cc < num_levels; cc++)
   {
-    oamr->GetAMRInfo()->SetSpacing(cc, &spacing[3 * cc]);
+    oamr->GetAMRInfo()->SetSpacing(cc, &spacing[3*cc]);
   }
 
-  // read in the amr boxes0
+  //read in the amr boxes0
   if (!this->ReadString(line))
   {
     vtkErrorMacro("Failed to read AMRBOXES' line");
@@ -383,7 +407,7 @@ bool vtkCompositeDataReader::ReadCompositeData(vtkOverlappingAMR* oamr)
     else
     {
       // now read the amrbox information.
-      vtkIdType num_tuples, num_components;
+      int num_tuples, num_components;
       if (!this->Read(&num_tuples) || !this->Read(&num_components))
       {
         vtkErrorMacro("Failed to read values for AMRBOXES.");
@@ -391,20 +415,20 @@ bool vtkCompositeDataReader::ReadCompositeData(vtkOverlappingAMR* oamr)
       }
 
       vtkSmartPointer<vtkIntArray> idata;
-      idata.TakeReference(
-        vtkArrayDownCast<vtkIntArray>(this->ReadArray("int", num_tuples, num_components)));
+      idata.TakeReference(vtkArrayDownCast<vtkIntArray>(
+                            this->ReadArray("int", num_tuples, num_components)));
       if (!idata || idata->GetNumberOfComponents() != 6 ||
-        idata->GetNumberOfTuples() != static_cast<vtkIdType>(oamr->GetTotalNumberOfBlocks()))
+          idata->GetNumberOfTuples() != static_cast<vtkIdType>(oamr->GetTotalNumberOfBlocks()))
       {
         vtkErrorMacro("Failed to read meta-data");
         return false;
       }
 
       unsigned int metadata_index = 0;
-      for (int level = 0; level < num_levels; level++)
+      for (int level=0; level < num_levels; level++)
       {
         unsigned int num_datasets = oamr->GetNumberOfDataSets(level);
-        for (unsigned int index = 0; index < num_datasets; index++, metadata_index++)
+        for (unsigned int index=0; index < num_datasets; index++, metadata_index++)
         {
           int tuple[6];
           idata->GetTypedTuple(metadata_index, tuple);
@@ -417,9 +441,11 @@ bool vtkCompositeDataReader::ReadCompositeData(vtkOverlappingAMR* oamr)
     }
   }
 
-  // read in the actual data
 
-  for (int cc = 0; cc < total_blocks; cc++)
+  //read in the actual data
+
+
+  for (int cc=0; cc < total_blocks; cc++)
   {
     if (!this->ReadString(line))
     {
@@ -430,7 +456,7 @@ bool vtkCompositeDataReader::ReadCompositeData(vtkOverlappingAMR* oamr)
 
     if (strncmp(this->LowerCase(line), "child", strlen("child")) == 0)
     {
-      unsigned int level = 0, index = 0;
+      unsigned int level=0, index=0;
       if (!this->Read(&level) || !this->Read(&index))
       {
         vtkErrorMacro("Failed to read level and index information");
@@ -500,7 +526,7 @@ bool vtkCompositeDataReader::ReadCompositeData(vtkMultiPieceDataSet* mp)
   }
 
   mp->SetNumberOfPieces(num_pieces);
-  for (unsigned int cc = 0; cc < num_pieces; cc++)
+  for (unsigned int cc=0; cc < num_pieces; cc++)
   {
     if (!this->ReadString(line))
     {
@@ -546,130 +572,6 @@ bool vtkCompositeDataReader::ReadCompositeData(vtkMultiPieceDataSet* mp)
 }
 
 //----------------------------------------------------------------------------
-bool vtkCompositeDataReader::ReadCompositeData(vtkPartitionedDataSet* mp)
-{
-  char line[256];
-  if (!this->ReadString(line))
-  {
-    vtkErrorMacro("Failed to read block-count");
-    return false;
-  }
-
-  if (strncmp(this->LowerCase(line), "children", strlen("children")) != 0)
-  {
-    vtkErrorMacro("Failed to read CHILDREN.");
-    return false;
-  }
-
-  unsigned int num_partitions = 0;
-  if (!this->Read(&num_partitions))
-  {
-    vtkErrorMacro("Failed to read number of pieces.");
-    return false;
-  }
-
-  mp->SetNumberOfPartitions(num_partitions);
-  for (unsigned int cc = 0; cc < num_partitions; cc++)
-  {
-    if (!this->ReadString(line))
-    {
-      vtkErrorMacro("Failed to read 'CHILD <type>' line");
-      return false;
-    }
-
-    int type;
-    if (!this->Read(&type))
-    {
-      vtkErrorMacro("Failed to read child type.");
-      return false;
-    }
-    // eat up the "\n" and other whitespace at the end of CHILD <type>.
-    this->ReadLine(line);
-
-    if (type != -1)
-    {
-      vtkDataObject* child = this->ReadChild();
-      if (!child)
-      {
-        vtkErrorMacro("Failed to read child.");
-        return false;
-      }
-      mp->SetPartition(cc, child);
-      child->FastDelete();
-    }
-    else
-    {
-      // eat up the ENDCHILD marker.
-      this->ReadString(line);
-    }
-  }
-
-  return true;
-}
-
-//----------------------------------------------------------------------------
-bool vtkCompositeDataReader::ReadCompositeData(vtkPartitionedDataSetCollection* mp)
-{
-  char line[256];
-  if (!this->ReadString(line))
-  {
-    vtkErrorMacro("Failed to read block-count");
-    return false;
-  }
-
-  if (strncmp(this->LowerCase(line), "children", strlen("children")) != 0)
-  {
-    vtkErrorMacro("Failed to read CHILDREN.");
-    return false;
-  }
-
-  unsigned int num_datasets = 0;
-  if (!this->Read(&num_datasets))
-  {
-    vtkErrorMacro("Failed to read number of pieces.");
-    return false;
-  }
-
-  mp->SetNumberOfPartitionedDataSets(num_datasets);
-  for (unsigned int cc = 0; cc < num_datasets; cc++)
-  {
-    if (!this->ReadString(line))
-    {
-      vtkErrorMacro("Failed to read 'CHILD <type>' line");
-      return false;
-    }
-
-    int type;
-    if (!this->Read(&type))
-    {
-      vtkErrorMacro("Failed to read child type.");
-      return false;
-    }
-    // eat up the "\n" and other whitespace at the end of CHILD <type>.
-    this->ReadLine(line);
-
-    if (type != -1)
-    {
-      vtkPartitionedDataSet* child = vtkPartitionedDataSet::SafeDownCast(this->ReadChild());
-      if (!child)
-      {
-        vtkErrorMacro("Failed to read child.");
-        return false;
-      }
-      mp->SetPartitionedDataSet(cc, child);
-      child->FastDelete();
-    }
-    else
-    {
-      // eat up the ENDCHILD marker.
-      this->ReadString(line);
-    }
-  }
-
-  return true;
-}
-
-//----------------------------------------------------------------------------
 vtkDataObject* vtkCompositeDataReader::ReadChild()
 {
   // This is tricky. Simplistically speaking, we need to read the string for the
@@ -686,12 +588,12 @@ vtkDataObject* vtkCompositeDataReader::ReadChild()
   std::ostringstream child_data;
   char line[512];
   while (child_stack_depth > 0)
-  // read until ENDCHILD (passing over any nested CHILD-ENDCHILD correctly).
+    // read until ENDCHILD (passing over any nested CHILD-ENDCHILD correctly).
   {
     bool new_line = true;
     while (true)
-    // read a full line until "\n". This maybe longer than 512 and hence this
-    // extra loop.
+      // read a full line until "\n". This maybe longer than 512 and hence this
+      // extra loop.
     {
       this->IS->get(line, 512);
       if (this->IS->fail())
@@ -699,7 +601,7 @@ vtkDataObject* vtkCompositeDataReader::ReadChild()
         if (this->IS->eof())
         {
           vtkErrorMacro("Premature EOF.");
-          return nullptr;
+          return NULL;
         }
         else
         {
@@ -742,10 +644,11 @@ vtkDataObject* vtkCompositeDataReader::ReadChild()
         break;
       }
     } // while (true);
-  }   // while (child_stack_depth > 0);
+  } // while (child_stack_depth > 0);
 
   vtkGenericDataObjectReader* reader = vtkGenericDataObjectReader::New();
-  reader->SetBinaryInputString(child_data.str().c_str(), static_cast<int>(child_data.str().size()));
+  reader->SetBinaryInputString(child_data.str().c_str(),
+    static_cast<int>(child_data.str().size()));
   reader->ReadFromInputStringOn();
   reader->Update();
 

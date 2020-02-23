@@ -37,47 +37,45 @@
  *
  * @sa
  * vtkFieldData vtkDataObject vtkDataSet vtkFieldDataToAttributeDataFilter
- */
+*/
 
 #ifndef vtkAttributeDataToFieldDataFilter_h
 #define vtkAttributeDataToFieldDataFilter_h
 
-#include "vtkDataSetAlgorithm.h"
 #include "vtkFiltersCoreModule.h" // For export macro
+#include "vtkDataSetAlgorithm.h"
 
 class VTKFILTERSCORE_EXPORT vtkAttributeDataToFieldDataFilter : public vtkDataSetAlgorithm
 {
 public:
-  void PrintSelf(ostream& os, vtkIndent indent) override;
-  vtkTypeMacro(vtkAttributeDataToFieldDataFilter, vtkDataSetAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  vtkTypeMacro(vtkAttributeDataToFieldDataFilter,vtkDataSetAlgorithm);
 
   /**
    * Construct this object.
    */
-  static vtkAttributeDataToFieldDataFilter* New();
+  static vtkAttributeDataToFieldDataFilter *New();
 
   //@{
   /**
    * Turn on/off the passing of point and cell non-field attribute data to the
    * output of the filter.
    */
-  vtkSetMacro(PassAttributeData, vtkTypeBool);
-  vtkGetMacro(PassAttributeData, vtkTypeBool);
-  vtkBooleanMacro(PassAttributeData, vtkTypeBool);
+  vtkSetMacro(PassAttributeData,int);
+  vtkGetMacro(PassAttributeData,int);
+  vtkBooleanMacro(PassAttributeData,int);
   //@}
 
 protected:
   vtkAttributeDataToFieldDataFilter();
-  ~vtkAttributeDataToFieldDataFilter() override {}
+  ~vtkAttributeDataToFieldDataFilter() VTK_OVERRIDE {}
 
-  int RequestData(vtkInformation*, vtkInformationVector**,
-    vtkInformationVector*) override; // generate output data
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *) VTK_OVERRIDE; //generate output data
 
-  vtkTypeBool PassAttributeData;
-
+  int PassAttributeData;
 private:
-  vtkAttributeDataToFieldDataFilter(const vtkAttributeDataToFieldDataFilter&) = delete;
-  void operator=(const vtkAttributeDataToFieldDataFilter&) = delete;
+  vtkAttributeDataToFieldDataFilter(const vtkAttributeDataToFieldDataFilter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkAttributeDataToFieldDataFilter&) VTK_DELETE_FUNCTION;
 };
 
 #endif

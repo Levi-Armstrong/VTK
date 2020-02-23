@@ -35,7 +35,7 @@
  *
  * @sa
  * vtkImageAlgorithm vtkSimpleImageFilterExample
- */
+*/
 
 #ifndef vtkSimpleImageToImageFilter_h
 #define vtkSimpleImageToImageFilter_h
@@ -46,25 +46,36 @@
 class VTKCOMMONEXECUTIONMODEL_EXPORT vtkSimpleImageToImageFilter : public vtkImageAlgorithm
 {
 public:
-  vtkTypeMacro(vtkSimpleImageToImageFilter, vtkImageAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkSimpleImageToImageFilter,vtkImageAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
 protected:
   vtkSimpleImageToImageFilter();
-  ~vtkSimpleImageToImageFilter() override;
+  ~vtkSimpleImageToImageFilter() VTK_OVERRIDE;
 
   // These are called by the superclass.
-  int RequestUpdateExtent(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestUpdateExtent (vtkInformation *,
+                                   vtkInformationVector **,
+                                   vtkInformationVector *) VTK_OVERRIDE;
 
   // You don't have to touch this unless you have a good reason.
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *,
+                          vtkInformationVector **,
+                          vtkInformationVector *) VTK_OVERRIDE;
 
   // In the simplest case, this is the only method you need to define.
   virtual void SimpleExecute(vtkImageData* input, vtkImageData* output) = 0;
 
 private:
-  vtkSimpleImageToImageFilter(const vtkSimpleImageToImageFilter&) = delete;
-  void operator=(const vtkSimpleImageToImageFilter&) = delete;
+  vtkSimpleImageToImageFilter(const vtkSimpleImageToImageFilter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkSimpleImageToImageFilter&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+
+
+
+
+
+

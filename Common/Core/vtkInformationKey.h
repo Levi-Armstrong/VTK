@@ -24,32 +24,32 @@
  * overload of Set/Get that is selected.  This ensures that the type
  * of value stored in a vtkInformation instance corresponding to a
  * given key matches the type expected for that key.
- */
+*/
 
 #ifndef vtkInformationKey_h
 #define vtkInformationKey_h
 
 #include "vtkCommonCoreModule.h" // For export macro
-#include "vtkObject.h"           // Need vtkTypeMacro
 #include "vtkObjectBase.h"
+#include "vtkObject.h" // Need vtkTypeMacro
 
 class vtkInformation;
 
 class VTKCOMMONCORE_EXPORT vtkInformationKey : public vtkObjectBase
 {
 public:
-  vtkBaseTypeMacro(vtkInformationKey, vtkObjectBase);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkBaseTypeMacro(vtkInformationKey,vtkObjectBase);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Prevent normal vtkObject reference counting behavior.
    */
-  void Register(vtkObjectBase*) override;
+  void Register(vtkObjectBase*) VTK_OVERRIDE;
 
   /**
    * Prevent normal vtkObject reference counting behavior.
    */
-  void UnRegister(vtkObjectBase*) override;
+  void UnRegister(vtkObjectBase*) VTK_OVERRIDE;
 
   /**
    * Get the name of the key.  This is not the type of the key, but
@@ -72,7 +72,7 @@ public:
    * literals because the strings are not copied.
    */
   vtkInformationKey(const char* name, const char* location);
-  ~vtkInformationKey() override;
+  ~vtkInformationKey() VTK_OVERRIDE;
   //@}
 
   /**
@@ -80,7 +80,7 @@ public:
    * object to another.  If there is no entry in the first information
    * object for this key, the value is removed from the second.
    */
-  virtual void ShallowCopy(vtkInformation* from, vtkInformation* to) = 0;
+  virtual void ShallowCopy(vtkInformation* from, vtkInformation* to)=0;
 
   /**
    * Duplicate (new instance created) the entry associated with this key from
@@ -88,7 +88,8 @@ public:
    * vtkInformation and vtkInformationVector objects are created).
    * Default implementation simply calls ShallowCopy().
    */
-  virtual void DeepCopy(vtkInformation* from, vtkInformation* to) { this->ShallowCopy(from, to); }
+  virtual void DeepCopy(vtkInformation *from, vtkInformation *to)
+    { this->ShallowCopy(from, to); }
 
   /**
    * Check whether this key appears in the given information object.
@@ -122,11 +123,8 @@ public:
    * the current output is different that what is being requested
    * by the key. For example, DATA_PIECE_NUMBER != UPDATE_PIECE_NUMBER.
    */
-  virtual bool NeedToExecute(
-    vtkInformation* vtkNotUsed(pipelineInfo), vtkInformation* vtkNotUsed(dobjInfo))
-  {
-    return false;
-  }
+  virtual bool NeedToExecute(vtkInformation* vtkNotUsed(pipelineInfo),
+                             vtkInformation* vtkNotUsed(dobjInfo)) {return false;}
 
   /**
    * This function is only relevant when the pertaining key
@@ -143,9 +141,8 @@ public:
    * re-execute.
    */
   virtual void StoreMetaData(vtkInformation* vtkNotUsed(request),
-    vtkInformation* vtkNotUsed(pipelineInfo), vtkInformation* vtkNotUsed(dobjInfo))
-  {
-  }
+                             vtkInformation* vtkNotUsed(pipelineInfo),
+                             vtkInformation* vtkNotUsed(dobjInfo)) {}
 
   /**
    * This function is only relevant when the pertaining key
@@ -156,42 +153,32 @@ public:
    * keys can copy themselves during REQUEST_UPDATE_EXTENT.
    */
   virtual void CopyDefaultInformation(vtkInformation* vtkNotUsed(request),
-    vtkInformation* vtkNotUsed(fromInfo), vtkInformation* vtkNotUsed(toInfo))
-  {
-  }
+                                      vtkInformation* vtkNotUsed(fromInfo),
+                                      vtkInformation* vtkNotUsed(toInfo)) {}
 
 protected:
   char* Name;
   char* Location;
 
-#define vtkInformationKeySetStringMacro(name)                                                      \
-  virtual void Set##name(const char* _arg)                                                         \
-  {                                                                                                \
-    if (this->name == nullptr && _arg == nullptr)                                                  \
-    {                                                                                              \
-      return;                                                                                      \
-    }                                                                                              \
-    if (this->name && _arg && (!strcmp(this->name, _arg)))                                         \
-    {                                                                                              \
-      return;                                                                                      \
-    }                                                                                              \
-    delete[] this->name;                                                                           \
-    if (_arg)                                                                                      \
-    {                                                                                              \
-      size_t n = strlen(_arg) + 1;                                                                 \
-      char* cp1 = new char[n];                                                                     \
-      const char* cp2 = (_arg);                                                                    \
-      this->name = cp1;                                                                            \
-      do                                                                                           \
-      {                                                                                            \
-        *cp1++ = *cp2++;                                                                           \
-      } while (--n);                                                                               \
-    }                                                                                              \
-    else                                                                                           \
-    {                                                                                              \
-      this->name = nullptr;                                                                        \
-    }                                                                                              \
-  }
+#define vtkInformationKeySetStringMacro(name) \
+virtual void Set##name (const char* _arg) \
+{ \
+  if ( this->name == NULL && _arg == NULL) { return;} \
+  if ( this->name && _arg && (!strcmp(this->name,_arg))) { return;} \
+  delete [] this->name; \
+  if (_arg) \
+  { \
+    size_t n = strlen(_arg) + 1; \
+    char *cp1 =  new char[n]; \
+    const char *cp2 = (_arg); \
+    this->name = cp1; \
+    do { *cp1++ = *cp2++; } while ( --n ); \
+  } \
+   else \
+   { \
+    this->name = NULL; \
+   } \
+}
 
   vtkInformationKeySetStringMacro(Name);
   vtkInformationKeySetStringMacro(Location);
@@ -204,28 +191,41 @@ protected:
 
   // Report the object associated with this key instance in the given
   // information object to the collector.
-  void ReportAsObjectBase(vtkInformation* info, vtkGarbageCollector* collector);
+  void ReportAsObjectBase(vtkInformation* info,
+                          vtkGarbageCollector* collector);
 
   // Helper for debug leaks support.
   void ConstructClass(const char*);
 
 private:
-  vtkInformationKey(const vtkInformationKey&) = delete;
-  void operator=(const vtkInformationKey&) = delete;
+  vtkInformationKey(const vtkInformationKey&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkInformationKey&) VTK_DELETE_FUNCTION;
 };
 
 // Macros to define an information key instance in a C++ source file.
 // The corresponding method declaration must appear in the class
 // definition in the header file.
-#define vtkInformationKeyMacro(CLASS, NAME, type)                                                  \
-  static vtkInformation##type##Key* CLASS##_##NAME = new vtkInformation##type##Key(#NAME, #CLASS); \
-  vtkInformation##type##Key* CLASS::NAME() { return CLASS##_##NAME; }
-#define vtkInformationKeySubclassMacro(CLASS, NAME, type, super)                                   \
-  static vtkInformation##type##Key* CLASS##_##NAME = new vtkInformation##type##Key(#NAME, #CLASS); \
-  vtkInformation##super##Key* CLASS::NAME() { return CLASS##_##NAME; }
-#define vtkInformationKeyRestrictedMacro(CLASS, NAME, type, required)                              \
-  static vtkInformation##type##Key* CLASS##_##NAME =                                               \
-    new vtkInformation##type##Key(#NAME, #CLASS, required);                                        \
-  vtkInformation##type##Key* CLASS::NAME() { return CLASS##_##NAME; }
+#define vtkInformationKeyMacro(CLASS, NAME, type)             \
+  static vtkInformation##type##Key* CLASS##_##NAME =          \
+    new vtkInformation##type##Key(#NAME, #CLASS);             \
+  vtkInformation##type##Key* CLASS::NAME()                    \
+  {                                                           \
+    return CLASS##_##NAME;                                    \
+  }
+#define vtkInformationKeySubclassMacro(CLASS, NAME, type, super)    \
+  static vtkInformation##type##Key* CLASS##_##NAME =          \
+    new vtkInformation##type##Key(#NAME, #CLASS);             \
+  vtkInformation##super##Key* CLASS::NAME()                    \
+  {                                                           \
+    return CLASS##_##NAME;                                    \
+  }
+#define vtkInformationKeyRestrictedMacro(CLASS, NAME, type, required)   \
+  static vtkInformation##type##Key* CLASS##_##NAME =                    \
+    new vtkInformation##type##Key(#NAME, #CLASS, required);             \
+  vtkInformation##type##Key* CLASS::NAME()                              \
+  {                                                                     \
+    return CLASS##_##NAME;                                              \
+  }
+
 
 #endif

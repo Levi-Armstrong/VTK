@@ -1,7 +1,6 @@
-set(classes
-  vtkXMLDataParser
-  vtkXMLParser
-  vtkXMLUtilities)
+set(Module_SRCS
+vtkXMLDataParser.cxx
+vtkXMLParser.cxx
+vtkXMLUtilities.cxx  )
 
-vtk_module_add_module(VTK::IOXMLParser
-  CLASSES ${classes})
+vtk_module_library(vtkIOXMLParser ${Module_SRCS})

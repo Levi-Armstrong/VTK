@@ -20,7 +20,7 @@
  * to its standard input pipe.  This is useful to have a separate
  * process display VTK errors so that if a VTK application crashes,
  * the error messages are still available.
- */
+*/
 
 #ifndef vtkWin32ProcessOutputWindow_h
 #define vtkWin32ProcessOutputWindow_h
@@ -31,14 +31,14 @@
 class VTKCOMMONCORE_EXPORT vtkWin32ProcessOutputWindow : public vtkOutputWindow
 {
 public:
-  vtkTypeMacro(vtkWin32ProcessOutputWindow, vtkOutputWindow);
+  vtkTypeMacro(vtkWin32ProcessOutputWindow,vtkOutputWindow);
   static vtkWin32ProcessOutputWindow* New();
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Send text to the output window process.
    */
-  void DisplayText(const char*) override;
+  virtual void DisplayText(const char*);
 
 protected:
   vtkWin32ProcessOutputWindow();
@@ -55,10 +55,9 @@ protected:
 
   // Count the number of times a new child has been initialized.
   unsigned int Count;
-
 private:
-  vtkWin32ProcessOutputWindow(const vtkWin32ProcessOutputWindow&) = delete;
-  void operator=(const vtkWin32ProcessOutputWindow&) = delete;
+  vtkWin32ProcessOutputWindow(const vtkWin32ProcessOutputWindow&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkWin32ProcessOutputWindow&) VTK_DELETE_FUNCTION;
 };
 
 #endif

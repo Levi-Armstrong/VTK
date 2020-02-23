@@ -23,54 +23,55 @@
  * this position if desired.
  * @sa
  * vtkPointHandleRepresentation3D vtkHandleRepresentation vtkHandleWidget
- */
+*/
 
 #ifndef vtkPolygonalHandleRepresentation3D_h
 #define vtkPolygonalHandleRepresentation3D_h
 
-#include "vtkAbstractPolygonalHandleRepresentation3D.h"
 #include "vtkInteractionWidgetsModule.h" // For export macro
+#include "vtkAbstractPolygonalHandleRepresentation3D.h"
 
 class VTKINTERACTIONWIDGETS_EXPORT vtkPolygonalHandleRepresentation3D
-  : public vtkAbstractPolygonalHandleRepresentation3D
+                : public vtkAbstractPolygonalHandleRepresentation3D
 {
 public:
   /**
    * Instantiate this class.
    */
-  static vtkPolygonalHandleRepresentation3D* New();
+  static vtkPolygonalHandleRepresentation3D *New();
 
   //@{
   /**
    * Standard methods for instances of this class.
    */
-  vtkTypeMacro(vtkPolygonalHandleRepresentation3D, vtkAbstractPolygonalHandleRepresentation3D);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkPolygonalHandleRepresentation3D,
+                       vtkAbstractPolygonalHandleRepresentation3D);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   /**
    * Set the position of the point in world and display coordinates.
    */
-  void SetWorldPosition(double p[3]) override;
+  virtual void SetWorldPosition(double p[3]);
 
   //@{
   /**
    * Set/get the offset of the handle position with respect to the handle
    * center, assumed to be the origin.
    */
-  vtkSetVector3Macro(Offset, double);
-  vtkGetVector3Macro(Offset, double);
+  vtkSetVector3Macro( Offset, double );
+  vtkGetVector3Macro( Offset, double );
   //@}
 
 protected:
   vtkPolygonalHandleRepresentation3D();
-  ~vtkPolygonalHandleRepresentation3D() override {}
+  ~vtkPolygonalHandleRepresentation3D() {}
 
   double Offset[3];
 
 private:
-  vtkPolygonalHandleRepresentation3D(const vtkPolygonalHandleRepresentation3D&) = delete;
-  void operator=(const vtkPolygonalHandleRepresentation3D&) = delete;
+  vtkPolygonalHandleRepresentation3D(const vtkPolygonalHandleRepresentation3D&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPolygonalHandleRepresentation3D&) VTK_DELETE_FUNCTION;
 };
 
 #endif

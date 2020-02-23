@@ -19,36 +19,40 @@
  * This filter shallow copies it's input to it's output. It is normally
  * used by PVSources with multiple outputs as the VTK filter in the
  * dummy connection objects at each output.
- */
+*/
 
 #ifndef vtkPassThroughFilter_h
 #define vtkPassThroughFilter_h
 
-#include "vtkDataSetAlgorithm.h"
 #include "vtkFiltersParallelModule.h" // For export macro
+#include "vtkDataSetAlgorithm.h"
 
 class vtkFieldData;
 
 class VTKFILTERSPARALLEL_EXPORT vtkPassThroughFilter : public vtkDataSetAlgorithm
 {
 public:
-  vtkTypeMacro(vtkPassThroughFilter, vtkDataSetAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkPassThroughFilter,vtkDataSetAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Create a new vtkPassThroughFilter.
    */
-  static vtkPassThroughFilter* New();
+  static vtkPassThroughFilter *New();
+
 
 protected:
-  vtkPassThroughFilter() {}
-  ~vtkPassThroughFilter() override {}
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  vtkPassThroughFilter() {}
+  virtual ~vtkPassThroughFilter() {}
+
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 
 private:
-  vtkPassThroughFilter(const vtkPassThroughFilter&) = delete;
-  void operator=(const vtkPassThroughFilter&) = delete;
+  vtkPassThroughFilter(const vtkPassThroughFilter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPassThroughFilter&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+

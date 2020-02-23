@@ -42,7 +42,7 @@
  *
  * @sa
  * vtkLocator vtkPointLocator vtkCellLocator vtkOBBTree
- */
+*/
 
 #ifndef vtkSpatialRepresentationFilter_h
 #define vtkSpatialRepresentationFilter_h
@@ -57,16 +57,16 @@ class vtkSpatialRepresentationFilterInternal;
 class VTKFILTERSGENERAL_EXPORT vtkSpatialRepresentationFilter : public vtkMultiBlockDataSetAlgorithm
 {
 public:
-  static vtkSpatialRepresentationFilter* New();
-  vtkTypeMacro(vtkSpatialRepresentationFilter, vtkMultiBlockDataSetAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkSpatialRepresentationFilter *New();
+  vtkTypeMacro(vtkSpatialRepresentationFilter,vtkMultiBlockDataSetAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   //@{
   /**
    * Set/Get the locator that will be used to generate the representation.
    */
   virtual void SetSpatialRepresentation(vtkLocator*);
-  vtkGetObjectMacro(SpatialRepresentation, vtkLocator);
+  vtkGetObjectMacro(SpatialRepresentation,vtkLocator);
   //@}
 
   //@{
@@ -74,7 +74,7 @@ public:
    * Get the maximum level that is available. Populated during
    * RequestData().
    */
-  vtkGetMacro(MaximumLevel, int);
+  vtkGetMacro(MaximumLevel,int);
   //@}
 
   /**
@@ -98,21 +98,22 @@ public:
 
 protected:
   vtkSpatialRepresentationFilter();
-  ~vtkSpatialRepresentationFilter() override;
+  ~vtkSpatialRepresentationFilter() VTK_OVERRIDE;
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation*,
+                  vtkInformationVector**,
+                  vtkInformationVector*) VTK_OVERRIDE;
 
   int MaximumLevel;
   bool GenerateLeaves;
 
-  vtkLocator* SpatialRepresentation;
+  vtkLocator *SpatialRepresentation;
 
-  void ReportReferences(vtkGarbageCollector*) override;
-  int FillInputPortInformation(int, vtkInformation*) override;
-
+  void ReportReferences(vtkGarbageCollector*) VTK_OVERRIDE;
+  int FillInputPortInformation(int, vtkInformation*) VTK_OVERRIDE;
 private:
-  vtkSpatialRepresentationFilter(const vtkSpatialRepresentationFilter&) = delete;
-  void operator=(const vtkSpatialRepresentationFilter&) = delete;
+  vtkSpatialRepresentationFilter(const vtkSpatialRepresentationFilter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkSpatialRepresentationFilter&) VTK_DELETE_FUNCTION;
 
   vtkSpatialRepresentationFilterInternal* Internal;
 };

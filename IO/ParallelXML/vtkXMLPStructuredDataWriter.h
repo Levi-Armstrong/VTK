@@ -18,7 +18,7 @@
  *
  * vtkXMLPStructuredDataWriter provides PVTK XML writing functionality
  * that is common among all the parallel structured data formats.
- */
+*/
 
 #ifndef vtkXMLPStructuredDataWriter_h
 #define vtkXMLPStructuredDataWriter_h
@@ -26,7 +26,7 @@
 #include "vtkIOParallelXMLModule.h" // For export macro
 #include "vtkXMLPDataWriter.h"
 
-#include <map>    // for keeping track of extents
+#include <map> // for keeping track of extents
 #include <vector> // for keeping track of extents
 
 class vtkXMLStructuredDataWriter;
@@ -34,26 +34,26 @@ class vtkXMLStructuredDataWriter;
 class VTKIOPARALLELXML_EXPORT vtkXMLPStructuredDataWriter : public vtkXMLPDataWriter
 {
 public:
-  vtkTypeMacro(vtkXMLPStructuredDataWriter, vtkXMLPDataWriter);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkXMLPStructuredDataWriter,vtkXMLPDataWriter);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
 protected:
   vtkXMLPStructuredDataWriter();
-  ~vtkXMLPStructuredDataWriter() override;
+  ~vtkXMLPStructuredDataWriter();
 
-  virtual vtkXMLStructuredDataWriter* CreateStructuredPieceWriter() = 0;
-  void WritePrimaryElementAttributes(ostream& os, vtkIndent indent) override;
-  void WritePPieceAttributes(int index) override;
-  vtkXMLWriter* CreatePieceWriter(int index) override;
+  virtual vtkXMLStructuredDataWriter* CreateStructuredPieceWriter()=0;
+  void WritePrimaryElementAttributes(ostream &os, vtkIndent indent);
+  void WritePPieceAttributes(int index);
+  vtkXMLWriter* CreatePieceWriter(int index);
 
-  int WriteInternal() override;
+  virtual int WriteInternal();
 
-  void PrepareSummaryFile() override;
-  int WritePiece(int index) override;
+  virtual void PrepareSummaryFile();
+  virtual int WritePiece(int index);
 
 private:
-  vtkXMLPStructuredDataWriter(const vtkXMLPStructuredDataWriter&) = delete;
-  void operator=(const vtkXMLPStructuredDataWriter&) = delete;
+  vtkXMLPStructuredDataWriter(const vtkXMLPStructuredDataWriter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkXMLPStructuredDataWriter&) VTK_DELETE_FUNCTION;
 
   typedef std::map<int, std::vector<int> > ExtentsType;
   ExtentsType Extents;

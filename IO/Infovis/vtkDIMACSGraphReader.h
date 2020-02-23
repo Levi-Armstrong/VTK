@@ -51,22 +51,23 @@
  * @sa
  * vtkDIMACSGraphWriter
  *
- */
+*/
 
 #ifndef vtkDIMACSGraphReader_h
 #define vtkDIMACSGraphReader_h
 
-#include "vtkGraphAlgorithm.h"
 #include "vtkIOInfovisModule.h" // For export macro
-#include "vtkStdString.h"       // For string API
+#include "vtkGraphAlgorithm.h"
+#include "vtkStdString.h" // For string API
 
 class VTKIOINFOVIS_EXPORT vtkDIMACSGraphReader : public vtkGraphAlgorithm
 {
 
 public:
-  static vtkDIMACSGraphReader* New();
+
+  static vtkDIMACSGraphReader *New();
   vtkTypeMacro(vtkDIMACSGraphReader, vtkGraphAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -93,38 +94,44 @@ public:
   //@}
 
 protected:
+
   vtkDIMACSGraphReader();
-  ~vtkDIMACSGraphReader() override;
+  ~vtkDIMACSGraphReader();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int RequestData(vtkInformation *,
+                          vtkInformationVector **,
+                          vtkInformationVector *);
 
-  int buildGenericGraph(vtkGraph* output, vtkStdString& defaultVertexAttrArrayName,
-    vtkStdString& defaultEdgeAttrArrayName);
+  int buildGenericGraph(vtkGraph     * output,
+                        vtkStdString & defaultVertexAttrArrayName,
+                        vtkStdString & defaultEdgeAttrArrayName);
 
-  int buildColoringGraph(vtkGraph* output);
-  int buildMaxflowGraph(vtkGraph* output);
+  int buildColoringGraph(vtkGraph * output);
+  int buildMaxflowGraph(vtkGraph * output);
 
   /**
    * Creates directed or undirected output based on Directed flag.
    */
-  int RequestDataObject(vtkInformation*, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  virtual int RequestDataObject(vtkInformation*,
+                                vtkInformationVector** inputVector,
+                                vtkInformationVector* outputVector);
 
   int ReadGraphMetaData();
 
 private:
-  bool fileOk;
-  bool Directed;
-  char* FileName;
-  char* VertexAttributeArrayName;
-  char* EdgeAttributeArrayName;
+
+  bool   fileOk;
+  bool   Directed;
+  char * FileName;
+  char * VertexAttributeArrayName;
+  char * EdgeAttributeArrayName;
 
   int numVerts;
   int numEdges;
   vtkStdString dimacsProblemStr;
 
-  vtkDIMACSGraphReader(const vtkDIMACSGraphReader&) = delete;
-  void operator=(const vtkDIMACSGraphReader&) = delete;
+  vtkDIMACSGraphReader(const vtkDIMACSGraphReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkDIMACSGraphReader&) VTK_DELETE_FUNCTION;
 };
 
 #endif // vtkDIMACSGraphReader_h

@@ -25,27 +25,33 @@
 
 vtkStandardNewMacro(vtkBlockIdScalars);
 //----------------------------------------------------------------------------
-vtkBlockIdScalars::vtkBlockIdScalars() = default;
+vtkBlockIdScalars::vtkBlockIdScalars()
+{
+}
 
 //----------------------------------------------------------------------------
-vtkBlockIdScalars::~vtkBlockIdScalars() = default;
+vtkBlockIdScalars::~vtkBlockIdScalars()
+{
+}
 
 //----------------------------------------------------------------------------
 // Map ids into attribute data
-int vtkBlockIdScalars::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+int vtkBlockIdScalars::RequestData(
+  vtkInformation *vtkNotUsed(request),
+  vtkInformationVector **inputVector,
+  vtkInformationVector *outputVector)
 {
   vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
-  vtkMultiBlockDataSet* input =
-    vtkMultiBlockDataSet::SafeDownCast(inInfo->Get(vtkDataObject::DATA_OBJECT()));
+  vtkMultiBlockDataSet *input = vtkMultiBlockDataSet::SafeDownCast(
+    inInfo->Get(vtkDataObject::DATA_OBJECT()));
   if (!input)
   {
     return 0;
   }
 
   vtkInformation* info = outputVector->GetInformationObject(0);
-  vtkMultiBlockDataSet* output =
-    vtkMultiBlockDataSet::SafeDownCast(info->Get(vtkDataObject::DATA_OBJECT()));
+  vtkMultiBlockDataSet *output = vtkMultiBlockDataSet::SafeDownCast(
+    info->Get(vtkDataObject::DATA_OBJECT()));
   if (!output)
   {
     return 0;
@@ -59,7 +65,8 @@ int vtkBlockIdScalars::RequestData(vtkInformation* vtkNotUsed(request),
   iter->VisitOnlyLeavesOff();
 
   int blockIdx = 0;
-  for (iter->InitTraversal(); !iter->IsDoneWithTraversal(); iter->GoToNextItem(), blockIdx++)
+  for (iter->InitTraversal(); !iter->IsDoneWithTraversal();
+    iter->GoToNextItem(), blockIdx++)
   {
     vtkDataObject* dObj = iter->GetCurrentDataObject();
     if (dObj)
@@ -78,22 +85,25 @@ int vtkBlockIdScalars::RequestData(vtkInformation* vtkNotUsed(request),
 }
 
 //----------------------------------------------------------------------------
-vtkDataObject* vtkBlockIdScalars::ColorBlock(vtkDataObject* input, int group)
+vtkDataObject* vtkBlockIdScalars::ColorBlock(
+  vtkDataObject* input, int group)
 {
-  vtkDataObject* output = nullptr;
+  vtkDataObject* output = 0;
   if (input->IsA("vtkCompositeDataSet"))
   {
     vtkCompositeDataSet* mbInput = vtkCompositeDataSet::SafeDownCast(input);
 
     output = input->NewInstance();
-    vtkCompositeDataSet* mbOutput = vtkCompositeDataSet::SafeDownCast(output);
+    vtkCompositeDataSet* mbOutput =
+      vtkCompositeDataSet::SafeDownCast(output);
     mbOutput->CopyStructure(mbInput);
 
     vtkCompositeDataIterator* inIter = mbInput->NewIterator();
-    for (inIter->InitTraversal(); !inIter->IsDoneWithTraversal(); inIter->GoToNextItem())
+    for (inIter->InitTraversal(); !inIter->IsDoneWithTraversal();
+      inIter->GoToNextItem())
     {
       vtkDataObject* src = inIter->GetCurrentDataObject();
-      vtkDataObject* dest = nullptr;
+      vtkDataObject* dest = 0;
       if (src)
       {
         dest = this->ColorBlock(src, group);
@@ -112,7 +122,7 @@ vtkDataObject* vtkBlockIdScalars::ColorBlock(vtkDataObject* input, int group)
       vtkIdType numCells = dsOutput->GetNumberOfCells();
       vtkUnsignedCharArray* cArray = vtkUnsignedCharArray::New();
       cArray->SetNumberOfTuples(numCells);
-      for (vtkIdType cellIdx = 0; cellIdx < numCells; cellIdx++)
+      for (vtkIdType cellIdx=0; cellIdx<numCells; cellIdx++)
       {
         cArray->SetValue(cellIdx, group);
       }
@@ -129,3 +139,4 @@ void vtkBlockIdScalars::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 }
+

@@ -23,7 +23,7 @@
  *
  * @sa
  * vtkPlotLine, vtkPlotPoints
- */
+*/
 
 #ifndef vtkMarkerUtilities_h
 #define vtkMarkerUtilities_h
@@ -38,13 +38,12 @@ class VTKRENDERINGCONTEXT2D_EXPORT vtkMarkerUtilities : public vtkObject
 {
 public:
   vtkTypeMacro(vtkMarkerUtilities, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  virtual void PrintSelf(ostream &os, vtkIndent indent);
 
   /**
    * Enum containing various marker styles that can be used in a plot.
    */
-  enum
-  {
+  enum {
     NONE = 0,
     CROSS,
     PLUS,
@@ -56,15 +55,16 @@ public:
   /**
    * Generate the requested symbol of a particular style and size.
    */
-  static void GenerateMarker(vtkImageData* data, int style, int width);
+  static void GenerateMarker(vtkImageData *data, int style, int width);
 
 protected:
   vtkMarkerUtilities();
-  ~vtkMarkerUtilities() override;
+  ~vtkMarkerUtilities();
 
 private:
-  vtkMarkerUtilities(const vtkMarkerUtilities&) = delete;
-  void operator=(const vtkMarkerUtilities&) = delete;
+  vtkMarkerUtilities(const vtkMarkerUtilities &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkMarkerUtilities &) VTK_DELETE_FUNCTION;
+
 };
 
-#endif // vtkMarkerUtilities_h
+#endif //vtkMarkerUtilities_h

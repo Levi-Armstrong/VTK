@@ -20,7 +20,7 @@
  *
  *
  *
- */
+*/
 
 #ifndef vtkPlotParallelCoordinates_h
 #define vtkPlotParallelCoordinates_h
@@ -40,7 +40,7 @@ class VTKCHARTSCORE_EXPORT vtkPlotParallelCoordinates : public vtkPlot
 {
 public:
   vtkTypeMacro(vtkPlotParallelCoordinates, vtkPlot);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  virtual void PrintSelf(ostream &os, vtkIndent indent);
 
   /**
    * Creates a parallel coordinates chart
@@ -52,12 +52,12 @@ public:
    * The scene should take care of calling this on all items before their
    * Paint function is invoked.
    */
-  void Update() override;
+  virtual void Update();
 
   /**
    * Paint event for the XY plot, called whenever the chart needs to be drawn
    */
-  bool Paint(vtkContext2D* painter) override;
+  virtual bool Paint(vtkContext2D *painter);
 
   /**
    * Paint legend event for the XY plot, called whenever the legend needs the
@@ -65,12 +65,13 @@ public:
    * corner of the rect (elements 0 and 1) and with width x height (elements 2
    * and 3). The plot can choose how to fill the space supplied.
    */
-  bool PaintLegend(vtkContext2D* painter, const vtkRectf& rect, int legendIndex) override;
+  virtual bool PaintLegend(vtkContext2D *painter, const vtkRectf& rect,
+                           int legendIndex);
 
   /**
    * Get the bounds for this mapper as (Xmin,Xmax,Ymin,Ymax,Zmin,Zmax).
    */
-  void GetBounds(double bounds[4]) override;
+  virtual void GetBounds(double bounds[4]);
 
   /**
    * Set the selection criteria on the given axis in normalized space (0.0 - 1.0).
@@ -86,8 +87,9 @@ public:
   /**
    * This is a convenience function to set the input table.
    */
-  void SetInputData(vtkTable* table) override;
-  void SetInputData(vtkTable* table, const vtkStdString&, const vtkStdString&) override
+  virtual void SetInputData(vtkTable *table);
+  virtual void SetInputData(vtkTable *table, const vtkStdString&,
+                            const vtkStdString&)
   {
     this->SetInputData(table);
   }
@@ -97,8 +99,8 @@ public:
   /**
    * Specify a lookup table for the mapper to use.
    */
-  void SetLookupTable(vtkScalarsToColors* lut);
-  vtkScalarsToColors* GetLookupTable();
+  void SetLookupTable(vtkScalarsToColors *lut);
+  vtkScalarsToColors *GetLookupTable();
   //@}
 
   /**
@@ -111,9 +113,9 @@ public:
   /**
    * Turn on/off flag to control whether scalar data is used to color objects.
    */
-  vtkSetMacro(ScalarVisibility, vtkTypeBool);
-  vtkGetMacro(ScalarVisibility, vtkTypeBool);
-  vtkBooleanMacro(ScalarVisibility, vtkTypeBool);
+  vtkSetMacro(ScalarVisibility,int);
+  vtkGetMacro(ScalarVisibility,int);
+  vtkBooleanMacro(ScalarVisibility,int);
   //@}
 
   //@{
@@ -123,7 +125,7 @@ public:
    * The lookup table will decide how to convert vectors to colors.
    */
   void SelectColorArray(vtkIdType arrayNum);
-  void SelectColorArray(const vtkStdString& arrayName);
+  void SelectColorArray(const vtkStdString &arrayName);
   //@}
 
   /**
@@ -133,12 +135,12 @@ public:
 
 protected:
   vtkPlotParallelCoordinates();
-  ~vtkPlotParallelCoordinates() override;
+  ~vtkPlotParallelCoordinates();
 
   /**
    * Update the table cache.
    */
-  bool UpdateTableCache(vtkTable* table);
+  bool UpdateTableCache(vtkTable *table);
 
   //@{
   /**
@@ -157,15 +159,16 @@ protected:
   /**
    * Lookup Table for coloring points by scalar value
    */
-  vtkScalarsToColors* LookupTable;
-  vtkUnsignedCharArray* Colors;
-  vtkTypeBool ScalarVisibility;
+  vtkScalarsToColors *LookupTable;
+  vtkUnsignedCharArray *Colors;
+  int ScalarVisibility;
   vtkStdString ColorArrayName;
   //@}
 
 private:
-  vtkPlotParallelCoordinates(const vtkPlotParallelCoordinates&) = delete;
-  void operator=(const vtkPlotParallelCoordinates&) = delete;
+  vtkPlotParallelCoordinates(const vtkPlotParallelCoordinates &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPlotParallelCoordinates &) VTK_DELETE_FUNCTION;
+
 };
 
-#endif // vtkPlotParallelCoordinates_h
+#endif //vtkPlotParallelCoordinates_h

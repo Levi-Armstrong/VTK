@@ -18,18 +18,19 @@
 #include "vtkNew.h"
 #include "vtkPolyData.h"
 #include "vtkRTAnalyticSource.h"
-#include "vtkSMPTools.h"
 #include "vtkSmartPointer.h"
+#include "vtkSMPTools.h"
 #include "vtkSynchronizedTemplates3D.h"
 #include "vtkThreadedSynchronizedTemplates3D.h"
 #include "vtkTimerLog.h"
 
-int TestThreadedSynchronizedTemplates3D(int, char*[])
+
+int TestThreadedSynchronizedTemplates3D(int, char *[])
 {
   static const int dim = 256;
-  static const int ext[6] = { 0, dim - 1, 0, dim - 1, 0, dim - 1 };
+  static int ext[6] = { 0, dim - 1, 0, dim - 1, 0, dim - 1 };
 
-  // vtkSMPTools::Initialize(4);
+  //vtkSMPTools::Initialize(4);
   vtkNew<vtkTimerLog> tl;
 
   vtkNew<vtkRTAnalyticSource> source;
@@ -59,17 +60,20 @@ int TestThreadedSynchronizedTemplates3D(int, char*[])
 
   vtkIdType parNumCells = 0, numPieces = 0;
   vtkSmartPointer<vtkCompositeDataIterator> iter;
-  iter.TakeReference(static_cast<vtkCompositeDataSet*>(cf->GetOutputDataObject(0))->NewIterator());
+  iter.TakeReference(static_cast<vtkCompositeDataSet*>(
+    cf->GetOutputDataObject(0))->NewIterator());
   iter->InitTraversal();
-  while (!iter->IsDoneWithTraversal())
+  while(!iter->IsDoneWithTraversal())
   {
-    vtkPolyData* piece = static_cast<vtkPolyData*>(iter->GetCurrentDataObject());
+    vtkPolyData* piece =
+      static_cast<vtkPolyData*>(iter->GetCurrentDataObject());
     parNumCells += piece->GetNumberOfCells();
     ++numPieces;
     iter->GoToNextItem();
   }
 
   cout << "Total num. cells: " << parNumCells << endl;
+
 
   vtkNew<vtkSynchronizedTemplates3D> st;
   st->SetInputData(source->GetOutput());
@@ -94,7 +98,8 @@ int TestThreadedSynchronizedTemplates3D(int, char*[])
   }
 
   cout << "Success!" << endl;
-  cout << "speedup = " << serialTime / parallelTime << "x with " << numPieces << " threads" << endl;
+  cout << "speedup = " << serialTime/parallelTime << "x with "
+       << numPieces << " threads" << endl;
 
   return EXIT_SUCCESS;
 }

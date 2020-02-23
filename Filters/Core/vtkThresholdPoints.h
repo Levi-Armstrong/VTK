@@ -20,10 +20,9 @@
  * satisfy a threshold criterion. The criterion can take three forms:
  * 1) greater than a particular value; 2) less than a particular value; or
  * 3) between a particular value. The output of the filter is polygonal data.
- *
  * @sa
- * vtkThreshold vtkSelectEnclosedPoints vtkExtractEnclosedPoints
- */
+ * vtkThreshold
+*/
 
 #ifndef vtkThresholdPoints_h
 #define vtkThresholdPoints_h
@@ -34,9 +33,9 @@
 class VTKFILTERSCORE_EXPORT vtkThresholdPoints : public vtkPolyDataAlgorithm
 {
 public:
-  static vtkThresholdPoints* New();
-  vtkTypeMacro(vtkThresholdPoints, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkThresholdPoints *New();
+  vtkTypeMacro(vtkThresholdPoints,vtkPolyDataAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Criterion is cells whose scalars are less or equal to lower threshold.
@@ -58,16 +57,16 @@ public:
   /**
    * Set/Get the upper threshold.
    */
-  vtkSetMacro(UpperThreshold, double);
-  vtkGetMacro(UpperThreshold, double);
+  vtkSetMacro(UpperThreshold,double);
+  vtkGetMacro(UpperThreshold,double);
   //@}
 
   //@{
   /**
    * Set/Get the lower threshold.
    */
-  vtkSetMacro(LowerThreshold, double);
-  vtkGetMacro(LowerThreshold, double);
+  vtkSetMacro(LowerThreshold,double);
+  vtkGetMacro(LowerThreshold,double);
   //@}
 
   //@{
@@ -76,18 +75,18 @@ public:
    * for the vtkAlgorithm::DesiredOutputPrecision enum for an explanation of
    * the available precision settings.
    */
-  vtkSetMacro(OutputPointsPrecision, int);
-  vtkGetMacro(OutputPointsPrecision, int);
+  vtkSetMacro(OutputPointsPrecision,int);
+  vtkGetMacro(OutputPointsPrecision,int);
   //@}
 
 protected:
   vtkThresholdPoints();
-  ~vtkThresholdPoints() override {}
+  ~vtkThresholdPoints() VTK_OVERRIDE {}
 
   // Usual data generation method
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *) VTK_OVERRIDE;
 
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  int FillInputPortInformation(int port, vtkInformation *info) VTK_OVERRIDE;
 
   double LowerThreshold;
   double UpperThreshold;
@@ -95,16 +94,13 @@ protected:
 
   int (vtkThresholdPoints::*ThresholdFunction)(double s);
 
-  int Lower(double s) { return (s <= this->LowerThreshold ? 1 : 0); }
-  int Upper(double s) { return (s >= this->UpperThreshold ? 1 : 0); }
-  int Between(double s)
-  {
-    return (s >= this->LowerThreshold ? (s <= this->UpperThreshold ? 1 : 0) : 0);
-  }
-
+  int Lower(double s) {return ( s <= this->LowerThreshold ? 1 : 0 );};
+  int Upper(double s) {return ( s >= this->UpperThreshold ? 1 : 0 );};
+  int Between(double s) {return ( s >= this->LowerThreshold ?
+                               ( s <= this->UpperThreshold ? 1 : 0 ) : 0 );};
 private:
-  vtkThresholdPoints(const vtkThresholdPoints&) = delete;
-  void operator=(const vtkThresholdPoints&) = delete;
+  vtkThresholdPoints(const vtkThresholdPoints&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkThresholdPoints&) VTK_DELETE_FUNCTION;
 };
 
 #endif

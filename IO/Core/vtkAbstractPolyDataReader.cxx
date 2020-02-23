@@ -19,17 +19,15 @@
 vtkAbstractPolyDataReader::vtkAbstractPolyDataReader()
   : vtkPolyDataAlgorithm()
 {
-  this->FileName = nullptr;
-  this->SetNumberOfInputPorts(0);
 }
 
 vtkAbstractPolyDataReader::~vtkAbstractPolyDataReader()
 {
-  this->SetFileName(nullptr);
 }
 
 void vtkAbstractPolyDataReader::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
-  os << indent << "FileName: " << (this->FileName ? this->FileName : "NONE") << endl;
+  this->Superclass::PrintSelf(os,indent);
+  os << indent << "FileName: " <<
+    (this->FileName ? this->FileName : "NONE") << endl;
 }

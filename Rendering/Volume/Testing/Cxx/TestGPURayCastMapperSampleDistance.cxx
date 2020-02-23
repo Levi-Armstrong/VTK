@@ -35,7 +35,9 @@
 int TestGPURayCastMapperSampleDistance(int argc, char* argv[])
 {
   vtkNew<vtkRTAnalyticSource> wavelet;
-  wavelet->SetWholeExtent(-127, 128, -127, 128, -127, 128);
+  wavelet->SetWholeExtent(-127, 128,
+                          -127, 128,
+                          -127, 128);
   wavelet->SetCenter(0.0, 0.0, 0.0);
 
   vtkNew<vtkGPUVolumeRayCastMapper> volumeMapper;
@@ -53,34 +55,35 @@ int TestGPURayCastMapperSampleDistance(int argc, char* argv[])
   pwf->AddPoint(37.3531, 0.0);
   pwf->AddPoint(276.829, 1.0);
 
-  volumeProperty->SetColor(ctf);
-  volumeProperty->SetScalarOpacity(pwf);
+  volumeProperty->SetColor(ctf.GetPointer());
+  volumeProperty->SetScalarOpacity(pwf.GetPointer());
 
   vtkNew<vtkVolume> volume;
-  volume->SetMapper(volumeMapper);
-  volume->SetProperty(volumeProperty);
+  volume->SetMapper(volumeMapper.GetPointer());
+  volume->SetProperty(volumeProperty.GetPointer());
 
   vtkNew<vtkRenderWindow> renderWindow;
   renderWindow->SetSize(300, 300);
   renderWindow->Render(); // make sure we have an OpenGL context.
 
   vtkNew<vtkRenderer> renderer;
-  renderer->AddVolume(volume);
+  renderer->AddVolume(volume.GetPointer());
   renderer->ResetCamera();
-  renderWindow->AddRenderer(renderer);
+  renderWindow->AddRenderer(renderer.GetPointer());
 
   vtkNew<vtkRenderWindowInteractor> iren;
-  iren->SetRenderWindow(renderWindow);
+  iren->SetRenderWindow(renderWindow.GetPointer());
 
-  int valid = volumeMapper->IsRenderSupported(renderWindow, volumeProperty);
+  int valid = volumeMapper->IsRenderSupported(renderWindow.GetPointer(),
+                                              volumeProperty.GetPointer());
   int retVal;
   if (valid)
   {
     renderWindow->Render();
     iren->Initialize();
 
-    retVal = vtkRegressionTestImage(renderWindow);
-    if (retVal == vtkRegressionTester::DO_INTERACTOR)
+    retVal = vtkRegressionTestImage( renderWindow.GetPointer() );
+    if( retVal == vtkRegressionTester::DO_INTERACTOR)
     {
       iren->Start();
     }
@@ -91,5 +94,6 @@ int TestGPURayCastMapperSampleDistance(int argc, char* argv[])
     cout << "Required extensions not supported." << endl;
   }
 
-  return !((retVal == vtkTesting::PASSED) || (retVal == vtkTesting::DO_INTERACTOR));
+  return !((retVal == vtkTesting::PASSED) ||
+           (retVal == vtkTesting::DO_INTERACTOR));
 }

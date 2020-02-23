@@ -19,4 +19,6 @@
 
 vtkStandardNewMacro(vtkStructuredPoints);
 
-vtkStructuredPoints::vtkStructuredPoints() = default;
+vtkStructuredPoints::vtkStructuredPoints()
+{
+}

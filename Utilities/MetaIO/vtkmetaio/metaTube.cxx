@@ -16,8 +16,8 @@
 
 #include "metaTube.h"
 
-#include <cctype>
-#include <cstdio>
+#include <stdio.h>
+#include <ctype.h>
 #include <string>
 
 #if (METAIO_USE_NAMESPACE)
@@ -104,7 +104,7 @@ MetaTube::
   while(it != m_PointList.end())
   {
     TubePnt* pnt = *it;
-    ++it;
+    it++;
     delete pnt;
   }
   m_PointList.clear();
@@ -147,7 +147,7 @@ PointDim(const char* pointDim)
 }
 
 const char* MetaTube::
-PointDim() const
+PointDim(void) const
 {
   return m_PointDim;
 }
@@ -159,7 +159,7 @@ NPoints(int npnt)
 }
 
 int MetaTube::
-NPoints() const
+NPoints(void) const
 {
   return m_NPoints;
 }
@@ -171,7 +171,7 @@ Root(bool root)
 }
 
 bool MetaTube::
-Root() const
+Root(void) const
 {
   return m_Root;
 }
@@ -184,14 +184,14 @@ ParentPoint(int parentpoint)
 }
 
 int MetaTube::
-ParentPoint() const
+ParentPoint(void) const
 {
   return m_ParentPoint;
 }
 
 /** Clear tube information */
 void MetaTube::
-Clear()
+Clear(void)
 {
   if(META_DEBUG) METAIO_STREAM::cout << "MetaTube: Clear" << METAIO_STREAM::endl;
   MetaObject::Clear();
@@ -200,7 +200,7 @@ Clear()
   while(it != m_PointList.end())
   {
     TubePnt* pnt = *it;
-    ++it;
+    it++;
     delete pnt;
   }
   m_PointList.clear();
@@ -214,14 +214,14 @@ Clear()
 
 /** Destroy tube information */
 void MetaTube::
-M_Destroy()
+M_Destroy(void)
 {
   MetaObject::M_Destroy();
 }
 
 /** Set Read fields */
 void MetaTube::
-M_SetupReadFields()
+M_SetupReadFields(void)
 {
   if(META_DEBUG) METAIO_STREAM::cout << "MetaTube: M_SetupReadFields" << METAIO_STREAM::endl;
 
@@ -255,7 +255,7 @@ M_SetupReadFields()
 }
 
 void MetaTube::
-M_SetupWriteFields()
+M_SetupWriteFields(void)
 {
   strcpy(m_ObjectTypeName,"Tube");
   MetaObject::M_SetupWriteFields();
@@ -304,7 +304,7 @@ M_SetupWriteFields()
 
 
 bool MetaTube::
-M_Read()
+M_Read(void)
 {
   if(META_DEBUG)
     {
@@ -382,7 +382,7 @@ M_Read()
   int posID = -1;
 
   int pntDim;
-  char** pntVal = nullptr;
+  char** pntVal = NULL;
   MET_StringToWordArray(m_PointDim, &pntDim, &pntVal);
 
   if(META_DEBUG)
@@ -719,7 +719,7 @@ M_Read()
 }
 
 MET_ValueEnumType MetaTube::
-ElementType() const
+ElementType(void) const
 {
   return m_ElementType;
 }
@@ -731,7 +731,7 @@ ElementType(MET_ValueEnumType _elementType)
 }
 
 bool MetaTube::
-M_Write()
+M_Write(void)
 {
 
   if(!MetaObject::M_Write())
@@ -803,7 +803,7 @@ M_Write()
       int id = (*it)->m_ID;
       MET_SwapByteIfSystemMSB(&id,MET_INT);
       MET_DoubleToValue((double)id,m_ElementType,data,i++);
-      ++it;
+      it++;
       }
 
     m_WriteStream->write((char *)data,writeSize);
@@ -851,7 +851,7 @@ M_Write()
       *m_WriteStream << (*it)->m_ID << " ";
 
       *m_WriteStream << METAIO_STREAM::endl;
-      ++it;
+      it++;
       }
     }
   return true;

@@ -24,36 +24,33 @@
  * opacity defaults to 255, but can be modified separately to the other
  * components. Ideally we would use a lightweight color class to store and pass
  * around colors.
- */
+*/
 
 #ifndef vtkPen_h
 #define vtkPen_h
 
-#include "vtkColor.h" // Needed for vtkColor4ub
-#include "vtkObject.h"
 #include "vtkRenderingContext2DModule.h" // For export macro
+#include "vtkObject.h"
+#include "vtkColor.h" // Needed for vtkColor4ub
 
 class VTKRENDERINGCONTEXT2D_EXPORT vtkPen : public vtkObject
 {
 public:
   vtkTypeMacro(vtkPen, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  virtual void PrintSelf(ostream &os, vtkIndent indent);
 
-  static vtkPen* New();
+  static vtkPen *New();
 
   /**
    * Enum of the available line types.
    */
-  enum
-  {
+  enum {
     NO_PEN,
     SOLID_LINE,
     DASH_LINE,
     DOT_LINE,
     DASH_DOT_LINE,
-    DASH_DOT_DOT_LINE,
-    DENSE_DOT_LINE
-  };
+    DASH_DOT_DOT_LINE};
 
   /**
    * Set the type of line that the pen should draw. The default is solid (1).
@@ -106,8 +103,9 @@ public:
    * Set the color of the brush with four component unsigned chars (RGBA),
    * ranging from 0 to 255.
    */
-  void SetColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a);
-  void SetColor(const vtkColor4ub& color);
+  void SetColor(unsigned char r, unsigned char g, unsigned char b,
+                unsigned char a);
+  void SetColor(const vtkColor4ub &color);
   //@}
 
   /**
@@ -140,7 +138,7 @@ public:
   /**
    * Get the color of the brush - gives a pointer to the underlying data.
    */
-  unsigned char* GetColor() { return this->Color; }
+  unsigned char * GetColor() { return this->Color; }
 
   //@{
   /**
@@ -153,11 +151,11 @@ public:
   /**
    * Make a deep copy of the supplied pen.
    */
-  void DeepCopy(vtkPen* pen);
+  void DeepCopy(vtkPen *pen);
 
 protected:
   vtkPen();
-  ~vtkPen() override;
+  ~vtkPen();
 
   //@{
   /**
@@ -178,8 +176,9 @@ protected:
   int LineType;
 
 private:
-  vtkPen(const vtkPen&) = delete;
-  void operator=(const vtkPen&) = delete;
+  vtkPen(const vtkPen &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPen &) VTK_DELETE_FUNCTION;
+
 };
 
-#endif // vtkPen_h
+#endif //vtkPen_h

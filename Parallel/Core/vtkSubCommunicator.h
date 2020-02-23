@@ -41,13 +41,13 @@
  * This class was originally written by Kenneth Moreland (kmorel@sandia.gov)
  * from Sandia National Laboratories.
  *
- */
+*/
 
 #ifndef vtkSubCommunicator_h
 #define vtkSubCommunicator_h
 
-#include "vtkCommunicator.h"
 #include "vtkParallelCoreModule.h" // For export macro
+#include "vtkCommunicator.h"
 
 class vtkProcessGroup;
 
@@ -55,35 +55,36 @@ class VTKPARALLELCORE_EXPORT vtkSubCommunicator : public vtkCommunicator
 {
 public:
   vtkTypeMacro(vtkSubCommunicator, vtkCommunicator);
-  static vtkSubCommunicator* New();
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkSubCommunicator *New();
+  virtual void PrintSelf(ostream &os, vtkIndent indent);
 
   //@{
   /**
    * Set/get the group on which communication will happen.
    */
   vtkGetObjectMacro(Group, vtkProcessGroup);
-  virtual void SetGroup(vtkProcessGroup* group);
+  virtual void SetGroup(vtkProcessGroup *group);
   //@}
 
   //@{
   /**
    * Implementation for abstract supercalss.
    */
-  int SendVoidArray(
-    const void* data, vtkIdType length, int type, int remoteHandle, int tag) override;
-  int ReceiveVoidArray(void* data, vtkIdType length, int type, int remoteHandle, int tag) override;
+  virtual int SendVoidArray(const void *data, vtkIdType length, int type,
+                            int remoteHandle, int tag);
+  virtual int ReceiveVoidArray(void *data, vtkIdType length, int type,
+                               int remoteHandle, int tag);
   //@}
 
 protected:
   vtkSubCommunicator();
-  ~vtkSubCommunicator() override;
+  virtual ~vtkSubCommunicator();
 
-  vtkProcessGroup* Group;
+  vtkProcessGroup *Group;
 
 private:
-  vtkSubCommunicator(const vtkSubCommunicator&) = delete;
-  void operator=(const vtkSubCommunicator&) = delete;
+  vtkSubCommunicator(const vtkSubCommunicator &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkSubCommunicator &) VTK_DELETE_FUNCTION;
 };
 
-#endif // vtkSubCommunicator_h
+#endif //vtkSubCommunicator_h

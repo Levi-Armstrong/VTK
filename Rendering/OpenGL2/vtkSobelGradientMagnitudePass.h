@@ -44,9 +44,9 @@
  * convolution with (1 2 1).
  * The second pass has two inputs, Gx1 and Gy1. Kernel (1 2 1)^T is applied
  * to Gx1 and kernel (-1 0 1)^T is applied to Gx2. It gives the values for
- * Gx and Gy. Those values are then used to compute the magnitude of the
+ * Gx and Gy. Thoses values are then used to compute the magnitude of the
  * gradient which is stored in the render target.
- * The gradient computation happens per component (R,G,B). A is arbitrarily set
+ * The gradient computation happens per component (R,G,B). A is arbitrarly set
  * to 1 (full opacity).
  *
  * @par Implementation:
@@ -55,41 +55,42 @@
  *
  * @sa
  * vtkRenderPass
- */
+*/
 
 #ifndef vtkSobelGradientMagnitudePass_h
 #define vtkSobelGradientMagnitudePass_h
 
-#include "vtkImageProcessingPass.h"
 #include "vtkRenderingOpenGL2Module.h" // For export macro
+#include "vtkImageProcessingPass.h"
 
 class vtkDepthPeelingPassLayerList; // Pimpl
-class vtkOpenGLFramebufferObject;
+class vtkFrameBufferObject;
 class vtkOpenGLHelper;
 class vtkOpenGLRenderWindow;
 class vtkTextureObject;
 
+
 class VTKRENDERINGOPENGL2_EXPORT vtkSobelGradientMagnitudePass : public vtkImageProcessingPass
 {
 public:
-  static vtkSobelGradientMagnitudePass* New();
-  vtkTypeMacro(vtkSobelGradientMagnitudePass, vtkImageProcessingPass);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkSobelGradientMagnitudePass *New();
+  vtkTypeMacro(vtkSobelGradientMagnitudePass,vtkImageProcessingPass);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Perform rendering according to a render state \p s.
    * \pre s_exists: s!=0
    */
-  void Render(const vtkRenderState* s) override;
+  virtual void Render(const vtkRenderState *s);
 
   /**
    * Release graphics resources and ask components to release their own
    * resources.
    * \pre w_exists: w!=0
    */
-  void ReleaseGraphicsResources(vtkWindow* w) override;
+  void ReleaseGraphicsResources(vtkWindow *w);
 
-protected:
+ protected:
   /**
    * Default constructor. DelegatePass is set to NULL.
    */
@@ -98,23 +99,23 @@ protected:
   /**
    * Destructor.
    */
-  ~vtkSobelGradientMagnitudePass() override;
+  virtual ~vtkSobelGradientMagnitudePass();
 
   /**
    * Graphics resources.
    */
-  vtkOpenGLFramebufferObject* FrameBufferObject;
-  vtkTextureObject* Pass1; // render target for the scene
-  vtkTextureObject* Gx1;   // render target 0 for the first shader
-  vtkTextureObject* Gy1;   // render target 1 for the first shader
+  vtkFrameBufferObject *FrameBufferObject;
+  vtkTextureObject *Pass1; // render target for the scene
+  vtkTextureObject *Gx1; // render target 0 for the first shader
+  vtkTextureObject *Gy1; // render target 1 for the first shader
 
   // Structures for the various cell types we render.
-  vtkOpenGLHelper* Program1; // shader to compute Gx1 and Gy1
-  vtkOpenGLHelper* Program2; // shader to compute |G| from Gx1 and Gy1
+  vtkOpenGLHelper *Program1; // shader to compute Gx1 and Gy1
+  vtkOpenGLHelper *Program2; // shader to compute |G| from Gx1 and Gy1
 
-private:
-  vtkSobelGradientMagnitudePass(const vtkSobelGradientMagnitudePass&) = delete;
-  void operator=(const vtkSobelGradientMagnitudePass&) = delete;
+ private:
+  vtkSobelGradientMagnitudePass(const vtkSobelGradientMagnitudePass&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkSobelGradientMagnitudePass&) VTK_DELETE_FUNCTION;
 };
 
 #endif

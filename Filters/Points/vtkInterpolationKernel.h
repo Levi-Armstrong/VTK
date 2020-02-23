@@ -20,13 +20,13 @@
  * vtkInterpolationKernel specifies an abstract interface for interpolation
  * kernels. An interpolation kernel is used to produce an interpolated data
  * value at a point X from the points + data in a local neighborhood
- * surrounding X. For example, given the N nearest points surrounding X, the
+ * surounding X. For example, given the N nearest points surrounding X, the
  * interpolation kernel provides N weights, which when combined with the N
  * data values associated with these nearest points, produces an interpolated
  * data value at point X.
  *
  * Note that various kernel initialization methods are provided. The basic
- * method requires providing a point locator to accelerate neighborhood
+ * method requires providing a point locator to accelerate neigborhood
  * queries. Some kernels may refer back to the original dataset, or the point
  * attribute data associated with the dataset. The initialization method
  * enables different styles of initialization and is kernel-dependent.
@@ -46,7 +46,7 @@
  * @sa
  * vtkPointInterpolator vtkPointInterpolator2D vtkGeneralizedKernel
  * vtkGaussianKernel vtkSPHKernel vtkShepardKernel vtkVoronoiKernel
- */
+*/
 
 #ifndef vtkInterpolationKernel_h
 #define vtkInterpolationKernel_h
@@ -60,6 +60,7 @@ class vtkDoubleArray;
 class vtkDataSet;
 class vtkPointData;
 
+
 class VTKFILTERSPOINTS_EXPORT vtkInterpolationKernel : public vtkObject
 {
 public:
@@ -68,7 +69,7 @@ public:
    * Standard method for type and printing.
    */
   vtkAbstractTypeMacro(vtkInterpolationKernel, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   /**
@@ -80,7 +81,8 @@ public:
    * RequiresInitialization to false, do not call Initialize(), and of course
    * manually initialize the kernel.
    */
-  virtual void Initialize(vtkAbstractPointLocator* loc, vtkDataSet* ds, vtkPointData* pd);
+  virtual void Initialize(vtkAbstractPointLocator *loc, vtkDataSet *ds,
+                          vtkPointData *pd);
 
   //@{
   /**
@@ -103,7 +105,7 @@ public:
    * cases, although in some kernels it is used to facilitate basis
    * computation.
    */
-  virtual vtkIdType ComputeBasis(double x[3], vtkIdList* pIds, vtkIdType ptId = 0) = 0;
+  virtual vtkIdType ComputeBasis(double x[3], vtkIdList *pIds, vtkIdType ptId=0) = 0;
 
   /**
    * Given a point x, and a list of basis points pIds, compute interpolation
@@ -115,23 +117,24 @@ public:
    * advanced users can invoke ComputeWeights() and provide the interpolation
    * basis points pIds directly.
    */
-  virtual vtkIdType ComputeWeights(double x[3], vtkIdList* pIds, vtkDoubleArray* weights) = 0;
+  virtual vtkIdType ComputeWeights(double x[3], vtkIdList *pIds,
+                                   vtkDoubleArray *weights) = 0;
 
 protected:
   vtkInterpolationKernel();
-  ~vtkInterpolationKernel() override;
+  ~vtkInterpolationKernel();
 
   bool RequiresInitialization;
-  vtkAbstractPointLocator* Locator;
-  vtkDataSet* DataSet;
-  vtkPointData* PointData;
+  vtkAbstractPointLocator *Locator;
+  vtkDataSet *DataSet;
+  vtkPointData *PointData;
 
   // Just clear out the data. Can be overloaded by subclasses as necessary.
   virtual void FreeStructures();
 
 private:
-  vtkInterpolationKernel(const vtkInterpolationKernel&) = delete;
-  void operator=(const vtkInterpolationKernel&) = delete;
+  vtkInterpolationKernel(const vtkInterpolationKernel&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkInterpolationKernel&) VTK_DELETE_FUNCTION;
 };
 
 #endif

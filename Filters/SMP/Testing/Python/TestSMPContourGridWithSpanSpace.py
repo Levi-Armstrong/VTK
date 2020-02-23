@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import vtk
+from vtk.test import Testing
 from vtk.util.misc import vtkGetDataRoot
 VTK_DATA_ROOT = vtkGetDataRoot()
 
@@ -14,12 +15,12 @@ reader.Update()
 
 tree = vtk.vtkSpanSpace()
 
-contour = vtk.vtkSMPContourGrid()
-#contour = vtk.vtkContourGrid()
+#contour = vtk.vtkSMPContourGrid()
+contour = vtk.vtkContourGrid()
 contour.SetInputConnection(reader.GetOutputPort())
 contour.SetInputArrayToProcess(0, 0, 0, vtk.vtkAssignAttribute.POINT_DATA, "CH4")
 contour.SetValue(0, 0.000718448)
-contour.MergePiecesOff()
+#contour.MergePiecesOff()
 contour.UseScalarTreeOn()
 contour.SetScalarTree(tree)
 contour.Update()
@@ -44,4 +45,4 @@ iren = vtk.vtkRenderWindowInteractor()
 iren.SetRenderWindow(renWin)
 
 renWin.Render()
-iren.Start()
+#iren.Start()

@@ -24,30 +24,31 @@ class vtkLookupTable;
 // Description:
 // vtkPlot::Color, vtkPlot::Brush, vtkScalarsToColors::DrawPolyLine,
 // vtkScalarsToColors::MaskAboveCurve have no effect here.
-class VTKCHARTSCORE_EXPORT vtkLookupTableItem : public vtkScalarsToColorsItem
+class VTKCHARTSCORE_EXPORT vtkLookupTableItem: public vtkScalarsToColorsItem
 {
 public:
   static vtkLookupTableItem* New();
   vtkTypeMacro(vtkLookupTableItem, vtkScalarsToColorsItem);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  virtual void PrintSelf(ostream &os, vtkIndent indent);
 
   void SetLookupTable(vtkLookupTable* t);
   vtkGetObjectMacro(LookupTable, vtkLookupTable);
 
 protected:
   vtkLookupTableItem();
-  ~vtkLookupTableItem() override;
+  virtual ~vtkLookupTableItem();
 
   // Description:
   // Reimplemented to return the range of the lookup table
-  void ComputeBounds(double bounds[4]) override;
+  virtual void ComputeBounds(double bounds[4]);
 
-  void ComputeTexture() override;
+
+  virtual void ComputeTexture();
   vtkLookupTable* LookupTable;
 
 private:
-  vtkLookupTableItem(const vtkLookupTableItem&) = delete;
-  void operator=(const vtkLookupTableItem&) = delete;
+  vtkLookupTableItem(const vtkLookupTableItem &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkLookupTableItem &) VTK_DELETE_FUNCTION;
 };
 
 #endif

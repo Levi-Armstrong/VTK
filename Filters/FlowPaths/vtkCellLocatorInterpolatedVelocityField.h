@@ -44,54 +44,55 @@
  *  vtkCompositeInterpolatedVelocityField vtkInterpolatedVelocityField
  *  vtkGenericInterpolatedVelocityField vtkCachingInterpolatedVelocityField
  *  vtkTemporalInterpolatedVelocityField vtkFunctionSet vtkStreamTracer
- */
+*/
 
 #ifndef vtkCellLocatorInterpolatedVelocityField_h
 #define vtkCellLocatorInterpolatedVelocityField_h
 
-#include "vtkCompositeInterpolatedVelocityField.h"
 #include "vtkFiltersFlowPathsModule.h" // For export macro
+#include "vtkCompositeInterpolatedVelocityField.h"
 
 class vtkAbstractCellLocator;
 class vtkCellLocatorInterpolatedVelocityFieldCellLocatorsType;
 
-class VTKFILTERSFLOWPATHS_EXPORT vtkCellLocatorInterpolatedVelocityField
-  : public vtkCompositeInterpolatedVelocityField
+class VTKFILTERSFLOWPATHS_EXPORT vtkCellLocatorInterpolatedVelocityField : public vtkCompositeInterpolatedVelocityField
 {
 public:
-  vtkTypeMacro(vtkCellLocatorInterpolatedVelocityField, vtkCompositeInterpolatedVelocityField);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro( vtkCellLocatorInterpolatedVelocityField,
+                        vtkCompositeInterpolatedVelocityField );
+  void PrintSelf( ostream & os, vtkIndent indent );
 
   /**
    * Construct a vtkCellLocatorInterpolatedVelocityField without an initial
    * dataset. Caching is set on and LastCellId is set to -1.
    */
-  static vtkCellLocatorInterpolatedVelocityField* New();
+  static vtkCellLocatorInterpolatedVelocityField * New();
 
   //@{
   /**
    * Get the cell locator attached to the most recently visited dataset.
    */
-  vtkGetObjectMacro(LastCellLocator, vtkAbstractCellLocator);
+  vtkGetObjectMacro( LastCellLocator, vtkAbstractCellLocator );
   //@}
 
   //@{
   /**
-   * Set/Get the prototype of the cell locator that is used for interpolating
-   * the velocity field during integration. The prototype is used to
-   * instantiate locators for performing interpolation. By default, a
-   * vtkModifiedBSPTree is used - other classes such as vtkStaticCellLocator
-   * can be faster.
+   * Get the prototype of the cell locator that is used for interpolating the
+   * velocity field during integration.
    */
-  void SetCellLocatorPrototype(vtkAbstractCellLocator* prototype);
-  vtkGetObjectMacro(CellLocatorPrototype, vtkAbstractCellLocator);
+  vtkGetObjectMacro( CellLocatorPrototype, vtkAbstractCellLocator );
   //@}
+
+  /**
+   * Set a prototype of the cell locator that is used for interpolating the
+   * velocity field during integration.
+   */
+  void SetCellLocatorPrototype( vtkAbstractCellLocator * prototype );
 
   /**
    * Import parameters. Sub-classes can add more after chaining.
    */
-  void CopyParameters(vtkAbstractInterpolatedVelocityField* from) override;
-
+  virtual void CopyParameters( vtkAbstractInterpolatedVelocityField * from );
   /**
    * Add a dataset coupled with a cell locator (of type vtkAbstractCellLocator)
    * for vector function evaluation. Note the use of a vtkAbstractCellLocator
@@ -99,27 +100,27 @@ public:
    * evaluation point is searched in all until a match is found. THIS FUNCTION
    * DOES NOT CHANGE THE REFERENCE COUNT OF dataset FOR THREAD SAFETY REASONS.
    */
-  void AddDataSet(vtkDataSet* dataset) override;
+  virtual void AddDataSet( vtkDataSet * dataset );
 
-  using Superclass::FunctionValues;
   /**
    * Evaluate the velocity field f at point (x, y, z).
    */
-  int FunctionValues(double* x, double* f) override;
+  virtual int FunctionValues( double * x, double * f );
 
   /**
    * Set the cell id cached by the last evaluation within a specified dataset.
    */
-  void SetLastCellId(vtkIdType c, int dataindex) override;
+  virtual void SetLastCellId( vtkIdType c, int dataindex );
 
   /**
    * Set the cell id cached by the last evaluation.
    */
-  void SetLastCellId(vtkIdType c) override { this->Superclass::SetLastCellId(c); }
+  virtual void SetLastCellId( vtkIdType c )
+    { this->Superclass::SetLastCellId( c ); }
 
 protected:
   vtkCellLocatorInterpolatedVelocityField();
-  ~vtkCellLocatorInterpolatedVelocityField() override;
+  ~vtkCellLocatorInterpolatedVelocityField();
 
   /**
    * Evaluate the velocity field f at point (x, y, z) in a specified dataset
@@ -127,25 +128,25 @@ protected:
    * vtkAbstractCellLocator::FindCell() (instead of involving vtkPointLocator)
    * to locate the next cell if the given point is outside the current cell.
    */
-  int FunctionValues(vtkDataSet* ds, vtkAbstractCellLocator* loc, double* x, double* f);
+  int FunctionValues( vtkDataSet * ds, vtkAbstractCellLocator * loc,
+                      double * x, double * f );
 
   /**
    * Evaluate the velocity field f at point (x, y, z) in a specified dataset
    * (of type vtkImageData or vtkRectilinearGrid only) by invoking FindCell()
    * to locate the next cell if the given point is outside the current cell.
    */
-  int FunctionValues(vtkDataSet* ds, double* x, double* f) override
-  {
-    return this->Superclass::FunctionValues(ds, x, f);
-  }
+  virtual int FunctionValues( vtkDataSet * ds, double * x, double * f )
+    { return this->Superclass::FunctionValues( ds, x, f ); }
 
 private:
-  vtkAbstractCellLocator* LastCellLocator;
-  vtkAbstractCellLocator* CellLocatorPrototype;
-  vtkCellLocatorInterpolatedVelocityFieldCellLocatorsType* CellLocators;
+  vtkAbstractCellLocator * LastCellLocator;
+  vtkAbstractCellLocator * CellLocatorPrototype;
+  vtkCellLocatorInterpolatedVelocityFieldCellLocatorsType * CellLocators;
 
-  vtkCellLocatorInterpolatedVelocityField(const vtkCellLocatorInterpolatedVelocityField&) = delete;
-  void operator=(const vtkCellLocatorInterpolatedVelocityField&) = delete;
+  vtkCellLocatorInterpolatedVelocityField
+    ( const vtkCellLocatorInterpolatedVelocityField & ) VTK_DELETE_FUNCTION;
+  void operator = ( const vtkCellLocatorInterpolatedVelocityField & ) VTK_DELETE_FUNCTION;
 };
 
 #endif

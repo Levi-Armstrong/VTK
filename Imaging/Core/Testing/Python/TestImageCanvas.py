@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import vtk
+from vtk.test import Testing
 from vtk.util.misc import vtkGetDataRoot
 VTK_DATA_ROOT = vtkGetDataRoot()
 
@@ -32,6 +33,5 @@ viewer = vtk.vtkImageViewer()
 viewer.SetInputConnection(imageCanvas.GetOutputPort())
 viewer.SetColorWindow(255)
 viewer.SetColorLevel(128)
-viewer.SetSize(300,300)
 viewer.Render()
 # --- end of script --

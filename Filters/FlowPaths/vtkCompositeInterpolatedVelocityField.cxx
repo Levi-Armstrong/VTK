@@ -14,32 +14,34 @@
 =========================================================================*/
 #include "vtkCompositeInterpolatedVelocityField.h"
 
-#include "vtkDataArray.h"
-#include "vtkDataSet.h"
-#include "vtkGenericCell.h"
 #include "vtkMath.h"
-#include "vtkObjectFactory.h"
+#include "vtkDataSet.h"
+#include "vtkDataArray.h"
 #include "vtkPointData.h"
+#include "vtkGenericCell.h"
+#include "vtkObjectFactory.h"
 
-//----------------------------------------------------------------------------
+
+const double vtkCompositeInterpolatedVelocityField::TOLERANCE_SCALE = 1.0E-8;
+
+
 vtkCompositeInterpolatedVelocityField::vtkCompositeInterpolatedVelocityField()
 {
   this->LastDataSetIndex = 0;
   this->DataSets = new vtkCompositeInterpolatedVelocityFieldDataSetsType;
 }
 
-//----------------------------------------------------------------------------
+
 vtkCompositeInterpolatedVelocityField::~vtkCompositeInterpolatedVelocityField()
 {
   delete this->DataSets;
-  this->DataSets = nullptr;
+  this->DataSets = NULL;
 }
 
-//----------------------------------------------------------------------------
-void vtkCompositeInterpolatedVelocityField::PrintSelf(ostream& os, vtkIndent indent)
+void vtkCompositeInterpolatedVelocityField::PrintSelf( ostream & os, vtkIndent indent )
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf( os, indent );
 
-  os << indent << "DataSets: " << this->DataSets << endl;
+  os << indent << "DataSets: "           << this->DataSets         << endl;
   os << indent << "Last Dataset Index: " << this->LastDataSetIndex << endl;
 }

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import vtk
+from vtk.test import Testing
 from vtk.util.misc import vtkGetDataRoot
 VTK_DATA_ROOT = vtkGetDataRoot()
 
@@ -160,6 +161,6 @@ imgWin.AddRenderer(imager3)
 imgWin.AddRenderer(imager4)
 imgWin.AddRenderer(imager5)
 imgWin.AddRenderer(imager6)
-imgWin.SetSize(230,150)
+imgWin.SetSize(225,150)
 imgWin.Render()
 # --- end of script --

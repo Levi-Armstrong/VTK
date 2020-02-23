@@ -90,15 +90,15 @@ class METAIO_EXPORT MetaTubeGraph : public MetaObject
 
     MetaTubeGraph(unsigned int dim);
 
-    ~MetaTubeGraph(void) override;
+    ~MetaTubeGraph(void);
 
-    void PrintInfo(void) const override;
+    void PrintInfo(void) const;
 
-    void CopyInfo(const MetaObject * _object) override;
+    void CopyInfo(const MetaObject * _object);
 
     //    NPoints(...)
     //       Required Field
-    //       Number of points which compose the tube
+    //       Number of points wich compose the tube
     void  NPoints(int npnt);
     int   NPoints(void) const;
 
@@ -115,7 +115,7 @@ class METAIO_EXPORT MetaTubeGraph : public MetaObject
     int   Root(void) const;
 
 
-    void  Clear(void) override;
+    void  Clear(void);
 
     PointListType &  GetPoints(void) {return m_PointList;}
     const PointListType &  GetPoints(void) const {return m_PointList;}
@@ -130,15 +130,15 @@ class METAIO_EXPORT MetaTubeGraph : public MetaObject
   ////
   protected:
 
-    void  M_Destroy(void) override;
+    void  M_Destroy(void);
 
-    void  M_SetupReadFields(void) override;
+    void  M_SetupReadFields(void);
 
-    void  M_SetupWriteFields(void) override;
+    void  M_SetupWriteFields(void);
 
-    bool  M_Read(void) override;
+    bool  M_Read(void);
 
-    bool  M_Write(void) override;
+    bool  M_Write(void);
 
     int m_Root;         // "Root = "            0
 

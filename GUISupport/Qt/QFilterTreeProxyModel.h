@@ -32,8 +32,8 @@
 #ifndef __QFilterTreeProxyModel_h
 #define __QFilterTreeProxyModel_h
 
-#include "QVTKWin32Header.h"
 #include "vtkGUISupportQtModule.h" // For export macro
+#include "QVTKWin32Header.h"
 #include <QSortFilterProxyModel>
 
 class QModelIndex;
@@ -43,18 +43,21 @@ class VTKGUISUPPORTQT_EXPORT QFilterTreeProxyModel : public QSortFilterProxyMode
   Q_OBJECT
 
 public:
-  QFilterTreeProxyModel(QObject* p = nullptr);
-  ~QFilterTreeProxyModel() override;
+
+  QFilterTreeProxyModel(QObject* p = 0);
+  ~QFilterTreeProxyModel();
 
   // Description:
   // The 0-based level in the tree hierarchy to filter on. The root is level 0.
   void setFilterTreeLevel(int level);
 
 protected:
-  bool filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) const override;
-  bool lessThan(const QModelIndex& left, const QModelIndex& right) const override;
+
+  virtual bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
+  virtual bool lessThan(const QModelIndex &left, const QModelIndex &right) const;
 
 private:
+
   int TreeLevel;
 };
 

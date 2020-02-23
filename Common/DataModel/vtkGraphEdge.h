@@ -28,7 +28,7 @@
  *
  * @sa
  * vtkGraph
- */
+*/
 
 #ifndef vtkGraphEdge_h
 #define vtkGraphEdge_h
@@ -39,9 +39,9 @@
 class VTKCOMMONDATAMODEL_EXPORT vtkGraphEdge : public vtkObject
 {
 public:
-  static vtkGraphEdge* New();
+  static vtkGraphEdge *New();
   vtkTypeMacro(vtkGraphEdge, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   //@{
   /**
@@ -69,15 +69,15 @@ public:
 
 protected:
   vtkGraphEdge();
-  ~vtkGraphEdge() override;
+  ~vtkGraphEdge() VTK_OVERRIDE;
 
   vtkIdType Source;
   vtkIdType Target;
   vtkIdType Id;
 
 private:
-  vtkGraphEdge(const vtkGraphEdge&) = delete;
-  void operator=(const vtkGraphEdge&) = delete;
+  vtkGraphEdge(const vtkGraphEdge&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkGraphEdge&) VTK_DELETE_FUNCTION;
 };
 
 #endif

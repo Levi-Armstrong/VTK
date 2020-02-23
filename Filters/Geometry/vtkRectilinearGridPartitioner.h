@@ -23,7 +23,7 @@
  *
  * @sa
  *  vtkUniformGridPartitioner vtkStructuredGridPartitioner
- */
+*/
 
 #ifndef vtkRectilinearGridPartitioner_h
 #define vtkRectilinearGridPartitioner_h
@@ -37,57 +37,62 @@ class vtkIndent;
 class vtkDoubleArray;
 class vtkRectilinearGrid;
 
-class VTKFILTERSGEOMETRY_EXPORT vtkRectilinearGridPartitioner : public vtkMultiBlockDataSetAlgorithm
+class VTKFILTERSGEOMETRY_EXPORT vtkRectilinearGridPartitioner :
+  public vtkMultiBlockDataSetAlgorithm
 {
 public:
-  static vtkRectilinearGridPartitioner* New();
+  static vtkRectilinearGridPartitioner *New();
   vtkTypeMacro(vtkRectilinearGridPartitioner, vtkMultiBlockDataSetAlgorithm);
-  void PrintSelf(ostream& oss, vtkIndent indent) override;
+  void PrintSelf(ostream &oss, vtkIndent indent) VTK_OVERRIDE;
 
   //@{
   /**
    * Set/Get macro for the number of subdivisions.
    */
-  vtkGetMacro(NumberOfPartitions, int);
-  vtkSetMacro(NumberOfPartitions, int);
+  vtkGetMacro(NumberOfPartitions,int);
+  vtkSetMacro(NumberOfPartitions,int);
   //@}
 
   //@{
   /**
    * Set/Get macro for the number of ghost layers.
    */
-  vtkGetMacro(NumberOfGhostLayers, int);
-  vtkSetMacro(NumberOfGhostLayers, int);
+  vtkGetMacro(NumberOfGhostLayers,int);
+  vtkSetMacro(NumberOfGhostLayers,int);
   //@}
 
   //@{
-  vtkGetMacro(DuplicateNodes, vtkTypeBool);
-  vtkSetMacro(DuplicateNodes, vtkTypeBool);
-  vtkBooleanMacro(DuplicateNodes, vtkTypeBool);
+  vtkGetMacro(DuplicateNodes,int);
+  vtkSetMacro(DuplicateNodes,int);
+  vtkBooleanMacro(DuplicateNodes,int);
   //@}
 
 protected:
   vtkRectilinearGridPartitioner();
-  ~vtkRectilinearGridPartitioner() override;
+  ~vtkRectilinearGridPartitioner() VTK_OVERRIDE;
 
   /**
    * Extracts the coordinates
    */
-  void ExtractGridCoordinates(vtkRectilinearGrid* grd, int subext[6], vtkDoubleArray* xcoords,
-    vtkDoubleArray* ycoords, vtkDoubleArray* zcoords);
+  void ExtractGridCoordinates(
+      vtkRectilinearGrid *grd, int subext[6],
+      vtkDoubleArray *xcoords,
+      vtkDoubleArray *ycoords,
+      vtkDoubleArray *zcoords );
 
   // Standard Pipeline methods
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int FillInputPortInformation(int port, vtkInformation* info) override;
-  int FillOutputPortInformation(int port, vtkInformation* info) override;
+  int RequestData(
+     vtkInformation*,vtkInformationVector**,vtkInformationVector*) VTK_OVERRIDE;
+  int FillInputPortInformation(int port, vtkInformation *info) VTK_OVERRIDE;
+  int FillOutputPortInformation(int port, vtkInformation *info) VTK_OVERRIDE;
 
   int NumberOfPartitions;
   int NumberOfGhostLayers;
-  vtkTypeBool DuplicateNodes;
+  int DuplicateNodes;
 
 private:
-  vtkRectilinearGridPartitioner(const vtkRectilinearGridPartitioner&) = delete;
-  void operator=(const vtkRectilinearGridPartitioner&) = delete;
+  vtkRectilinearGridPartitioner(const vtkRectilinearGridPartitioner &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkRectilinearGridPartitioner &) VTK_DELETE_FUNCTION;
 };
 
 #endif /* vtkRectilinearGridPartitioner_h */

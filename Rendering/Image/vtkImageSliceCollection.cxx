@@ -14,21 +14,21 @@
 =========================================================================*/
 
 #include "vtkImageSliceCollection.h"
-#include "vtkImageProperty.h"
-#include "vtkImageSlice.h"
 #include "vtkObjectFactory.h"
+#include "vtkImageSlice.h"
+#include "vtkImageProperty.h"
 
 vtkStandardNewMacro(vtkImageSliceCollection);
 
 //----------------------------------------------------------------------------
 // protected function to delete an element. Internal use only.
-void vtkImageSliceCollection::DeleteElement(vtkCollectionElement* e)
+void vtkImageSliceCollection::DeleteElement(vtkCollectionElement *e)
 {
   vtkCollection::DeleteElement(e);
 }
 
 //----------------------------------------------------------------------------
-// Destructor for the vtkImageSliceCollection class. This removes all
+// Desctructor for the vtkImageSliceCollection class. This removes all
 // objects from the collection.
 vtkImageSliceCollection::~vtkImageSliceCollection()
 {
@@ -38,15 +38,16 @@ vtkImageSliceCollection::~vtkImageSliceCollection()
 //----------------------------------------------------------------------------
 // Add an image to the list.  The new image is inserted in the
 // list according to it's layer number.
-void vtkImageSliceCollection::AddItem(vtkImageSlice* a)
+void vtkImageSliceCollection::AddItem(vtkImageSlice *a)
 {
   vtkCollectionElement* elem = new vtkCollectionElement;
   elem->Item = a;
 
   // Find insertion location according to the layer number
-  vtkCollectionElement* prevElem = nullptr;
+  vtkCollectionElement *prevElem = 0;
   int layerNumber = a->GetProperty()->GetLayerNumber();
-  for (vtkCollectionElement* indexElem = this->Top; indexElem != nullptr;
+  for (vtkCollectionElement *indexElem = this->Top;
+       indexElem != 0;
        indexElem = indexElem->Next)
   {
     vtkImageSlice* tempImage = static_cast<vtkImageSlice*>(indexElem->Item);
@@ -58,7 +59,7 @@ void vtkImageSliceCollection::AddItem(vtkImageSlice* a)
   }
 
   // Insert the new element into the linked list
-  if (prevElem == nullptr)
+  if (prevElem == 0)
   {
     elem->Next = this->Top;
     this->Top = elem;
@@ -70,7 +71,7 @@ void vtkImageSliceCollection::AddItem(vtkImageSlice* a)
   }
 
   // Check if this is the new bottom
-  if (elem->Next == nullptr)
+  if (elem->Next == 0)
   {
     this->Bottom = elem;
   }
@@ -84,7 +85,7 @@ void vtkImageSliceCollection::AddItem(vtkImageSlice* a)
 class vtkImageSliceLayerPair
 {
 public:
-  vtkImageSlice* image;
+  vtkImageSlice *image;
   int layer;
 };
 
@@ -96,10 +97,10 @@ void vtkImageSliceCollection::Sort()
   // Create a temporary array of pointers to images
   int numElems = this->GetNumberOfItems();
   vtkImageSliceLayerPair defaultLayerArray[8];
-  vtkImageSliceLayerPair* layerArray = defaultLayerArray;
+  vtkImageSliceLayerPair *layerArray = defaultLayerArray;
   if (numElems > 8)
   {
-    layerArray = new vtkImageSliceLayerPair[numElems];
+    layerArray = new vtkImageSliceLayerPair [numElems];
   }
 
   // Start at the beginning of the collection
@@ -109,7 +110,7 @@ void vtkImageSliceCollection::Sort()
   // Fill the image array with the items in the collection
   for (int ii = 0; ii < numElems; ii++)
   {
-    vtkImageSlice* image = this->GetNextImage(ait);
+    vtkImageSlice *image = this->GetNextImage(ait);
     layerArray[ii].image = image;
     layerArray[ii].layer = image->GetProperty()->GetLayerNumber();
   }
@@ -131,7 +132,8 @@ void vtkImageSliceCollection::Sort()
         imin = j;
         lmin = l;
       }
-    } while (++j < numElems);
+    }
+    while (++j < numElems);
 
     vtkImageSliceLayerPair t = layerArray[imin];
     layerArray[imin] = layerArray[i];
@@ -149,6 +151,6 @@ void vtkImageSliceCollection::Sort()
 
   if (layerArray != defaultLayerArray)
   {
-    delete[] layerArray;
+    delete [] layerArray;
   }
 }

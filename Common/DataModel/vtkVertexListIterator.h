@@ -29,7 +29,7 @@
  *
  * @sa
  * vtkGraph
- */
+*/
 
 #ifndef vtkVertexListIterator_h
 #define vtkVertexListIterator_h
@@ -44,14 +44,14 @@ class vtkGraphEdge;
 class VTKCOMMONDATAMODEL_EXPORT vtkVertexListIterator : public vtkObject
 {
 public:
-  static vtkVertexListIterator* New();
+  static vtkVertexListIterator *New();
   vtkTypeMacro(vtkVertexListIterator, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Setup the iterator with a graph.
    */
-  virtual void SetGraph(vtkGraph* graph);
+  virtual void SetGraph(vtkGraph *graph);
 
   //@{
   /**
@@ -75,19 +75,22 @@ public:
   /**
    * Whether this iterator has more edges.
    */
-  bool HasNext() { return this->Current != this->End; }
+  bool HasNext()
+  {
+    return this->Current != this->End;
+  }
 
 protected:
   vtkVertexListIterator();
-  ~vtkVertexListIterator() override;
+  ~vtkVertexListIterator() VTK_OVERRIDE;
 
-  vtkGraph* Graph;
-  vtkIdType Current;
-  vtkIdType End;
+  vtkGraph *Graph;
+  vtkIdType  Current;
+  vtkIdType  End;
 
 private:
-  vtkVertexListIterator(const vtkVertexListIterator&) = delete;
-  void operator=(const vtkVertexListIterator&) = delete;
+  vtkVertexListIterator(const vtkVertexListIterator&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkVertexListIterator&) VTK_DELETE_FUNCTION;
 };
 
 #endif

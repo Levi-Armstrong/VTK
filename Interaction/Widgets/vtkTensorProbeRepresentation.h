@@ -23,7 +23,7 @@
  *
  * @sa
  * vtkTensorProbeWidget
- */
+*/
 
 #ifndef vtkTensorProbeRepresentation_h
 #define vtkTensorProbeRepresentation_h
@@ -36,39 +36,40 @@ class vtkPolyData;
 class vtkPolyDataMapper;
 class vtkGenericCell;
 
-class VTKINTERACTIONWIDGETS_EXPORT vtkTensorProbeRepresentation : public vtkWidgetRepresentation
+class VTKINTERACTIONWIDGETS_EXPORT vtkTensorProbeRepresentation :
+                           public vtkWidgetRepresentation
 {
 public:
   //@{
   /**
    * Standard methods for instances of this class.
    */
-  vtkTypeMacro(vtkTensorProbeRepresentation, vtkWidgetRepresentation);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkTensorProbeRepresentation,vtkWidgetRepresentation);
+  void PrintSelf(ostream& os, vtkIndent indent);
   //@}
 
   //@{
   /**
    * See vtkWidgetRepresentation for details.
    */
-  void BuildRepresentation() override;
-  int RenderOpaqueGeometry(vtkViewport*) override;
+  virtual void BuildRepresentation();
+  virtual int RenderOpaqueGeometry(vtkViewport *);
   //@}
 
   //@{
   /**
    * Set the position of the Tensor probe.
    */
-  vtkSetVector3Macro(ProbePosition, double);
-  vtkGetVector3Macro(ProbePosition, double);
-  vtkSetMacro(ProbeCellId, vtkIdType);
-  vtkGetMacro(ProbeCellId, vtkIdType);
+  vtkSetVector3Macro( ProbePosition, double );
+  vtkGetVector3Macro( ProbePosition, double );
+  vtkSetMacro( ProbeCellId, vtkIdType );
+  vtkGetMacro( ProbeCellId, vtkIdType );
   //@}
 
   /**
    * Set the trajectory that we are trying to probe tensors on
    */
-  virtual void SetTrajectory(vtkPolyData*);
+  virtual void SetTrajectory( vtkPolyData * );
 
   /**
    * Set the probe position to a reasonable location on the trajectory.
@@ -79,39 +80,43 @@ public:
    * This method is invoked by the widget during user interaction.
    * Can we pick the tensor glyph at the current cursor pos
    */
-  virtual int SelectProbe(int pos[2]) = 0;
+  virtual int SelectProbe( int pos[2] ) = 0;
 
   /**
    * INTERNAL - Do not use
    * This method is invoked by the widget during user interaction.
    * Move probe based on the position and the motion vector.
    */
-  virtual int Move(double motionVector[2]);
+  virtual int Move( double motionVector[2] );
 
   //@{
   /**
    * See vtkProp for details.
    */
-  void GetActors(vtkPropCollection*) override;
-  void ReleaseGraphicsResources(vtkWindow*) override;
+  virtual void GetActors(vtkPropCollection *);
+  virtual void ReleaseGraphicsResources(vtkWindow *);
   //@}
 
 protected:
   vtkTensorProbeRepresentation();
-  ~vtkTensorProbeRepresentation() override;
+  ~vtkTensorProbeRepresentation();
 
   void FindClosestPointOnPolyline(
-    double displayPos[2], double closestWorldPos[3], vtkIdType& cellId, int maxSpeed = 10);
+    double displayPos[2], double closestWorldPos[3], vtkIdType &cellId,
+    int maxSpeed = 10 );
 
-  vtkActor* TrajectoryActor;
-  vtkPolyDataMapper* TrajectoryMapper;
-  vtkPolyData* Trajectory;
-  double ProbePosition[3];
-  vtkIdType ProbeCellId;
+  vtkActor           * TrajectoryActor;
+  vtkPolyDataMapper  * TrajectoryMapper;
+  vtkPolyData        * Trajectory;
+  double               ProbePosition[3];
+  vtkIdType            ProbeCellId;
 
 private:
-  vtkTensorProbeRepresentation(const vtkTensorProbeRepresentation&) = delete;
-  void operator=(const vtkTensorProbeRepresentation&) = delete;
+  vtkTensorProbeRepresentation(
+      const vtkTensorProbeRepresentation&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTensorProbeRepresentation&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif
+

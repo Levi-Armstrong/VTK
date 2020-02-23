@@ -29,17 +29,22 @@
 vtkStandardNewMacro(vtkActorNode);
 
 //----------------------------------------------------------------------------
-vtkActorNode::vtkActorNode() {}
+vtkActorNode::vtkActorNode()
+{
+}
 
 //----------------------------------------------------------------------------
-vtkActorNode::~vtkActorNode() {}
+vtkActorNode::~vtkActorNode()
+{
+}
 
 //----------------------------------------------------------------------------
 void vtkActorNode::Build(bool prepass)
 {
   if (prepass)
   {
-    vtkActor* mine = vtkActor::SafeDownCast(this->GetRenderable());
+    vtkActor *mine = vtkActor::SafeDownCast
+      (this->GetRenderable());
     if (!mine)
     {
       return;

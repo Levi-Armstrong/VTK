@@ -13,27 +13,28 @@
 
 =========================================================================*/
 
+#include "vtkLookupTable.h"
 #include "vtkColorSeries.h"
 #include "vtkDoubleArray.h"
-#include "vtkLookupTable.h"
 #include "vtkUnsignedCharArray.h"
 
-#include <iomanip>
 #include <iostream>
-#include <map>
+#include <iomanip>
 #include <sstream>
 #include <string>
+#include <map>
 
 #include <cstdio> // For EXIT_SUCCESS
 
 //-----------------------------------------------------------------------------
 //! Get a hexadecimal string of the RGBA colors.
-std::string RGBAToHexString(const unsigned char* rgba)
+std::string RGBAToHexString(const unsigned char *rgba)
 {
   std::ostringstream os;
   for (int i = 0; i < 4; ++i)
   {
-    os << std::setw(2) << std::setfill('0') << std::hex << static_cast<int>(rgba[i]);
+    os << std::setw(2) << std::setfill('0')
+    << std::hex << static_cast<int>(rgba[i]);
   }
   return os.str();
 }
@@ -82,16 +83,28 @@ int TestCategoricalColors(int vtkNotUsed(argc), char* vtkNotUsed(argv)[])
   std::string v = "0x" + RGBAToHexString(rgba);
   if (expectedColors[0] != v)
   {
-    std::cout << "Fail for " << std::setw(3) << std::left << 0 << ": got: " << v
-              << " expected: " << expectedColors[0] << std::endl;
+    std::cout
+      << "Fail for "
+      << std::setw(3) << std::left
+      << 0 << ": got: "
+      << v
+      << " expected: "
+      << expectedColors[0]
+      << std::endl;
     res &= false;
   }
   rgba = lut->MapValue(3.);
   v = "0x" + RGBAToHexString(rgba);
   if (expectedColors[3] != v)
   {
-    std::cout << "Fail for " << std::setw(3) << std::left << 3 << ": got: " << v
-              << " expected: " << expectedColors[3] << std::endl;
+    std::cout
+      << "Fail for "
+      << std::setw(3) << std::left
+      << 3 << ": got: "
+      << v
+      << " expected: "
+      << expectedColors[3]
+      << std::endl;
     res &= false;
   }
 
@@ -103,16 +116,23 @@ int TestCategoricalColors(int vtkNotUsed(argc), char* vtkNotUsed(argv)[])
   data->InsertNextValue(3.);
   data->InsertNextValue(.5);
 
+
   vtkUnsignedCharArray* color = lut->MapScalars(data, VTK_RGBA, 0);
   unsigned char* cval;
-  for (vtkIdType i = 0; i < color->GetNumberOfTuples(); ++i)
+  for (vtkIdType i = 0; i < color->GetNumberOfTuples(); ++ i)
   {
     cval = color->GetPointer(i * 4);
     v = "0x" + RGBAToHexString(cval);
     if (expectedColors[data->GetTuple1(i)] != v)
     {
-      std::cout << "Fail for " << std::setw(3) << std::left << data->GetTuple1(i) << ": got: " << v
-                << " expected: " << expectedColors[data->GetTuple1(i)] << std::endl;
+      std::cout
+        << "Fail for "
+        << std::setw(3) << std::left
+        << data->GetTuple1(i) << ": got: "
+        << v
+        << " expected: "
+        << expectedColors[data->GetTuple1(i)]
+        << std::endl;
       res &= false;
     }
   }
@@ -120,8 +140,13 @@ int TestCategoricalColors(int vtkNotUsed(argc), char* vtkNotUsed(argv)[])
   v = "0x" + RGBAToHexString(cval);
   if (expectedColors[-999] != v)
   {
-    std::cout << "Fail for "
-              << "NaN: got: " << v << " expected: " << expectedColors[-999] << std::endl;
+    std::cout
+      << "Fail for "
+      << "NaN: got: "
+      << v
+      << " expected: "
+      << expectedColors[-999]
+      << std::endl;
     res &= false;
   }
 

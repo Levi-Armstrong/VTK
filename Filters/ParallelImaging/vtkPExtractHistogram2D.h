@@ -34,13 +34,13 @@
  * @par Thanks:
  *  Developed by David Feng and Philippe Pebay at Sandia National Laboratories
  *------------------------------------------------------------------------------
- */
+*/
 
 #ifndef vtkPExtractHistogram2D_h
 #define vtkPExtractHistogram2D_h
 
-#include "vtkExtractHistogram2D.h"
 #include "vtkFiltersParallelImagingModule.h" // For export macro
+#include "vtkExtractHistogram2D.h"
 
 class vtkMultiBlockDataSet;
 class vtkMultiProcessController;
@@ -50,25 +50,27 @@ class VTKFILTERSPARALLELIMAGING_EXPORT vtkPExtractHistogram2D : public vtkExtrac
 public:
   static vtkPExtractHistogram2D* New();
   vtkTypeMacro(vtkPExtractHistogram2D, vtkExtractHistogram2D);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   virtual void SetController(vtkMultiProcessController*);
-  vtkGetObjectMacro(Controller, vtkMultiProcessController);
+  vtkGetObjectMacro(Controller,vtkMultiProcessController);
 
 protected:
   vtkPExtractHistogram2D();
-  ~vtkPExtractHistogram2D() override;
+  ~vtkPExtractHistogram2D();
 
   vtkMultiProcessController* Controller;
 
-  int ComputeBinExtents(vtkDataArray* col1, vtkDataArray* col2) override;
+  virtual int ComputeBinExtents(vtkDataArray* col1, vtkDataArray* col2);
 
   // Execute the calculations required by the Learn option.
-  void Learn(vtkTable* inData, vtkTable* inParameters, vtkMultiBlockDataSet* outMeta) override;
+  virtual void Learn( vtkTable* inData,
+                      vtkTable* inParameters,
+                      vtkMultiBlockDataSet* outMeta );
 
 private:
-  vtkPExtractHistogram2D(const vtkPExtractHistogram2D&) = delete;
-  void operator=(const vtkPExtractHistogram2D&) = delete;
+  vtkPExtractHistogram2D(const vtkPExtractHistogram2D&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPExtractHistogram2D&) VTK_DELETE_FUNCTION;
 };
 
 #endif

@@ -32,16 +32,16 @@
  *
  * @sa
  * vtkRenderPass
- */
+*/
 
 #ifndef vtkDepthOfFieldPass_h
 #define vtkDepthOfFieldPass_h
 
-#include "vtkDepthImageProcessingPass.h"
 #include "vtkRenderingOpenGL2Module.h" // For export macro
+#include "vtkDepthImageProcessingPass.h"
 
 class vtkDepthPeelingPassLayerList; // Pimpl
-class vtkOpenGLFramebufferObject;
+class vtkFrameBufferObject;
 class vtkOpenGLHelper;
 class vtkOpenGLRenderWindow;
 class vtkTextureObject;
@@ -49,9 +49,9 @@ class vtkTextureObject;
 class VTKRENDERINGOPENGL2_EXPORT vtkDepthOfFieldPass : public vtkDepthImageProcessingPass
 {
 public:
-  static vtkDepthOfFieldPass* New();
-  vtkTypeMacro(vtkDepthOfFieldPass, vtkDepthImageProcessingPass);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkDepthOfFieldPass *New();
+  vtkTypeMacro(vtkDepthOfFieldPass,vtkDepthImageProcessingPass);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -59,25 +59,25 @@ public:
    * When on the center of the viewport will always be in focus
    * regardless of where the focal point is.
    */
-  vtkSetMacro(AutomaticFocalDistance, bool);
-  vtkGetMacro(AutomaticFocalDistance, bool);
-  vtkBooleanMacro(AutomaticFocalDistance, bool);
+  vtkSetMacro(AutomaticFocalDistance,bool);
+  vtkGetMacro(AutomaticFocalDistance,bool);
+  vtkBooleanMacro(AutomaticFocalDistance,bool);
   //@}
 
   /**
    * Perform rendering according to a render state \p s.
    * \pre s_exists: s!=0
    */
-  void Render(const vtkRenderState* s) override;
+  virtual void Render(const vtkRenderState *s);
 
   /**
    * Release graphics resources and ask components to release their own
    * resources.
    * \pre w_exists: w!=0
    */
-  void ReleaseGraphicsResources(vtkWindow* w) override;
+  void ReleaseGraphicsResources(vtkWindow *w);
 
-protected:
+ protected:
   /**
    * Default constructor. DelegatePass is set to NULL.
    */
@@ -86,23 +86,26 @@ protected:
   /**
    * Destructor.
    */
-  ~vtkDepthOfFieldPass() override;
+  virtual ~vtkDepthOfFieldPass();
 
   /**
    * Graphics resources.
    */
-  vtkOpenGLFramebufferObject* FrameBufferObject;
-  vtkTextureObject* Pass1;      // render target for the scene
-  vtkTextureObject* Pass1Depth; // render target for the depth
+  vtkFrameBufferObject *FrameBufferObject;
+  vtkTextureObject *Pass1; // render target for the scene
+  vtkTextureObject *Pass1Depth; // render target for the depth
 
   // Structures for the various cell types we render.
-  vtkOpenGLHelper* BlurProgram;
+  vtkOpenGLHelper *BlurProgram;
+
+  bool Supported;
+  bool SupportProbed;
 
   bool AutomaticFocalDistance;
 
-private:
-  vtkDepthOfFieldPass(const vtkDepthOfFieldPass&) = delete;
-  void operator=(const vtkDepthOfFieldPass&) = delete;
+ private:
+  vtkDepthOfFieldPass(const vtkDepthOfFieldPass&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkDepthOfFieldPass&) VTK_DELETE_FUNCTION;
 };
 
 #endif

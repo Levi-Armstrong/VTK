@@ -107,7 +107,7 @@ class ThreadSpecificStorageIterator
 {
 public:
   ThreadSpecificStorageIterator()
-    : ThreadSpecificStorage(nullptr), CurrentArray(nullptr), CurrentSlot(0)
+    : ThreadSpecificStorage(NULL), CurrentArray(NULL), CurrentSlot(0)
   {
   }
 
@@ -128,18 +128,18 @@ public:
 
   void SetToEnd()
   {
-    this->CurrentArray = nullptr;
+    this->CurrentArray = NULL;
     this->CurrentSlot = 0;
   }
 
   bool GetInitialized() const
   {
-    return this->ThreadSpecificStorage != nullptr;
+    return this->ThreadSpecificStorage != NULL;
   }
 
   bool GetAtEnd() const
   {
-    return this->CurrentArray == nullptr;
+    return this->CurrentArray == NULL;
   }
 
   void Forward()

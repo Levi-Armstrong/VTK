@@ -28,13 +28,13 @@
  * are used to subdivide an octree referencing the points
  * until the points each octree node contains have a variance
  * close to the node size and a limited population (< 100).
- */
+*/
 
 #ifndef vtkPointSetToLabelHierarchy_h
 #define vtkPointSetToLabelHierarchy_h
 
-#include "vtkLabelHierarchyAlgorithm.h"
 #include "vtkRenderingLabelModule.h" // For export macro
+#include "vtkLabelHierarchyAlgorithm.h"
 
 class vtkTextProperty;
 
@@ -42,32 +42,32 @@ class VTKRENDERINGLABEL_EXPORT vtkPointSetToLabelHierarchy : public vtkLabelHier
 {
 public:
   static vtkPointSetToLabelHierarchy* New();
-  vtkTypeMacro(vtkPointSetToLabelHierarchy, vtkLabelHierarchyAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkPointSetToLabelHierarchy,vtkLabelHierarchyAlgorithm);
+  virtual void PrintSelf( ostream& os, vtkIndent indent );
 
   //@{
   /**
    * Set/get the "ideal" number of labels to associate with each node in the output hierarchy.
    */
-  vtkSetMacro(TargetLabelCount, int);
-  vtkGetMacro(TargetLabelCount, int);
+  vtkSetMacro(TargetLabelCount,int);
+  vtkGetMacro(TargetLabelCount,int);
   //@}
 
   //@{
   /**
    * Set/get the maximum tree depth in the output hierarchy.
    */
-  vtkSetMacro(MaximumDepth, int);
-  vtkGetMacro(MaximumDepth, int);
+  vtkSetMacro(MaximumDepth,int);
+  vtkGetMacro(MaximumDepth,int);
   //@}
 
   //@{
   /**
    * Whether to use unicode strings.
    */
-  vtkSetMacro(UseUnicodeStrings, bool);
-  vtkGetMacro(UseUnicodeStrings, bool);
-  vtkBooleanMacro(UseUnicodeStrings, bool);
+  vtkSetMacro(UseUnicodeStrings,bool);
+  vtkGetMacro(UseUnicodeStrings,bool);
+  vtkBooleanMacro(UseUnicodeStrings,bool);
   //@}
 
   //@{
@@ -128,12 +128,14 @@ public:
 
 protected:
   vtkPointSetToLabelHierarchy();
-  ~vtkPointSetToLabelHierarchy() override;
+  virtual ~vtkPointSetToLabelHierarchy();
 
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  virtual int FillInputPortInformation( int port, vtkInformation* info );
 
-  int RequestData(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  virtual int RequestData(
+    vtkInformation* request,
+    vtkInformationVector** inputVector,
+    vtkInformationVector* outputVector );
 
   int TargetLabelCount;
   int MaximumDepth;
@@ -141,8 +143,8 @@ protected:
   vtkTextProperty* TextProperty;
 
 private:
-  vtkPointSetToLabelHierarchy(const vtkPointSetToLabelHierarchy&) = delete;
-  void operator=(const vtkPointSetToLabelHierarchy&) = delete;
+  vtkPointSetToLabelHierarchy( const vtkPointSetToLabelHierarchy& ) VTK_DELETE_FUNCTION;
+  void operator = ( const vtkPointSetToLabelHierarchy& ) VTK_DELETE_FUNCTION;
 };
 
 #endif // vtkPointSetToLabelHierarchy_h

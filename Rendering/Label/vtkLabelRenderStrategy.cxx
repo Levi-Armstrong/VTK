@@ -23,21 +23,21 @@ vtkCxxSetObjectMacro(vtkLabelRenderStrategy, DefaultTextProperty, vtkTextPropert
 //----------------------------------------------------------------------------
 vtkLabelRenderStrategy::vtkLabelRenderStrategy()
 {
-  this->Renderer = nullptr;
+  this->Renderer = 0;
   this->DefaultTextProperty = vtkTextProperty::New();
 }
 
 //----------------------------------------------------------------------------
 vtkLabelRenderStrategy::~vtkLabelRenderStrategy()
 {
-  this->SetRenderer(nullptr);
-  this->SetDefaultTextProperty(nullptr);
+  this->SetRenderer(0);
+  this->SetDefaultTextProperty(0);
 }
 
 //----------------------------------------------------------------------------
 void vtkLabelRenderStrategy::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
   os << indent << "Renderer: " << this->Renderer << endl;
   os << indent << "DefaultTextProperty: " << this->DefaultTextProperty << endl;
 }

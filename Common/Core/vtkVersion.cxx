@@ -16,7 +16,3 @@
 #include "vtkObjectFactory.h"
 
 vtkStandardNewMacro(vtkVersion);
-const char* GetVTKVersion()
-{
-  return vtkVersion::GetVTKVersion();
-}

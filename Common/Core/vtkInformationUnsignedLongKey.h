@@ -18,7 +18,7 @@
  *
  * vtkInformationUnsignedLongKey is used to represent keys for unsigned long values
  * in vtkInformation.
- */
+*/
 
 #ifndef vtkInformationUnsignedLongKey_h
 #define vtkInformationUnsignedLongKey_h
@@ -31,11 +31,11 @@
 class VTKCOMMONCORE_EXPORT vtkInformationUnsignedLongKey : public vtkInformationKey
 {
 public:
-  vtkTypeMacro(vtkInformationUnsignedLongKey, vtkInformationKey);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkInformationUnsignedLongKey,vtkInformationKey);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   vtkInformationUnsignedLongKey(const char* name, const char* location);
-  ~vtkInformationUnsignedLongKey() override;
+  ~vtkInformationUnsignedLongKey() VTK_OVERRIDE;
 
   /**
    * This method simply returns a new vtkInformationUnsignedLongKey, given a
@@ -61,12 +61,12 @@ public:
    * object to another.  If there is no entry in the first information
    * object for this key, the value is removed from the second.
    */
-  void ShallowCopy(vtkInformation* from, vtkInformation* to) override;
+  void ShallowCopy(vtkInformation* from, vtkInformation* to) VTK_OVERRIDE;
 
   /**
    * Print the key's value in an information object to a stream.
    */
-  void Print(ostream& os, vtkInformation* info) override;
+  void Print(ostream& os, vtkInformation* info) VTK_OVERRIDE;
 
 protected:
   /**
@@ -77,8 +77,8 @@ protected:
   unsigned long* GetWatchAddress(vtkInformation* info);
 
 private:
-  vtkInformationUnsignedLongKey(const vtkInformationUnsignedLongKey&) = delete;
-  void operator=(const vtkInformationUnsignedLongKey&) = delete;
+  vtkInformationUnsignedLongKey(const vtkInformationUnsignedLongKey&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkInformationUnsignedLongKey&) VTK_DELETE_FUNCTION;
 };
 
 #endif

@@ -18,7 +18,7 @@
  *
  * vtkInformationIntegerKey is used to represent keys for integer values
  * in vtkInformation.
- */
+*/
 
 #ifndef vtkInformationIntegerKey_h
 #define vtkInformationIntegerKey_h
@@ -31,11 +31,11 @@
 class VTKCOMMONCORE_EXPORT vtkInformationIntegerKey : public vtkInformationKey
 {
 public:
-  vtkTypeMacro(vtkInformationIntegerKey, vtkInformationKey);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkInformationIntegerKey,vtkInformationKey);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   vtkInformationIntegerKey(const char* name, const char* location);
-  ~vtkInformationIntegerKey() override;
+  ~vtkInformationIntegerKey() VTK_OVERRIDE;
 
   /**
    * This method simply returns a new vtkInformationIntegerKey, given a
@@ -61,12 +61,12 @@ public:
    * object to another.  If there is no entry in the first information
    * object for this key, the value is removed from the second.
    */
-  void ShallowCopy(vtkInformation* from, vtkInformation* to) override;
+  void ShallowCopy(vtkInformation* from, vtkInformation* to) VTK_OVERRIDE;
 
   /**
    * Print the key's value in an information object to a stream.
    */
-  void Print(ostream& os, vtkInformation* info) override;
+  void Print(ostream& os, vtkInformation* info) VTK_OVERRIDE;
 
 protected:
   /**
@@ -77,8 +77,8 @@ protected:
   int* GetWatchAddress(vtkInformation* info);
 
 private:
-  vtkInformationIntegerKey(const vtkInformationIntegerKey&) = delete;
-  void operator=(const vtkInformationIntegerKey&) = delete;
+  vtkInformationIntegerKey(const vtkInformationIntegerKey&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkInformationIntegerKey&) VTK_DELETE_FUNCTION;
 };
 
 #endif

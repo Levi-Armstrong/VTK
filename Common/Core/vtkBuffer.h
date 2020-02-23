@@ -20,7 +20,7 @@
  * vtkBuffer makes it easier to keep data pointers in vtkDataArray subclasses.
  * This is an internal class and not intended for direct use expect when writing
  * new types of vtkDataArray subclasses.
- */
+*/
 
 #ifndef vtkBuffer_h
 #define vtkBuffer_h
@@ -28,14 +28,17 @@
 #include "vtkObject.h"
 #include "vtkObjectFactory.h" // New() implementation
 
-#include <algorithm> // for std::min and std::copy
-
 template <class ScalarTypeT>
 class vtkBuffer : public vtkObject
 {
 public:
-  vtkTemplateTypeMacro(vtkBuffer<ScalarTypeT>, vtkObject);
+  vtkTemplateTypeMacro(vtkBuffer<ScalarTypeT>, vtkObject)
   typedef ScalarTypeT ScalarType;
+  enum
+  {
+    VTK_DATA_ARRAY_FREE,
+    VTK_DATA_ARRAY_DELETE
+  };
 
   static vtkBuffer<ScalarTypeT>* New();
 
@@ -47,18 +50,13 @@ public:
 
   /**
    * Set the memory buffer that this vtkBuffer object will manage. @a array
-   * is a pointer to the buffer data and @a size is the size of the buffer (in
-   * number of elements).
+   * is a pointer to the buffer data and @a size is the size of the bufffer (in
+   * number of elements). If @a save is true, the buffer will not be freed when
+   * this vtkBuffer object is deleted or resize -- otherwise, @a deleteMethod
+   * specifies how the buffer will be freed.
    */
-  void SetBuffer(ScalarType* array, vtkIdType size);
-
-  /**
-   * Set the free function to be used when releasing this object.
-   * If @a noFreeFunction is true, the buffer will not be freed when
-   * this vtkBuffer object is deleted or resize -- otherwise, @a deleteFunction
-   * will be called to free the buffer
-   **/
-  void SetFreeFunction(bool noFreeFunction, void (*deleteFunction)(void*) = free);
+  void SetBuffer(ScalarType* array, vtkIdType size, bool save=false,
+                 int deleteMethod=VTK_DATA_ARRAY_FREE);
 
   /**
    * Return the number of elements the current buffer can hold.
@@ -78,55 +76,58 @@ public:
 
 protected:
   vtkBuffer()
-    : Pointer(nullptr)
-    , Size(0)
-    , DeleteFunction(free)
+    : Pointer(NULL),
+      Size(0),
+      Save(false),
+      DeleteMethod(VTK_DATA_ARRAY_FREE)
   {
   }
 
-  ~vtkBuffer() override { this->SetBuffer(nullptr, 0); }
+  ~vtkBuffer() VTK_OVERRIDE
+  {
+    this->SetBuffer(NULL, 0);
+  }
 
-  ScalarType* Pointer;
+  ScalarType *Pointer;
   vtkIdType Size;
-  void (*DeleteFunction)(void*);
+  bool Save;
+  int DeleteMethod;
 
 private:
-  vtkBuffer(const vtkBuffer&) = delete;
-  void operator=(const vtkBuffer&) = delete;
+  vtkBuffer(const vtkBuffer&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkBuffer&) VTK_DELETE_FUNCTION;
 };
 
 template <class ScalarT>
-inline vtkBuffer<ScalarT>* vtkBuffer<ScalarT>::New()
+inline vtkBuffer<ScalarT> *vtkBuffer<ScalarT>::New()
 {
-  VTK_STANDARD_NEW_BODY(vtkBuffer<ScalarT>);
+  VTK_STANDARD_NEW_BODY(vtkBuffer<ScalarT>)
 }
 
 //------------------------------------------------------------------------------
 template <typename ScalarT>
-void vtkBuffer<ScalarT>::SetBuffer(typename vtkBuffer<ScalarT>::ScalarType* array, vtkIdType size)
+void vtkBuffer<ScalarT>::SetBuffer(
+    typename vtkBuffer<ScalarT>::ScalarType *array,
+    vtkIdType size, bool save, int deleteMethod)
 {
   if (this->Pointer != array)
   {
-    if (this->DeleteFunction)
+    if (!this->Save)
     {
-      this->DeleteFunction(this->Pointer);
+      if (this->DeleteMethod == VTK_DATA_ARRAY_FREE)
+      {
+        free(this->Pointer);
+      }
+      else
+      {
+        delete [] this->Pointer;
+      }
     }
     this->Pointer = array;
   }
   this->Size = size;
-}
-//------------------------------------------------------------------------------
-template <typename ScalarT>
-void vtkBuffer<ScalarT>::SetFreeFunction(bool noFreeFunction, void (*deleteFunction)(void*))
-{
-  if (noFreeFunction)
-  {
-    this->DeleteFunction = nullptr;
-  }
-  else
-  {
-    this->DeleteFunction = deleteFunction;
-  }
+  this->Save = save;
+  this->DeleteMethod = deleteMethod;
 }
 
 //------------------------------------------------------------------------------
@@ -134,14 +135,14 @@ template <typename ScalarT>
 bool vtkBuffer<ScalarT>::Allocate(vtkIdType size)
 {
   // release old memory.
-  this->SetBuffer(nullptr, 0);
+  this->SetBuffer(NULL, 0);
   if (size > 0)
   {
-    ScalarType* newArray = static_cast<ScalarType*>(malloc(size * sizeof(ScalarType)));
+    ScalarType* newArray =
+        static_cast<ScalarType*>(malloc(size * sizeof(ScalarType)));
     if (newArray)
     {
-      this->SetBuffer(newArray, size);
-      this->DeleteFunction = free;
+      this->SetBuffer(newArray, size, false, VTK_DATA_ARRAY_FREE);
       return true;
     }
     return false;
@@ -153,29 +154,28 @@ bool vtkBuffer<ScalarT>::Allocate(vtkIdType size)
 template <typename ScalarT>
 bool vtkBuffer<ScalarT>::Reallocate(vtkIdType newsize)
 {
-  if (newsize == 0)
-  {
-    return this->Allocate(0);
-  }
+  if (newsize == 0) { return this->Allocate(0); }
 
-  if (this->Pointer && this->DeleteFunction != free)
+  if (this->Pointer &&
+      (this->Save || this->DeleteMethod == VTK_DATA_ARRAY_DELETE))
   {
-    ScalarType* newArray = static_cast<ScalarType*>(malloc(newsize * sizeof(ScalarType)));
+    ScalarType* newArray =
+        static_cast<ScalarType*>(malloc(newsize * sizeof(ScalarType)));
     if (!newArray)
     {
       return false;
     }
-    std::copy(this->Pointer, this->Pointer + std::min(this->Size, newsize), newArray);
+    std::copy(this->Pointer, this->Pointer + std::min(this->Size, newsize),
+              newArray);
     // now save the new array and release the old one too.
-    this->SetBuffer(newArray, newsize);
-    this->DeleteFunction = free;
+    this->SetBuffer(newArray, newsize, false, VTK_DATA_ARRAY_FREE);
   }
   else
   {
     // Try to reallocate with minimal memory usage and possibly avoid
     // copying.
-    ScalarType* newArray =
-      static_cast<ScalarType*>(realloc(this->Pointer, newsize * sizeof(ScalarType)));
+    ScalarType* newArray = static_cast<ScalarType*>(
+          realloc(this->Pointer, newsize * sizeof(ScalarType)));
     if (!newArray)
     {
       return false;

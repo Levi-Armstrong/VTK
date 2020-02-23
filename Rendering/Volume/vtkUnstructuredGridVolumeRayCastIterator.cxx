@@ -16,6 +16,7 @@
 =========================================================================*/
 #include "vtkUnstructuredGridVolumeRayCastIterator.h"
 
+
 //----------------------------------------------------------------------------
 
 vtkUnstructuredGridVolumeRayCastIterator::vtkUnstructuredGridVolumeRayCastIterator()
@@ -26,12 +27,16 @@ vtkUnstructuredGridVolumeRayCastIterator::vtkUnstructuredGridVolumeRayCastIterat
   this->MaxNumberOfIntersections = 32;
 }
 
-vtkUnstructuredGridVolumeRayCastIterator::~vtkUnstructuredGridVolumeRayCastIterator() = default;
+vtkUnstructuredGridVolumeRayCastIterator::~vtkUnstructuredGridVolumeRayCastIterator()
+{
+}
 
 void vtkUnstructuredGridVolumeRayCastIterator::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 
-  os << indent << "Bounds: [" << this->Bounds[0] << ", " << this->Bounds[1] << "]" << endl;
-  os << indent << "MaxNumberOfIntersections: " << this->MaxNumberOfIntersections << endl;
+  os << indent << "Bounds: [" << this->Bounds[0] << ", " << this->Bounds[1]
+     << "]" << endl;
+  os << indent << "MaxNumberOfIntersections: "
+     << this->MaxNumberOfIntersections << endl;
 }

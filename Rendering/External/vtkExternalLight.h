@@ -44,26 +44,25 @@
  *    exLight->SetLightIndex(GL_LIGHT0); // GL_LIGHT0 identifies the external light
  *    exLight->SetDiffuseColor(1.0, 0.0, 0.0); // Changing diffuse color
  *    vtkNew<ExternalVTKWidget> exWidget;
- *    vtkExternalOpenGLRenderer* ren =
- * vtkExternalOpenGLRenderer::SafeDownCast(exWidget->AddRenderer());
+ *    vtkExternalOpenGLRenderer* ren = vtkExternalOpenGLRenderer::SafeDownCast(exWidget->AddRenderer());
  *    ren->AddExternalLight(exLight.GetPointer());
  * \endcode
  *
  * @sa
  * vtkExternalOpenGLRenderer \ref ExternalVTKWidget
- */
+*/
 
 #ifndef vtkExternalLight_h
 #define vtkExternalLight_h
 
-#include "vtkLight.h"
 #include "vtkRenderingExternalModule.h" // For export macro
+#include "vtkLight.h"
 
 class VTKRENDERINGEXTERNAL_EXPORT vtkExternalLight : public vtkLight
 {
 public:
   vtkTypeMacro(vtkExternalLight, vtkLight);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Create an external light object with the focal point at the origin and its
@@ -74,12 +73,12 @@ public:
    * TransformMatrix is NULL. The light index is GL_LIGHT0, which means the
    * existing light with index GL_LIGHT0 will be affected by this light.
    */
-  static vtkExternalLight* New();
+  static vtkExternalLight *New();
 
   enum ReplaceModes
   {
-    INDIVIDUAL_PARAMS = 0, // default
-    ALL_PARAMS = 1
+    INDIVIDUAL_PARAMS   = 0, // default
+    ALL_PARAMS          = 1
   };
 
   //@{
@@ -113,58 +112,52 @@ public:
   /**
    * Override Set method to keep a record of changed value
    */
-  void SetPosition(double, double, double) override;
-  using Superclass::SetPosition;
+  void SetPosition(double, double, double);
 
   /**
    * Override Set method to keep a record of changed value
    */
-  void SetFocalPoint(double, double, double) override;
-  using Superclass::SetFocalPoint;
+  void SetFocalPoint(double, double, double);
 
   /**
    * Override Set method to keep a record of changed value
    */
-  void SetAmbientColor(double, double, double) override;
-  using Superclass::SetAmbientColor;
+  void SetAmbientColor(double, double, double);
 
   /**
    * Override Set method to keep a record of changed value
    */
-  void SetDiffuseColor(double, double, double) override;
-  using Superclass::SetDiffuseColor;
+  void SetDiffuseColor(double, double, double);
 
   /**
    * Override Set method to keep a record of changed value
    */
-  void SetSpecularColor(double, double, double) override;
-  using Superclass::SetSpecularColor;
+  void SetSpecularColor(double, double, double);
 
   /**
    * Override Set method to keep a record of changed value
    */
-  void SetIntensity(double) override;
+  void SetIntensity(double);
 
   /**
    * Override Set method to keep a record of changed value
    */
-  void SetConeAngle(double) override;
+  void SetConeAngle(double);
 
   /**
    * Override Set method to keep a record of changed value
    */
-  void SetAttenuationValues(double, double, double) override;
-  using Superclass::SetAttenuationValues;
+  void SetAttenuationValues(double, double, double);
 
   /**
    * Override Set method to keep a record of changed value
    */
-  void SetExponent(double) override;
+  void SetExponent(double);
 
   /**
    * Override Set method to keep a record of changed value
    */
-  void SetPositional(vtkTypeBool) override;
+  void SetPositional(int);
 
   //@{
   /**
@@ -238,7 +231,7 @@ public:
 
 protected:
   vtkExternalLight();
-  ~vtkExternalLight() override;
+  ~vtkExternalLight();
 
   int LightIndex;
   int ReplaceMode;
@@ -255,8 +248,8 @@ protected:
   bool PositionalSet;
 
 private:
-  vtkExternalLight(const vtkExternalLight&) = delete;
-  void operator=(const vtkExternalLight&) = delete;
+  vtkExternalLight(const vtkExternalLight&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkExternalLight&) VTK_DELETE_FUNCTION;
 };
 
 #endif // vtkExternalLight_h

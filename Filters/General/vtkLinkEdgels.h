@@ -43,7 +43,7 @@
  *
  * @sa
  * vtkImageData vtkImageGradient vtkImageNonMaximumSuppression
- */
+*/
 
 #ifndef vtkLinkEdgels_h
 #define vtkLinkEdgels_h
@@ -59,56 +59,56 @@ class vtkPoints;
 class VTKFILTERSGENERAL_EXPORT vtkLinkEdgels : public vtkPolyDataAlgorithm
 {
 public:
-  vtkTypeMacro(vtkLinkEdgels, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkLinkEdgels,vtkPolyDataAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Construct instance of vtkLinkEdgels with GradientThreshold set to
    * 0.1, PhiThreshold set to 90 degrees and LinkThreshold set to 90 degrees.
    */
-  static vtkLinkEdgels* New();
+  static vtkLinkEdgels *New();
 
   //@{
   /**
    * Set/Get the threshold for Phi vs. Alpha link thresholding.
    */
-  vtkSetMacro(LinkThreshold, double);
-  vtkGetMacro(LinkThreshold, double);
+  vtkSetMacro(LinkThreshold,double);
+  vtkGetMacro(LinkThreshold,double);
   //@}
 
   //@{
   /**
    * Set/get the threshold for Phi vs. Phi link thresholding.
    */
-  vtkSetMacro(PhiThreshold, double);
-  vtkGetMacro(PhiThreshold, double);
+  vtkSetMacro(PhiThreshold,double);
+  vtkGetMacro(PhiThreshold,double);
   //@}
 
   //@{
   /**
    * Set/Get the threshold for image gradient thresholding.
    */
-  vtkSetMacro(GradientThreshold, double);
-  vtkGetMacro(GradientThreshold, double);
+  vtkSetMacro(GradientThreshold,double);
+  vtkGetMacro(GradientThreshold,double);
   //@}
 
 protected:
   vtkLinkEdgels();
-  ~vtkLinkEdgels() override {}
+  ~vtkLinkEdgels() VTK_OVERRIDE {}
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *) VTK_OVERRIDE;
+  int FillInputPortInformation(int port, vtkInformation *info) VTK_OVERRIDE;
 
-  void LinkEdgels(int xdim, int ydim, double* image, vtkDataArray* inVectors,
-    vtkCellArray* newLines, vtkPoints* newPts, vtkDoubleArray* outScalars,
-    vtkDoubleArray* outVectors, int z);
+  void LinkEdgels(int xdim, int ydim,double *image, vtkDataArray *inVectors,
+                  vtkCellArray *newLines, vtkPoints *newPts,
+                  vtkDoubleArray *outScalars, vtkDoubleArray *outVectors,
+                  int z);
   double GradientThreshold;
   double PhiThreshold;
   double LinkThreshold;
-
 private:
-  vtkLinkEdgels(const vtkLinkEdgels&) = delete;
-  void operator=(const vtkLinkEdgels&) = delete;
+  vtkLinkEdgels(const vtkLinkEdgels&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkLinkEdgels&) VTK_DELETE_FUNCTION;
 };
 
 #endif

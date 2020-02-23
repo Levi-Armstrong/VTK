@@ -36,17 +36,16 @@
  * @par Thanks:
  * This class was contributed to VTK by David Gobbi on behalf of Atamai Inc.,
  * as an enhancement to the original vtkCellPicker.
- */
+*/
 
 #ifndef vtkCellPicker_h
 #define vtkCellPicker_h
 
-#include "vtkPicker.h"
 #include "vtkRenderingCoreModule.h" // For export macro
+#include "vtkPicker.h"
 
 class vtkMapper;
 class vtkTexture;
-class vtkAbstractHyperTreeGridMapper;
 class vtkAbstractVolumeMapper;
 class vtkImageMapper3D;
 class vtkPlaneCollection;
@@ -60,15 +59,13 @@ class vtkImageData;
 class vtkAbstractCellLocator;
 class vtkCollection;
 class vtkMatrix4x4;
-class vtkBitArray;
-class vtkHyperTreeGridNonOrientedGeometryCursor;
 
 class VTKRENDERINGCORE_EXPORT vtkCellPicker : public vtkPicker
 {
 public:
-  static vtkCellPicker* New();
+  static vtkCellPicker *New();
   vtkTypeMacro(vtkCellPicker, vtkPicker);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Perform pick operation with selection point provided. Normally the
@@ -76,14 +73,8 @@ public:
    * the third value is z=0. The return value will be non-zero if
    * something was successfully picked.
    */
-  int Pick(double selectionX, double selectionY, double selectionZ, vtkRenderer* renderer) override;
-
-  /**
-   * Perform pick operation with selection point provided. The
-   * selectionPt is in world coordinates.
-   * Return non-zero if something was successfully picked.
-   */
-  int Pick3DRay(double selectionPt[3], double orient[4], vtkRenderer* ren) override;
+  virtual int Pick(double selectionX, double selectionY, double selectionZ,
+                   vtkRenderer *renderer);
 
   /**
    * Add a locator for one of the data sets that will be included in the
@@ -94,14 +85,14 @@ public:
    * build itself on the first pick.  Note that if you try to add the
    * same locator to the picker twice, the second addition will be ignored.
    */
-  void AddLocator(vtkAbstractCellLocator* locator);
+  void AddLocator(vtkAbstractCellLocator *locator);
 
   /**
    * Remove a locator that was previously added.  If you try to remove a
    * nonexistent locator, then nothing will happen and no errors will be
    * raised.
    */
-  void RemoveLocator(vtkAbstractCellLocator* locator);
+  void RemoveLocator(vtkAbstractCellLocator *locator);
 
   /**
    * Remove all locators associated with this picker.
@@ -128,9 +119,9 @@ public:
    * opacity. This parameter is only relevant to volume picking and
    * is off by default.
    */
-  vtkSetMacro(UseVolumeGradientOpacity, vtkTypeBool);
-  vtkBooleanMacro(UseVolumeGradientOpacity, vtkTypeBool);
-  vtkGetMacro(UseVolumeGradientOpacity, vtkTypeBool);
+  vtkSetMacro(UseVolumeGradientOpacity, int);
+  vtkBooleanMacro(UseVolumeGradientOpacity, int);
+  vtkGetMacro(UseVolumeGradientOpacity, int);
   //@}
 
   //@{
@@ -146,9 +137,9 @@ public:
    * plane so that you can retrieve it from the mapper, or -1 if no
    * clipping plane was picked.
    */
-  vtkSetMacro(PickClippingPlanes, vtkTypeBool);
-  vtkBooleanMacro(PickClippingPlanes, vtkTypeBool);
-  vtkGetMacro(PickClippingPlanes, vtkTypeBool);
+  vtkSetMacro(PickClippingPlanes, int);
+  vtkBooleanMacro(PickClippingPlanes, int);
+  vtkGetMacro(PickClippingPlanes, int);
   //@}
 
   //@{
@@ -233,7 +224,7 @@ public:
    * Get the texture that was picked.  This will always be set if the
    * picked prop has a texture, and will always be null otherwise.
    */
-  vtkTexture* GetTexture() { return this->Texture; }
+  vtkTexture *GetTexture() { return this->Texture; };
 
   //@{
   /**
@@ -246,79 +237,81 @@ public:
    * related to the mapper's data.  The default value of PickTextureData
    * is "Off".
    */
-  vtkSetMacro(PickTextureData, vtkTypeBool);
-  vtkBooleanMacro(PickTextureData, vtkTypeBool);
-  vtkGetMacro(PickTextureData, vtkTypeBool);
+  vtkSetMacro(PickTextureData, int);
+  vtkBooleanMacro(PickTextureData, int);
+  vtkGetMacro(PickTextureData, int);
   //@}
 
 protected:
   vtkCellPicker();
-  ~vtkCellPicker() override;
+  ~vtkCellPicker();
 
-  void Initialize() override;
+  void Initialize();
 
   virtual void ResetPickInfo();
 
-  double IntersectWithLine(const double p1[3], const double p2[3], double tol,
-    vtkAssemblyPath* path, vtkProp3D* p, vtkAbstractMapper3D* m) override;
+  virtual double IntersectWithLine(double p1[3], double p2[3], double tol,
+                                  vtkAssemblyPath *path, vtkProp3D *p,
+                                  vtkAbstractMapper3D *m);
 
-  virtual double IntersectActorWithLine(const double p1[3], const double p2[3], double t1,
-    double t2, double tol, vtkProp3D* prop, vtkMapper* mapper);
+  virtual double IntersectActorWithLine(const double p1[3], const double p2[3],
+                                        double t1, double t2, double tol,
+                                        vtkProp3D *prop, vtkMapper *mapper);
 
-  virtual bool IntersectDataSetWithLine(vtkDataSet* dataSet, const double p1[3], const double p2[3],
-    double t1, double t2, double tol, vtkAbstractCellLocator*& locator, vtkIdType& cellId,
-    int& subId, double& tMin, double& pDistMin, double xyz[3], double minPCoords[3]);
+  virtual double IntersectVolumeWithLine(const double p1[3],
+                                         const double p2[3],
+                                         double t1, double t2,
+                                         vtkProp3D *prop,
+                                         vtkAbstractVolumeMapper *mapper);
 
-  //@{
-  /**
-   * Intersect a vtkAbstractHyperTreeGridMapper with a line by ray casting.
-   */
-  virtual double IntersectHyperTreeGridWithLine(
-    const double[3], const double[3], double, double, vtkAbstractHyperTreeGridMapper*);
-  virtual bool RecursivelyProcessTree(vtkHyperTreeGridNonOrientedGeometryCursor*, int);
-  //@}
+  virtual double IntersectImageWithLine(const double p1[3],
+                                        const double p2[3],
+                                        double t1, double t2,
+                                        vtkProp3D *prop,
+                                        vtkImageMapper3D *mapper);
 
-  virtual double IntersectVolumeWithLine(const double p1[3], const double p2[3], double t1,
-    double t2, vtkProp3D* prop, vtkAbstractVolumeMapper* mapper);
+  virtual double IntersectProp3DWithLine(const double p1[3],
+                                         const double p2[3],
+                                         double t1, double t2, double tol,
+                                         vtkProp3D *prop,
+                                         vtkAbstractMapper3D *mapper);
 
-  virtual double IntersectImageWithLine(const double p1[3], const double p2[3], double t1,
-    double t2, vtkProp3D* prop, vtkImageMapper3D* mapper);
+  static int ClipLineWithPlanes(vtkAbstractMapper3D *mapper,
+                                vtkMatrix4x4 *propMatrix,
+                                const double p1[3], const double p2[3],
+                                double &t1, double &t2, int& planeId);
 
-  virtual double IntersectProp3DWithLine(const double p1[3], const double p2[3], double t1,
-    double t2, double tol, vtkProp3D* prop, vtkAbstractMapper3D* mapper);
+  static int ClipLineWithExtent(const int extent[6],
+                                const double x1[3], const double x2[3],
+                                double &t1, double &t2, int &planeId);
 
-  static int ClipLineWithPlanes(vtkAbstractMapper3D* mapper, vtkMatrix4x4* propMatrix,
-    const double p1[3], const double p2[3], double& t1, double& t2, int& planeId);
+  static int ComputeSurfaceNormal(vtkDataSet *data, vtkCell *cell,
+                                  const double *weights, double normal[3]);
 
-  static int ClipLineWithExtent(const int extent[6], const double x1[3], const double x2[3],
-    double& t1, double& t2, int& planeId);
-
-  static int ComputeSurfaceNormal(
-    vtkDataSet* data, vtkCell* cell, const double* weights, double normal[3]);
-
-  static int ComputeSurfaceTCoord(
-    vtkDataSet* data, vtkCell* cell, const double* weights, double tcoord[3]);
+  static int ComputeSurfaceTCoord(vtkDataSet *data, vtkCell *cell,
+                                  const double *weights, double tcoord[3]);
 
   static int HasSubCells(int cellType);
 
-  static int GetNumberOfSubCells(vtkIdList* pointIds, int cellType);
+  static int GetNumberOfSubCells(vtkIdList *pointIds, int cellType);
 
-  static void GetSubCell(
-    vtkDataSet* data, vtkIdList* pointIds, int subId, int cellType, vtkGenericCell* cell);
+  static void GetSubCell(vtkDataSet *data, vtkIdList *pointIds, int subId,
+                         int cellType, vtkGenericCell *cell);
 
-  static void SubCellFromCell(vtkGenericCell* cell, int subId);
+  static void SubCellFromCell(vtkGenericCell *cell, int subId);
 
   void SetImageDataPickInfo(const double x[3], const int extent[6]);
 
-  double ComputeVolumeOpacity(const int xi[3], const double pcoords[3], vtkImageData* data,
-    vtkDataArray* scalars, vtkPiecewiseFunction* scalarOpacity,
-    vtkPiecewiseFunction* gradientOpacity);
+  double ComputeVolumeOpacity(const int xi[3], const double pcoords[3],
+                              vtkImageData *data, vtkDataArray *scalars,
+                              vtkPiecewiseFunction *scalarOpacity,
+                              vtkPiecewiseFunction *gradientOpacity);
 
-  vtkCollection* Locators;
+  vtkCollection *Locators;
 
   double VolumeOpacityIsovalue;
-  vtkTypeBool UseVolumeGradientOpacity;
-  vtkTypeBool PickClippingPlanes;
+  int UseVolumeGradientOpacity;
+  int PickClippingPlanes;
   int ClippingPlaneId;
 
   vtkIdType PointId;
@@ -332,22 +325,21 @@ protected:
   double PickNormal[3];
   double MapperNormal[3];
 
-  vtkTexture* Texture;
-  vtkTypeBool PickTextureData;
-
-  vtkBitArray* InMask;
-  double WordlPoint[3];
+  vtkTexture *Texture;
+  int PickTextureData;
 
 private:
   void ResetCellPickerInfo();
 
-  vtkGenericCell* Cell;      // used to accelerate picking
-  vtkIdList* PointIds;       // used to accelerate picking
-  vtkDoubleArray* Gradients; // used in volume picking
+  vtkGenericCell *Cell; //used to accelerate picking
+  vtkIdList *PointIds; // used to accelerate picking
+  vtkDoubleArray *Gradients; //used in volume picking
 
 private:
-  vtkCellPicker(const vtkCellPicker&) = delete;
-  void operator=(const vtkCellPicker&) = delete;
+  vtkCellPicker(const vtkCellPicker&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkCellPicker&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+

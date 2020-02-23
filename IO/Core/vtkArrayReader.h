@@ -34,20 +34,21 @@
  *
  * @par Thanks:
  * Developed by Timothy M. Shead (tshead@sandia.gov) at Sandia National Laboratories.
- */
+*/
 
 #ifndef vtkArrayReader_h
 #define vtkArrayReader_h
 
-#include "vtkArrayDataAlgorithm.h"
 #include "vtkIOCoreModule.h" // For export macro
+#include "vtkArrayDataAlgorithm.h"
 
-class VTKIOCORE_EXPORT vtkArrayReader : public vtkArrayDataAlgorithm
+class VTKIOCORE_EXPORT vtkArrayReader :
+  public vtkArrayDataAlgorithm
 {
 public:
   static vtkArrayReader* New();
   vtkTypeMacro(vtkArrayReader, vtkArrayDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -85,21 +86,25 @@ public:
   /**
    * Read an arbitrary array from a string.
    */
-  static vtkArray* Read(const vtkStdString& str);
+  static vtkArray* Read(vtkStdString str);
 
 protected:
   vtkArrayReader();
-  ~vtkArrayReader() override;
+  ~vtkArrayReader();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(
+    vtkInformation*,
+    vtkInformationVector**,
+    vtkInformationVector*);
 
   char* FileName;
   vtkStdString InputString;
   bool ReadFromInputString;
 
 private:
-  vtkArrayReader(const vtkArrayReader&) = delete;
-  void operator=(const vtkArrayReader&) = delete;
+  vtkArrayReader(const vtkArrayReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkArrayReader&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

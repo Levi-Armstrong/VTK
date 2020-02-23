@@ -14,8 +14,8 @@ PURPOSE.  See the above copyright notice for more information.
 =========================================================================*/
 #include "vtkMPIController.h"
 
-#include "vtkIntArray.h"
 #include "vtkObjectFactory.h"
+#include "vtkIntArray.h"
 #include "vtkOutputWindow.h"
 
 #include "vtkMPI.h"
@@ -24,7 +24,8 @@ PURPOSE.  See the above copyright notice for more information.
 
 #include <cassert>
 
-#define VTK_CREATE(type, name) vtkSmartPointer<type> name = vtkSmartPointer<type>::New()
+#define VTK_CREATE(type, name) \
+  vtkSmartPointer<type> name = vtkSmartPointer<type>::New()
 
 int vtkMPIController::Initialized = 0;
 char vtkMPIController::ProcessorName[MPI_MAX_PROCESSOR_NAME] = "";
@@ -35,25 +36,31 @@ int vtkMPIController::UseSsendForRMI = 0;
 class vtkMPIOutputWindow : public vtkOutputWindow
 {
 public:
-  vtkTypeMacro(vtkMPIOutputWindow, vtkOutputWindow);
+  vtkTypeMacro(vtkMPIOutputWindow,vtkOutputWindow);
 
-  void DisplayText(const char* t) override
+  void DisplayText(const char* t)
   {
-    if (this->Controller && vtkMPIController::Initialized)
-    {
-      cout << "Process id: " << this->Controller->GetLocalProcessId() << " >> ";
-    }
-    cout << t;
+      if (this->Controller && vtkMPIController::Initialized)
+      {
+        cout << "Process id: " << this->Controller->GetLocalProcessId()
+             << " >> ";
+      }
+      cout << t;
   }
 
-  vtkMPIOutputWindow() { this->Controller = 0; }
+  vtkMPIOutputWindow()
+  {
+      this->Controller = 0;
+  }
 
   friend class vtkMPIController;
 
 protected:
+
   vtkMPIController* Controller;
   vtkMPIOutputWindow(const vtkMPIOutputWindow&);
   void operator=(const vtkMPIOutputWindow&);
+
 };
 
 void vtkMPIController::CreateOutputWindow()
@@ -64,6 +71,7 @@ void vtkMPIController::CreateOutputWindow()
   this->OutputWindow = window;
   vtkOutputWindow::SetInstance(this->OutputWindow);
 }
+
 
 vtkStandardNewMacro(vtkMPIController);
 
@@ -97,24 +105,26 @@ vtkMPIController::~vtkMPIController()
 //----------------------------------------------------------------------------
 void vtkMPIController::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
-  os << indent << "Initialized: " << (vtkMPIController::Initialized ? "(yes)" : "(no)") << endl;
+  this->Superclass::PrintSelf(os,indent);
+  os << indent << "Initialized: " << ( vtkMPIController::Initialized ? "(yes)" : "(no)" ) << endl;
 }
 
-vtkMPICommunicator* vtkMPIController::WorldRMICommunicator = 0;
+vtkMPICommunicator* vtkMPIController::WorldRMICommunicator=0;
 
 //----------------------------------------------------------------------------
-void vtkMPIController::TriggerRMIInternal(
-  int remoteProcessId, void* arg, int argLength, int rmiTag, bool propagate)
+void vtkMPIController::TriggerRMIInternal(int remoteProcessId,
+    void* arg, int argLength, int rmiTag, bool propagate)
 {
-  vtkMPICommunicator* mpiComm = vtkMPICommunicator::SafeDownCast(this->RMICommunicator);
+  vtkMPICommunicator* mpiComm = vtkMPICommunicator::SafeDownCast(
+    this->RMICommunicator);
   int use_ssend = mpiComm->GetUseSsend();
   if (vtkMPIController::UseSsendForRMI == 1 && use_ssend == 0)
   {
     mpiComm->SetUseSsend(1);
   }
 
-  this->Superclass::TriggerRMIInternal(remoteProcessId, arg, argLength, rmiTag, propagate);
+  this->Superclass::TriggerRMIInternal(remoteProcessId,
+    arg, argLength, rmiTag, propagate);
 
   if (vtkMPIController::UseSsendForRMI == 1 && use_ssend == 0)
   {
@@ -129,7 +139,8 @@ void vtkMPIController::Initialize()
 }
 
 //----------------------------------------------------------------------------
-void vtkMPIController::Initialize(int* argc, char*** argv, int initializedExternally)
+void vtkMPIController::Initialize(int* argc, char*** argv,
+                                  int initializedExternally)
 {
   if (vtkMPIController::Initialized)
   {
@@ -156,8 +167,8 @@ void vtkMPIController::Initialize(int* argc, char*** argv, int initializedExtern
   vtkMPIController::WorldRMICommunicator = vtkMPICommunicator::New();
   vtkMPIController::WorldRMICommunicator->Duplicate((vtkMPICommunicator*)this->Communicator);
   this->RMICommunicator = vtkMPIController::WorldRMICommunicator;
-  // Since we use Delete to get rid of the reference, we should use nullptr to register.
-  this->RMICommunicator->Register(nullptr);
+  // Since we use Delete to get rid of the reference, we should use NULL to register.
+  this->RMICommunicator->Register(NULL);
 
   this->Modified();
 }
@@ -191,6 +202,7 @@ void vtkMPIController::Finalize(int finalizedExternally)
     vtkMPIController::Initialized = 0;
     this->Modified();
   }
+
 }
 
 // Called by SetCommunicator and constructor. It frees but does
@@ -212,13 +224,15 @@ void vtkMPIController::InitializeCommunicator(vtkMPICommunicator* comm)
 
     this->Modified();
   }
+
+
 }
 
 // Delete the previous RMI communicator and creates a new one
 // by duplicating the user communicator.
 void vtkMPIController::InitializeRMICommunicator()
 {
-  if (this->RMICommunicator)
+  if ( this->RMICommunicator )
   {
     this->RMICommunicator->Delete();
     this->RMICommunicator = 0;
@@ -226,8 +240,7 @@ void vtkMPIController::InitializeRMICommunicator()
   if (this->Communicator)
   {
     this->RMICommunicator = vtkMPICommunicator::New();
-    ((vtkMPICommunicator*)this->RMICommunicator)
-      ->Duplicate((vtkMPICommunicator*)this->Communicator);
+    ((vtkMPICommunicator*)this->RMICommunicator)->Duplicate((vtkMPICommunicator*)this->Communicator);
   }
 }
 
@@ -241,7 +254,7 @@ void vtkMPIController::SetCommunicator(vtkMPICommunicator* comm)
 // Execute the method set as the SingleMethod.
 void vtkMPIController::SingleMethodExecute()
 {
-  if (!vtkMPIController::Initialized)
+  if(!vtkMPIController::Initialized)
   {
     vtkWarningMacro("MPI has to be initialized first.");
     return;
@@ -265,7 +278,7 @@ void vtkMPIController::SingleMethodExecute()
 // Execute the methods set as the MultipleMethods.
 void vtkMPIController::MultipleMethodExecute()
 {
-  if (!vtkMPIController::Initialized)
+  if(!vtkMPIController::Initialized)
   {
     vtkWarningMacro("MPI has to be initialized first.");
     return;
@@ -276,7 +289,7 @@ void vtkMPIController::MultipleMethodExecute()
   if (i < this->GetNumberOfProcesses())
   {
     vtkProcessFunctionType multipleMethod;
-    void* multipleData;
+    void *multipleData;
     this->GetMultipleMethod(i, multipleMethod, multipleData);
     if (multipleMethod)
     {
@@ -299,78 +312,77 @@ char* vtkMPIController::ErrorString(int err)
 }
 
 //-----------------------------------------------------------------------------
-vtkMPIController* vtkMPIController::CreateSubController(vtkProcessGroup* group)
+vtkMPIController *vtkMPIController::CreateSubController(vtkProcessGroup *group)
 {
   VTK_CREATE(vtkMPICommunicator, subcomm);
 
-  if (!subcomm->Initialize(group))
-  {
-    return nullptr;
-  }
+  if (!subcomm->Initialize(group)) return NULL;
 
   // MPI is kind of funny in that in order to create a communicator from a
   // subgroup of another communicator, it is a collective operation involving
   // all of the processes in the original communicator, not just those belonging
   // to the group.  In any process not part of the group, the communicator is
-  // created with MPI_COMM_NULL.  Check for that and return nullptr ourselves,
+  // created with MPI_COMM_NULL.  Check for that and return NULL ourselves,
   // which is not really an error condition.
-  if (*(subcomm->GetMPIComm()->Handle) == MPI_COMM_NULL)
-  {
-    return nullptr;
-  }
+  if (*(subcomm->GetMPIComm()->Handle) == MPI_COMM_NULL) return NULL;
 
-  vtkMPIController* controller = vtkMPIController::New();
+  vtkMPIController *controller = vtkMPIController::New();
   controller->SetCommunicator(subcomm);
   return controller;
 }
 
 //-----------------------------------------------------------------------------
-vtkMPIController* vtkMPIController::PartitionController(int localColor, int localKey)
+vtkMPIController *vtkMPIController::PartitionController(int localColor,
+                                                        int localKey)
 {
   VTK_CREATE(vtkMPICommunicator, subcomm);
 
   if (!subcomm->SplitInitialize(this->Communicator, localColor, localKey))
   {
-    return nullptr;
+    return NULL;
   }
 
-  vtkMPIController* controller = vtkMPIController::New();
+  vtkMPIController *controller = vtkMPIController::New();
   controller->SetCommunicator(subcomm);
   return controller;
 }
 
 //-----------------------------------------------------------------------------
 int vtkMPIController::WaitSome(
-  const int count, vtkMPICommunicator::Request rqsts[], vtkIntArray* completed)
+  const int count, vtkMPICommunicator::Request rqsts[], vtkIntArray *completed)
 {
-  assert("pre: completed array is nullptr!" && (completed != nullptr));
+  assert( "pre: completed array is NULL!" && (completed != NULL) );
 
   // Allocate set of completed requests
   completed->SetNumberOfComponents(1);
-  completed->SetNumberOfTuples(count);
+  completed->SetNumberOfTuples( count );
 
   // Downcast to MPI communicator
-  vtkMPICommunicator* myMPICommunicator = (vtkMPICommunicator*)this->Communicator;
+  vtkMPICommunicator *myMPICommunicator =
+      (vtkMPICommunicator*)this->Communicator;
 
   // Delegate to MPI communicator
   int N = 0;
-  int rc = myMPICommunicator->WaitSome(count, rqsts, N, completed->GetPointer(0));
-  assert("post: Number of completed requests must N > 0" && (N > 0) && (N < (count - 1)));
-  completed->Resize(N);
+  int rc = myMPICommunicator->WaitSome(count,rqsts,N,completed->GetPointer(0));
+  assert("post: Number of completed requests must N > 0" &&
+         (N > 0) && (N < (count-1) ) );
+  completed->Resize( N );
 
-  return (rc);
+  return( rc );
 }
 
 //-----------------------------------------------------------------------------
-bool vtkMPIController::TestAll(const int count, vtkMPICommunicator::Request requests[])
+bool vtkMPIController::TestAll(
+    const int count, vtkMPICommunicator::Request requests[] )
 {
   int flag = 0;
 
   // Downcast to MPI communicator
-  vtkMPICommunicator* myMPICommunicator = (vtkMPICommunicator*)this->Communicator;
+  vtkMPICommunicator *myMPICommunicator =
+     (vtkMPICommunicator*)this->Communicator;
 
-  myMPICommunicator->TestAll(count, requests, flag);
-  if (flag)
+  myMPICommunicator->TestAll( count, requests, flag );
+  if( flag )
   {
     return true;
   }
@@ -378,15 +390,17 @@ bool vtkMPIController::TestAll(const int count, vtkMPICommunicator::Request requ
 }
 
 //-----------------------------------------------------------------------------
-bool vtkMPIController::TestAny(const int count, vtkMPICommunicator::Request requests[], int& idx)
+bool vtkMPIController::TestAny(
+    const int count, vtkMPICommunicator::Request requests[], int &idx )
 {
   int flag = 0;
 
   // Downcast to MPI communicator
-  vtkMPICommunicator* myMPICommunicator = (vtkMPICommunicator*)this->Communicator;
+  vtkMPICommunicator *myMPICommunicator =
+     (vtkMPICommunicator*)this->Communicator;
 
-  myMPICommunicator->TestAny(count, requests, idx, flag);
-  if (flag)
+  myMPICommunicator->TestAny( count, requests, idx, flag );
+  if( flag )
   {
     return true;
   }
@@ -395,29 +409,32 @@ bool vtkMPIController::TestAny(const int count, vtkMPICommunicator::Request requ
 
 //-----------------------------------------------------------------------------
 bool vtkMPIController::TestSome(
-  const int count, vtkMPICommunicator::Request requests[], vtkIntArray* completed)
+    const int count, vtkMPICommunicator::Request requests[],
+    vtkIntArray *completed )
 {
-  assert("pre: completed array is nullptr" && (completed != nullptr));
+  assert("pre: completed array is NULL" && (completed != NULL) );
 
   // Allocate set of completed requests
   completed->SetNumberOfComponents(1);
   completed->SetNumberOfTuples(count);
 
   // Downcast to MPI communicator
-  vtkMPICommunicator* myMPICommunicator = (vtkMPICommunicator*)this->Communicator;
+  vtkMPICommunicator *myMPICommunicator =
+      (vtkMPICommunicator*)this->Communicator;
 
   int N = 0;
-  myMPICommunicator->TestSome(count, requests, N, completed->GetPointer(0));
-  assert("post: Number of completed requests must N > 0" && (N > 0) && (N < (count - 1)));
+  myMPICommunicator->TestSome(count,requests,N,completed->GetPointer(0));
+  assert("post: Number of completed requests must N > 0" &&
+         (N > 0) && (N < (count-1) ) );
 
-  if (N > 0)
+  if( N > 0 )
   {
-    completed->Resize(N);
+    completed->Resize( N );
     return true;
   }
   else
   {
-    completed->Resize(0);
+    completed->Resize( 0 );
     return false;
   }
 }

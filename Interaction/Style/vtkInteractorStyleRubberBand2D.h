@@ -35,7 +35,7 @@
  * Right mouse - Zoom.
  * Middle mouse - Pan.
  * Scroll wheel - Zoom.
- */
+*/
 
 #ifndef vtkInteractorStyleRubberBand2D_h
 #define vtkInteractorStyleRubberBand2D_h
@@ -48,19 +48,19 @@ class vtkUnsignedCharArray;
 class VTKINTERACTIONSTYLE_EXPORT vtkInteractorStyleRubberBand2D : public vtkInteractorStyle
 {
 public:
-  static vtkInteractorStyleRubberBand2D* New();
+  static vtkInteractorStyleRubberBand2D *New();
   vtkTypeMacro(vtkInteractorStyleRubberBand2D, vtkInteractorStyle);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
-  void OnLeftButtonDown() override;
-  void OnLeftButtonUp() override;
-  void OnMiddleButtonDown() override;
-  void OnMiddleButtonUp() override;
-  void OnRightButtonDown() override;
-  void OnRightButtonUp() override;
-  void OnMouseMove() override;
-  void OnMouseWheelForward() override;
-  void OnMouseWheelBackward() override;
+  virtual void OnLeftButtonDown();
+  virtual void OnLeftButtonUp();
+  virtual void OnMiddleButtonDown();
+  virtual void OnMiddleButtonUp();
+  virtual void OnRightButtonDown();
+  virtual void OnRightButtonUp();
+  virtual void OnMouseMove();
+  virtual void OnMouseWheelForward();
+  virtual void OnMouseWheelBackward();
 
   //@{
   /**
@@ -101,13 +101,13 @@ public:
    * band pick area. This is a convenience method for the wrapped languages
    * since the event callData is lost when using those wrappings.
    */
-  vtkGetVector2Macro(StartPosition, int);
-  vtkGetVector2Macro(EndPosition, int);
+  vtkGetVector2Macro(StartPosition,int);
+  vtkGetVector2Macro(EndPosition,int);
   //@}
 
 protected:
   vtkInteractorStyleRubberBand2D();
-  ~vtkInteractorStyleRubberBand2D() override;
+  ~vtkInteractorStyleRubberBand2D();
 
   // The interaction mode
   int Interaction;
@@ -115,10 +115,10 @@ protected:
   // Draws the selection rubber band
   void RedrawRubberBand();
 
-  // The start position of the selection
+  // The end position of the selection
   int StartPosition[2];
 
-  // The end position of the selection
+  // The start position of the selection
   int EndPosition[2];
 
   // The pixel array for the rubber band
@@ -128,8 +128,8 @@ protected:
   bool RenderOnMouseMove;
 
 private:
-  vtkInteractorStyleRubberBand2D(const vtkInteractorStyleRubberBand2D&) = delete;
-  void operator=(const vtkInteractorStyleRubberBand2D&) = delete;
+  vtkInteractorStyleRubberBand2D(const vtkInteractorStyleRubberBand2D&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkInteractorStyleRubberBand2D&) VTK_DELETE_FUNCTION;
 };
 
 #endif

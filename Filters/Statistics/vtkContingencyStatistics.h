@@ -38,7 +38,7 @@ PURPOSE.  See the above copyright notice for more information.
  * Thanks to Philippe Pebay and David Thompson from Sandia National Laboratories
  * for implementing this class.
  * Updated by Philippe Pebay, Kitware SAS 2012
- */
+*/
 
 #ifndef vtkContingencyStatistics_h
 #define vtkContingencyStatistics_h
@@ -57,38 +57,45 @@ class VTKFILTERSSTATISTICS_EXPORT vtkContingencyStatistics : public vtkStatistic
 {
 public:
   vtkTypeMacro(vtkContingencyStatistics, vtkStatisticsAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
   static vtkContingencyStatistics* New();
 
   /**
    * Given a collection of models, calculate aggregate model
    * NB: not implemented
    */
-  void Aggregate(vtkDataObjectCollection*, vtkMultiBlockDataSet*) override { return; }
+  void Aggregate( vtkDataObjectCollection*,
+                          vtkMultiBlockDataSet* ) VTK_OVERRIDE { return; };
 
 protected:
   vtkContingencyStatistics();
-  ~vtkContingencyStatistics() override;
+  ~vtkContingencyStatistics() VTK_OVERRIDE;
 
   /**
    * Execute the calculations required by the Learn option.
    */
-  void Learn(vtkTable*, vtkTable*, vtkMultiBlockDataSet*) override;
+  void Learn( vtkTable*,
+              vtkTable*,
+              vtkMultiBlockDataSet* ) VTK_OVERRIDE;
 
   /**
    * Execute the calculations required by the Derive option.
    */
-  void Derive(vtkMultiBlockDataSet*) override;
+  void Derive( vtkMultiBlockDataSet* ) VTK_OVERRIDE;
 
   /**
    * Execute the calculations required by the Test option.
    */
-  void Test(vtkTable*, vtkMultiBlockDataSet*, vtkTable*) override;
+  void Test( vtkTable*,
+             vtkMultiBlockDataSet*,
+             vtkTable* ) VTK_OVERRIDE;
 
   /**
    * Execute the calculations required by the Assess option.
    */
-  void Assess(vtkTable*, vtkMultiBlockDataSet*, vtkTable*) override;
+  void Assess( vtkTable*,
+               vtkMultiBlockDataSet*,
+               vtkTable* ) VTK_OVERRIDE;
 
   /**
    * Calculate p-value. This will be overridden using the object factory with an
@@ -101,18 +108,24 @@ protected:
    * This one does nothing because the API is not sufficient for tables indexed
    * by a separate summary table.
    */
-  void SelectAssessFunctor(vtkTable* outData, vtkDataObject* inMeta, vtkStringArray* rowNames,
-    AssessFunctor*& dfunc) override;
+  void SelectAssessFunctor( vtkTable* outData,
+                            vtkDataObject* inMeta,
+                            vtkStringArray* rowNames,
+                            AssessFunctor*& dfunc ) VTK_OVERRIDE;
   /**
    * Provide the appropriate assessment functor.
    * This one is the one that is actually used.
    */
-  virtual void SelectAssessFunctor(vtkTable* outData, vtkMultiBlockDataSet* inMeta,
-    vtkIdType pairKey, vtkStringArray* rowNames, AssessFunctor*& dfunc);
+  virtual void SelectAssessFunctor( vtkTable* outData,
+                                    vtkMultiBlockDataSet* inMeta,
+                                    vtkIdType pairKey,
+                                    vtkStringArray* rowNames,
+                                    AssessFunctor*& dfunc );
 
 private:
-  vtkContingencyStatistics(const vtkContingencyStatistics&) = delete;
-  void operator=(const vtkContingencyStatistics&) = delete;
+  vtkContingencyStatistics(const vtkContingencyStatistics&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkContingencyStatistics&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

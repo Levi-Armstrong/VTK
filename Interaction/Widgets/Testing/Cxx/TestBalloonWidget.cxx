@@ -16,57 +16,60 @@
 // This example tests the vtkHoverWidget and vtkBalloonWidget.
 
 // First include the required header files for the VTK classes we are using.
-#include "vtkActor.h"
-#include "vtkBalloonRepresentation.h"
+#include "vtkSmartPointer.h"
 #include "vtkBalloonWidget.h"
-#include "vtkCommand.h"
-#include "vtkConeSource.h"
+#include "vtkBalloonRepresentation.h"
+#include "vtkSphereSource.h"
 #include "vtkCylinderSource.h"
-#include "vtkInteractorEventRecorder.h"
-#include "vtkInteractorStyleTrackballCamera.h"
+#include "vtkConeSource.h"
 #include "vtkPolyDataMapper.h"
-#include "vtkPropPicker.h"
+#include "vtkActor.h"
+#include "vtkRenderer.h"
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
-#include "vtkRenderer.h"
-#include "vtkSmartPointer.h"
-#include "vtkSphereSource.h"
-#include "vtkTIFFReader.h"
+#include "vtkInteractorStyleTrackballCamera.h"
+#include "vtkCommand.h"
+#include "vtkInteractorEventRecorder.h"
 #include "vtkTestUtilities.h"
+#include "vtkTIFFReader.h"
+#include "vtkPropPicker.h"
 
 class vtkBalloonCallback : public vtkCommand
 {
 public:
-  static vtkBalloonCallback* New() { return new vtkBalloonCallback; }
-  void Execute(vtkObject* caller, unsigned long, void*) override
+  static vtkBalloonCallback *New()
+    { return new vtkBalloonCallback; }
+  void Execute(vtkObject *caller, unsigned long, void*) VTK_OVERRIDE
   {
-    vtkBalloonWidget* balloonWidget = reinterpret_cast<vtkBalloonWidget*>(caller);
-    if (balloonWidget->GetCurrentProp() != nullptr)
-    {
-      std::cout << "Prop selected\n";
-    }
+      vtkBalloonWidget *balloonWidget = reinterpret_cast<vtkBalloonWidget*>(caller);
+      if ( balloonWidget->GetCurrentProp() != NULL )
+      {
+        std::cout << "Prop selected\n";
+      }
   }
 
-  vtkActor* PickedActor;
+  vtkActor *PickedActor;
+
 };
 
 class vtkBalloonPickCallback : public vtkCommand
 {
 public:
-  static vtkBalloonPickCallback* New() { return new vtkBalloonPickCallback; }
-  void Execute(vtkObject* caller, unsigned long, void*) override
+  static vtkBalloonPickCallback *New()
+    { return new vtkBalloonPickCallback; }
+  void Execute(vtkObject *caller, unsigned long, void*) VTK_OVERRIDE
   {
-    vtkPropPicker* picker = reinterpret_cast<vtkPropPicker*>(caller);
-    vtkProp* prop = picker->GetViewProp();
-    if (prop != nullptr)
-    {
-      this->BalloonWidget->UpdateBalloonString(prop, "Picked");
-    }
+      vtkPropPicker *picker = reinterpret_cast<vtkPropPicker*>(caller);
+      vtkProp *prop = picker->GetViewProp();
+      if ( prop != NULL )
+      {
+        this->BalloonWidget->UpdateBalloonString(prop,"Picked");
+      }
   }
-  vtkBalloonWidget* BalloonWidget;
+  vtkBalloonWidget *BalloonWidget;
 };
 
-int TestBalloonWidget(int argc, char* argv[])
+int TestBalloonWidget( int argc, char *argv[] )
 {
   // Create the RenderWindow, Renderer and both Actors
   //
@@ -74,20 +77,19 @@ int TestBalloonWidget(int argc, char* argv[])
   vtkSmartPointer<vtkRenderWindow> renWin = vtkSmartPointer<vtkRenderWindow>::New();
   renWin->AddRenderer(ren1);
 
-  vtkSmartPointer<vtkRenderWindowInteractor> iren =
-    vtkSmartPointer<vtkRenderWindowInteractor>::New();
+  vtkSmartPointer<vtkRenderWindowInteractor> iren = vtkSmartPointer<vtkRenderWindowInteractor>::New();
   iren->SetRenderWindow(renWin);
 
   vtkSmartPointer<vtkPropPicker> picker = vtkSmartPointer<vtkPropPicker>::New();
   vtkSmartPointer<vtkBalloonPickCallback> pcbk = vtkSmartPointer<vtkBalloonPickCallback>::New();
-  picker->AddObserver(vtkCommand::PickEvent, pcbk);
+  picker->AddObserver(vtkCommand::PickEvent,pcbk);
   iren->SetPicker(picker);
 
   // Create an image for the balloon widget
   char* fname = vtkTestUtilities::ExpandDataFileName(argc, argv, "Data/beach.tif");
   vtkSmartPointer<vtkTIFFReader> image1 = vtkSmartPointer<vtkTIFFReader>::New();
   image1->SetFileName(fname);
-  image1->SetOrientationType(4);
+  image1->SetOrientationType( 4 );
 
   // Create a test pipeline
   //
@@ -102,14 +104,14 @@ int TestBalloonWidget(int argc, char* argv[])
   csMapper->SetInputConnection(cs->GetOutputPort());
   vtkSmartPointer<vtkActor> cyl = vtkSmartPointer<vtkActor>::New();
   cyl->SetMapper(csMapper);
-  cyl->AddPosition(5, 0, 0);
+  cyl->AddPosition(5,0,0);
 
   vtkSmartPointer<vtkConeSource> coneSource = vtkSmartPointer<vtkConeSource>::New();
   vtkSmartPointer<vtkPolyDataMapper> coneMapper = vtkSmartPointer<vtkPolyDataMapper>::New();
   coneMapper->SetInputConnection(coneSource->GetOutputPort());
   vtkSmartPointer<vtkActor> cone = vtkSmartPointer<vtkActor>::New();
   cone->SetMapper(coneMapper);
-  cone->AddPosition(0, 5, 0);
+  cone->AddPosition(0,5,0);
 
   // Create the widget
   vtkSmartPointer<vtkBalloonRepresentation> rep = vtkSmartPointer<vtkBalloonRepresentation>::New();
@@ -118,14 +120,13 @@ int TestBalloonWidget(int argc, char* argv[])
   vtkSmartPointer<vtkBalloonWidget> widget = vtkSmartPointer<vtkBalloonWidget>::New();
   widget->SetInteractor(iren);
   widget->SetRepresentation(rep);
-  widget->AddBalloon(sph, "This is a sphere", nullptr);
-  widget->AddBalloon(cyl, "This is a\ncylinder", image1->GetOutput());
-  widget->AddBalloon(cone, "This is a\ncone,\na really big cone,\nyou wouldn't believe how big",
-    image1->GetOutput());
+  widget->AddBalloon(sph,"This is a sphere",NULL);
+  widget->AddBalloon(cyl,"This is a\ncylinder",image1->GetOutput());
+  widget->AddBalloon(cone,"This is a\ncone,\na really big cone,\nyou wouldn't believe how big",image1->GetOutput());
   pcbk->BalloonWidget = widget;
 
   vtkSmartPointer<vtkBalloonCallback> cbk = vtkSmartPointer<vtkBalloonCallback>::New();
-  widget->AddObserver(vtkCommand::WidgetActivateEvent, cbk);
+  widget->AddObserver(vtkCommand::WidgetActivateEvent,cbk);
 
   // Add the actors to the renderer, set the background and size
   //
@@ -136,20 +137,19 @@ int TestBalloonWidget(int argc, char* argv[])
   renWin->SetSize(300, 300);
 
   // record events
-  vtkSmartPointer<vtkInteractorEventRecorder> recorder =
-    vtkSmartPointer<vtkInteractorEventRecorder>::New();
+  vtkSmartPointer<vtkInteractorEventRecorder> recorder = vtkSmartPointer<vtkInteractorEventRecorder>::New();
   recorder->SetInteractor(iren);
   recorder->SetFileName("c:/record.log");
-  //  recorder->Record();
-  //  recorder->ReadFromInputStringOn();
-  //  recorder->SetInputString(eventLog);
+//  recorder->Record();
+//  recorder->ReadFromInputStringOn();
+//  recorder->SetInputString(eventLog);
 
   // render the image
   //
   iren->Initialize();
   renWin->Render();
   widget->On();
-  //  recorder->Play();
+//  recorder->Play();
 
   // Remove the observers so we can go interactive. Without this the "-I"
   // testing option fails.
@@ -157,7 +157,10 @@ int TestBalloonWidget(int argc, char* argv[])
 
   iren->Start();
 
-  delete[] fname;
+  delete [] fname;
 
   return EXIT_SUCCESS;
+
 }
+
+

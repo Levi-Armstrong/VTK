@@ -28,7 +28,7 @@
  *
  * NOTE: This class has been superceded by the newer vtkGenericDataArray and
  * vtkArrayDispatch mechanism.
- */
+*/
 
 #ifndef vtkTypedDataArrayIterator_h
 #define vtkTypedDataArrayIterator_h
@@ -37,7 +37,7 @@
 
 #include "vtkTypedDataArray.h" // For vtkTypedDataArray
 
-template <class Scalar>
+template<class Scalar>
 class vtkTypedDataArrayIterator
 {
 public:
@@ -48,65 +48,70 @@ public:
   typedef Scalar* pointer;
 
   vtkTypedDataArrayIterator()
-    : Data(nullptr)
-    , Index(0)
+    : Data(NULL), Index(0) {}
+
+  explicit vtkTypedDataArrayIterator(vtkTypedDataArray<Scalar> *arr,
+                                     const vtkIdType index = 0)
+    : Data(arr),
+      Index(index)
   {
   }
 
-  explicit vtkTypedDataArrayIterator(vtkTypedDataArray<Scalar>* arr, const vtkIdType index = 0)
-    : Data(arr)
-    , Index(index)
+  vtkTypedDataArrayIterator(const vtkTypedDataArrayIterator &o)
+    : Data(o.Data),
+      Index(o.Index)
   {
   }
 
-  vtkTypedDataArrayIterator(const vtkTypedDataArrayIterator& o)
-    : Data(o.Data)
-    , Index(o.Index)
-  {
-  }
-
-  vtkTypedDataArrayIterator& operator=(vtkTypedDataArrayIterator<Scalar> o)
+  vtkTypedDataArrayIterator&
+  operator=(vtkTypedDataArrayIterator<Scalar> o)
   {
     std::swap(this->Data, o.Data);
     std::swap(this->Index, o.Index);
     return *this;
   }
 
-  bool operator==(const vtkTypedDataArrayIterator<Scalar>& o) const
+  bool operator==(const vtkTypedDataArrayIterator<Scalar> &o) const
   {
     return this->Data == o.Data && this->Index == o.Index;
   }
 
-  bool operator!=(const vtkTypedDataArrayIterator<Scalar>& o) const
+  bool operator!=(const vtkTypedDataArrayIterator<Scalar> &o) const
   {
     return this->Data == o.Data && this->Index != o.Index;
   }
 
-  bool operator>(const vtkTypedDataArrayIterator<Scalar>& o) const
+  bool operator>(const vtkTypedDataArrayIterator<Scalar> &o) const
   {
     return this->Data == o.Data && this->Index > o.Index;
   }
 
-  bool operator>=(const vtkTypedDataArrayIterator<Scalar>& o) const
+  bool operator>=(const vtkTypedDataArrayIterator<Scalar> &o) const
   {
     return this->Data == o.Data && this->Index >= o.Index;
   }
 
-  bool operator<(const vtkTypedDataArrayIterator<Scalar>& o) const
+  bool operator<(const vtkTypedDataArrayIterator<Scalar> &o) const
   {
     return this->Data == o.Data && this->Index < o.Index;
   }
 
-  bool operator<=(const vtkTypedDataArrayIterator<Scalar>& o) const
+  bool operator<=(const vtkTypedDataArrayIterator<Scalar> &o) const
   {
     return this->Data == o.Data && this->Index <= o.Index;
   }
 
-  Scalar& operator*() { return this->Data->GetValueReference(this->Index); }
+  Scalar& operator*()
+  {
+    return this->Data->GetValueReference(this->Index);
+  }
 
-  Scalar* operator->() const { return &this->Data->GetValueReference(this->Index); }
+  Scalar* operator->() const
+  {
+    return &this->Data->GetValueReference(this->Index);
+  }
 
-  Scalar& operator[](const difference_type& n)
+  Scalar& operator[](const difference_type &n)
   {
     return this->Data->GetValueReference(this->Index + n);
   }
@@ -161,7 +166,7 @@ public:
   }
 
 private:
-  vtkTypedDataArray<Scalar>* Data;
+  vtkTypedDataArray<Scalar> *Data;
   vtkIdType Index;
 };
 

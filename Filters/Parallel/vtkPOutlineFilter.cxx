@@ -22,42 +22,44 @@
 #include "vtkMultiProcessController.h"
 #include "vtkObjectFactory.h"
 #include "vtkOutlineSource.h"
-#include "vtkPOutlineFilterInternals.h"
 #include "vtkPolyData.h"
 #include "vtkStreamingDemandDrivenPipeline.h"
+#include "vtkPOutlineFilterInternals.h"
 
 vtkStandardNewMacro(vtkPOutlineFilter);
 vtkCxxSetObjectMacro(vtkPOutlineFilter, Controller, vtkMultiProcessController);
 
-vtkPOutlineFilter::vtkPOutlineFilter()
+vtkPOutlineFilter::vtkPOutlineFilter ()
 {
-  this->Controller = nullptr;
+  this->Controller = 0;
   this->SetController(vtkMultiProcessController::GetGlobalController());
 
   this->OutlineSource = vtkOutlineSource::New();
 }
 
-vtkPOutlineFilter::~vtkPOutlineFilter()
+vtkPOutlineFilter::~vtkPOutlineFilter ()
 {
-  this->SetController(nullptr);
-  if (this->OutlineSource != nullptr)
+  this->SetController(0);
+  if (this->OutlineSource != NULL)
   {
-    this->OutlineSource->Delete();
-    this->OutlineSource = nullptr;
+    this->OutlineSource->Delete ();
+    this->OutlineSource = NULL;
   }
 }
 
 int vtkPOutlineFilter::RequestData(
-  vtkInformation* request, vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+  vtkInformation *request,
+  vtkInformationVector **inputVector,
+  vtkInformationVector *outputVector)
 {
   vtkPOutlineFilterInternals internals;
   internals.SetIsCornerSource(false);
   internals.SetController(this->Controller);
 
-  return internals.RequestData(request, inputVector, outputVector);
+  return internals.RequestData(request,inputVector,outputVector);
 }
 
-int vtkPOutlineFilter::FillInputPortInformation(int, vtkInformation* info)
+int vtkPOutlineFilter::FillInputPortInformation(int, vtkInformation *info)
 {
   info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkDataSet");
   info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkCompositeDataSet");
@@ -67,6 +69,6 @@ int vtkPOutlineFilter::FillInputPortInformation(int, vtkInformation* info)
 
 void vtkPOutlineFilter::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
   os << indent << "Controller: " << this->Controller << endl;
 }

@@ -19,33 +19,34 @@
  * Loop over each data set in the composite input and apply vtkCutter
  * @sa
  * vtkCutter
- */
+*/
 
 #ifndef vtkCompositeCutter_h
 #define vtkCompositeCutter_h
 
-#include "vtkCutter.h"
 #include "vtkFiltersCoreModule.h" // For export macro
+#include "vtkCutter.h"
 
 class VTKFILTERSCORE_EXPORT vtkCompositeCutter : public vtkCutter
 {
 public:
-  vtkTypeMacro(vtkCompositeCutter, vtkCutter);
+  vtkTypeMacro(vtkCompositeCutter,vtkCutter);
 
-  static vtkCompositeCutter* New();
+  static vtkCompositeCutter *New();
 
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;;
 
 protected:
-  vtkCompositeCutter(vtkImplicitFunction* cf = nullptr);
-  ~vtkCompositeCutter() override;
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int RequestUpdateExtent(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  vtkCompositeCutter(vtkImplicitFunction *cf=NULL);
+  ~vtkCompositeCutter() VTK_OVERRIDE;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *) VTK_OVERRIDE;
+  int RequestUpdateExtent(vtkInformation *, vtkInformationVector **, vtkInformationVector *) VTK_OVERRIDE;
+  int FillInputPortInformation(int port, vtkInformation *info) VTK_OVERRIDE;
 
 private:
-  vtkCompositeCutter(const vtkCompositeCutter&) = delete;
-  void operator=(const vtkCompositeCutter&) = delete;
+  vtkCompositeCutter(const vtkCompositeCutter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkCompositeCutter&) VTK_DELETE_FUNCTION;
 };
+
 
 #endif

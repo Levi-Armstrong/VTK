@@ -18,34 +18,38 @@
  *
  * vtkImageMirrorPad makes an image larger by filling extra pixels with
  * a mirror image of the original image (mirror at image boundaries).
- */
+*/
 
 #ifndef vtkImageMirrorPad_h
 #define vtkImageMirrorPad_h
 
-#include "vtkImagePadFilter.h"
+
 #include "vtkImagingCoreModule.h" // For export macro
+#include "vtkImagePadFilter.h"
 
 class VTKIMAGINGCORE_EXPORT vtkImageMirrorPad : public vtkImagePadFilter
 {
 public:
-  static vtkImageMirrorPad* New();
-  vtkTypeMacro(vtkImageMirrorPad, vtkImagePadFilter);
+  static vtkImageMirrorPad *New();
+  vtkTypeMacro(vtkImageMirrorPad,vtkImagePadFilter);
 
 protected:
   vtkImageMirrorPad() {}
-  ~vtkImageMirrorPad() override {}
+  ~vtkImageMirrorPad() {}
 
-  void ComputeInputUpdateExtent(int inExt[6], int outExt[6], int wExt[6]) override;
-  void ThreadedRequestData(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector, vtkImageData*** inData, vtkImageData** outData, int ext[6],
-    int id) override;
-
+  void ComputeInputUpdateExtent(int inExt[6], int outExt[6], int wExt[6]) VTK_OVERRIDE;
+  void ThreadedRequestData (vtkInformation* request,
+                            vtkInformationVector** inputVector,
+                            vtkInformationVector* outputVector,
+                            vtkImageData ***inData, vtkImageData **outData,
+                            int ext[6], int id) VTK_OVERRIDE;
 private:
-  vtkImageMirrorPad(const vtkImageMirrorPad&) = delete;
-  void operator=(const vtkImageMirrorPad&) = delete;
+  vtkImageMirrorPad(const vtkImageMirrorPad&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkImageMirrorPad&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+
 
 // VTK-HeaderTest-Exclude: vtkImageMirrorPad.h

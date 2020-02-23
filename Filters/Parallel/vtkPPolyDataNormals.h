@@ -16,7 +16,7 @@
  * @class   vtkPPolyDataNormals
  * @brief   compute normals for polygonal mesh
  *
- */
+*/
 
 #ifndef vtkPPolyDataNormals_h
 #define vtkPPolyDataNormals_h
@@ -27,34 +27,33 @@
 class VTKFILTERSPARALLEL_EXPORT vtkPPolyDataNormals : public vtkPolyDataNormals
 {
 public:
-  vtkTypeMacro(vtkPPolyDataNormals, vtkPolyDataNormals);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkPPolyDataNormals,vtkPolyDataNormals);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
-  static vtkPPolyDataNormals* New();
+  static vtkPPolyDataNormals *New();
 
   //@{
   /**
    * To get piece invariance, this filter has to request an
    * extra ghost level.  By default piece invariance is on.
    */
-  vtkSetMacro(PieceInvariant, vtkTypeBool);
-  vtkGetMacro(PieceInvariant, vtkTypeBool);
-  vtkBooleanMacro(PieceInvariant, vtkTypeBool);
+  vtkSetMacro(PieceInvariant, int);
+  vtkGetMacro(PieceInvariant, int);
+  vtkBooleanMacro(PieceInvariant, int);
   //@}
 
 protected:
   vtkPPolyDataNormals();
-  ~vtkPPolyDataNormals() override {}
+  ~vtkPPolyDataNormals() {}
 
   // Usual data generation method
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int RequestUpdateExtent(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
+  virtual int RequestUpdateExtent(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 
-  vtkTypeBool PieceInvariant;
-
+  int PieceInvariant;
 private:
-  vtkPPolyDataNormals(const vtkPPolyDataNormals&) = delete;
-  void operator=(const vtkPPolyDataNormals&) = delete;
+  vtkPPolyDataNormals(const vtkPPolyDataNormals&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPPolyDataNormals&) VTK_DELETE_FUNCTION;
 };
 
 #endif

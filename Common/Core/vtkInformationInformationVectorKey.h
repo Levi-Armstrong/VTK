@@ -18,7 +18,7 @@
  *
  * vtkInformationInformationVectorKey is used to represent keys in
  * vtkInformation for vectors of other vtkInformation objects.
- */
+*/
 
 #ifndef vtkInformationInformationVectorKey_h
 #define vtkInformationInformationVectorKey_h
@@ -33,11 +33,11 @@ class vtkInformationVector;
 class VTKCOMMONCORE_EXPORT vtkInformationInformationVectorKey : public vtkInformationKey
 {
 public:
-  vtkTypeMacro(vtkInformationInformationVectorKey, vtkInformationKey);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkInformationInformationVectorKey,vtkInformationKey);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   vtkInformationInformationVectorKey(const char* name, const char* location);
-  ~vtkInformationInformationVectorKey() override;
+  ~vtkInformationInformationVectorKey() VTK_OVERRIDE;
 
   //@{
   /**
@@ -53,23 +53,23 @@ public:
    * object to another.  If there is no entry in the first information
    * object for this key, the value is removed from the second.
    */
-  void ShallowCopy(vtkInformation* from, vtkInformation* to) override;
+  void ShallowCopy(vtkInformation* from, vtkInformation* to) VTK_OVERRIDE;
 
   /**
    * Duplicate (new instance created) the entry associated with this key from
    * one information object to another (new instances of any contained
    * vtkInformation and vtkInformationVector objects are created).
    */
-  void DeepCopy(vtkInformation* from, vtkInformation* to) override;
+  void DeepCopy(vtkInformation* from, vtkInformation* to) VTK_OVERRIDE;
 
   /**
    * Report a reference this key has in the given information object.
    */
-  void Report(vtkInformation* info, vtkGarbageCollector* collector) override;
+  void Report(vtkInformation* info, vtkGarbageCollector* collector) VTK_OVERRIDE;
 
 private:
-  vtkInformationInformationVectorKey(const vtkInformationInformationVectorKey&) = delete;
-  void operator=(const vtkInformationInformationVectorKey&) = delete;
+  vtkInformationInformationVectorKey(const vtkInformationInformationVectorKey&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkInformationInformationVectorKey&) VTK_DELETE_FUNCTION;
 };
 
 #endif

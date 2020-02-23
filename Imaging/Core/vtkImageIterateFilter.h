@@ -22,7 +22,7 @@
  * believe the correct solution is to pass the in and out cache to the
  * subclasses methods as arguments.  Now the data is passes.  Can the caches
  * be passed, and data retrieved from the cache?
- */
+*/
 
 #ifndef vtkImageIterateFilter_h
 #define vtkImageIterateFilter_h
@@ -33,35 +33,44 @@
 class VTKIMAGINGCORE_EXPORT vtkImageIterateFilter : public vtkThreadedImageAlgorithm
 {
 public:
-  vtkTypeMacro(vtkImageIterateFilter, vtkThreadedImageAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkImageIterateFilter,vtkThreadedImageAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   //@{
   /**
    * Get which iteration is current being performed. Normally the
    * user will not access this method.
    */
-  vtkGetMacro(Iteration, int);
-  vtkGetMacro(NumberOfIterations, int);
+  vtkGetMacro(Iteration,int);
+  vtkGetMacro(NumberOfIterations,int);
   //@}
 
 protected:
   vtkImageIterateFilter();
-  ~vtkImageIterateFilter() override;
+  ~vtkImageIterateFilter();
 
   // Implement standard requests by calling iterative versions the
   // specified number of times.
-  int RequestUpdateExtent(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int RequestData(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector) override;
+  virtual int RequestUpdateExtent(vtkInformation*,
+                                  vtkInformationVector**,
+                                  vtkInformationVector*) VTK_OVERRIDE;
+  virtual int RequestInformation (vtkInformation*,
+                                  vtkInformationVector**,
+                                  vtkInformationVector*) VTK_OVERRIDE;
+  virtual int RequestData(vtkInformation* request,
+                          vtkInformationVector** inputVector,
+                          vtkInformationVector* outputVector) VTK_OVERRIDE;
 
   // Iterative versions of standard requests.  These are given the
   // pipeline information object for the in/out pair at each
   // iteration.
-  virtual int IterativeRequestInformation(vtkInformation* in, vtkInformation* out);
-  virtual int IterativeRequestUpdateExtent(vtkInformation* in, vtkInformation* out);
-  virtual int IterativeRequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  virtual int IterativeRequestInformation(vtkInformation* in,
+                                          vtkInformation* out);
+  virtual int IterativeRequestUpdateExtent(vtkInformation* in,
+                                           vtkInformation* out);
+  virtual int IterativeRequestData(vtkInformation*,
+                                   vtkInformationVector**,
+                                   vtkInformationVector*);
 
   virtual void SetNumberOfIterations(int num);
 
@@ -70,14 +79,20 @@ protected:
   int Iteration;
   // A list of intermediate caches that is created when
   // is called SetNumberOfIterations()
-  vtkAlgorithm** IterationData;
+  vtkAlgorithm **IterationData;
 
   vtkInformationVector* InputVector;
   vtkInformationVector* OutputVector;
-
 private:
-  vtkImageIterateFilter(const vtkImageIterateFilter&) = delete;
-  void operator=(const vtkImageIterateFilter&) = delete;
+  vtkImageIterateFilter(const vtkImageIterateFilter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkImageIterateFilter&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+
+
+
+
+
+

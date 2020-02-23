@@ -34,10 +34,13 @@ vtkImageMagnitude::vtkImageMagnitude()
   this->SetNumberOfOutputPorts(1);
 }
 
-int vtkImageMagnitude::RequestInformation(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector)
+int vtkImageMagnitude::RequestInformation (
+  vtkInformation       * vtkNotUsed( request ),
+  vtkInformationVector ** vtkNotUsed( inputVector ),
+  vtkInformationVector * outputVector)
 {
-  vtkDataObject::SetPointDataActiveScalarInfo(outputVector->GetInformationObject(0), -1, 1);
+  vtkDataObject::SetPointDataActiveScalarInfo(
+    outputVector->GetInformationObject(0), -1, 1);
   return 1;
 }
 
@@ -46,8 +49,10 @@ int vtkImageMagnitude::RequestInformation(vtkInformation* vtkNotUsed(request),
 // it handles boundaries. Pixels are just replicated to get values
 // out of extent.
 template <class T>
-void vtkImageMagnitudeExecute(
-  vtkImageMagnitude* self, vtkImageData* inData, vtkImageData* outData, int outExt[6], int id, T*)
+void vtkImageMagnitudeExecute(vtkImageMagnitude *self,
+                              vtkImageData *inData,
+                              vtkImageData *outData,
+                              int outExt[6], int id, T *)
 {
   vtkImageIterator<T> inIt(inData, outExt);
   vtkImageProgressIterator<T> outIt(outData, outExt, self, id);
@@ -80,12 +85,14 @@ void vtkImageMagnitudeExecute(
   }
 }
 
+
 //----------------------------------------------------------------------------
 // This method contains a switch statement that calls the correct
 // templated function for the input data type.  The output data
 // must match input type.  This method does handle boundary conditions.
-void vtkImageMagnitude::ThreadedExecute(
-  vtkImageData* inData, vtkImageData* outData, int outExt[6], int id)
+void vtkImageMagnitude::ThreadedExecute (vtkImageData *inData,
+                                        vtkImageData *outData,
+                                        int outExt[6], int id)
 {
   // This is really meta data and should be set in ExecuteInformation,
   // but there are some issues to solve first.
@@ -93,22 +100,34 @@ void vtkImageMagnitude::ThreadedExecute(
   {
     outData->GetPointData()->GetScalars()->SetName("Magnitude");
   }
-  vtkDebugMacro(<< "Execute: inData = " << inData << ", outData = " << outData);
+  vtkDebugMacro(<< "Execute: inData = " << inData
+  << ", outData = " << outData);
 
   // this filter expects that input is the same type as output.
   if (inData->GetScalarType() != outData->GetScalarType())
   {
     vtkErrorMacro(<< "Execute: input ScalarType, " << inData->GetScalarType()
-                  << ", must match out ScalarType " << outData->GetScalarType());
+    << ", must match out ScalarType " << outData->GetScalarType());
     return;
   }
 
   switch (inData->GetScalarType())
   {
     vtkTemplateMacro(
-      vtkImageMagnitudeExecute(this, inData, outData, outExt, id, static_cast<VTK_TT*>(nullptr)));
+      vtkImageMagnitudeExecute( this, inData, outData,
+                                outExt, id, static_cast<VTK_TT *>(0)));
     default:
       vtkErrorMacro(<< "Execute: Unknown ScalarType");
       return;
   }
 }
+
+
+
+
+
+
+
+
+
+

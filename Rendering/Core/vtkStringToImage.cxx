@@ -25,7 +25,9 @@ vtkStringToImage::vtkStringToImage()
 }
 
 //-----------------------------------------------------------------------------
-vtkStringToImage::~vtkStringToImage() = default;
+vtkStringToImage::~vtkStringToImage()
+{
+}
 
 //-----------------------------------------------------------------------------
 void vtkStringToImage::SetScaleToPowerOfTwo(bool scale)
@@ -38,7 +40,7 @@ void vtkStringToImage::SetScaleToPowerOfTwo(bool scale)
 }
 
 //-----------------------------------------------------------------------------
-void vtkStringToImage::PrintSelf(ostream& os, vtkIndent indent)
+void vtkStringToImage::PrintSelf(ostream &os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
   os << indent << "ScaleToPowerOfTwo: " << this->ScaleToPowerOfTwo << endl;

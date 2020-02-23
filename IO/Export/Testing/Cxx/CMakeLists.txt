@@ -1,25 +1,29 @@
-include("${CMAKE_CURRENT_LIST_DIR}/vtkWkHtmlToImage.cmake")
+include(vtkGhostscript)
 
-if (VTK_WKHTMLTOIMAGE_EXECUTABLE)
-  set(SVGTests
-    TestSVGContextExport.cxx,NO_DATA,NO_VALID
-    TestSVGContextShading.cxx,NO_DATA,NO_VALID
-    TestSVGExporterContextPolyData.cxx,NO_VALID
-    )
+# Only run GL2PS tests if GhostScript is available
+if(VTK_GHOSTSCRIPT_EXECUTABLE)
+  set(GL2PSTests
+    TestGL2PSBillboardTextActor3D.cxx
+    TestGL2PSExporterMultipleRenderers.cxx
+    TestGL2PSExporterRaster.cxx
+    TestGL2PSExporterVolumeRaster.cxx
+    TestGL2PSScalarBar.cxx
+    TestGL2PSTextActor.cxx
+    TestGL2PSTextActor3D.cxx
+    TestGL2PSTextMapper.cxx
+    TestGL2PSLabeledDataMapper.cxx
+    TestLinePlotGL2PS.cxx
+    TestStackedPlotGL2PS.cxx
+  )
 endif()
 
-
-vtk_add_test_cxx(vtkIOExportCxxTests tests
+vtk_add_test_cxx(${vtk-module}CxxTests tests
   X3DTest.cxx,NO_DATA,NO_VALID
-  TestJSONRenderWindowExporter.cxx,NO_DATA,NO_VALID
-  TestOBJExporter.cxx,NO_DATA,NO_VALID
-  TestGLTFExporter.cxx,NO_DATA,NO_VALID
-  TestSingleVTPExporter.cxx,NO_DATA,NO_VALID
-  ${SVGTests}
+  ${GL2PSTests}
   TestRIBExporter.cxx,NO_VALID
   UnitTestRIB.cxx,NO_DATA,NO_VALID
   )
-vtk_test_cxx_executable(vtkIOExportCxxTests tests
+vtk_test_cxx_executable(${vtk-module}CxxTests tests
   RENDERING_FACTORY
   )
 
@@ -33,43 +37,45 @@ mark_as_advanced(RMANTREE)
 # Tests to run if Renderman is present
 if(RMANTREE)
   # write a Renderman ini file to specify the shaderpath
-  file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/rendermn.ini
-          "/shaderpath &:${CMAKE_CURRENT_SOURCE_DIR}/Testing/Cxx")
-  add_test(NAME VTK::IOExport-RIBExporterShaderCompile
+  write_file(${${vtk-module}_BINARY_DIR}/Testing/Cxx/rendermn.ini
+          "/shaderpath &:${${vtk-module}_SOURCE_DIR}/Testing/Cxx")
+  add_test(NAME ${vtk-module}-RIBExporterShaderCompile
           COMMAND ${RMANTREE}/bin/shader
-          ${CMAKE_CURRENT_SOURCE_DIR}/../Data/Input/bozo.sl
-          ${CMAKE_CURRENT_SOURCE_DIR}/../Data/Input/dented.sl
-          WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+          ${${vtk-module}_SOURCE_DIR}/Testing/Data/Input/bozo.sl
+          ${${vtk-module}_SOURCE_DIR}/Testing/Data/Input/dented.sl
+          WORKING_DIRECTORY ${${vtk-module}_BINARY_DIR}/Testing/Cxx
   )
-  add_test(NAME VTK::IOExport-RIBExporterPrman
+  add_test(NAME ${vtk-module}-RIBExporterPrman
           COMMAND ${RMANTREE}/bin/prman
-            ${_vtk_build_TEST_OUTPUT_DIRECTORY}/TestRIBExporter.rib
-          WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+            ${VTK_TEST_OUTPUT_DIR}/TestRIBExporter.rib
+          WORKING_DIRECTORY ${${vtk-module}_BINARY_DIR}/Testing/Cxx
   )
   # Image diff rman generated tif with baseline
-  set(baseline_dir ${CMAKE_CURRENT_SOURCE_DIR}/../Data/Baseline)
-  ExternalData_add_test(${_vtk_build_TEST_DATA_TARGET}
-        NAME VTK::IOExportCxx-ComparePrmanImage
+  set(baseline_dir ${${vtk-module}_SOURCE_DIR}/Testing/Data/Baseline)
+  ExternalData_add_test(VTKData
+        NAME ${vtk-module}Cxx-ComparePrmanImage
         COMMAND ${RMANTREE}/bin/cmptiff -d 100
         DATA{${baseline_dir}/TestRIBExporter.tif}
-        ${_vtk_build_TEST_OUTPUT_DIRECTORY}/TestRIBExporter.tif
+        ${VTK_TEST_OUTPUT_DIR}/TestRIBExporter.tif
   )
-  set_tests_properties(VTK::IOExport-RIBExporterPrman
+  set_tests_properties(${vtk-module}-RIBExporterPrman
         PROPERTIES
         DEPENDS
-        "VTK::IOExport-TestRIBExporter"
+        "${vtk-module}-TestRIBExporter"
         DEPENDS
-        "VTK::IOExport-RIBExporterShaderCompile"
+        "${vtk-module}-RIBExporterShaderCompile"
         ENVIRONMENT
         "RMANTREE=${RMANTREE}"
   )
-  set_tests_properties("VTK::IOExportCxx-ComparePrmanImage"
+  set_tests_properties("${vtk-module}Cxx-ComparePrmanImage"
         PROPERTIES
-        DEPENDS "VTK::IOExportCxx-TestRIBExporter"
+        DEPENDS "${vtk-module}Cxx-TestRIBExporter"
         REQUIRED_FILES
-          "${_vtk_build_TEST_OUTPUT_DIRECTORY}/TestRIBExporter.tif"
+          "${VTK_TEST_OUTPUT_DIR}/TestRIBExporter.tif"
   )
 endif()
 
-include("${CMAKE_CURRENT_LIST_DIR}/vtkTestingSVG.cmake")
-vtk_add_svg_test(${SVGTests})
+set(TestGL2PSExporterVolumeRasterError 50)
+
+include(vtkTestingGL2PS)
+vtk_add_gl2ps_test_cxx(${GL2PSTests})

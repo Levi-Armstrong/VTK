@@ -25,20 +25,20 @@
  * triggers the renders. All other processes, simply listen to the StartEvent
  * fired and beginning of the render to ensure that vtkHardwareSelector's
  * CurrentPass is updated appropriately.
- */
+*/
 
 #ifndef vtkPHardwareSelector_h
 #define vtkPHardwareSelector_h
 
-#include "vtkOpenGLHardwareSelector.h"
 #include "vtkRenderingParallelModule.h" // For export macro
+#include "vtkOpenGLHardwareSelector.h"
 
 class VTKRENDERINGPARALLEL_EXPORT vtkPHardwareSelector : public vtkOpenGLHardwareSelector
 {
 public:
   static vtkPHardwareSelector* New();
   vtkTypeMacro(vtkPHardwareSelector, vtkOpenGLHardwareSelector);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -57,11 +57,11 @@ public:
    * vtkHardwareSelector as the capturing of buffers progresses is done as a
    * slave to the master render.
    */
-  bool CaptureBuffers() override;
+  virtual bool CaptureBuffers();
 
 protected:
   vtkPHardwareSelector();
-  ~vtkPHardwareSelector() override;
+  ~vtkPHardwareSelector();
 
   void StartRender();
   void EndRender();
@@ -69,12 +69,13 @@ protected:
   bool ProcessIsRoot;
 
 private:
-  vtkPHardwareSelector(const vtkPHardwareSelector&) = delete;
-  void operator=(const vtkPHardwareSelector&) = delete;
+  vtkPHardwareSelector(const vtkPHardwareSelector&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPHardwareSelector&) VTK_DELETE_FUNCTION;
 
   class vtkObserver;
   friend class vtkObserver;
   vtkObserver* Observer;
+
 };
 
 #endif

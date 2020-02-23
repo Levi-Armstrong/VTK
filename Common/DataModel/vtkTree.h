@@ -41,7 +41,7 @@
  *
  * @sa
  * vtkDirectedGraph vtkMutableDirectedGraph vtkGraph
- */
+*/
 
 #ifndef vtkTree_h
 #define vtkTree_h
@@ -54,14 +54,14 @@ class vtkIdTypeArray;
 class VTKCOMMONDATAMODEL_EXPORT vtkTree : public vtkDirectedAcyclicGraph
 {
 public:
-  static vtkTree* New();
+  static vtkTree *New();
   vtkTypeMacro(vtkTree, vtkDirectedAcyclicGraph);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Return what type of dataset this is.
    */
-  int GetDataObjectType() override { return VTK_TREE; }
+  int GetDataObjectType() VTK_OVERRIDE {return VTK_TREE;}
 
   //@{
   /**
@@ -73,7 +73,8 @@ public:
   /**
    * Get the number of children of a vertex.
    */
-  vtkIdType GetNumberOfChildren(vtkIdType v) { return this->GetOutDegree(v); }
+  vtkIdType GetNumberOfChildren(vtkIdType v)
+    { return this->GetOutDegree(v); }
 
   /**
    * Get the i-th child of a parent vertex.
@@ -85,7 +86,8 @@ public:
    * This is a convenience method that functions exactly like
    * GetAdjacentVertices.
    */
-  void GetChildren(vtkIdType v, vtkAdjacentVertexIterator* it) { this->GetAdjacentVertices(v, it); }
+  void GetChildren(vtkIdType v, vtkAdjacentVertexIterator *it)
+    { this->GetAdjacentVertices(v, it); }
 
   /**
    * Get the parent of a vertex.
@@ -113,8 +115,8 @@ public:
   /**
    * Retrieve a graph from an information vector.
    */
-  static vtkTree* GetData(vtkInformation* info);
-  static vtkTree* GetData(vtkInformationVector* v, int i = 0);
+  static vtkTree *GetData(vtkInformation *info);
+  static vtkTree *GetData(vtkInformationVector *v, int i=0);
   //@}
 
   /**
@@ -123,17 +125,17 @@ public:
    * just in a different order.
    * This does not change the topology of the tree.
    */
-  virtual void ReorderChildren(vtkIdType parent, vtkIdTypeArray* children);
+  virtual void ReorderChildren(vtkIdType parent, vtkIdTypeArray *children);
 
 protected:
   vtkTree();
-  ~vtkTree() override;
+  ~vtkTree() VTK_OVERRIDE;
 
   /**
    * Check the storage, and accept it if it is a valid
    * tree.
    */
-  bool IsStructureValid(vtkGraph* g) override;
+  bool IsStructureValid(vtkGraph *g) VTK_OVERRIDE;
 
   /**
    * The root of the tree.
@@ -141,8 +143,8 @@ protected:
   vtkIdType Root;
 
 private:
-  vtkTree(const vtkTree&) = delete;
-  void operator=(const vtkTree&) = delete;
+  vtkTree(const vtkTree&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTree&) VTK_DELETE_FUNCTION;
 };
 
 #endif

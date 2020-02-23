@@ -39,7 +39,7 @@ namespace xdmf2
 {
 
 extern "C"{
-void *
+XDMF_EXPORT void *
 XdmfDsmBufferServiceThread(void *DsmObj){
     XdmfDsmBuffer *Dsm = (XdmfDsmBuffer *)DsmObj;
     return(Dsm->ServiceThread());

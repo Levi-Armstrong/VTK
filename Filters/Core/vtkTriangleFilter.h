@@ -20,7 +20,7 @@
  * strips.  It also generates line segments from polylines unless PassLines
  * is off, and generates individual vertex cells from vtkVertex point lists
  * unless PassVerts is off.
- */
+*/
 
 #ifndef vtkTriangleFilter_h
 #define vtkTriangleFilter_h
@@ -31,9 +31,9 @@
 class VTKFILTERSCORE_EXPORT vtkTriangleFilter : public vtkPolyDataAlgorithm
 {
 public:
-  static vtkTriangleFilter* New();
-  vtkTypeMacro(vtkTriangleFilter, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkTriangleFilter *New();
+  vtkTypeMacro(vtkTriangleFilter,vtkPolyDataAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   //@{
   /**
@@ -42,9 +42,9 @@ public:
    * into individual vertex cells (one point per cell).  If it
    * is off, the input vertex cells will be ignored.
    */
-  vtkBooleanMacro(PassVerts, vtkTypeBool);
-  vtkSetMacro(PassVerts, vtkTypeBool);
-  vtkGetMacro(PassVerts, vtkTypeBool);
+  vtkBooleanMacro(PassVerts,int);
+  vtkSetMacro(PassVerts,int);
+  vtkGetMacro(PassVerts,int);
   //@}
 
   //@{
@@ -54,28 +54,23 @@ public:
    * into line segments.  If it is off, then the input lines
    * will be ignored and the output will have no lines.
    */
-  vtkBooleanMacro(PassLines, vtkTypeBool);
-  vtkSetMacro(PassLines, vtkTypeBool);
-  vtkGetMacro(PassLines, vtkTypeBool);
+  vtkBooleanMacro(PassLines,int);
+  vtkSetMacro(PassLines,int);
+  vtkGetMacro(PassLines,int);
   //@}
 
 protected:
-  vtkTriangleFilter()
-    : PassVerts(1)
-    , PassLines(1)
-  {
-  }
-  ~vtkTriangleFilter() override {}
+  vtkTriangleFilter() : PassVerts(1), PassLines(1) {}
+  ~vtkTriangleFilter() VTK_OVERRIDE {}
 
   // Usual data generation method
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *) VTK_OVERRIDE;
 
-  vtkTypeBool PassVerts;
-  vtkTypeBool PassLines;
-
+  int PassVerts;
+  int PassLines;
 private:
-  vtkTriangleFilter(const vtkTriangleFilter&) = delete;
-  void operator=(const vtkTriangleFilter&) = delete;
+  vtkTriangleFilter(const vtkTriangleFilter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkTriangleFilter&) VTK_DELETE_FUNCTION;
 };
 
 #endif

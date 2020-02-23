@@ -16,7 +16,7 @@
  * @class   vtkPResampleFilter
  * @brief   probe dataset in parallel using a vtkImageData
  *
- */
+*/
 
 #ifndef vtkPResampleFilter_h
 #define vtkPResampleFilter_h
@@ -29,10 +29,10 @@ class vtkMultiProcessController;
 class VTKFILTERSPARALLEL_EXPORT vtkPResampleFilter : public vtkImageAlgorithm
 {
 public:
-  vtkTypeMacro(vtkPResampleFilter, vtkImageAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkPResampleFilter,vtkImageAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
-  static vtkPResampleFilter* New();
+  static vtkPResampleFilter *New();
 
   //@{
   /**
@@ -47,9 +47,9 @@ public:
    * Set/Get if the filter should use Input bounds to sub-sample the data.
    * By default it is set to 1.
    */
-  vtkSetMacro(UseInputBounds, vtkTypeBool);
-  vtkGetMacro(UseInputBounds, vtkTypeBool);
-  vtkBooleanMacro(UseInputBounds, vtkTypeBool);
+  vtkSetMacro(UseInputBounds, int);
+  vtkGetMacro(UseInputBounds, int);
+  vtkBooleanMacro(UseInputBounds, int);
   //@}
 
   //@{
@@ -71,25 +71,26 @@ public:
 
 protected:
   vtkPResampleFilter();
-  ~vtkPResampleFilter() override;
+  ~vtkPResampleFilter();
 
   // Usual data generation method
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int RequestUpdateExtent(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  virtual int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
+  virtual int RequestUpdateExtent(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
+  virtual int RequestInformation(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
+  virtual int FillInputPortInformation(int port, vtkInformation *info);
 
   double* CalculateBounds(vtkDataSet* input);
 
   vtkMultiProcessController* Controller;
-  vtkTypeBool UseInputBounds;
+  int UseInputBounds;
   double CustomSamplingBounds[6];
   int SamplingDimension[3];
   double Bounds[6];
 
 private:
-  vtkPResampleFilter(const vtkPResampleFilter&) = delete;
-  void operator=(const vtkPResampleFilter&) = delete;
+  vtkPResampleFilter(const vtkPResampleFilter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkPResampleFilter&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif

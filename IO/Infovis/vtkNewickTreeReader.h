@@ -26,13 +26,13 @@
  * This class is adapted from code originally written by Yu-Wei Wu.
  * @sa
  * vtkTree vtkDataReader
- */
+*/
 
 #ifndef vtkNewickTreeReader_h
 #define vtkNewickTreeReader_h
 
-#include "vtkDataReader.h"
 #include "vtkIOInfovisModule.h" // For export macro
+#include "vtkDataReader.h"
 
 class vtkDoubleArray;
 class vtkMutableDirectedGraph;
@@ -42,37 +42,40 @@ class vtkTree;
 class VTKIOINFOVIS_EXPORT vtkNewickTreeReader : public vtkDataReader
 {
 public:
-  static vtkNewickTreeReader* New();
-  vtkTypeMacro(vtkNewickTreeReader, vtkDataReader);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkNewickTreeReader *New();
+  vtkTypeMacro(vtkNewickTreeReader,vtkDataReader);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
    * Get the output of this reader.
    */
-  vtkTree* GetOutput();
-  vtkTree* GetOutput(int idx);
-  void SetOutput(vtkTree* output);
-  int ReadNewickTree(const char* buffer, vtkTree& tree);
+  vtkTree *GetOutput();
+  vtkTree *GetOutput(int idx);
+  void SetOutput(vtkTree *output);
+  int ReadNewickTree(const char * buffer, vtkTree & tree);
   //@}
-
-  /**
-   * Actual reading happens here
-   */
-  int ReadMeshSimple(const std::string& fname, vtkDataObject* output) override;
 
 protected:
   vtkNewickTreeReader();
-  ~vtkNewickTreeReader() override;
+  ~vtkNewickTreeReader();
 
-  int FillOutputPortInformation(int, vtkInformation*) override;
-  void CountNodes(const char* buffer, vtkIdType* numNodes);
-  vtkIdType BuildTree(char* buffer, vtkMutableDirectedGraph* g, vtkDoubleArray* weights,
-    vtkStringArray* names, vtkIdType parent);
+  virtual int RequestData(vtkInformation *, vtkInformationVector **,
+                          vtkInformationVector *);
 
+  // Since the Outputs[0] has the same UpdateExtent format
+  // as the generic DataObject we can copy the UpdateExtent
+  // as a default behavior.
+  virtual int RequestUpdateExtent(vtkInformation *, vtkInformationVector **,
+                                  vtkInformationVector *);
+
+  virtual int FillOutputPortInformation(int, vtkInformation*);
+  void CountNodes(const char * buffer, vtkIdType *numNodes);
+  vtkIdType BuildTree(char *buffer, vtkMutableDirectedGraph *g,
+    vtkDoubleArray *weights, vtkStringArray *names, vtkIdType parent);
 private:
-  vtkNewickTreeReader(const vtkNewickTreeReader&) = delete;
-  void operator=(const vtkNewickTreeReader&) = delete;
+  vtkNewickTreeReader(const vtkNewickTreeReader&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkNewickTreeReader&) VTK_DELETE_FUNCTION;
 };
 
 #endif

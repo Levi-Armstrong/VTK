@@ -24,7 +24,7 @@
  *
  * Use SetInputArrayToProcess(0, ...) to set the array to group on.
  * Currently this array must be a vtkStringArray.
- */
+*/
 
 #ifndef vtkGroupLeafVertices_h
 #define vtkGroupLeafVertices_h
@@ -36,8 +36,8 @@ class VTKINFOVISCORE_EXPORT vtkGroupLeafVertices : public vtkTreeAlgorithm
 {
 public:
   static vtkGroupLeafVertices* New();
-  vtkTypeMacro(vtkGroupLeafVertices, vtkTreeAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkGroupLeafVertices,vtkTreeAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -54,15 +54,19 @@ public:
 
 protected:
   vtkGroupLeafVertices();
-  ~vtkGroupLeafVertices() override;
+  ~vtkGroupLeafVertices();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(
+    vtkInformation*,
+    vtkInformationVector**,
+    vtkInformationVector*);
 
   char* GroupDomain;
 
 private:
-  vtkGroupLeafVertices(const vtkGroupLeafVertices&) = delete;
-  void operator=(const vtkGroupLeafVertices&) = delete;
+  vtkGroupLeafVertices(const vtkGroupLeafVertices&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkGroupLeafVertices&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+

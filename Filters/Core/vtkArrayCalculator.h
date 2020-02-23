@@ -56,33 +56,29 @@
  *
  * @sa
  * vtkFunctionParser
- */
+*/
 
 #ifndef vtkArrayCalculator_h
 #define vtkArrayCalculator_h
 
-#include "vtkDataObject.h"        // For attribute types
 #include "vtkFiltersCoreModule.h" // For export macro
-#include "vtkPassInputTypeAlgorithm.h"
+#include "vtkDataSetAlgorithm.h"
 
-class vtkDataSet;
 class vtkFunctionParser;
 
-#ifndef VTK_LEGACY_REMOVE
 #define VTK_ATTRIBUTE_MODE_DEFAULT 0
 #define VTK_ATTRIBUTE_MODE_USE_POINT_DATA 1
 #define VTK_ATTRIBUTE_MODE_USE_CELL_DATA 2
 #define VTK_ATTRIBUTE_MODE_USE_VERTEX_DATA 3
 #define VTK_ATTRIBUTE_MODE_USE_EDGE_DATA 4
-#endif
 
-class VTKFILTERSCORE_EXPORT vtkArrayCalculator : public vtkPassInputTypeAlgorithm
+class VTKFILTERSCORE_EXPORT vtkArrayCalculator : public vtkDataSetAlgorithm
 {
 public:
-  vtkTypeMacro(vtkArrayCalculator, vtkPassInputTypeAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkArrayCalculator,vtkDataSetAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
-  static vtkArrayCalculator* New();
+  static vtkArrayCalculator *New();
 
   //@{
   /**
@@ -100,8 +96,8 @@ public:
    * AddVectorVariable to use a variable name different from the array name.
    */
   void AddScalarArrayName(const char* arrayName, int component = 0);
-  void AddVectorArrayName(
-    const char* arrayName, int component0 = 0, int component1 = 1, int component2 = 2);
+  void AddVectorArrayName(const char* arrayName, int component0 = 0,
+                          int component1 = 1, int component2 = 2);
   //@}
 
   //@{
@@ -109,9 +105,11 @@ public:
    * Add a variable name, a corresponding array name, and which components of
    * the array to use.
    */
-  void AddScalarVariable(const char* variableName, const char* arrayName, int component = 0);
-  void AddVectorVariable(const char* variableName, const char* arrayName, int component0 = 0,
-    int component1 = 1, int component2 = 2);
+  void AddScalarVariable(const char* variableName, const char* arrayName,
+                         int component = 0);
+  void AddVectorVariable(const char* variableName, const char* arrayName,
+                         int component0 = 0, int component1 = 1,
+                         int component2 = 2);
   //@}
 
   //@{
@@ -119,9 +117,11 @@ public:
    * Add a variable name, a corresponding array name, and which components of
    * the array to use.
    */
-  void AddCoordinateScalarVariable(const char* variableName, int component = 0);
-  void AddCoordinateVectorVariable(
-    const char* variableName, int component0 = 0, int component1 = 1, int component2 = 2);
+  void AddCoordinateScalarVariable(const char* variableName,
+                                   int component = 0);
+  void AddCoordinateVectorVariable(const char* variableName,
+                                   int component0 = 0, int component1 = 1,
+                                   int component2 = 2);
   //@}
 
   //@{
@@ -140,25 +140,25 @@ public:
    * Type of the result array. It is ignored if CoordinateResults is true.
    * Initial value is VTK_DOUBLE.
    */
-  vtkGetMacro(ResultArrayType, int);
-  vtkSetMacro(ResultArrayType, int);
+  vtkGetMacro(ResultArrayType,int);
+  vtkSetMacro(ResultArrayType,int);
   //@}
 
   //@{
   /**
    * Set whether to output results as coordinates.  ResultArrayName will be
-   * ignored.  Outputting as coordinates is only valid with vector results and
+   * ignored.  Outputing as coordinates is only valid with vector results and
    * if the AttributeMode is AttributeModeToUsePointData.
    * If a valid output can't be made, an error will occur.
    */
-  vtkGetMacro(CoordinateResults, vtkTypeBool);
-  vtkSetMacro(CoordinateResults, vtkTypeBool);
-  vtkBooleanMacro(CoordinateResults, vtkTypeBool);
+  vtkGetMacro(CoordinateResults, int);
+  vtkSetMacro(CoordinateResults, int);
+  vtkBooleanMacro(CoordinateResults, int);
   //@}
 
   //@{
   /**
-   * Set whether to output results as point/cell normals. Outputting as
+   * Set whether to output results as point/cell normals. Outputing as
    * normals is only valid with vector results. Point or cell normals are
    * selected using AttributeMode.
    */
@@ -186,48 +186,20 @@ public:
    * (AttributeModeToUsePointData) or cell data (AttributeModeToUseCellData).
    * For graphs you can set the filter to use vertex data
    * (AttributeModeToUseVertexData) or edge data (AttributeModeToUseEdgeData).
-   *
-   * @deprecated Replaced By GetAttributeType and SetAttributeType as of VTK 8.1.
    */
-#ifndef VTK_LEGACY_REMOVE
-  VTK_LEGACY(void SetAttributeMode(int newMode);)
-  VTK_LEGACY(int GetAttributeMode();)
-  VTK_LEGACY(void SetAttributeModeToDefault()) { this->SetAttributeType(DEFAULT_ATTRIBUTE_TYPE); }
-  VTK_LEGACY(void SetAttributeModeToUsePointData())
-  {
-    this->SetAttributeType(vtkDataObject::POINT);
-  }
-  VTK_LEGACY(void SetAttributeModeToUseCellData()) { this->SetAttributeType(vtkDataObject::CELL); }
-  VTK_LEGACY(void SetAttributeModeToUseVertexData())
-  {
-    this->SetAttributeType(vtkDataObject::VERTEX);
-  }
-  VTK_LEGACY(void SetAttributeModeToUseEdgeData()) { this->SetAttributeType(vtkDataObject::EDGE); }
-  VTK_LEGACY(const char* GetAttributeModeAsString());
-#endif
-  //@}
-
-  /**
-   * Returns a string representation of the calculator's AttributeType
-   */
-  const char* GetAttributeTypeAsString();
-
-  static const int DEFAULT_ATTRIBUTE_TYPE = -1;
-  //@{
-  /**
-   * Control which AttributeType the filter operates on (point data or cell data
-   * for vtkDataSets).  By default the filter uses Point/Vertex/Row data depending
-   * on the input data type.  The input value for this function should be one of the
-   * constants in vtkDataObject::AttributeTypes or DEFAULT_ATTRIBUTE_TYPE for 'default behavior'.
-   */
-  vtkSetMacro(AttributeType, int);
-  vtkGetMacro(AttributeType, int);
-  void SetAttributeTypeToDefault() { this->SetAttributeType(DEFAULT_ATTRIBUTE_TYPE); }
-  void SetAttributeTypeToPointData() { this->SetAttributeType(vtkDataObject::POINT); }
-  void SetAttributeTypeToCellData() { this->SetAttributeType(vtkDataObject::CELL); }
-  void SetAttributeTypeToEdgeData() { this->SetAttributeType(vtkDataObject::EDGE); }
-  void SetAttributeTypeToVertexData() { this->SetAttributeType(vtkDataObject::VERTEX); }
-  void SetAttributeTypeToRowData() { this->SetAttributeType(vtkDataObject::ROW); }
+  vtkSetMacro(AttributeMode,int);
+  vtkGetMacro(AttributeMode,int);
+  void SetAttributeModeToDefault()
+    {this->SetAttributeMode(VTK_ATTRIBUTE_MODE_DEFAULT);};
+  void SetAttributeModeToUsePointData()
+    {this->SetAttributeMode(VTK_ATTRIBUTE_MODE_USE_POINT_DATA);};
+  void SetAttributeModeToUseCellData()
+    {this->SetAttributeMode(VTK_ATTRIBUTE_MODE_USE_CELL_DATA);};
+  void SetAttributeModeToUseVertexData()
+    {this->SetAttributeMode(VTK_ATTRIBUTE_MODE_USE_VERTEX_DATA);};
+  void SetAttributeModeToUseEdgeData()
+    {this->SetAttributeMode(VTK_ATTRIBUTE_MODE_USE_EDGE_DATA);};
+  const char *GetAttributeModeAsString();
   //@}
 
   /**
@@ -269,7 +241,7 @@ public:
   char* GetVectorVariableName(int i);
   int* GetSelectedScalarComponents() { return this->SelectedScalarComponents; }
   int GetSelectedScalarComponent(int i);
-  int** GetSelectedVectorComponents() { return this->SelectedVectorComponents; }
+  int** GetSelectedVectorComponents() { return this->SelectedVectorComponents;}
   int* GetSelectedVectorComponents(int i);
   vtkGetMacro(NumberOfScalarArrays, int);
   vtkGetMacro(NumberOfVectorArrays, int);
@@ -282,78 +254,49 @@ public:
    * numbers) will be replaced by ReplacementValue. Otherwise an
    * error will be reported
    */
-  vtkSetMacro(ReplaceInvalidValues, vtkTypeBool);
-  vtkGetMacro(ReplaceInvalidValues, vtkTypeBool);
-  vtkBooleanMacro(ReplaceInvalidValues, vtkTypeBool);
-  vtkSetMacro(ReplacementValue, double);
-  vtkGetMacro(ReplacementValue, double);
+  vtkSetMacro(ReplaceInvalidValues,int);
+  vtkGetMacro(ReplaceInvalidValues,int);
+  vtkBooleanMacro(ReplaceInvalidValues,int);
+  vtkSetMacro(ReplacementValue,double);
+  vtkGetMacro(ReplacementValue,double);
   //@}
-
-  //@{
-  /**
-   * When this option is set, silently ignore datasets where the requested field
-   * data array is not present. When an input array is not present, the result array
-   * will not be generated nor added to the output.
-   */
-  //@}
-  vtkSetMacro(IgnoreMissingArrays, bool);
-  vtkGetMacro(IgnoreMissingArrays, bool);
-  vtkBooleanMacro(IgnoreMissingArrays, bool);
-
-  /**
-   * Returns the output of the filter downcast to a vtkDataSet or nullptr if the
-   * cast fails.
-   */
-  vtkDataSet* GetDataSetOutput();
 
 protected:
   vtkArrayCalculator();
-  ~vtkArrayCalculator() override;
+  ~vtkArrayCalculator() VTK_OVERRIDE;
 
-  int FillInputPortInformation(int, vtkInformation*) override;
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *) VTK_OVERRIDE;
 
-  // Do the bulk of the work
-  int ProcessDataObject(vtkDataObject* input, vtkDataObject* output);
-
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-
-  /**
-   * Get the attribute type for the input.
-   */
-  int GetAttributeTypeFromInput(vtkDataObject* input);
-
-  char* Function;
-  char* ResultArrayName;
-  char** ScalarArrayNames;
-  char** VectorArrayNames;
-  char** ScalarVariableNames;
-  char** VectorVariableNames;
-  int NumberOfScalarArrays;
-  int NumberOfVectorArrays;
-  int AttributeType;
-  int* SelectedScalarComponents;
-  int** SelectedVectorComponents;
+  char  * Function;
+  char  * ResultArrayName;
+  char ** ScalarArrayNames;
+  char ** VectorArrayNames;
+  char ** ScalarVariableNames;
+  char ** VectorVariableNames;
+  int     NumberOfScalarArrays;
+  int     NumberOfVectorArrays;
+  int     AttributeMode;
+  int   * SelectedScalarComponents;
+  int  ** SelectedVectorComponents;
   vtkFunctionParser* FunctionParser;
 
-  vtkTypeBool ReplaceInvalidValues;
-  double ReplacementValue;
-  bool IgnoreMissingArrays;
+  int     ReplaceInvalidValues;
+  double  ReplacementValue;
 
-  vtkTypeBool CoordinateResults;
-  bool ResultNormals;
-  bool ResultTCoords;
-  char** CoordinateScalarVariableNames;
-  char** CoordinateVectorVariableNames;
-  int* SelectedCoordinateScalarComponents;
-  int** SelectedCoordinateVectorComponents;
-  int NumberOfCoordinateScalarArrays;
-  int NumberOfCoordinateVectorArrays;
+  int     CoordinateResults;
+  bool    ResultNormals;
+  bool    ResultTCoords;
+  char ** CoordinateScalarVariableNames;
+  char ** CoordinateVectorVariableNames;
+  int   * SelectedCoordinateScalarComponents;
+  int  ** SelectedCoordinateVectorComponents;
+  int     NumberOfCoordinateScalarArrays;
+  int     NumberOfCoordinateVectorArrays;
 
-  int ResultArrayType;
-
+  int     ResultArrayType;
 private:
-  vtkArrayCalculator(const vtkArrayCalculator&) = delete;
-  void operator=(const vtkArrayCalculator&) = delete;
+  vtkArrayCalculator(const vtkArrayCalculator&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkArrayCalculator&) VTK_DELETE_FUNCTION;
 };
 
 #endif

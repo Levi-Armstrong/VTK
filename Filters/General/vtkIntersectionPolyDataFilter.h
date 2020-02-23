@@ -54,11 +54,8 @@
  * indicating if the cell has any free edges. A watertight surface will have
  * 0 everywhere for this array!
  *
- * @author Adam Updegrove updega2@gmail.com
- *
- * @warning This filter is not designed to perform 2D boolean operations,
- * and in fact relies on the inputs having no co-planar, overlapping cells.
- */
+ * Author: Adam Updegrove updega2@gmail.com
+*/
 
 #ifndef vtkIntersectionPolyDataFilter_h
 #define vtkIntersectionPolyDataFilter_h
@@ -66,12 +63,13 @@
 #include "vtkFiltersGeneralModule.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
-class VTKFILTERSGENERAL_EXPORT vtkIntersectionPolyDataFilter : public vtkPolyDataAlgorithm
+class VTKFILTERSGENERAL_EXPORT vtkIntersectionPolyDataFilter :
+        public vtkPolyDataAlgorithm
 {
 public:
-  static vtkIntersectionPolyDataFilter* New();
+  static vtkIntersectionPolyDataFilter *New();
   vtkTypeMacro(vtkIntersectionPolyDataFilter, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream &os, vtkIndent indent) VTK_OVERRIDE;
 
   //@{
   /**
@@ -86,9 +84,9 @@ public:
    * If on, the second output will be the first input mesh split by the
    * intersection with the second input mesh. Defaults to on.
    */
-  vtkGetMacro(SplitFirstOutput, vtkTypeBool);
-  vtkSetMacro(SplitFirstOutput, vtkTypeBool);
-  vtkBooleanMacro(SplitFirstOutput, vtkTypeBool);
+  vtkGetMacro(SplitFirstOutput, int);
+  vtkSetMacro(SplitFirstOutput, int);
+  vtkBooleanMacro(SplitFirstOutput, int);
   //@}
 
   //@{
@@ -96,9 +94,9 @@ public:
    * If on, the third output will be the second input mesh split by the
    * intersection with the first input mesh. Defaults to on.
    */
-  vtkGetMacro(SplitSecondOutput, vtkTypeBool);
-  vtkSetMacro(SplitSecondOutput, vtkTypeBool);
-  vtkBooleanMacro(SplitSecondOutput, vtkTypeBool);
+  vtkGetMacro(SplitSecondOutput, int);
+  vtkSetMacro(SplitSecondOutput, int);
+  vtkBooleanMacro(SplitSecondOutput, int);
   //@}
 
   //@{
@@ -106,18 +104,18 @@ public:
    * If on, the output split surfaces will contain information about which
    * points are on the intersection of the two inputs. Default: ON
    */
-  vtkGetMacro(ComputeIntersectionPointArray, vtkTypeBool);
-  vtkSetMacro(ComputeIntersectionPointArray, vtkTypeBool);
-  vtkBooleanMacro(ComputeIntersectionPointArray, vtkTypeBool);
+  vtkGetMacro(ComputeIntersectionPointArray, int);
+  vtkSetMacro(ComputeIntersectionPointArray, int);
+  vtkBooleanMacro(ComputeIntersectionPointArray, int);
   //@}
 
   //@{
   /**
    * If on, the normals of the input will be checked. Default: OFF
    */
-  vtkGetMacro(CheckInput, vtkTypeBool);
-  vtkSetMacro(CheckInput, vtkTypeBool);
-  vtkBooleanMacro(CheckInput, vtkTypeBool);
+  vtkGetMacro(CheckInput, int);
+  vtkSetMacro(CheckInput, int);
+  vtkBooleanMacro(CheckInput, int);
   //@}
 
   //@{
@@ -125,9 +123,9 @@ public:
    * If on, the output remeshed surfaces will be checked for bad cells and
    * free edges. Default: ON
    */
-  vtkGetMacro(CheckMesh, vtkTypeBool);
-  vtkSetMacro(CheckMesh, vtkTypeBool);
-  vtkBooleanMacro(CheckMesh, vtkTypeBool);
+  vtkGetMacro(CheckMesh, int);
+  vtkSetMacro(CheckMesh, int);
+  vtkBooleanMacro(CheckMesh, int);
   //@}
 
   //@{
@@ -147,16 +145,6 @@ public:
   vtkSetMacro(Tolerance, double);
   //@}
 
-  //@{
-  /**
-   * When discretizing polygons, the minimum ratio of the smallest acceptable
-   * triangle area w.r.t. the area of the polygon
-   *
-   */
-  vtkGetMacro(RelativeSubtriangleArea, double);
-  vtkSetMacro(RelativeSubtriangleArea, double);
-  //@}
-
   /**
    * Given two triangles defined by points (p1, q1, r1) and (p2, q2,
    * r2), returns whether the two triangles intersect. If they do,
@@ -167,45 +155,50 @@ public:
    * intersection points resides, respectively. A geometric tolerance
    * can be specified in the last argument.
    */
-  static int TriangleTriangleIntersection(double p1[3], double q1[3], double r1[3], double p2[3],
-    double q2[3], double r2[3], int& coplanar, double pt1[3], double pt2[3], double surfaceid[2],
-    double tolerance);
+  static int TriangleTriangleIntersection(double p1[3], double q1[3],
+                                          double r1[3], double p2[3],
+                                          double q2[3], double r2[3],
+                                          int &coplanar, double pt1[3],
+                                          double pt2[3], double surfaceid[2],
+                                          double tolerance);
 
   /**
    * Function to clean and check the output surfaces for bad triangles and
    * free edges
    */
-  static void CleanAndCheckSurface(vtkPolyData* pd, double stats[2], double tolerance);
+  static void CleanAndCheckSurface(vtkPolyData *pd, double stats[2],
+                  double tolerance);
 
   /**
    * Function to clean and check the inputs
    */
-  static void CleanAndCheckInput(vtkPolyData* pd, double tolerance);
+  static void CleanAndCheckInput(vtkPolyData *pd, double tolerance);
+
 
 protected:
-  vtkIntersectionPolyDataFilter();           // Constructor
-  ~vtkIntersectionPolyDataFilter() override; // Destructor
+  vtkIntersectionPolyDataFilter();  //Constructor
+  ~vtkIntersectionPolyDataFilter() VTK_OVERRIDE;  //Destructor
 
   int RequestData(vtkInformation*, vtkInformationVector**,
-    vtkInformationVector*) override;                           // Update
-  int FillInputPortInformation(int, vtkInformation*) override; // Input,Output
+                  vtkInformationVector*) VTK_OVERRIDE;  //Update
+  int FillInputPortInformation(int, vtkInformation*) VTK_OVERRIDE; //Input,Output
 
 private:
-  vtkIntersectionPolyDataFilter(const vtkIntersectionPolyDataFilter&) = delete;
-  void operator=(const vtkIntersectionPolyDataFilter&) = delete;
+  vtkIntersectionPolyDataFilter(const vtkIntersectionPolyDataFilter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkIntersectionPolyDataFilter&) VTK_DELETE_FUNCTION;
 
   int NumberOfIntersectionPoints;
   int NumberOfIntersectionLines;
-  vtkTypeBool SplitFirstOutput;
-  vtkTypeBool SplitSecondOutput;
-  vtkTypeBool ComputeIntersectionPointArray;
-  vtkTypeBool CheckMesh;
-  vtkTypeBool CheckInput;
+  int SplitFirstOutput;
+  int SplitSecondOutput;
+  int ComputeIntersectionPointArray;
+  int CheckMesh;
+  int CheckInput;
   int Status;
   double Tolerance;
-  double RelativeSubtriangleArea;
 
-  class Impl; // Implementation class
+  class Impl;  //Implementation class
 };
+
 
 #endif // vtkIntersectionPolyDataFilter_h

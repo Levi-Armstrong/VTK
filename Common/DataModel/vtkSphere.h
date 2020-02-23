@@ -20,7 +20,7 @@
  * vtkSphere is a concrete implementation of vtkImplicitFunction. Additional
  * methods are available for sphere-related computations, such as computing
  * bounding spheres for a set of points, or set of spheres.
- */
+*/
 
 #ifndef vtkSphere_h
 #define vtkSphere_h
@@ -31,51 +31,43 @@
 class VTKCOMMONDATAMODEL_EXPORT vtkSphere : public vtkImplicitFunction
 {
 public:
-  vtkTypeMacro(vtkSphere, vtkImplicitFunction);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkSphere,vtkImplicitFunction);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Construct sphere with center at (0,0,0) and radius=0.5.
    */
-  static vtkSphere* New();
+  static vtkSphere *New();
 
   //@{
   /**
    * Evaluate sphere equation ((x-x0)^2 + (y-y0)^2 + (z-z0)^2) - R^2.
    */
-  using vtkImplicitFunction::EvaluateFunction;
-  double EvaluateFunction(double x[3]) override;
+  double EvaluateFunction(double x[3]) VTK_OVERRIDE;
+  double EvaluateFunction(double x, double y, double z)
+    {return this->vtkImplicitFunction::EvaluateFunction(x, y, z); } ;
   //@}
 
   /**
    * Evaluate sphere gradient.
    */
-  void EvaluateGradient(double x[3], double n[3]) override;
+  void EvaluateGradient(double x[3], double n[3]) VTK_OVERRIDE;
 
   //@{
   /**
    * Set / get the radius of the sphere. The default is 0.5.
    */
-  vtkSetMacro(Radius, double);
-  vtkGetMacro(Radius, double);
+  vtkSetMacro(Radius,double);
+  vtkGetMacro(Radius,double);
   //@}
 
   //@{
   /**
    * Set / get the center of the sphere. The default is (0,0,0).
    */
-  vtkSetVector3Macro(Center, double);
-  vtkGetVectorMacro(Center, double, 3);
+  vtkSetVector3Macro(Center,double);
+  vtkGetVectorMacro(Center,double,3);
   //@}
-
-  /**
-   * Quick evaluation of the sphere equation ((x-x0)^2 + (y-y0)^2 + (z-z0)^2) - R^2.
-   */
-  static double Evaluate(double center[3], double R, double x[3])
-  {
-    return (x[0] - center[0]) * (x[0] - center[0]) + (x[1] - center[1]) * (x[1] - center[1]) +
-      (x[2] - center[2]) * (x[2] - center[2]) - R * R;
-  }
 
   //@{
   /**
@@ -86,10 +78,10 @@ public:
    * expected to be the furthest apart. The output sphere consists of a
    * center (x-y-z) and a radius.
    */
-  static void ComputeBoundingSphere(
-    float* pts, vtkIdType numPts, float sphere[4], vtkIdType hints[2]);
-  static void ComputeBoundingSphere(
-    double* pts, vtkIdType numPts, double sphere[4], vtkIdType hints[2]);
+  static void ComputeBoundingSphere(float *pts, vtkIdType numPts, float sphere[4],
+                                    vtkIdType hints[2]);
+  static void ComputeBoundingSphere(double *pts, vtkIdType numPts, double sphere[4],
+                                    vtkIdType hints[2]);
   //@}
 
   //@{
@@ -101,22 +93,24 @@ public:
    * are the two spheres expected to be the furthest apart. The output sphere
    * consists of a center (x-y-z) and a radius.
    */
-  static void ComputeBoundingSphere(
-    float** spheres, vtkIdType numSpheres, float sphere[4], vtkIdType hints[2]);
-  static void ComputeBoundingSphere(
-    double** spheres, vtkIdType numSpheres, double sphere[4], vtkIdType hints[2]);
+  static void ComputeBoundingSphere(float **spheres, vtkIdType numSpheres, float sphere[4],
+                                    vtkIdType hints[2]);
+  static void ComputeBoundingSphere(double **spheres, vtkIdType numSpheres, double sphere[4],
+                                    vtkIdType hints[2]);
   //@}
 
 protected:
   vtkSphere();
-  ~vtkSphere() override {}
+  ~vtkSphere() VTK_OVERRIDE {}
 
   double Radius;
   double Center[3];
 
 private:
-  vtkSphere(const vtkSphere&) = delete;
-  void operator=(const vtkSphere&) = delete;
+  vtkSphere(const vtkSphere&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkSphere&) VTK_DELETE_FUNCTION;
 };
 
 #endif
+
+

@@ -17,22 +17,18 @@
  * @brief   OpenGL rendering utility functions
  *
  * vtkOpenGLRenderUtilities provides functions to help render primitives.
- *
- * See also the vtkOpenGLQuadHelper class which may be easier to use.
- *
- */
+*/
 
 #ifndef vtkOpenGLRenderUtilities_h
 #define vtkOpenGLRenderUtilities_h
 
-#include "vtkObject.h"
 #include "vtkRenderingOpenGL2Module.h" // For export macro
+#include "vtkObject.h"
 
 #include "vtk_glew.h" // Needed for GLuint.
-#include <string>     // for std::string
+#include <string> // for std::string
 
 class vtkOpenGLBufferObject;
-class vtkOpenGLRenderWindow;
 class vtkOpenGLVertexArrayObject;
 class vtkShaderProgram;
 
@@ -40,7 +36,7 @@ class VTKRENDERINGOPENGL2_EXPORT vtkOpenGLRenderUtilities : public vtkObject
 {
 public:
   vtkTypeMacro(vtkOpenGLRenderUtilities, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
@@ -50,16 +46,18 @@ public:
    * texture coordinates.
    */
   static void RenderQuad(
-    float* verts, float* tcoords, vtkShaderProgram* program, vtkOpenGLVertexArrayObject* vao);
-  static void RenderTriangles(float* verts, unsigned int numVerts, GLuint* indices,
-    unsigned int numIndices, float* tcoords, vtkShaderProgram* program,
-    vtkOpenGLVertexArrayObject* vao);
+    float *verts, float *tcoords,
+    vtkShaderProgram *program, vtkOpenGLVertexArrayObject *vao);
+  static void RenderTriangles(
+    float *verts, unsigned int numVerts,
+    GLuint *indices, unsigned int numIndices,
+    float *tcoords,
+    vtkShaderProgram *program, vtkOpenGLVertexArrayObject *vao);
   //@}
 
   //@{
   /**
    * Draw a full-screen quad:
-   *
    * * VertexShader and GeometryShader should be used as-is when building the
    * ShaderProgram.
    * * FragmentShaderTemplate supports the replacements //VTK::FSQ::Decl and
@@ -88,8 +86,9 @@ public:
    * GLUtil::GetFullScreenQuadGeometryShader().c_str());
 
    * // Initialize new VAO/vertex buffer. This is only done once:
+   * vtkNew<vtkOpenGLBufferObject> verts;
    * vtkNew<vtkOpenGLVertexArrayObject> vao;
-   * GLUtil::PrepFullScreenVAO(renWin, vao.Get(), prog);
+   * GLUtil::PrepFullScreenVAO(verts.Get(), vao.Get(), prog);
 
    * // Setup shader program to sample vtkTextureObject aTexture:
    * aTexture->Activate();
@@ -105,32 +104,19 @@ public:
   static std::string GetFullScreenQuadVertexShader();
   static std::string GetFullScreenQuadFragmentShaderTemplate();
   static std::string GetFullScreenQuadGeometryShader();
-  static bool PrepFullScreenVAO(
-    vtkOpenGLRenderWindow* renWin, vtkOpenGLVertexArrayObject* vao, vtkShaderProgram* prog);
+  static bool PrepFullScreenVAO(vtkOpenGLBufferObject *verts,
+                                vtkOpenGLVertexArrayObject *vao,
+                                vtkShaderProgram *prog);
   static void DrawFullScreenQuad();
   //@}
 
-  // older signsature, we suggest you use the newer signature above
-  static bool PrepFullScreenVAO(
-    vtkOpenGLBufferObject* verts, vtkOpenGLVertexArrayObject* vao, vtkShaderProgram* prog);
-
-  /**
-   * Pass a debugging mark to the render engine to assist development via tools
-   * like apitrace. This calls glDebugMessageInsert to insert the event string
-   * into the OpenGL command stream.
-   *
-   * Note that this method only works when glDebugMessageInsert is bound, which
-   * it may not be on certain platforms.
-   */
-  static void MarkDebugEvent(const std::string& event);
-
 protected:
   vtkOpenGLRenderUtilities();
-  ~vtkOpenGLRenderUtilities() override;
+  ~vtkOpenGLRenderUtilities();
 
 private:
-  vtkOpenGLRenderUtilities(const vtkOpenGLRenderUtilities&) = delete;
-  void operator=(const vtkOpenGLRenderUtilities&) = delete;
+  vtkOpenGLRenderUtilities(const vtkOpenGLRenderUtilities&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkOpenGLRenderUtilities&) VTK_DELETE_FUNCTION;
 };
 
 #endif

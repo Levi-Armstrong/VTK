@@ -18,27 +18,29 @@
 #include "vtkBYUReader.h"
 #include "vtkCamera.h"
 #include "vtkCubeAxesActor.h"
-#include "vtkLODActor.h"
 #include "vtkLight.h"
+#include "vtkLODActor.h"
 #include "vtkNew.h"
 #include "vtkOutlineFilter.h"
 #include "vtkPolyDataMapper.h"
 #include "vtkPolyDataNormals.h"
 #include "vtkProperty.h"
 #include "vtkRegressionTestImage.h"
+#include "vtkRenderer.h"
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
-#include "vtkRenderer.h"
 #include "vtkSmartPointer.h"
 #include "vtkTestUtilities.h"
 
+
+
 //----------------------------------------------------------------------------
-int TestCubeAxesWithYInnerGrids(int argc, char* argv[])
+int TestCubeAxesWithYInnerGrids( int argc, char * argv [] )
 {
   vtkNew<vtkBYUReader> fohe;
   char* fname = vtkTestUtilities::ExpandDataFileName(argc, argv, "Data/teapot.g");
   fohe->SetGeometryFileName(fname);
-  delete[] fname;
+  delete [] fname;
 
   vtkNew<vtkPolyDataNormals> normals;
   normals->SetInputConnection(fohe->GetOutputPort());
@@ -47,7 +49,7 @@ int TestCubeAxesWithYInnerGrids(int argc, char* argv[])
   foheMapper->SetInputConnection(normals->GetOutputPort());
 
   vtkNew<vtkLODActor> foheActor;
-  foheActor->SetMapper(foheMapper);
+  foheActor->SetMapper(foheMapper.GetPointer());
   foheActor->GetProperty()->SetDiffuseColor(0.7, 0.3, 0.0);
 
   vtkNew<vtkOutlineFilter> outline;
@@ -57,8 +59,8 @@ int TestCubeAxesWithYInnerGrids(int argc, char* argv[])
   mapOutline->SetInputConnection(outline->GetOutputPort());
 
   vtkNew<vtkActor> outlineActor;
-  outlineActor->SetMapper(mapOutline);
-  outlineActor->GetProperty()->SetColor(0.0, 0.0, 0.0);
+  outlineActor->SetMapper(mapOutline.GetPointer());
+  outlineActor->GetProperty()->SetColor(0.0 ,0.0 ,0.0);
 
   vtkNew<vtkCamera> camera;
   camera->SetClippingRange(1.0, 100.0);
@@ -70,20 +72,20 @@ int TestCubeAxesWithYInnerGrids(int argc, char* argv[])
   light->SetPosition(8.3761, 4.94858, 4.12505);
 
   vtkNew<vtkRenderer> ren2;
-  ren2->SetActiveCamera(camera);
-  ren2->AddLight(light);
+  ren2->SetActiveCamera(camera.GetPointer());
+  ren2->AddLight(light.GetPointer());
 
   vtkNew<vtkRenderWindow> renWin;
   renWin->SetMultiSamples(0);
-  renWin->AddRenderer(ren2);
+  renWin->AddRenderer(ren2.GetPointer());
   renWin->SetWindowName("VTK - Cube Axes custom range");
   renWin->SetSize(600, 600);
 
   vtkNew<vtkRenderWindowInteractor> iren;
-  iren->SetRenderWindow(renWin);
+  iren->SetRenderWindow(renWin.GetPointer());
 
-  ren2->AddViewProp(foheActor);
-  ren2->AddViewProp(outlineActor);
+  ren2->AddViewProp(foheActor.GetPointer());
+  ren2->AddViewProp(outlineActor.GetPointer());
   ren2->SetBackground(0.1, 0.2, 0.4);
 
   normals->Update();
@@ -101,11 +103,11 @@ int TestCubeAxesWithYInnerGrids(int argc, char* argv[])
   axes2->SetCornerOffset(0.0);
   axes2->SetDrawYInnerGridlines(1);
 
-  ren2->AddViewProp(axes2);
+  ren2->AddViewProp(axes2.GetPointer());
   renWin->Render();
 
-  int retVal = vtkRegressionTestImage(renWin);
-  if (retVal == vtkRegressionTester::DO_INTERACTOR)
+  int retVal = vtkRegressionTestImage( renWin.GetPointer() );
+  if ( retVal == vtkRegressionTester::DO_INTERACTOR)
   {
     iren->Start();
   }

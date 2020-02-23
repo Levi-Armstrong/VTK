@@ -1,10 +1,16 @@
-set(classes
-  vtkOpenSlideReader)
+# OpenSlide required
+LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
+find_package(OpenSlide REQUIRED)
 
-vtk_module_add_module(VTK::DomainsMicroscopy
-  CLASSES ${classes})
+mark_as_advanced(OPENSLIDE_INCLUDE_DIR OPENSLIDE_LIBRARY)
 
-vtk_module_find_package(PACKAGE OpenSlide)
-vtk_module_link(VTK::DomainsMicroscopy
-  PUBLIC
-    OpenSlide::OpenSlide)
+set(OPENSLIDE_SRCS vtkOpenSlideReader.cxx)
+
+include_directories(${OPENSLIDE_INCLUDE_DIRS})
+
+set(${vtk-module}_SYSTEM_INCLUDE_DIRS
+    ${OPENSLIDE_INCLUDE_DIRS})
+
+vtk_module_library(vtkDomainsMicroscopy ${OPENSLIDE_SRCS})
+
+vtk_module_link_libraries(vtkDomainsMicroscopy LINK_PRIVATE ${OPENSLIDE_LIBRARY})

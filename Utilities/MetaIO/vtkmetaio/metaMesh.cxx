@@ -16,8 +16,8 @@
 
 #include "metaMesh.h"
 
-#include <cctype>
-#include <cstdio>
+#include <stdio.h>
+#include <ctype.h>
 #include <string>
 
 #if (METAIO_USE_NAMESPACE)
@@ -85,7 +85,7 @@ MetaMesh()
 
   for(unsigned int i=0;i<MET_NUM_CELL_TYPES;i++)
     {
-    m_CellListArray[i] = nullptr;
+    m_CellListArray[i] = NULL;
     }
   Clear();
 }
@@ -100,7 +100,7 @@ MetaMesh(const char *_headerName)
 
   for(unsigned int i=0;i<MET_NUM_CELL_TYPES;i++)
     {
-    m_CellListArray[i] = nullptr;
+    m_CellListArray[i] = NULL;
     }
   Clear();
   Read(_headerName);
@@ -115,7 +115,7 @@ MetaMesh(const MetaMesh *_mesh)
   m_NPoints = 0;
   for(unsigned int i=0;i<MET_NUM_CELL_TYPES;i++)
     {
-    m_CellListArray[i] = nullptr;
+    m_CellListArray[i] = NULL;
     }
   Clear();
   CopyInfo(_mesh);
@@ -132,7 +132,7 @@ MetaMesh(unsigned int dim)
   m_NPoints = 0;
   for(unsigned int i=0;i<MET_NUM_CELL_TYPES;i++)
     {
-    m_CellListArray[i] = nullptr;
+    m_CellListArray[i] = NULL;
     }
   Clear();
 }
@@ -145,7 +145,7 @@ MetaMesh::
   for(unsigned int i=0;i<MET_NUM_CELL_TYPES;i++)
     {
     delete m_CellListArray[i];
-    m_CellListArray[i] = nullptr;
+    m_CellListArray[i] = NULL;
     }
 
   M_Destroy();
@@ -174,26 +174,26 @@ CopyInfo(const MetaObject * _object)
 }
 
 int MetaMesh::
-NPoints() const
+NPoints(void) const
 {
   return m_NPoints;
 }
 
 int MetaMesh::
-NCells() const
+NCells(void) const
 {
   return m_NCells;
 }
 
 int MetaMesh::
-NCellLinks() const
+NCellLinks(void) const
 {
   return m_NCellLinks;
 }
 
 /** Clear tube information */
 void MetaMesh::
-Clear()
+Clear(void)
 {
   if(META_DEBUG) METAIO_STREAM::cout << "MetaMesh: Clear" << METAIO_STREAM::endl;
   MetaObject::Clear();
@@ -204,7 +204,7 @@ Clear()
   while(it_pnt != m_PointList.end())
   {
     MeshPoint* pnt = *it_pnt;
-    ++it_pnt;
+    it_pnt++;
     delete pnt;
   }
 
@@ -213,7 +213,7 @@ Clear()
   while(it_celllinks != m_CellLinks.end())
   {
     MeshCellLink* link = *it_celllinks;
-    ++it_celllinks;
+    it_celllinks++;
     delete link;
   }
 
@@ -222,7 +222,7 @@ Clear()
   while(it_pointdata != m_PointData.end())
   {
     MeshDataBase* data = *it_pointdata;
-    ++it_pointdata;
+    it_pointdata++;
     delete data;
   }
 
@@ -231,7 +231,7 @@ Clear()
   while(it_celldata != m_CellData.end())
   {
     MeshDataBase* data = *it_celldata;
-    ++it_celldata;
+    it_celldata++;
     delete data;
   }
 
@@ -245,7 +245,7 @@ Clear()
       while(it_cell != m_CellListArray[i]->end())
       {
         MeshCell* cell = *it_cell;
-        ++it_cell;
+        it_cell++;
         delete cell;
       }
       delete m_CellListArray[i];
@@ -270,14 +270,14 @@ Clear()
 
 /** Destroy tube information */
 void MetaMesh::
-M_Destroy()
+M_Destroy(void)
 {
   MetaObject::M_Destroy();
 }
 
 /** Set Read fields */
 void MetaMesh::
-M_SetupReadFields()
+M_SetupReadFields(void)
 {
   if(META_DEBUG) METAIO_STREAM::cout << "MetaMesh: M_SetupReadFields" << METAIO_STREAM::endl;
 
@@ -318,7 +318,7 @@ M_SetupReadFields()
 }
 
 void MetaMesh::
-M_SetupWriteFields()
+M_SetupWriteFields(void)
 {
   strcpy(m_ObjectTypeName,"Mesh");
   MetaObject::M_SetupWriteFields();
@@ -332,7 +332,7 @@ M_SetupWriteFields()
   m_Fields.push_back(mF);
 
   // Find the pointDataType
-  if(!m_PointData.empty())
+  if(m_PointData.size()>0)
     {
     m_PointDataType = (*m_PointData.begin())->GetMetaType();
     }
@@ -385,7 +385,7 @@ M_SetupWriteFields()
 
 
 bool MetaMesh::
-M_Read()
+M_Read(void)
 {
 
   if(META_DEBUG) METAIO_STREAM::cout << "MetaMesh: M_Read: Loading Header" << METAIO_STREAM::endl;
@@ -1176,7 +1176,7 @@ M_Read()
 }
 
 bool MetaMesh::
-M_Write()
+M_Write(void)
 {
   if(!MetaObject::M_Write())
     {
@@ -1207,7 +1207,7 @@ M_Write()
         MET_SwapByteIfSystemMSB(&pntX,MET_FLOAT);
         MET_DoubleToValue((double)pntX,m_PointType,data,i++);
         }
-      ++it;
+      it++;
       }
     m_WriteStream->write((char *)data,(m_NDims+1)*m_NPoints*elementSize);
     m_WriteStream->write("\n",1);
@@ -1226,7 +1226,7 @@ M_Write()
         *m_WriteStream << (*it)->m_X[d] << " ";
         }
       *m_WriteStream << METAIO_STREAM::endl;
-      ++it;
+      it++;
       }
     }
 
@@ -1283,7 +1283,7 @@ M_Write()
             MET_SwapByteIfSystemMSB(&pntId,MET_INT);
             MET_DoubleToValue((double)pntId,MET_INT,data,j++);
             }
-          ++it;
+          it++;
         }
         m_WriteStream->write((char *)data,totalCellsSize*sizeof(int));
         m_WriteStream->write("\n",1);
@@ -1304,14 +1304,14 @@ M_Write()
             }
 
           *m_WriteStream << METAIO_STREAM::endl;
-          ++it;
+          it++;
           }
         }
     }
   }
 
   // Now write the cell links
-  if(!m_CellLinks.empty())
+  if(m_CellLinks.size()>0)
     {
     MetaObject::ClearFields();
     m_NCellLinks = static_cast<int>(m_CellLinks.size());
@@ -1328,7 +1328,7 @@ M_Write()
       while(it != itEnd)
         {
         cellLinksSize += static_cast<int>(2+(*it)->m_Links.size());
-        ++it;
+        it++;
         }
       mF = new MET_FieldRecordType;
       MET_InitWriteField(mF, "CellLinksSize", MET_INT,cellLinksSize);
@@ -1371,9 +1371,9 @@ M_Write()
           int links = (*it2);
           MET_SwapByteIfSystemMSB(&links,MET_INT);
           MET_DoubleToValue((double)links,MET_INT,data,j++);
-          ++it2;
+          it2++;
           }
-        ++it;
+        it++;
         }
         m_WriteStream->write((char *)data,cellLinksSize*sizeof(int));
         m_WriteStream->write("\n",1);
@@ -1393,17 +1393,17 @@ M_Write()
         while(it2 != it2End)
           {
           *m_WriteStream << (*it2) << " ";
-          ++it2;
+          it2++;
           }
         *m_WriteStream << METAIO_STREAM::endl;
-        ++it;
+        it++;
         }
       }
     }
 
   // Now write the point data
   // Point Data type is the same for the whole mesh
-  if(!m_PointData.empty())
+  if(m_PointData.size()>0)
     {
     MetaObject::ClearFields();
     m_NPointData = static_cast<int>(m_PointData.size());
@@ -1418,7 +1418,7 @@ M_Write()
     while(it != itEnd)
       {
       pointDataSize += (*it)->GetSize();
-      ++it;
+      it++;
       }
 
     mF = new MET_FieldRecordType;
@@ -1443,7 +1443,7 @@ M_Write()
     while(it != itEnd)
       {
       (*it)->Write(m_WriteStream);
-      ++it;
+      it++;
       }
     m_WriteStream->write("\n",1);
 
@@ -1451,7 +1451,7 @@ M_Write()
 
   // Now write the cell data
   // Cell Data type is the same for the whole mesh
-  if(!m_CellData.empty())
+  if(m_CellData.size()>0)
     {
     MetaObject::ClearFields();
     m_NCellData = static_cast<int>(m_CellData.size());
@@ -1466,7 +1466,7 @@ M_Write()
     while(it != itEnd)
       {
       cellDataSize += (*it)->GetSize();
-      ++it;
+      it++;
       }
 
     mF = new MET_FieldRecordType;
@@ -1492,7 +1492,7 @@ M_Write()
     while(it != itEnd)
       {
       (*it)->Write(m_WriteStream);
-      ++it;
+      it++;
       }
     m_WriteStream->write("\n",1);
     }

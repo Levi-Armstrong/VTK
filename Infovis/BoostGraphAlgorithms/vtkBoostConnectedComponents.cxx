@@ -38,20 +38,28 @@ using namespace boost;
 
 vtkStandardNewMacro(vtkBoostConnectedComponents);
 
-vtkBoostConnectedComponents::vtkBoostConnectedComponents() {}
+vtkBoostConnectedComponents::vtkBoostConnectedComponents()
+{
+}
 
-vtkBoostConnectedComponents::~vtkBoostConnectedComponents() {}
+vtkBoostConnectedComponents::~vtkBoostConnectedComponents()
+{
+}
 
-int vtkBoostConnectedComponents::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+int vtkBoostConnectedComponents::RequestData(
+  vtkInformation *vtkNotUsed(request),
+  vtkInformationVector **inputVector,
+  vtkInformationVector *outputVector)
 {
   // get the info objects
-  vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
-  vtkInformation* outInfo = outputVector->GetInformationObject(0);
+  vtkInformation *inInfo = inputVector[0]->GetInformationObject(0);
+  vtkInformation *outInfo = outputVector->GetInformationObject(0);
 
   // get the input and output
-  vtkGraph* input = vtkGraph::SafeDownCast(inInfo->Get(vtkDataObject::DATA_OBJECT()));
-  vtkGraph* output = vtkGraph::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
+  vtkGraph *input = vtkGraph::SafeDownCast(
+    inInfo->Get(vtkDataObject::DATA_OBJECT()));
+  vtkGraph *output = vtkGraph::SafeDownCast(
+    outInfo->Get(vtkDataObject::DATA_OBJECT()));
 
   // Send the data to output.
   output->ShallowCopy(input);
@@ -59,7 +67,7 @@ int vtkBoostConnectedComponents::RequestData(vtkInformation* vtkNotUsed(request)
   // Compute connected components.
   if (vtkDirectedGraph::SafeDownCast(input))
   {
-    vtkDirectedGraph* g = vtkDirectedGraph::SafeDownCast(input);
+    vtkDirectedGraph *g = vtkDirectedGraph::SafeDownCast(input);
     vtkIntArray* comps = vtkIntArray::New();
     comps->SetName("component");
     vector_property_map<default_color_type> color;
@@ -71,7 +79,7 @@ int vtkBoostConnectedComponents::RequestData(vtkInformation* vtkNotUsed(request)
   }
   else
   {
-    vtkUndirectedGraph* g = vtkUndirectedGraph::SafeDownCast(input);
+    vtkUndirectedGraph *g = vtkUndirectedGraph::SafeDownCast(input);
     vtkIntArray* comps = vtkIntArray::New();
     comps->SetName("component");
     vector_property_map<default_color_type> color;
@@ -87,3 +95,4 @@ void vtkBoostConnectedComponents::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 }
+

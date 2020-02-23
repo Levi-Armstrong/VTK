@@ -14,9 +14,9 @@
 =========================================================================*/
 #include "vtkImageRGBToHSI.h"
 
+#include "vtkMath.h"
 #include "vtkImageData.h"
 #include "vtkImageProgressIterator.h"
-#include "vtkMath.h"
 #include "vtkObjectFactory.h"
 
 #include <cmath>
@@ -34,8 +34,10 @@ vtkImageRGBToHSI::vtkImageRGBToHSI()
 //----------------------------------------------------------------------------
 // This templated function executes the filter for any type of data.
 template <class T>
-void vtkImageRGBToHSIExecute(
-  vtkImageRGBToHSI* self, vtkImageData* inData, vtkImageData* outData, int outExt[6], int id, T*)
+void vtkImageRGBToHSIExecute(vtkImageRGBToHSI *self,
+                             vtkImageData *inData,
+                             vtkImageData *outData,
+                             int outExt[6], int id, T *)
 {
   vtkImageIterator<T> inIt(inData, outExt);
   vtkImageProgressIterator<T> outIt(outData, outExt, self, id);
@@ -45,7 +47,7 @@ void vtkImageRGBToHSIExecute(
   double temp;
 
   // find the region to loop over
-  maxC = inData->GetNumberOfScalarComponents() - 1;
+  maxC = inData->GetNumberOfScalarComponents()-1;
 
   // Loop through output pixels
   while (!outIt.IsAtEnd())
@@ -56,12 +58,9 @@ void vtkImageRGBToHSIExecute(
     while (outSI != outSIEnd)
     {
       // Pixel operation
-      R = static_cast<double>(*inSI);
-      inSI++;
-      G = static_cast<double>(*inSI);
-      inSI++;
-      B = static_cast<double>(*inSI);
-      inSI++;
+      R = static_cast<double>(*inSI); inSI++;
+      G = static_cast<double>(*inSI); inSI++;
+      B = static_cast<double>(*inSI); inSI++;
       // Saturation
       temp = R;
       if (G < temp)
@@ -72,8 +71,8 @@ void vtkImageRGBToHSIExecute(
       {
         temp = B;
       }
-      double sumRGB = R + G + B;
-      if (sumRGB == 0.0)
+      double sumRGB = R+G+B;
+      if(sumRGB == 0.0)
       {
         S = 0.0;
       }
@@ -87,10 +86,10 @@ void vtkImageRGBToHSIExecute(
       I = temp / 3.0;
 
       // Hue
-      temp = sqrt((R - G) * (R - G) + (R - B) * (G - B));
-      if (temp != 0.0)
+      temp = sqrt((R-G)*(R-G) + (R-B)*(G-B));
+      if(temp != 0.0)
       {
-        temp = acos((0.5 * ((R - G) + (R - B))) / temp);
+        temp = acos((0.5 * ((R-G) + (R-B))) / temp);
       }
       if (G >= B)
       {
@@ -102,12 +101,9 @@ void vtkImageRGBToHSIExecute(
       }
 
       // assign output.
-      *outSI = static_cast<T>(H);
-      outSI++;
-      *outSI = static_cast<T>(S);
-      outSI++;
-      *outSI = static_cast<T>(I);
-      outSI++;
+      *outSI = static_cast<T>(H); outSI++;
+      *outSI = static_cast<T>(S); outSI++;
+      *outSI = static_cast<T>(I); outSI++;
 
       for (idxC = 3; idxC <= maxC; idxC++)
       {
@@ -120,16 +116,18 @@ void vtkImageRGBToHSIExecute(
 }
 
 //----------------------------------------------------------------------------
-void vtkImageRGBToHSI::ThreadedExecute(
-  vtkImageData* inData, vtkImageData* outData, int outExt[6], int id)
+void vtkImageRGBToHSI::ThreadedExecute (vtkImageData *inData,
+                                         vtkImageData *outData,
+                                         int outExt[6], int id)
 {
-  vtkDebugMacro(<< "Execute: inData = " << inData << ", outData = " << outData);
+  vtkDebugMacro(<< "Execute: inData = " << inData
+  << ", outData = " << outData);
 
   // this filter expects that input is the same type as output.
   if (inData->GetScalarType() != outData->GetScalarType())
   {
     vtkErrorMacro(<< "Execute: input ScalarType, " << inData->GetScalarType()
-                  << ", must match out ScalarType " << outData->GetScalarType());
+    << ", must match out ScalarType " << outData->GetScalarType());
     return;
   }
 
@@ -148,7 +146,9 @@ void vtkImageRGBToHSI::ThreadedExecute(
   switch (inData->GetScalarType())
   {
     vtkTemplateMacro(
-      vtkImageRGBToHSIExecute(this, inData, outData, outExt, id, static_cast<VTK_TT*>(nullptr)));
+      vtkImageRGBToHSIExecute( this, inData,
+                               outData, outExt, id,
+                               static_cast<VTK_TT *>(0)));
     default:
       vtkErrorMacro(<< "Execute: Unknown ScalarType");
       return;
@@ -157,7 +157,8 @@ void vtkImageRGBToHSI::ThreadedExecute(
 
 void vtkImageRGBToHSI::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 
   os << indent << "Maximum: " << this->Maximum << "\n";
 }
+

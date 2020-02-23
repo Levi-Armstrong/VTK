@@ -21,7 +21,7 @@
  * <a href="http://en.wikipedia.org/wiki/Bour%27s_minimal_surface">Wikipedia</a>.
  * @par Thanks:
  * Tim Meehan
- */
+*/
 
 #ifndef vtkParametricBour_h
 #define vtkParametricBour_h
@@ -32,8 +32,9 @@
 class VTKCOMMONCOMPUTATIONALGEOMETRY_EXPORT vtkParametricBour : public vtkParametricFunction
 {
 public:
-  vtkTypeMacro(vtkParametricBour, vtkParametricFunction);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+
+  vtkTypeMacro(vtkParametricBour,vtkParametricFunction);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   /**
    * Construct Bour's minimal surface with the following parameters:
@@ -41,15 +42,15 @@ public:
    * (MinimumV, MaximumV) = (0., 4.*pi),
    * JoinU = 0, JoinV = 0,
    * TwistU = 0, TwistV = 0;
-   * ClockwiseOrdering = 0,
+   * ClockwiseOrdering = 1,
    * DerivativesAvailable = 1,
    */
-  static vtkParametricBour* New();
+  static vtkParametricBour *New();
 
   /**
    * Return the parametric dimension of the class.
    */
-  int GetDimension() override { return 2; }
+  int GetDimension() VTK_OVERRIDE {return 2;}
 
   /**
    * Bour's minimal surface.
@@ -59,21 +60,21 @@ public:
    * \f$Pt = (x, y, z), D_u\vec{f} = (dx/du, dy/du, dz/du), D_v\vec{f} = (dx/dv, dy/dv, dz/dv)\f$ .
    * Then the normal is \f$N = D_u\vec{f} \times D_v\vec{f}\f$ .
    */
-  void Evaluate(double uvw[3], double Pt[3], double Duvw[9]) override;
+  void Evaluate(double uvw[3], double Pt[3], double Duvw[9]) VTK_OVERRIDE;
 
   /**
    * Calculate a user defined scalar using one or all of uvw, Pt, Duvw.
    * This method simply returns 0.
    */
-  double EvaluateScalar(double uvw[3], double Pt[3], double Duvw[9]) override;
+  double EvaluateScalar(double uvw[3], double Pt[3], double Duvw[9]) VTK_OVERRIDE;
 
 protected:
   vtkParametricBour();
-  ~vtkParametricBour() override;
+  ~vtkParametricBour() VTK_OVERRIDE;
 
 private:
-  vtkParametricBour(const vtkParametricBour&) = delete;
-  void operator=(const vtkParametricBour&) = delete;
+  vtkParametricBour(const vtkParametricBour&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkParametricBour&) VTK_DELETE_FUNCTION;
 };
 
 #endif

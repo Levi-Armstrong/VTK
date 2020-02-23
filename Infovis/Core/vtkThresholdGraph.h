@@ -19,21 +19,22 @@
  *
  * Requires input array, lower and upper threshold. This filter than
  * extracts the subgraph based on these three parameters.
- */
+*/
 
 #ifndef vtkThresholdGraph_h
 #define vtkThresholdGraph_h
 
-#include "vtkGraphAlgorithm.h"
 #include "vtkInfovisCoreModule.h" // For export macro
+#include "vtkGraphAlgorithm.h"
 
 class VTKINFOVISCORE_EXPORT vtkThresholdGraph : public vtkGraphAlgorithm
 {
 public:
+
   static vtkThresholdGraph* New();
   vtkTypeMacro(vtkThresholdGraph, vtkGraphAlgorithm);
 
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream &os, vtkIndent indent);
 
   //@{
   /**
@@ -54,17 +55,24 @@ public:
   //@}
 
 protected:
-  vtkThresholdGraph();
-  ~vtkThresholdGraph() override;
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  vtkThresholdGraph();
+ ~vtkThresholdGraph();
+
+  virtual int RequestData(vtkInformation*,
+                          vtkInformationVector**,
+                          vtkInformationVector*);
+
 
 private:
+
   double LowerThreshold;
   double UpperThreshold;
 
-  vtkThresholdGraph(const vtkThresholdGraph&) = delete;
-  void operator=(const vtkThresholdGraph&) = delete;
+
+  vtkThresholdGraph(const vtkThresholdGraph&) VTK_DELETE_FUNCTION;
+  void operator =(const vtkThresholdGraph&) VTK_DELETE_FUNCTION;
+
 };
 
 #endif // vtkThresholdGraph_h

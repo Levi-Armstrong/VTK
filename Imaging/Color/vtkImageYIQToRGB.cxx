@@ -32,8 +32,10 @@ vtkImageYIQToRGB::vtkImageYIQToRGB()
 //----------------------------------------------------------------------------
 // This templated function executes the filter for any type of data.
 template <class T>
-void vtkImageYIQToRGBExecute(
-  vtkImageYIQToRGB* self, vtkImageData* inData, vtkImageData* outData, int outExt[6], int id, T*)
+void vtkImageYIQToRGBExecute(vtkImageYIQToRGB *self,
+                             vtkImageData *inData,
+                             vtkImageData *outData,
+                             int outExt[6], int id, T *)
 {
   vtkImageIterator<T> inIt(inData, outExt);
   vtkImageProgressIterator<T> outIt(outData, outExt, self, id);
@@ -42,7 +44,7 @@ void vtkImageYIQToRGBExecute(
   double max = self->GetMaximum();
 
   // find the region to loop over
-  maxC = inData->GetNumberOfScalarComponents() - 1;
+  maxC = inData->GetNumberOfScalarComponents()-1;
 
   // Loop through output pixels
   while (!outIt.IsAtEnd())
@@ -53,21 +55,18 @@ void vtkImageYIQToRGBExecute(
     while (outSI != outSIEnd)
     {
       // Pixel operation
-      Y = static_cast<double>(*inSI) / max;
-      inSI++;
-      I = static_cast<double>(*inSI) / max;
-      inSI++;
-      Q = static_cast<double>(*inSI) / max;
-      inSI++;
+      Y = static_cast<double>(*inSI) / max; inSI++;
+      I = static_cast<double>(*inSI) / max; inSI++;
+      Q = static_cast<double>(*inSI) / max; inSI++;
 
-      // vtkMath::RGBToHSV(R, G, B, &H, &S, &V);
+      //vtkMath::RGBToHSV(R, G, B, &H, &S, &V);
       // Port this snippet below into vtkMath as YIQToRGB(similar to RGBToHSV)
       // The numbers used below are standard numbers used from here
       // http://www.cs.rit.edu/~ncs/color/t_convert.html
       // Please do not change these numbers
-      R = 1 * Y + 0.956 * I + 0.621 * Q;
-      G = 1 * Y - 0.272 * I - 0.647 * Q;
-      B = 1 * Y - 1.105 * I + 1.702 * Q;
+      R = 1*Y + 0.956*I + 0.621*Q;
+      G = 1*Y - 0.272*I - 0.647*Q;
+      B = 1*Y - 1.105*I + 1.702*Q;
       //----------------------------------------------------------------
 
       R *= max;
@@ -88,12 +87,9 @@ void vtkImageYIQToRGBExecute(
       }
 
       // assign output.
-      *outSI = static_cast<T>(R);
-      outSI++;
-      *outSI = static_cast<T>(G);
-      outSI++;
-      *outSI = static_cast<T>(B);
-      outSI++;
+      *outSI = static_cast<T>(R); outSI++;
+      *outSI = static_cast<T>(G); outSI++;
+      *outSI = static_cast<T>(B); outSI++;
 
       for (int idxC = 3; idxC <= maxC; idxC++)
       {
@@ -106,16 +102,18 @@ void vtkImageYIQToRGBExecute(
 }
 
 //----------------------------------------------------------------------------
-void vtkImageYIQToRGB::ThreadedExecute(
-  vtkImageData* inData, vtkImageData* outData, int outExt[6], int id)
+void vtkImageYIQToRGB::ThreadedExecute (vtkImageData *inData,
+                                         vtkImageData *outData,
+                                         int outExt[6], int id)
 {
-  vtkDebugMacro(<< "Execute: inData = " << inData << ", outData = " << outData);
+  vtkDebugMacro(<< "Execute: inData = " << inData
+  << ", outData = " << outData);
 
   // this filter expects that input is the same type as output.
   if (inData->GetScalarType() != outData->GetScalarType())
   {
     vtkErrorMacro(<< "Execute: input ScalarType, " << inData->GetScalarType()
-                  << ", must match out ScalarType " << outData->GetScalarType());
+    << ", must match out ScalarType " << outData->GetScalarType());
     return;
   }
 
@@ -134,7 +132,9 @@ void vtkImageYIQToRGB::ThreadedExecute(
   switch (inData->GetScalarType())
   {
     vtkTemplateMacro(
-      vtkImageYIQToRGBExecute(this, inData, outData, outExt, id, static_cast<VTK_TT*>(nullptr)));
+      vtkImageYIQToRGBExecute( this, inData,
+                               outData, outExt, id,
+                               static_cast<VTK_TT *>(0)));
     default:
       vtkErrorMacro(<< "Execute: Unknown ScalarType");
       return;
@@ -143,7 +143,7 @@ void vtkImageYIQToRGB::ThreadedExecute(
 
 void vtkImageYIQToRGB::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf(os,indent);
 
   os << indent << "Maximum: " << this->Maximum << "\n";
 }

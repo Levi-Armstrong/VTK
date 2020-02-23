@@ -20,16 +20,14 @@
 #include "vtkDataCompressor.h"
 #include "vtkDataSet.h"
 #include "vtkErrorCode.h"
-#include "vtkFieldData.h"
 #include "vtkInformation.h"
 #include "vtkInformationIntegerVectorKey.h"
 #include "vtkInformationVector.h"
-#include "vtkNew.h"
 #include "vtkPointData.h"
 #include "vtkStreamingDemandDrivenPipeline.h"
 #define vtkXMLOffsetsManager_DoNotInclude
 #include "vtkXMLOffsetsManager.h"
-#undef vtkXMLOffsetsManager_DoNotInclude
+#undef  vtkXMLOffsetsManager_DoNotInclude
 
 //----------------------------------------------------------------------------
 vtkXMLStructuredDataWriter::vtkXMLStructuredDataWriter()
@@ -38,18 +36,15 @@ vtkXMLStructuredDataWriter::vtkXMLStructuredDataWriter()
   this->NumberOfPieces = 1;
   this->GhostLevel = 0;
 
-  this->WriteExtent[0] = 0;
-  this->WriteExtent[1] = -1;
-  this->WriteExtent[2] = 0;
-  this->WriteExtent[3] = -1;
-  this->WriteExtent[4] = 0;
-  this->WriteExtent[5] = -1;
+  this->WriteExtent[0] = 0; this->WriteExtent[1] = -1;
+  this->WriteExtent[2] = 0; this->WriteExtent[3] = -1;
+  this->WriteExtent[4] = 0; this->WriteExtent[5] = -1;
 
   this->CurrentPiece = 0;
-  this->ProgressFractions = nullptr;
+  this->ProgressFractions = 0;
   this->FieldDataOM->Allocate(0);
   this->PointDataOM = new OffsetsManagerArray;
-  this->CellDataOM = new OffsetsManagerArray;
+  this->CellDataOM  = new OffsetsManagerArray;
 }
 
 //----------------------------------------------------------------------------
@@ -63,10 +58,11 @@ vtkXMLStructuredDataWriter::~vtkXMLStructuredDataWriter()
 //----------------------------------------------------------------------------
 void vtkXMLStructuredDataWriter::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
-  os << indent << "WriteExtent: " << this->WriteExtent[0] << " " << this->WriteExtent[1] << "  "
-     << this->WriteExtent[2] << " " << this->WriteExtent[3] << "  " << this->WriteExtent[4] << " "
-     << this->WriteExtent[5] << "\n";
+  this->Superclass::PrintSelf(os,indent);
+  os << indent << "WriteExtent: "
+     << this->WriteExtent[0] << " " << this->WriteExtent[1] << "  "
+     << this->WriteExtent[2] << " " << this->WriteExtent[3] << "  "
+     << this->WriteExtent[4] << " " << this->WriteExtent[5] << "\n";
   os << indent << "NumberOfPieces" << this->NumberOfPieces << "\n";
   os << indent << "WritePiece: " << this->WritePiece << "\n";
 }
@@ -74,46 +70,35 @@ void vtkXMLStructuredDataWriter::PrintSelf(ostream& os, vtkIndent indent)
 //----------------------------------------------------------------------------
 void vtkXMLStructuredDataWriter::SetInputUpdateExtent(int piece)
 {
-  vtkInformation* inInfo = this->GetExecutive()->GetInputInformation(0, 0);
-  inInfo->Set(vtkStreamingDemandDrivenPipeline::UPDATE_PIECE_NUMBER(), piece);
-  inInfo->Set(vtkStreamingDemandDrivenPipeline::UPDATE_NUMBER_OF_PIECES(), this->NumberOfPieces);
-  inInfo->Set(vtkStreamingDemandDrivenPipeline::UPDATE_NUMBER_OF_GHOST_LEVELS(), this->GhostLevel);
-  if ((this->WriteExtent[0] == 0) && (this->WriteExtent[1] == -1) && (this->WriteExtent[2] == 0) &&
-    (this->WriteExtent[3] == -1) && (this->WriteExtent[4] == 0) && (this->WriteExtent[5] == -1))
+  vtkInformation* inInfo =
+    this->GetExecutive()->GetInputInformation(0, 0);
+  inInfo->Set(vtkStreamingDemandDrivenPipeline::UPDATE_PIECE_NUMBER(),
+    piece);
+  inInfo->Set(vtkStreamingDemandDrivenPipeline::UPDATE_NUMBER_OF_PIECES(),
+    this->NumberOfPieces);
+  inInfo->Set(vtkStreamingDemandDrivenPipeline::UPDATE_NUMBER_OF_GHOST_LEVELS(),
+    this->GhostLevel);
+  if ((this->WriteExtent[0] == 0) && (this->WriteExtent[1] == -1) &&
+     (this->WriteExtent[2] == 0) && (this->WriteExtent[3] == -1) &&
+     (this->WriteExtent[4] == 0) && (this->WriteExtent[5] == -1))
   {
     inInfo->Set(vtkStreamingDemandDrivenPipeline::UPDATE_EXTENT(),
-      inInfo->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT()), 6);
+      inInfo->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT()),
+      6);
   }
   else
   {
-    inInfo->Set(vtkStreamingDemandDrivenPipeline::UPDATE_EXTENT(), this->WriteExtent, 6);
+    inInfo->Set(vtkStreamingDemandDrivenPipeline::UPDATE_EXTENT(),
+      this->WriteExtent, 6);
   }
   inInfo->Set(vtkStreamingDemandDrivenPipeline::EXACT_EXTENT(), 1);
 }
 
-vtkIdType vtkXMLStructuredDataWriter::GetNumberOfValues(vtkDataSet* input)
-{
-  vtkIdType dataSetValues = 0;
-  vtkPointData* pointData = input->GetPointData();
-  int pdArrays = pointData->GetNumberOfArrays();
-  for (int i = 0; i < pdArrays; ++i)
-  {
-    vtkAbstractArray* array = pointData->GetAbstractArray(i);
-    dataSetValues += array->GetNumberOfValues();
-  }
-  vtkCellData* cellData = input->GetCellData();
-  int cdArrays = cellData->GetNumberOfArrays();
-  for (int i = 0; i < cdArrays; ++i)
-  {
-    vtkAbstractArray* array = cellData->GetAbstractArray(i);
-    dataSetValues += array->GetNumberOfValues();
-  }
-  return dataSetValues;
-}
-
 //----------------------------------------------------------------------------
-vtkTypeBool vtkXMLStructuredDataWriter::ProcessRequest(
-  vtkInformation* request, vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+int vtkXMLStructuredDataWriter::ProcessRequest(
+  vtkInformation* request,
+  vtkInformationVector** inputVector,
+  vtkInformationVector* outputVector)
 {
 
   if (request->Has(vtkStreamingDemandDrivenPipeline::REQUEST_INFORMATION()))
@@ -141,7 +126,7 @@ vtkTypeBool vtkXMLStructuredDataWriter::ProcessRequest(
     {
       this->SetErrorCode(vtkErrorCode::NoFileNameError);
       vtkErrorMacro("The FileName or Stream must be set first or "
-                    "the output must be written to a string.");
+        "the output must be written to a string.");
       return 0;
     }
 
@@ -149,33 +134,21 @@ vtkTypeBool vtkXMLStructuredDataWriter::ProcessRequest(
     // UpdateProgressDiscrete because we want a 0 progress callback the
     // first time.
     this->UpdateProgress(0);
-    this->SetProgressText("vtkXMLStructuredDataWriter");
+
     // Initialize progress range to entire 0..1 range.
-    float wholeProgressRange[] = { 0.0f, 1.0f };
-    vtkIdType fieldDataValues = 0;
-    vtkFieldData* fieldData = this->GetInput()->GetFieldData();
-    for (int i = 0; i < fieldData->GetNumberOfArrays(); ++i)
-    {
-      vtkAbstractArray* array = fieldData->GetAbstractArray(i);
-      fieldDataValues += array->GetNumberOfValues();
-    }
-    vtkIdType dataSetValues = fieldDataValues + GetNumberOfValues(this->GetInputAsDataSet());
-    if (dataSetValues == 0)
-    {
-      dataSetValues = 1;
-    }
-    float fraction[] = { 0.0f, static_cast<float>(fieldDataValues) / dataSetValues, 1.0f };
-    this->SetProgressRange(wholeProgressRange, 0, fraction);
+    float wholeProgressRange[2] = {0,1};
+    this->SetProgressRange(wholeProgressRange, 0, 1);
+
     int result = 1;
-    if ((this->CurrentPiece == 0 || this->WritePiece >= 0) && this->CurrentTimeIndex == 0)
+    if ((this->CurrentPiece == 0 || this->WritePiece >= 0) && this->CurrentTimeIndex == 0 )
     {
       if (!this->OpenStream())
       {
         return 0;
       }
-      if (this->GetInputAsDataSet() != nullptr &&
-        (this->GetInputAsDataSet()->GetPointGhostArray() != nullptr ||
-          this->GetInputAsDataSet()->GetCellGhostArray() != nullptr))
+      if (this->GetInputAsDataSet() != NULL &&
+          (this->GetInputAsDataSet()->GetPointGhostArray() != NULL ||
+           this->GetInputAsDataSet()->GetCellGhostArray() != NULL))
       {
         // use the current version for the file
         this->UsePreviousVersion = false;
@@ -194,11 +167,9 @@ vtkTypeBool vtkXMLStructuredDataWriter::ProcessRequest(
       this->CurrentTimeIndex = 0;
       if (this->DataMode == vtkXMLWriter::Appended && this->FieldDataOM->GetNumberOfElements())
       {
-        vtkNew<vtkFieldData> fieldDataCopy;
-        this->UpdateFieldData(fieldDataCopy);
-
         // Write the field data arrays.
-        this->WriteFieldDataAppendedData(fieldDataCopy, this->CurrentTimeIndex, this->FieldDataOM);
+        this->WriteFieldDataAppendedData(this->GetInput()->GetFieldData(),
+          this->CurrentTimeIndex, this->FieldDataOM);
         if (this->ErrorCode == vtkErrorCode::OutOfDiskSpaceError)
         {
           this->DeletePositionArrays();
@@ -207,9 +178,8 @@ vtkTypeBool vtkXMLStructuredDataWriter::ProcessRequest(
       }
     }
 
-    if (!(this->UserContinueExecuting == 0)) // if user ask to stop do not try to write a piece
+    if (!(this->UserContinueExecuting == 0)) //if user ask to stop do not try to write a piece
     {
-      this->SetProgressRange(wholeProgressRange, 1, fraction);
       result = this->WriteAPiece();
     }
 
@@ -227,7 +197,7 @@ vtkTypeBool vtkXMLStructuredDataWriter::ProcessRequest(
     {
       request->Remove(vtkStreamingDemandDrivenPipeline::CONTINUE_EXECUTING());
       this->CurrentPiece = 0;
-      // We are done writing all the pieces, lets loop over time now:
+       // We are done writing all the pieces, lets loop over time now:
       this->CurrentTimeIndex++;
 
       if (this->UserContinueExecuting != 1)
@@ -254,6 +224,7 @@ vtkTypeBool vtkXMLStructuredDataWriter::ProcessRequest(
   return this->Superclass::ProcessRequest(request, inputVector, outputVector);
 }
 
+
 //----------------------------------------------------------------------------
 void vtkXMLStructuredDataWriter::AllocatePositionArrays()
 {
@@ -269,7 +240,7 @@ void vtkXMLStructuredDataWriter::AllocatePositionArrays()
 void vtkXMLStructuredDataWriter::DeletePositionArrays()
 {
   delete[] this->ExtentPositions;
-  this->ExtentPositions = nullptr;
+  this->ExtentPositions = NULL;
 }
 
 //----------------------------------------------------------------------------
@@ -300,7 +271,7 @@ int vtkXMLStructuredDataWriter::WriteHeader()
     this->AllocatePositionArrays();
 
     // Loop over each piece and write its structure.
-    for (int i = begin; i < end; ++i)
+    for (int i=begin; i < end; ++i)
     {
       // Update the piece's extent.
 
@@ -350,7 +321,7 @@ int vtkXMLStructuredDataWriter::WriteHeader()
   // each piece.
   float progressRange[2] = { 0.f, 0.f };
   this->GetProgressRange(progressRange);
-  this->ProgressFractions = new float[this->NumberOfPieces + 1];
+  this->ProgressFractions = new float[this->NumberOfPieces+1];
   this->CalculatePieceFractions(this->ProgressFractions);
 
   return 1;
@@ -379,7 +350,9 @@ int vtkXMLStructuredDataWriter::WriteAPiece()
     }
     else
     {
-      vtkErrorMacro("Input is invalid for piece " << this->CurrentPiece << ".  Aborting.");
+      vtkErrorMacro("Input is invalid for piece "
+                    << this->CurrentPiece
+                    << ".  Aborting.");
       result = 0;
     }
   }
@@ -416,7 +389,7 @@ int vtkXMLStructuredDataWriter::WriteFooter()
   }
 
   delete[] this->ProgressFractions;
-  this->ProgressFractions = nullptr;
+  this->ProgressFractions = 0;
 
   return 1;
 }
@@ -471,17 +444,22 @@ int vtkXMLStructuredDataWriter::WriteInlineMode(vtkIndent indent)
 //----------------------------------------------------------------------------
 template <class iterT>
 inline void vtkXMLStructuredDataWriterCopyTuples(
-  iterT* destIter, vtkIdType destTuple, iterT* srcIter, vtkIdType sourceTuple, vtkIdType numTuples)
+  iterT* destIter, vtkIdType destTuple,
+  iterT* srcIter, vtkIdType sourceTuple,
+  vtkIdType numTuples)
 {
   // for all contiguous-fixed component size arrays (except Bit).
-  int tupleSize = (srcIter->GetDataTypeSize() * srcIter->GetNumberOfComponents());
+  int tupleSize = (srcIter->GetDataTypeSize() *
+                   srcIter->GetNumberOfComponents());
 
-  memcpy(destIter->GetTuple(destTuple), srcIter->GetTuple(sourceTuple), numTuples * tupleSize);
+  memcpy(destIter->GetTuple(destTuple), srcIter->GetTuple(sourceTuple),
+    numTuples*tupleSize);
 }
 
 //----------------------------------------------------------------------------
-inline void vtkXMLStructuredDataWriterCopyTuples(vtkArrayIteratorTemplate<vtkStdString>* destIter,
-  vtkIdType destTuple, vtkArrayIteratorTemplate<vtkStdString>* srcIter, vtkIdType sourceTuple,
+inline void vtkXMLStructuredDataWriterCopyTuples(
+  vtkArrayIteratorTemplate<vtkStdString>* destIter, vtkIdType destTuple,
+  vtkArrayIteratorTemplate<vtkStdString>* srcIter, vtkIdType sourceTuple,
   vtkIdType numTuples)
 {
   vtkIdType numValues = numTuples * srcIter->GetNumberOfComponents();
@@ -495,15 +473,18 @@ inline void vtkXMLStructuredDataWriterCopyTuples(vtkArrayIteratorTemplate<vtkStd
 }
 
 //----------------------------------------------------------------------------
-void vtkXMLStructuredDataWriter::WritePrimaryElementAttributes(ostream& os, vtkIndent indent)
+void vtkXMLStructuredDataWriter::WritePrimaryElementAttributes(ostream &os,
+                                                               vtkIndent indent)
 {
   this->Superclass::WritePrimaryElementAttributes(os, indent);
 
   int* ext = this->WriteExtent;
-  if ((this->WriteExtent[0] == 0) && (this->WriteExtent[1] == -1) && (this->WriteExtent[2] == 0) &&
-    (this->WriteExtent[3] == -1) && (this->WriteExtent[4] == 0) && (this->WriteExtent[5] == -1))
+  if ((this->WriteExtent[0] == 0) && (this->WriteExtent[1] == -1) &&
+     (this->WriteExtent[2] == 0) && (this->WriteExtent[3] == -1) &&
+     (this->WriteExtent[4] == 0) && (this->WriteExtent[5] == -1))
   {
-    ext = this->GetInputInformation(0, 0)->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT());
+    ext = this->GetInputInformation(0, 0)->Get(
+      vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT());
   }
 
   if (this->WritePiece >= 0)
@@ -516,16 +497,19 @@ void vtkXMLStructuredDataWriter::WritePrimaryElementAttributes(ostream& os, vtkI
 }
 
 //----------------------------------------------------------------------------
-void vtkXMLStructuredDataWriter::WriteAppendedPiece(int index, vtkIndent indent)
+void vtkXMLStructuredDataWriter::WriteAppendedPiece(int index,
+                                                    vtkIndent indent)
 {
   // Write the point data and cell data arrays.
   vtkDataSet* input = this->GetInputAsDataSet();
-  this->WritePointDataAppended(input->GetPointData(), indent, &this->PointDataOM->GetPiece(index));
+  this->WritePointDataAppended(input->GetPointData(), indent,
+    &this->PointDataOM->GetPiece(index));
   if (this->ErrorCode == vtkErrorCode::OutOfDiskSpaceError)
   {
     return;
   }
-  this->WriteCellDataAppended(input->GetCellData(), indent, &this->CellDataOM->GetPiece(index));
+  this->WriteCellDataAppended(input->GetCellData(), indent,
+    &this->CellDataOM->GetPiece(index));
   if (this->ErrorCode == vtkErrorCode::OutOfDiskSpaceError)
   {
     return;
@@ -556,13 +540,18 @@ void vtkXMLStructuredDataWriter::WriteAppendedPieceData(int index)
   this->GetProgressRange(progressRange);
   int pdArrays = input->GetPointData()->GetNumberOfArrays();
   int cdArrays = input->GetCellData()->GetNumberOfArrays();
-  int total = (pdArrays + cdArrays) ? (pdArrays + cdArrays) : 1;
-  float fractions[3] = { 0, static_cast<float>(pdArrays) / total, 1 };
+  int total = (pdArrays+cdArrays)? (pdArrays+cdArrays):1;
+  float fractions[3] =
+    {
+    0,
+    static_cast<float>(pdArrays) / total,
+    1
+    };
 
   // Set the range of progress for the point data arrays.
   this->SetProgressRange(progressRange, 0, fractions);
-  this->WritePointDataAppendedData(
-    input->GetPointData(), this->CurrentTimeIndex, &this->PointDataOM->GetPiece(index));
+  this->WritePointDataAppendedData(input->GetPointData(), this->CurrentTimeIndex,
+                                   &this->PointDataOM->GetPiece(index));
   if (this->ErrorCode == vtkErrorCode::OutOfDiskSpaceError)
   {
     return;
@@ -570,8 +559,8 @@ void vtkXMLStructuredDataWriter::WriteAppendedPieceData(int index)
 
   // Set the range of progress for the cell data arrays.
   this->SetProgressRange(progressRange, 1, fractions);
-  this->WriteCellDataAppendedData(
-    input->GetCellData(), this->CurrentTimeIndex, &this->CellDataOM->GetPiece(index));
+  this->WriteCellDataAppendedData(input->GetCellData(), this->CurrentTimeIndex,
+                                  &this->CellDataOM->GetPiece(index));
 }
 
 //----------------------------------------------------------------------------
@@ -585,8 +574,13 @@ void vtkXMLStructuredDataWriter::WriteInlinePiece(vtkIndent indent)
   this->GetProgressRange(progressRange);
   int pdArrays = input->GetPointData()->GetNumberOfArrays();
   int cdArrays = input->GetCellData()->GetNumberOfArrays();
-  int total = (pdArrays + cdArrays) ? (pdArrays + cdArrays) : 1;
-  float fractions[3] = { 0, float(pdArrays) / total, 1 };
+  int total = (pdArrays+cdArrays)? (pdArrays+cdArrays):1;
+  float fractions[3] =
+    {
+      0,
+      float(pdArrays)/total,
+      1
+    };
 
   // Set the range of progress for the point data arrays.
   this->SetProgressRange(progressRange, 0, fractions);
@@ -602,11 +596,13 @@ void vtkXMLStructuredDataWriter::WriteInlinePiece(vtkIndent indent)
 }
 
 //----------------------------------------------------------------------------
-vtkIdType vtkXMLStructuredDataWriter::GetStartTuple(
-  int* extent, vtkIdType* increments, int i, int j, int k)
+vtkIdType vtkXMLStructuredDataWriter::GetStartTuple(int* extent,
+                                                    vtkIdType* increments,
+                                                    int i, int j, int k)
 {
-  return (((i - extent[0]) * increments[0]) + ((j - extent[2]) * increments[1]) +
-    ((k - extent[4]) * increments[2]));
+  return (((i - extent[0]) * increments[0]) +
+          ((j - extent[2]) * increments[1]) +
+          ((k - extent[4]) * increments[2]));
 }
 
 //----------------------------------------------------------------------------
@@ -614,14 +610,15 @@ void vtkXMLStructuredDataWriter::CalculatePieceFractions(float* fractions)
 {
   // Calculate the fraction of total data contributed by each piece.
   fractions[0] = 0;
-  for (int i = 0; i < this->NumberOfPieces; ++i)
+  for (int i = 0; i < this->NumberOfPieces;++i)
   {
     int extent[6];
     this->GetInputExtent(extent);
 
     // Add this piece's size to the cumulative fractions array.
-    fractions[i + 1] = fractions[i] +
-      ((extent[1] - extent[0] + 1) * (extent[3] - extent[2] + 1) * (extent[5] - extent[4] + 1));
+    fractions[i+1] = fractions[i] + ((extent[1]-extent[0]+1)*
+                                     (extent[3]-extent[2]+1)*
+                                     (extent[5]-extent[4]+1));
   }
   if (fractions[this->NumberOfPieces] == 0)
   {
@@ -629,6 +626,6 @@ void vtkXMLStructuredDataWriter::CalculatePieceFractions(float* fractions)
   }
   for (int i = 0; i < this->NumberOfPieces; ++i)
   {
-    fractions[i + 1] = fractions[i + 1] / fractions[this->NumberOfPieces];
+    fractions[i+1] = fractions[i+1] / fractions[this->NumberOfPieces];
   }
 }

@@ -54,7 +54,7 @@
  * @sa
  * vtkInteractorStyle vtkInteractorStyleTrackballActor
  * vtkInteractorStyleJoystickCamera vtkInteractorStyleJoystickActor
- */
+*/
 
 #ifndef vtkInteractorStyleImage_h
 #define vtkInteractorStyleImage_h
@@ -65,7 +65,8 @@
 // Motion flags
 
 #define VTKIS_WINDOW_LEVEL 1024
-#define VTKIS_SLICE 1025
+#define VTKIS_PICK         1025
+#define VTKIS_SLICE        1026
 
 // Style flags
 
@@ -78,16 +79,16 @@ class vtkImageProperty;
 class VTKINTERACTIONSTYLE_EXPORT vtkInteractorStyleImage : public vtkInteractorStyleTrackballCamera
 {
 public:
-  static vtkInteractorStyleImage* New();
+  static vtkInteractorStyleImage *New();
   vtkTypeMacro(vtkInteractorStyleImage, vtkInteractorStyleTrackballCamera);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   //@{
   /**
    * Some useful information for handling window level
    */
-  vtkGetVector2Macro(WindowLevelStartPosition, int);
-  vtkGetVector2Macro(WindowLevelCurrentPosition, int);
+  vtkGetVector2Macro(WindowLevelStartPosition,int);
+  vtkGetVector2Macro(WindowLevelCurrentPosition,int);
   //@}
 
   //@{
@@ -95,19 +96,19 @@ public:
    * Event bindings controlling the effects of pressing mouse buttons
    * or moving the mouse.
    */
-  void OnMouseMove() override;
-  void OnLeftButtonDown() override;
-  void OnLeftButtonUp() override;
-  void OnMiddleButtonDown() override;
-  void OnMiddleButtonUp() override;
-  void OnRightButtonDown() override;
-  void OnRightButtonUp() override;
+  virtual void OnMouseMove();
+  virtual void OnLeftButtonDown();
+  virtual void OnLeftButtonUp();
+  virtual void OnMiddleButtonDown();
+  virtual void OnMiddleButtonUp();
+  virtual void OnRightButtonDown();
+  virtual void OnRightButtonUp();
   //@}
 
   /**
    * Override the "fly-to" (f keypress) for images.
    */
-  void OnChar() override;
+  virtual void OnChar();
 
   // These methods for the different interactions in different modes
   // are overridden in subclasses to perform the correct motion. Since
@@ -134,9 +135,12 @@ public:
    */
   vtkSetClampMacro(InteractionMode, int, VTKIS_IMAGE2D, VTKIS_IMAGE_SLICING);
   vtkGetMacro(InteractionMode, int);
-  void SetInteractionModeToImage2D() { this->SetInteractionMode(VTKIS_IMAGE2D); }
-  void SetInteractionModeToImage3D() { this->SetInteractionMode(VTKIS_IMAGE3D); }
-  void SetInteractionModeToImageSlicing() { this->SetInteractionMode(VTKIS_IMAGE_SLICING); }
+  void SetInteractionModeToImage2D() {
+    this->SetInteractionMode(VTKIS_IMAGE2D); }
+  void SetInteractionModeToImage3D() {
+    this->SetInteractionMode(VTKIS_IMAGE3D); }
+  void SetInteractionModeToImageSlicing() {
+    this->SetInteractionMode(VTKIS_IMAGE_SLICING); }
   //@}
 
   //@{
@@ -167,7 +171,8 @@ public:
    * moving bottom-to-top up the screen.  This method changes
    * the position of the camera to provide the desired view.
    */
-  void SetImageOrientation(const double leftToRight[3], const double bottomToTop[3]);
+  void SetImageOrientation(const double leftToRight[3],
+                           const double bottomToTop[3]);
 
   /**
    * Set the image to use for WindowLevel interaction.
@@ -186,18 +191,19 @@ public:
    * Get the current image property, which is set when StartWindowLevel
    * is called immediately before StartWindowLevelEvent is generated.
    * This is the image property of the topmost vtkImageSlice in the
-   * renderer or nullptr if no image actors are present.
+   * renderer or NULL if no image actors are present.
    */
-  vtkImageProperty* GetCurrentImageProperty() { return this->CurrentImageProperty; }
+  vtkImageProperty *GetCurrentImageProperty() {
+    return this->CurrentImageProperty; }
 
 protected:
   vtkInteractorStyleImage();
-  ~vtkInteractorStyleImage() override;
+  ~vtkInteractorStyleImage();
 
   int WindowLevelStartPosition[2];
   int WindowLevelCurrentPosition[2];
   double WindowLevelInitial[2];
-  vtkImageProperty* CurrentImageProperty;
+  vtkImageProperty *CurrentImageProperty;
   int CurrentImageNumber;
 
   int InteractionMode;
@@ -209,8 +215,8 @@ protected:
   double ZViewUpVector[3];
 
 private:
-  vtkInteractorStyleImage(const vtkInteractorStyleImage&) = delete;
-  void operator=(const vtkInteractorStyleImage&) = delete;
+  vtkInteractorStyleImage(const vtkInteractorStyleImage&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkInteractorStyleImage&) VTK_DELETE_FUNCTION;
 };
 
 #endif

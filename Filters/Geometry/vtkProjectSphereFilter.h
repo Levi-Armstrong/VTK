@@ -18,7 +18,7 @@
  * unroll longitude is -180.
  *
  *
- */
+*/
 
 #ifndef vtkProjectSphereFilter_h
 #define vtkProjectSphereFilter_h
@@ -33,20 +33,21 @@ class vtkIdList;
 class vtkIncrementalPointLocator;
 class vtkUnstructuredGrid;
 
-class VTKFILTERSGEOMETRY_EXPORT vtkProjectSphereFilter : public vtkPointSetAlgorithm
+class VTKFILTERSGEOMETRY_EXPORT vtkProjectSphereFilter :
+  public vtkPointSetAlgorithm
 {
 public:
   vtkTypeMacro(vtkProjectSphereFilter, vtkPointSetAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream &os, vtkIndent indent) VTK_OVERRIDE;
 
-  static vtkProjectSphereFilter* New();
+  static vtkProjectSphereFilter *New();
 
   //@{
   /**
    * Set the center of the sphere to be split. Default is 0,0,0.
    */
-  vtkSetVector3Macro(Center, double);
-  vtkGetVectorMacro(Center, double, 3);
+  vtkSetVector3Macro(Center,double);
+  vtkGetVectorMacro(Center,double,3);
   //@}
 
   //@{
@@ -72,11 +73,12 @@ public:
 
 protected:
   vtkProjectSphereFilter();
-  ~vtkProjectSphereFilter() override;
+  ~vtkProjectSphereFilter() VTK_OVERRIDE;
 
-  int FillInputPortInformation(int port, vtkInformation* info) override;
+  int FillInputPortInformation(int port, vtkInformation *info) VTK_OVERRIDE;
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation *, vtkInformationVector **,
+                  vtkInformationVector *) VTK_OVERRIDE;
 
   void TransformPointInformation(vtkPointSet* input, vtkPointSet* output, vtkIdList*);
   void TransformCellInformation(vtkPointSet* input, vtkPointSet* output, vtkIdList*);
@@ -87,7 +89,8 @@ protected:
    * to the centerline (i.e. line connecting -90 latitude to 90 latitude)
    * if we don't build cells using points at the poles.
    */
-  virtual void ComputePointsClosestToCenterLine(double, vtkIdList*) {}
+  virtual void ComputePointsClosestToCenterLine(double, vtkIdList*)
+  {}
 
   /**
    * If TranslateZ is true then this is the method that computes
@@ -99,14 +102,16 @@ protected:
    * Split a cell into multiple cells because it stretches across the
    * SplitLongitude. splitSide is 1 for left side and 0 for sight side.
    */
-  void SplitCell(vtkPointSet* input, vtkPointSet* output, vtkIdType inputCellId,
-    vtkIncrementalPointLocator* locator, vtkCellArray* connectivity, int splitSide);
+  void SplitCell(  vtkPointSet* input, vtkPointSet* output, vtkIdType inputCellId,
+                   vtkIncrementalPointLocator* locator, vtkCellArray* connectivity,
+                   int splitSide);
 
-  void SetCellInformation(vtkUnstructuredGrid* output, vtkCell* cell, vtkIdType numberOfNewCells);
+  void SetCellInformation(
+    vtkUnstructuredGrid* output, vtkCell* cell, vtkIdType numberOfNewCells);
 
 private:
-  vtkProjectSphereFilter(const vtkProjectSphereFilter&) = delete;
-  void operator=(const vtkProjectSphereFilter&) = delete;
+  vtkProjectSphereFilter(const vtkProjectSphereFilter &) VTK_DELETE_FUNCTION;
+  void operator=(const vtkProjectSphereFilter &) VTK_DELETE_FUNCTION;
 
   double Center[3];
   const double SplitLongitude;

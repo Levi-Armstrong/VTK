@@ -23,13 +23,13 @@
  * mesh's cell data or point data, in an array with names varied with different
  * quality being queried. Note this filter always assume the data associate with
  * the cells or points are 3 by 3 matrix.
- */
+*/
 
 #ifndef vtkMatrixMathFilter_h
 #define vtkMatrixMathFilter_h
 
-#include "vtkDataSetAlgorithm.h"
 #include "vtkFiltersVerdictModule.h" // For export macro
+#include "vtkDataSetAlgorithm.h"
 
 class vtkCell;
 class vtkDataArray;
@@ -39,46 +39,59 @@ class VTKFILTERSVERDICT_EXPORT vtkMatrixMathFilter : public vtkDataSetAlgorithm
 
   enum
   {
-    NONE = 0,
-    DETERMINANT,
-    EIGENVALUE,
-    EIGENVECTOR,
-    INVERSE
+  NONE = 0,
+  DETERMINANT,
+  EIGENVALUE,
+  EIGENVECTOR,
+  INVERSE
   };
   enum
   {
-    POINT_QUALITY = 0,
-    CELL_QUALITY
+  POINT_QUALITY = 0,
+  CELL_QUALITY
   };
 
 public:
-  void PrintSelf(ostream&, vtkIndent) override;
+  void PrintSelf (ostream&, vtkIndent);
   vtkTypeMacro(vtkMatrixMathFilter, vtkDataSetAlgorithm);
-  static vtkMatrixMathFilter* New();
+  static vtkMatrixMathFilter* New ();
 
   //@{
   /**
    * Set/Get the particular estimator used to function the quality of query.
    */
-  vtkSetMacro(Operation, int);
-  vtkGetMacro(Operation, int);
-  void SetOperationToDeterminant() { this->SetOperation(DETERMINANT); }
-  void SetOperationToEigenvalue() { this->SetOperation(EIGENVALUE); }
-  void SetOperationToEigenvector() { this->SetOperation(EIGENVECTOR); }
-  void SetOperationToInverse() { this->SetOperation(INVERSE); }
+  vtkSetMacro(Operation, int)
+  vtkGetMacro(Operation, int)
+  void SetOperationToDeterminant ()
+  {
+     this->SetOperation(DETERMINANT);
+  }
+  void SetOperationToEigenvalue ()
+  {
+     this->SetOperation(EIGENVALUE);
+  }
+  void SetOperationToEigenvector ()
+  {
+     this->SetOperation(EIGENVECTOR);
+  }
+  void SetOperationToInverse ()
+  {
+     this->SetOperation(INVERSE);
+  }
   //@}
 
 protected:
-  ~vtkMatrixMathFilter() override;
-  vtkMatrixMathFilter();
+ ~vtkMatrixMathFilter ();
+  vtkMatrixMathFilter ();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  virtual int RequestData
+    (vtkInformation*, vtkInformationVector**, vtkInformationVector*);
 
   int Operation;
 
 private:
-  vtkMatrixMathFilter(const vtkMatrixMathFilter&) = delete;
-  void operator=(const vtkMatrixMathFilter&) = delete;
+  vtkMatrixMathFilter(const vtkMatrixMathFilter&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkMatrixMathFilter&) VTK_DELETE_FUNCTION;
 };
 
 #endif // vtkMatrixMathFilter_h

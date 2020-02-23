@@ -14,31 +14,32 @@
 =========================================================================*/
 
 #include <vtkActor.h>
-#include <vtkCamera.h>
 #include <vtkColorTransferFunction.h>
 #include <vtkConeSource.h>
 #include <vtkDoubleArray.h>
-#include <vtkImageActor.h>
-#include <vtkImageMapper3D.h>
 #include <vtkNew.h>
 #include <vtkPointData.h>
 #include <vtkPolyData.h>
 #include <vtkPolyDataMapper.h>
+#include <vtkImageMapper3D.h>
 #include <vtkProjectedTetrahedraMapper.h>
 #include <vtkProp3D.h>
 #include <vtkProperty.h>
 #include <vtkRectilinearGrid.h>
 #include <vtkRectilinearGridToTetrahedra.h>
 #include <vtkRegressionTestImage.h>
+#include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
-#include <vtkRenderer.h>
 #include <vtkSmartPointer.h>
 #include <vtkTesting.h>
 #include <vtkTransform.h>
 #include <vtkUnstructuredGrid.h>
 #include <vtkVolumeProperty.h>
 #include <vtkWindowToImageFilter.h>
+#include <vtkImageActor.h>
+#include <vtkCamera.h>
+
 
 // Description
 // Tests off-screen rendering of vtkProjectedTetrahedra.
@@ -60,16 +61,17 @@ vtkSmartPointer<vtkVolume> CubeVolume_TetrahedraOffscreen(double r, double g, do
   // Create the RectilinearGrid
   vtkNew<vtkRectilinearGrid> grid;
   grid->SetDimensions(2, 2, 2);
-  grid->SetXCoordinates(xArray);
-  grid->SetYCoordinates(yArray);
-  grid->SetZCoordinates(zArray);
+  grid->SetXCoordinates(xArray.GetPointer());
+  grid->SetYCoordinates(yArray.GetPointer());
+  grid->SetZCoordinates(zArray.GetPointer());
 
   // Obtain an UnstructuredGrid made of tetrahedras
   vtkNew<vtkRectilinearGridToTetrahedra> rectilinearGridToTetrahedra;
-  rectilinearGridToTetrahedra->SetInputData(grid);
+  rectilinearGridToTetrahedra->SetInputData(grid.GetPointer());
   rectilinearGridToTetrahedra->Update();
 
-  vtkSmartPointer<vtkUnstructuredGrid> ugrid = rectilinearGridToTetrahedra->GetOutput();
+  vtkSmartPointer<vtkUnstructuredGrid> ugrid
+    = rectilinearGridToTetrahedra->GetOutput();
 
   // Add scalars to the grid
   vtkNew<vtkDoubleArray> scalars;
@@ -77,7 +79,7 @@ vtkSmartPointer<vtkVolume> CubeVolume_TetrahedraOffscreen(double r, double g, do
   {
     scalars->InsertNextValue(0);
   }
-  ugrid->GetPointData()->SetScalars(scalars);
+  ugrid->GetPointData()->SetScalars(scalars.GetPointer());
 
   // Volume Rendering Mapper
   vtkNew<vtkProjectedTetrahedraMapper> mapper;
@@ -86,12 +88,12 @@ vtkSmartPointer<vtkVolume> CubeVolume_TetrahedraOffscreen(double r, double g, do
 
   // Create the volume
   vtkSmartPointer<vtkVolume> volume = vtkSmartPointer<vtkVolume>::New();
-  volume->SetMapper(mapper);
+  volume->SetMapper(mapper.GetPointer());
 
   // Apply a ColorTransferFunction to the volume
   vtkNew<vtkColorTransferFunction> colorTransferFunction;
   colorTransferFunction->AddRGBPoint(0.0, r, g, b);
-  volume->GetProperty()->SetColor(colorTransferFunction);
+  volume->GetProperty()->SetColor(colorTransferFunction.GetPointer());
 
   return volume;
 }
@@ -108,12 +110,13 @@ vtkSmartPointer<vtkActor> ConeActor_TetrahedraOffscreen(double r, double g, doub
   // Create the actor
   vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
   actor->GetProperty()->SetColor(r, g, b);
-  actor->SetMapper(mapper);
+  actor->SetMapper(mapper.GetPointer());
 
   return actor;
 }
 
-int TestProjectedTetrahedraOffscreen(int argc, char* argv[])
+
+int TestProjectedTetrahedraOffscreen(int argc, char *argv[])
 {
   // Create the props
 
@@ -129,17 +132,17 @@ int TestProjectedTetrahedraOffscreen(int argc, char* argv[])
   // Translate the blue props by (2,2)
   vtkNew<vtkTransform> transform;
   transform->Translate(2, 2, 0);
-  volume2->SetUserTransform(transform);
+  volume2->SetUserTransform(transform.GetPointer());
 
   // Create a renderer, render window, and interactor
   vtkNew<vtkRenderer> renderer;
   vtkNew<vtkRenderWindow> renderWindow;
   renderWindow->SetMultiSamples(0);
-  renderWindow->AddRenderer(renderer);
+  renderWindow->AddRenderer(renderer.GetPointer());
   renderWindow->SetSize(300, 300);
 
   vtkNew<vtkRenderWindowInteractor> renderWindowInteractor;
-  renderWindowInteractor->SetRenderWindow(renderWindow);
+  renderWindowInteractor->SetRenderWindow(renderWindow.GetPointer());
 
   // Render dummy scene on-screen
   renderWindow->SetOffScreenRendering(false);
@@ -160,7 +163,7 @@ int TestProjectedTetrahedraOffscreen(int argc, char* argv[])
   renderer->ResetCamera();
 
   vtkNew<vtkWindowToImageFilter> win2image;
-  win2image->SetInput(renderWindow);
+  win2image->SetInput(renderWindow.GetPointer());
   win2image->Update();
   vtkImageData* offScreenImage = win2image->GetOutput();
 
@@ -174,7 +177,7 @@ int TestProjectedTetrahedraOffscreen(int argc, char* argv[])
   // Render on-screen a texture map of the off-screen rendered image
   vtkNew<vtkImageActor> ia;
   ia->GetMapper()->SetInputData(offScreenImage);
-  renderer->AddActor(ia);
+  renderer->AddActor(ia.GetPointer());
   renderer->SetBackground(0, 0, 0);
 
   renderer->GetActiveCamera()->SetPosition(0, 0, -1);
@@ -183,7 +186,7 @@ int TestProjectedTetrahedraOffscreen(int argc, char* argv[])
   renderer->ResetCamera();
   renderWindow->Render();
 
-  int retVal = vtkTesting::Test(argc, argv, renderWindow, 20);
+  int retVal = vtkTesting::Test(argc, argv, renderWindow.GetPointer(), 20);
   if (retVal == vtkRegressionTester::DO_INTERACTOR)
   {
     renderWindowInteractor->Start();

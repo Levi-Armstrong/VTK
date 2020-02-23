@@ -22,10 +22,8 @@
  * vtkBridgeCellIteratorOnCellBoundaries,
  * vtkBridgeCellIteratorOnCellNeighbors,
  * @sa
- * vtkGenericCellIterator, vtkBridgeCellIterator, vtkBridgeDataSet, vtkBridgeCellIteratorOnDataSet,
- * vtkBridgeCellIteratorOnDataSetBoundaries, vtkBridgeCellIteratorOnCellBoundaries,
- * vtkBridgeCellIteratorOnCellNeighbors
- */
+ * vtkGenericCellIterator, vtkBridgeCellIterator, vtkBridgeDataSet, vtkBridgeCellIteratorOnDataSet, vtkBridgeCellIteratorOnDataSetBoundaries, vtkBridgeCellIteratorOnCellBoundaries, vtkBridgeCellIteratorOnCellNeighbors
+*/
 
 #ifndef vtkBridgeCellIteratorStrategy_h
 #define vtkBridgeCellIteratorStrategy_h
@@ -41,22 +39,22 @@ class vtkIdList;
 class VTKTESTINGGENERICBRIDGE_EXPORT vtkBridgeCellIteratorStrategy : public vtkGenericCellIterator
 {
 public:
-  vtkTypeMacro(vtkBridgeCellIteratorStrategy, vtkGenericCellIterator);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  vtkTypeMacro(vtkBridgeCellIteratorStrategy,vtkGenericCellIterator);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
   /**
    * Create an empty cell. NOT USED
    * \post result_exists: result!=0
    */
-  vtkGenericAdaptorCell* NewCell() override;
+  vtkGenericAdaptorCell *NewCell();
 
 protected:
   vtkBridgeCellIteratorStrategy() {}
-  ~vtkBridgeCellIteratorStrategy() override {}
+  virtual ~vtkBridgeCellIteratorStrategy() {}
 
 private:
-  vtkBridgeCellIteratorStrategy(const vtkBridgeCellIteratorStrategy&) = delete;
-  void operator=(const vtkBridgeCellIteratorStrategy&) = delete;
+  vtkBridgeCellIteratorStrategy(const vtkBridgeCellIteratorStrategy&) VTK_DELETE_FUNCTION;
+  void operator=(const vtkBridgeCellIteratorStrategy&) VTK_DELETE_FUNCTION;
 };
 
 #endif
