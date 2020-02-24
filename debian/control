@@ -167,7 +167,7 @@ Depends: ${misc:Depends},
 Suggests: mpi-default-bin,
           ros-industrial-vtk7-doc,
           ros-industrial-vtk7-examples
-Conflicts: ros-industrial-libvtk (>> 6.0.0-7)
+Conflicts: ros-industrial-libvtk7 (>> 6.0.0-7)
 Replaces: ros-industrial-libvtk5.8,
           ros-industrial-libvtk7
 Description: VTK libraries
