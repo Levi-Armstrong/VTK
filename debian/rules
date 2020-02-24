@@ -131,3 +131,5 @@ override_dh_install-arch:
 	mkdir -p  $(CURDIR)/debian/python3-vtk7/opt/ros_industrial/vtk-7.1/lib/$(DEB_HOST_MULTIARCH)/python3.5/site-packages/ && \
           cd $(CURDIR)/debian/python3-vtk7/opt/ros_industrial/vtk-7.1/lib/$(DEB_HOST_MULTIARCH)/python3.5/site-packages/ && \
 	  ln -s  /opt/ros_industrial/vtk-7.1/lib/python3.5/dist-packages/vtk vtk
+override_dh_shlibdeps:
+   dh_shlibdeps --dpkg-shlibdeps-params=-l$(CURDIR)/debian/tmp/opt/ros_industrial/vtk-7.1/lib
