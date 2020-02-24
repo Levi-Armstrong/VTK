@@ -1,2 +1,2 @@
-debian/tmp/usr/share/doc/vtk-7.1/doxygen
+debian/tmp/opt/ros_industrial/vtk-7.1/share/doc/vtk-7.1/doxygen
 debian/build/Utilities/Doxygen/doc/html

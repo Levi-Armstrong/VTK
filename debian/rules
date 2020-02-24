@@ -103,19 +103,19 @@ override_dh_auto_install:
 	pwd
 	dh_auto_install -X.pyc -X.pyo
 	# Modify vtkWrapJava.cmake to properly upload JavaDependencies.cmake.in	from $VTK_DIR
-	perl -pi -e "s|{dir}/JavaDependencies.cmake.in\"|{VTK_DIR}/JavaDependencies.cmake.in\"|" debian/tmp/usr/lib/cmake/vtk-7.1/vtkWrapJava.cmake
+	perl -pi -e "s|{dir}/JavaDependencies.cmake.in\"|{VTK_DIR}/JavaDependencies.cmake.in\"|" debian/tmp/opt/ros_industrial/vtk-7.1/lib/cmake/vtk-7.1/vtkWrapJava.cmake
 	# Correct headers for paraview
 	perl -pi.bak -e "s|cxx|include|g" ThirdParty/netcdf/vtk_netcdfcpp.h
-	mv $(CURDIR)/debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/vtk.jar $(CURDIR)/debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/vtk7.jar
+	mv $(CURDIR)/debian/tmp/opt/ros_industrial/vtk-7.1/lib/$(DEB_HOST_MULTIARCH)/vtk.jar $(CURDIR)/debian/tmp/opt/ros_industrial/vtk-7.1/lib/$(DEB_HOST_MULTIARCH)/vtk7.jar
 	mv $(CURDIR)/debian/build/bin/vtkpython $(CURDIR)/debian/build/bin/vtk7python
-	sed -i -e "s/FATAL_ERROR/STATUS/g" $(CURDIR)/debian/tmp/usr/lib/cmake/vtk-7.1/VTKTargets.cmake
+	sed -i -e "s/FATAL_ERROR/STATUS/g" $(CURDIR)/debian/tmp/opt/ros_industrial/vtk-7.1/lib/cmake/vtk-7.1/VTKTargets.cmake
 	chrpath -d $(CURDIR)/debian/build/bin/vtk7python
 	chrpath -d $(CURDIR)/debian/build/bin/pvtk
 	chrpath -d $(CURDIR)/debian/build/bin/pvtkpython
 	mv $(CURDIR)/debian/tmp/usr/bin/vtk $(CURDIR)/debian/tmp/usr/bin/vtk7
 	find $(CURDIR)/debian/tmp/ -name "*.pyc" | xargs rm -f
 	find $(CURDIR)/debian/tmp/ -name "*.pyo" | xargs rm -f
-	sed -i -e "9 a\ append libPath /${DEB_HOST_MULTIARCH}" $(CURDIR)/debian/tmp/usr/lib/tcltk/vtk-7.1/pkgIndex.tcl
+	sed -i -e "9 a\ append libPath /${DEB_HOST_MULTIARCH}" $(CURDIR)/debian/tmp/opt/ros_industrial/vtk-7.1/lib/tcltk/vtk-7.1/pkgIndex.tcl
 
 override_dh_install-arch:
 	dh_install -a
@@ -125,6 +125,6 @@ override_dh_install-arch:
 	find $(CURDIR)/debian/libvtk7-dev/usr/include/ -name "Q*" -exec rm {} \;
 	chmod 755 $(CURDIR)/debian/libvtk7-dev/usr/share/vtk-7.1/doxygen/*.pl
 	rm -rf $(CURDIR)/debian/libvtk7-doc/usr/share/doc/vtk7-doc/html/_formulas.log
-	mkdir -p  $(CURDIR)/debian/python3-vtk7/usr/lib/$(DEB_HOST_MULTIARCH)/python3.5/site-packages/ && \
-          cd $(CURDIR)/debian/python3-vtk7/usr/lib/$(DEB_HOST_MULTIARCH)/python3.5/site-packages/ && \
-	  ln -s  /usr/lib/python3.5/dist-packages/vtk vtk
+	mkdir -p  $(CURDIR)/debian/python3-vtk7/opt/ros_industrial/vtk-7.1/lib/$(DEB_HOST_MULTIARCH)/python3.5/site-packages/ && \
+          cd $(CURDIR)/debian/python3-vtk7/opt/ros_industrial/vtk-7.1/lib/$(DEB_HOST_MULTIARCH)/python3.5/site-packages/ && \
+	  ln -s  /opt/ros_industrial/vtk-7.1/lib/python3.5/dist-packages/vtk vtk

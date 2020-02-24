@@ -1,3 +1,3 @@
-usr/bin/vtkParseJava-7.1                    usr/bin
-usr/bin/vtkWrapJava-7.1                     usr/bin
-usr/lib/*/vtk7.jar                          usr/share/java
+opt/ros_industrial/vtk-7.1/bin/vtkParseJava-7.1                    opt/ros_industrial/vtk-7.1/bin
+opt/ros_industrial/vtk-7.1/bin/vtkWrapJava-7.1                     opt/ros_industrial/vtk-7.1/bin
+opt/ros_industrial/vtk-7.1/lib/*/vtk7.jar                          opt/ros_industrial/vtk-7.1/share/java

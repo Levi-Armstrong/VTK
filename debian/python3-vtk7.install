@@ -1,3 +1,3 @@
-usr/lib/python3/dist-packages
-usr/bin/vtkWrapPython-7.*
-usr/bin/vtkWrapPythonInit-7.*
+opt/ros_industrial/vtk-7.1/lib/python3/dist-packages
+opt/ros_industrial/vtk-7.1/bin/vtkWrapPython-7.*
+opt/ros_industrial/vtk-7.1/bin/vtkWrapPythonInit-7.*
