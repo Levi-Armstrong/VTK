@@ -122,14 +122,14 @@ override_dh_auto_install:
 
 override_dh_install-arch:
 	dh_install -a
-	find $(CURDIR)/debian/libvtk7-dev/ -name "*Qt*" -exec rm {} \;
-	find $(CURDIR)/debian/libvtk7.1/ -name "*Qt*" -exec rm {} \;
-	find $(CURDIR)/debian/libvtk7-dev/ -name "libvtkRenderingPythonTkWidgets.so" -exec rm {} \;
-	find $(CURDIR)/debian/libvtk7-dev/opt/ros_industrial/vtk-7.1/include/ -name "Q*" -exec rm {} \;
-	chmod 755 $(CURDIR)/debian/libvtk7-dev/opt/ros_industrial/vtk-7.1/share/vtk-7.1/doxygen/*.pl
-	rm -rf $(CURDIR)/debian/libvtk7-doc/opt/ros_industrial/vtk-7.1/share/doc/vtk7-doc/html/_formulas.log
-	mkdir -p  $(CURDIR)/debian/python3-vtk7/opt/ros_industrial/vtk-7.1/lib/$(DEB_HOST_MULTIARCH)/python3.5/site-packages/ && \
-          cd $(CURDIR)/debian/python3-vtk7/opt/ros_industrial/vtk-7.1/lib/$(DEB_HOST_MULTIARCH)/python3.5/site-packages/ && \
+	find $(CURDIR)/debian/ros-industrial-libvtk7-dev/ -name "*Qt*" -exec rm {} \;
+	find $(CURDIR)/debian/ros-industrial-libvtk7.1/ -name "*Qt*" -exec rm {} \;
+	find $(CURDIR)/debian/ros-industrial-libvtk7-dev/ -name "libvtkRenderingPythonTkWidgets.so" -exec rm {} \;
+	find $(CURDIR)/debian/ros-industrial-libvtk7-dev/opt/ros_industrial/vtk-7.1/include/ -name "Q*" -exec rm {} \;
+	chmod 755 $(CURDIR)/debian/ros-industrial-libvtk7-dev/opt/ros_industrial/vtk-7.1/share/vtk-7.1/doxygen/*.pl
+	rm -rf $(CURDIR)/debian/ros-industrial-libvtk7-doc/opt/ros_industrial/vtk-7.1/share/doc/vtk7-doc/html/_formulas.log
+	mkdir -p  $(CURDIR)/debian/ros-industrial-python3-vtk7/opt/ros_industrial/vtk-7.1/lib/$(DEB_HOST_MULTIARCH)/python3.5/site-packages/ && \
+          cd $(CURDIR)/debian/ros-industrial-python3-vtk7/opt/ros_industrial/vtk-7.1/lib/$(DEB_HOST_MULTIARCH)/python3.5/site-packages/ && \
 	  ln -s  /opt/ros_industrial/vtk-7.1/lib/python3.5/dist-packages/vtk vtk
 
 override_dh_shlibdeps:
