@@ -133,5 +133,5 @@ override_dh_install-arch:
 	  ln -s  /opt/ros_industrial/vtk-7.1/lib/python3.5/dist-packages/vtk vtk
 
 override_dh_shlibdeps:
-	dh_shlibdeps --dpkg-shlibdeps-params=--ignore-missing-info -l$(CURDIR)/debian/tmp/opt/ros_industrial/vtk-7.1/lib
+	dh_shlibdeps --dpkg-shlibdeps-params=--ignore-missing-info -l$(CURDIR)/debian/tmp/opt/ros_industrial/vtk-7.1/lib -l$(CURDIR)/debian/tmp/opt/ros_industrial/vtk-7.1/lib/x86_64-linux-gnu/
 
