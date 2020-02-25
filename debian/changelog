@@ -1,6 +1,6 @@
-ros-industrial-vtk7 (7.1.1.1-3) bionic; urgency=medium
+ros-industrial-vtk7 (7.1.2-1) bionic; urgency=medium
 
   * Change install location
 
- -- Levi Armstrong <levi.armstrong@gmail.com>  Sun, 23 Feb 2020 12:15:49 +0200
+ -- Levi Armstrong <levi.armstrong@gmail.com>  Mon, 25 Feb 2020 12:15:49 +0200
 
