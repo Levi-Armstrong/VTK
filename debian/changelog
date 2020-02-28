@@ -1,3 +1,9 @@
+ros-industrial-vtk7 (7.1.2-3) xenial; urgency=medium
+
+  * Change install location
+
+ -- Levi Armstrong <levi.armstrong@gmail.com>  Thu, 27 Feb 2020 12:15:49 +0200
+
 ros-industrial-vtk7 (7.1.2-2) bionic; urgency=medium
 
   * Change install location
